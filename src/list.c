@@ -64,7 +64,7 @@ list list_init(const size_t data_size) {
  *
  * @return The amount of elements.
  */
-int list_size(list me) {
+int list_size(list me const) {
     return me->space;
 }
 
@@ -75,7 +75,7 @@ int list_size(list me) {
  *
  * @return If the list is empty.
  */
-bool list_is_empty(list me) {
+bool list_is_empty(list me const) {
     return list_size(me) == 0;
 }
 
@@ -85,7 +85,7 @@ bool list_is_empty(list me) {
  * @param array The array to copy the list to.
  * @param me    The list to copy to the array.
  */
-void list_to_array(void *const array, list me) {
+void list_to_array(void *const array, list me const) {
     struct node *traverse = me->head;
     int offset = 0;
     while (traverse != NULL) {
@@ -98,7 +98,7 @@ void list_to_array(void *const array, list me) {
 /*
  * Get the node at index starting from the head.
  */
-static struct node *get_node_from_head(list me, const int index) {
+static struct node *get_node_from_head(list me const, const int index) {
     struct node *traverse = me->head;
     for (int i = 0; i < index; i++) {
         traverse = traverse->next;
@@ -109,7 +109,7 @@ static struct node *get_node_from_head(list me, const int index) {
 /*
  * Get the node at index starting from tail.
  */
-static struct node *get_node_from_tail(list me, const int index) {
+static struct node *get_node_from_tail(list me const, const int index) {
     struct node *traverse = me->tail;
     for (int i = me->space - 1; i > index; i--) {
         traverse = traverse->prev;
@@ -120,7 +120,7 @@ static struct node *get_node_from_tail(list me, const int index) {
 /*
  * Get the node at the specified index.
  */
-static struct node *get_node_at(list me, const int index) {
+static struct node *get_node_at(list me const, const int index) {
     if (index <= me->space / 2) {
         return get_node_from_head(me, index);
     } else {
@@ -137,7 +137,7 @@ static struct node *get_node_at(list me, const int index) {
  * @return 0       No error.
  *         -ENOMEM Out of memory.
  */
-int list_add_first(list me, void *const data) {
+int list_add_first(list me const, void *const data) {
     struct node *const traverse = me->head;
     struct node *const add = malloc(sizeof(struct node));
     if (add == NULL) {
@@ -173,7 +173,7 @@ int list_add_first(list me, void *const data) {
  *         -ENOMEM Out of memory.
  *         -EINVAL Invalid parameter.
  */
-int list_add_at(list me, const int index, void *const data) {
+int list_add_at(list me const, const int index, void *const data) {
     if (index < 0 || index > me->space) {
         return -EINVAL;
     }
@@ -212,7 +212,7 @@ int list_add_at(list me, const int index, void *const data) {
  * @return 0       No error.
  *         -ENOMEM Out of memory.
  */
-int list_add_last(list me, void *const data) {
+int list_add_last(list me const, void *const data) {
     struct node *const traverse = me->tail;
     struct node *const add = malloc(sizeof(struct node));
     if (add == NULL) {
@@ -234,7 +234,10 @@ int list_add_last(list me, void *const data) {
     return 0;
 }
 
-static bool isIllegalParameters(list me, const int index) {
+/*
+ * Determines if the parameters are illegal.
+ */
+static bool isIllegalParameters(list me const, const int index) {
     return index < 0 || index >= me->space || me->space == 0;
 }
 
@@ -246,7 +249,7 @@ static bool isIllegalParameters(list me, const int index) {
  * @return 0       No error.
  *         -EINVAL Invalid parameter.
  */
-int list_remove_first(list me) {
+int list_remove_first(list me const) {
     return list_remove_at(me, 0);
 }
 
@@ -259,7 +262,7 @@ int list_remove_first(list me) {
  * @return 0       No error.
  *         -EINVAL Invalid parameter.
  */
-int list_remove_at(list me, const int index) {
+int list_remove_at(list me const, const int index) {
     if (isIllegalParameters(me, index)) {
         return -EINVAL;
     }
@@ -287,7 +290,7 @@ int list_remove_at(list me, const int index) {
  * @return 0       No error.
  *         -EINVAL Invalid parameter.
  */
-int list_remove_last(list me) {
+int list_remove_last(list me const) {
     return list_remove_at(me, me->space - 1);
 }
 
@@ -300,7 +303,7 @@ int list_remove_last(list me) {
  * @return 0       No error.
  *         -EINVAL Invalid parameter.
  */
-int list_set_first(list me, void *const data) {
+int list_set_first(list me const, void *const data) {
     return list_set_at(me, 0, data);
 }
 
@@ -314,7 +317,7 @@ int list_set_first(list me, void *const data) {
  * @return 0       No error.
  *         -EINVAL Invalid parameter.
  */
-int list_set_at(list me, const int index, void *const data) {
+int list_set_at(list me const, const int index, void *const data) {
     if (isIllegalParameters(me, index)) {
         return -EINVAL;
     }
@@ -332,7 +335,7 @@ int list_set_at(list me, const int index, void *const data) {
  * @return 0       No error.
  *         -EINVAL Invalid parameter.
  */
-int list_set_last(list me, void *const data) {
+int list_set_last(list me const, void *const data) {
     return list_set_at(me, me->space - 1, data);
 }
 
@@ -345,7 +348,7 @@ int list_set_last(list me, void *const data) {
  * @return 0       No error.
  *         -EINVAL Invalid parameter.
  */
-int list_get_first(void *const data, list me) {
+int list_get_first(void *const data, list me const) {
     return list_get_at(data, me, 0);
 }
 
@@ -359,7 +362,7 @@ int list_get_first(void *const data, list me) {
  * @return 0       No error.
  *         -EINVAL Invalid parameter.
  */
-int list_get_at(void *const data, list me, const int index) {
+int list_get_at(void *const data, list me const, const int index) {
     if (isIllegalParameters(me, index)) {
         return -EINVAL;
     }
@@ -377,7 +380,7 @@ int list_get_at(void *const data, list me, const int index) {
  * @return 0       No error.
  *         -EINVAL Invalid parameter.
  */
-int list_get_last(void *const data, list me) {
+int list_get_last(void *const data, list me const) {
     return list_get_at(data, me, me->space - 1);
 }
 
@@ -386,7 +389,7 @@ int list_get_last(void *const data, list me) {
  *
  * @param me The list to clear.
  */
-void list_clear(list me) {
+void list_clear(list me const) {
     struct node *traverse = me->head;
     while (traverse != NULL) {
         struct node *const temp = traverse;
@@ -405,7 +408,7 @@ void list_clear(list me) {
  *
  * @return NULL
  */
-list list_destroy(list me) {
+list list_destroy(list me const) {
     list_clear(me);
     free(me);
     return NULL;

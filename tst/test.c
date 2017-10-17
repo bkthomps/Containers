@@ -231,7 +231,7 @@ static void test_list(void) {
 }
 
 int main() {
-    //test_vector();
+    test_vector();
     test_list();
     return 0;
 }
