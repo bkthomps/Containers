@@ -20,40 +20,37 @@
  * SOFTWARE.
  */
 
-#ifndef CONTAINERS_VECTOR_H
-#define CONTAINERS_VECTOR_H
+#ifndef CONTAINERS_LIST_H
+#define CONTAINERS_LIST_H
 
 #include <stdbool.h>
 
-typedef struct _vector *vector;
+typedef struct _list *list;
 
 // Starting
-vector vector_init(size_t data_size);
+list list_init(size_t data_size);
 // Utility
-int vector_size(vector me);
-bool vector_is_empty(vector me);
-bool vector_ensure_capacity(vector me, int capacity);
-int vector_set_space(vector me, int size);
-int vector_trim_to_size(vector me);
-void vector_to_array(void *array, vector me);
+int list_size(list me);
+bool list_is_empty(list me);
+void list_to_array(void *array, list me);
 // Adding
-int vector_add_first(vector me, void *data);
-int vector_add_at(vector me, int index, void *data);
-int vector_add_last(vector me, void *data);
+int list_add_first(list me, void *data);
+int list_add_at(list me, int index, void *data);
+int list_add_last(list me, void *data);
 // Removing
-int vector_remove_first(vector me);
-int vector_remove_at(vector me, int index);
-int vector_remove_last(vector me);
+int list_remove_first(list me);
+int list_remove_at(list me, int index);
+int list_remove_last(list me);
 // Setting
-int vector_set_first(vector me, void *data);
-int vector_set_at(vector me, int index, void *data);
-int vector_set_last(vector me, void *data);
+int list_set_first(list me, void *data);
+int list_set_at(list me, int index, void *data);
+int list_set_last(list me, void *data);
 // Getting
-int vector_get_first(void *data, vector me);
-int vector_get_at(void *data, vector me, int index);
-int vector_get_last(void *data, vector me);
+int list_get_first(void *data, list me);
+int list_get_at(void *data, list me, int index);
+int list_get_last(void *data, list me);
 // Ending
-int vector_clear(vector me);
-vector vector_destroy(vector me);
+void list_clear(list me);
+list list_destroy(list me);
 
-#endif /* CONTAINERS_VECTOR_H */
+#endif /* CONTAINERS_LIST_H */
