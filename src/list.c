@@ -171,7 +171,7 @@ int list_add_first(list me const, void *const data) {
  *
  * @return 0       No error.
  *         -ENOMEM Out of memory.
- *         -EINVAL Invalid parameter.
+ *         -EINVAL Invalid argument.
  */
 int list_add_at(list me const, const int index, void *const data) {
     if (index < 0 || index > me->space) {
@@ -235,9 +235,9 @@ int list_add_last(list me const, void *const data) {
 }
 
 /*
- * Determines if the parameters are illegal.
+ * Determines if the input is illegal.
  */
-static bool isIllegalParameters(list me const, const int index) {
+static bool isIllegalInput(list me const, const int index) {
     return index < 0 || index >= me->space || me->space == 0;
 }
 
@@ -247,7 +247,7 @@ static bool isIllegalParameters(list me const, const int index) {
  * @param me The list to remove data from.
  *
  * @return 0       No error.
- *         -EINVAL Invalid parameter.
+ *         -EINVAL Invalid argument.
  */
 int list_remove_first(list me const) {
     return list_remove_at(me, 0);
@@ -260,10 +260,10 @@ int list_remove_first(list me const) {
  * @param index The index to remove from.
  *
  * @return 0       No error.
- *         -EINVAL Invalid parameter.
+ *         -EINVAL Invalid argument.
  */
 int list_remove_at(list me const, const int index) {
-    if (isIllegalParameters(me, index)) {
+    if (isIllegalInput(me, index)) {
         return -EINVAL;
     }
     struct node *const traverse = get_node_at(me, index);
@@ -288,7 +288,7 @@ int list_remove_at(list me const, const int index) {
  * @param me The list to remove data from.
  *
  * @return 0       No error.
- *         -EINVAL Invalid parameter.
+ *         -EINVAL Invalid argument.
  */
 int list_remove_last(list me const) {
     return list_remove_at(me, me->space - 1);
@@ -301,7 +301,7 @@ int list_remove_last(list me const) {
  * @param data The data to set in the list.
  *
  * @return 0       No error.
- *         -EINVAL Invalid parameter.
+ *         -EINVAL Invalid argument.
  */
 int list_set_first(list me const, void *const data) {
     return list_set_at(me, 0, data);
@@ -315,10 +315,10 @@ int list_set_first(list me const, void *const data) {
  * @param data  The data to set in the list.
  *
  * @return 0       No error.
- *         -EINVAL Invalid parameter.
+ *         -EINVAL Invalid argument.
  */
 int list_set_at(list me const, const int index, void *const data) {
-    if (isIllegalParameters(me, index)) {
+    if (isIllegalInput(me, index)) {
         return -EINVAL;
     }
     struct node *const traverse = get_node_at(me, index);
@@ -333,7 +333,7 @@ int list_set_at(list me const, const int index, void *const data) {
  * @param data The data to set in the list.
  *
  * @return 0       No error.
- *         -EINVAL Invalid parameter.
+ *         -EINVAL Invalid argument.
  */
 int list_set_last(list me const, void *const data) {
     return list_set_at(me, me->space - 1, data);
@@ -346,7 +346,7 @@ int list_set_last(list me const, void *const data) {
  * @param me   The list to get data from.
  *
  * @return 0       No error.
- *         -EINVAL Invalid parameter.
+ *         -EINVAL Invalid argument.
  */
 int list_get_first(void *const data, list me const) {
     return list_get_at(data, me, 0);
@@ -360,10 +360,10 @@ int list_get_first(void *const data, list me const) {
  * @param index The index to get data from.
  *
  * @return 0       No error.
- *         -EINVAL Invalid parameter.
+ *         -EINVAL Invalid argument.
  */
 int list_get_at(void *const data, list me const, const int index) {
-    if (isIllegalParameters(me, index)) {
+    if (isIllegalInput(me, index)) {
         return -EINVAL;
     }
     struct node *const traverse = get_node_at(me, index);
@@ -378,7 +378,7 @@ int list_get_at(void *const data, list me const, const int index) {
  * @param me   The list to get data from.
  *
  * @return 0       No error.
- *         -EINVAL Invalid parameter.
+ *         -EINVAL Invalid argument.
  */
 int list_get_last(void *const data, list me const) {
     return list_get_at(data, me, me->space - 1);

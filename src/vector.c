@@ -85,7 +85,7 @@ bool vector_is_empty(vector me const) {
  * @param me       The vector to check.
  * @param capacity The capacity to check the vector for.
  *
- * @return True if big enough, else false.
+ * @return If big enough.
  */
 bool vector_ensure_capacity(vector me const, const int capacity) {
     return capacity <= me->space;
@@ -159,7 +159,7 @@ int vector_add_first(vector me const, void *const data) {
  *
  * @return 0       No error.
  *         -ENOMEM Out of memory.
- *         -EINVAL Invalid parameter.
+ *         -EINVAL Invalid argument.
  */
 int vector_add_at(vector me const, const int index, void *const data) {
     if (index < 0 || index > me->offset) {
@@ -198,9 +198,9 @@ int vector_add_last(vector me const, void *const data) {
 }
 
 /*
- * Determines if the parameters are illegal.
+ * Determines if the input is illegal.
  */
-static bool isIllegalParameters(vector me const, const int index) {
+static bool isIllegalInput(vector me const, const int index) {
     return index < 0 || index >= me->offset || me->offset == 0;
 }
 
@@ -210,7 +210,7 @@ static bool isIllegalParameters(vector me const, const int index) {
  * @param me The vector to remove from.
  *
  * @return 0       No error.
- *         -EINVAL Invalid parameter.
+ *         -EINVAL Invalid argument.
  */
 int vector_remove_first(vector me const) {
     return vector_remove_at(me, 0);
@@ -223,10 +223,10 @@ int vector_remove_first(vector me const) {
  * @param index The location in the vector to remove the data from.
  *
  * @return 0       No error.
- *         -EINVAL Invalid parameter.
+ *         -EINVAL Invalid argument.
  */
 int vector_remove_at(vector me const, const int index) {
-    if (isIllegalParameters(me, index)) {
+    if (isIllegalInput(me, index)) {
         return -EINVAL;
     }
     memmove(me->storage + index * me->data_size,
@@ -242,7 +242,7 @@ int vector_remove_at(vector me const, const int index) {
  * @param me The vector to remove from.
  *
  * @return 0       No error.
- *         -EINVAL Invalid parameter.
+ *         -EINVAL Invalid argument.
  */
 int vector_remove_last(vector me const) {
     if (me->offset == 0) {
@@ -258,7 +258,7 @@ int vector_remove_last(vector me const) {
  * @param me The vector to set data for.
  *
  * @return 0       No error.
- *         -EINVAL Invalid parameter.
+ *         -EINVAL Invalid argument.
  */
 int vector_set_first(vector me const, void *const data) {
     return vector_set_at(me, 0, data);
@@ -271,10 +271,10 @@ int vector_set_first(vector me const, void *const data) {
  * @param data  The data to set at the location in the vector.
  *
  * @return 0       No error.
- *         -EINVAL Invalid parameter.
+ *         -EINVAL Invalid argument.
  */
 int vector_set_at(vector me const, const int index, void *const data) {
-    if (isIllegalParameters(me, index)) {
+    if (isIllegalInput(me, index)) {
         return -EINVAL;
     }
     memcpy(me->storage + index * me->data_size, data, me->data_size);
@@ -287,7 +287,7 @@ int vector_set_at(vector me const, const int index, void *const data) {
  * @param me The vector to set data for.
  *
  * @return 0       No error.
- *         -EINVAL Invalid parameter.
+ *         -EINVAL Invalid argument.
  */
 int vector_set_last(vector me const, void *const data) {
     return vector_set_at(me, me->offset - 1, data);
@@ -300,7 +300,7 @@ int vector_set_last(vector me const, void *const data) {
  * @param me   The vector to copy from.
  *
  * @return 0       No error.
- *         -EINVAL Invalid parameter.
+ *         -EINVAL Invalid argument.
  */
 int vector_get_first(void *const data, vector me const) {
     return vector_get_at(data, me, 0);
@@ -314,10 +314,10 @@ int vector_get_first(void *const data, vector me const) {
  * @param index The index to copy from in the vector.
  *
  * @return 0       No error.
- *         -EINVAL Invalid parameter.
+ *         -EINVAL Invalid argument.
  */
 int vector_get_at(void *const data, vector me const, const int index) {
-    if (isIllegalParameters(me, index)) {
+    if (isIllegalInput(me, index)) {
         return -EINVAL;
     }
     memcpy(data, me->storage + index * me->data_size, me->data_size);
@@ -331,7 +331,7 @@ int vector_get_at(void *const data, vector me const, const int index) {
  * @param me   The vector to copy from.
  *
  * @return 0       No error.
- *         -EINVAL Invalid parameter.
+ *         -EINVAL Invalid argument.
  */
 int vector_get_last(void *const data, vector me const) {
     return vector_get_at(data, me, me->offset - 1);
