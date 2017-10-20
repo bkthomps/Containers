@@ -200,7 +200,7 @@ int vector_add_last(vector me, void *const data) {
 /*
  * Determines if the input is illegal.
  */
-static bool isIllegalInput(vector me, const int index) {
+static bool is_illegal_input(vector me, const int index) {
     return index < 0 || index >= me->offset || me->offset == 0;
 }
 
@@ -226,7 +226,7 @@ int vector_remove_first(vector me) {
  *         -EINVAL Invalid argument.
  */
 int vector_remove_at(vector me, const int index) {
-    if (isIllegalInput(me, index)) {
+    if (is_illegal_input(me, index)) {
         return -EINVAL;
     }
     memmove(me->storage + index * me->data_size,
@@ -274,7 +274,7 @@ int vector_set_first(vector me, void *const data) {
  *         -EINVAL Invalid argument.
  */
 int vector_set_at(vector me, const int index, void *const data) {
-    if (isIllegalInput(me, index)) {
+    if (is_illegal_input(me, index)) {
         return -EINVAL;
     }
     memcpy(me->storage + index * me->data_size, data, me->data_size);
@@ -317,7 +317,7 @@ int vector_get_first(void *const data, vector me) {
  *         -EINVAL Invalid argument.
  */
 int vector_get_at(void *const data, vector me, const int index) {
-    if (isIllegalInput(me, index)) {
+    if (is_illegal_input(me, index)) {
         return -EINVAL;
     }
     memcpy(data, me->storage + index * me->data_size, me->data_size);
