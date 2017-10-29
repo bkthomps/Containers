@@ -21,7 +21,6 @@
  */
 
 #include <stdlib.h>
-#include <stdio.h>
 #include <memory.h>
 #include <math.h>
 #include <errno.h>
@@ -41,21 +40,13 @@ struct node {
     void *data;
 };
 
-static void deque_DEBUG(deque me) {
-    for (int i = 0; i < me->block_count; i++) {
-        if (me->block[i].data == NULL) {
-            printf("NULL\n");
-            continue;
-        }
-        for (int j = 0; j < BLOCK_SIZE; j++) {
-            int *a = me->block[i].data + j * me->data_size;
-            printf("%d, ", *a);
-        }
-        printf("\n");
-    }
-    printf("\n\n");
-}
-
+/**
+ * Initializes a deque.
+ *
+ * @param data_size The size of each element in the deque.
+ *
+ * @return The newly-allocated deque, or NULL if could not allocate memory.
+ */
 deque deque_init(const size_t data_size) {
     struct _deque *const init = malloc(sizeof(struct _deque));
     if (init == NULL) {
@@ -67,28 +58,72 @@ deque deque_init(const size_t data_size) {
     init->block_count = 1;
     init->block = malloc(sizeof(struct node));
     if (init->block == NULL) {
+        free(init);
         return NULL;
     }
-    init->block->data = malloc(BLOCK_SIZE * data_size);
+    init->block->data = malloc(BLOCK_SIZE * init->data_size);
     if (init->block->data == NULL) {
+        free(init->block);
+        free(init);
         return NULL;
     }
     return init;
 }
 
+/**
+ * Determines the size of the deque. The size is the amount of data spaces being
+ * used. The size starts at zero, and every time an element is added, it
+ * increases by one.
+ *
+ * @param me The deque to check size of.
+ *
+ * @return The size of the deque.
+ */
 int deque_size(deque me) {
     return me->end_index - me->start_index - 1;
 }
 
+/**
+ * Determines if the deque is empty. It is empty if it has no elements.
+ *
+ * @param me The deque to check if empty.
+ *
+ * @return If empty.
+ */
 bool deque_is_empty(deque me) {
     return deque_size(me) == 0;
 }
 
+/**
+ * Trims the deque so that it does not use memory which does not need to be
+ * used.
+ *
+ * @param me The deque to trim.
+ *
+ * @return 0       No error.
+ *         -ENOMEM Out of memory.
+ */
 int deque_trim(deque me) {
-    deque_DEBUG(me);
-    return -ENOSYS; // TODO
+    const int start_block = me->start_index / BLOCK_SIZE;
+    const int end_block = me->end_index / BLOCK_SIZE;
+    me->block_count = end_block - start_block + 1;
+    memmove(me->block,
+            &me->block[start_block],
+            me->block_count * sizeof(struct node));
+    void *temp = realloc(me->block, me->block_count * sizeof(struct node));
+    if (temp == NULL) {
+        return -ENOMEM;
+    }
+    me->block = temp;
+    return 0;
 }
 
+/**
+ * Copies the deque to an array representation.
+ *
+ * @param array The array to copy the deque to.
+ * @param me    The deque to copy from.
+ */
 void deque_to_array(void *const array, deque me) {
     void *const temp = malloc(me->data_size);
     if (temp == NULL) {
@@ -101,6 +136,14 @@ void deque_to_array(void *const array, deque me) {
     free(temp);
 }
 
+/**
+ * Adds an element to the front of the deque.
+ *
+ * @param me   The deque to add an element to.
+ * @param data The element to add.
+ *
+ * @return -ENOMEM Out of memory.
+ */
 int deque_push_front(deque me, void *const data) {
     int block_index = me->start_index / BLOCK_SIZE;
     int inner_index = me->start_index % BLOCK_SIZE;
@@ -140,10 +183,17 @@ int deque_push_front(deque me, void *const data) {
            data,
            me->data_size);
     me->start_index--;
-    deque_DEBUG(me);
     return 0;
 }
 
+/**
+ * Adds an element to the back of the deque.
+ *
+ * @param me   The deque to add an element to.
+ * @param data The element to add.
+ *
+ * @return -ENOMEM Out of memory.
+ */
 int deque_push_back(deque me, void *const data) {
     const int block_index = me->end_index / BLOCK_SIZE;
     const int inner_index = me->end_index % BLOCK_SIZE;
@@ -171,10 +221,18 @@ int deque_push_back(deque me, void *const data) {
            data,
            me->data_size);
     me->end_index++;
-    deque_DEBUG(me);
     return 0;
 }
 
+/**
+ * Removes the front element from the deque and copies it to a data value.
+ *
+ * @param data The value to copy to.
+ * @param me   The deque to remove from.
+ *
+ * @return 0       No error.
+ *         -EINVAL Invalid argument.
+ */
 int deque_pop_front(void *const data, deque me) {
     if (deque_is_empty(me)) {
         return -EINVAL;
@@ -185,10 +243,18 @@ int deque_pop_front(void *const data, deque me) {
            me->block[block_index].data + inner_index * me->data_size,
            me->data_size);
     me->start_index++;
-    deque_DEBUG(me);
     return 0;
 }
 
+/**
+ * Removes the back element from the deque and copies it to a data value.
+ *
+ * @param data The value to copy to.
+ * @param me   The deque to remove from.
+ *
+ * @return 0       No error.
+ *         -EINVAL Invalid argument.
+ */
 int deque_pop_back(void *const data, deque me) {
     if (deque_is_empty(me)) {
         return -EINVAL;
@@ -199,14 +265,32 @@ int deque_pop_back(void *const data, deque me) {
            me->block[block_index].data + inner_index * me->data_size,
            me->data_size);
     me->end_index--;
-    deque_DEBUG(me);
     return 0;
 }
 
+/**
+ * Sets the first value of the deque.
+ *
+ * @param me   The deque to set value of.
+ * @param data The data to set.
+ *
+ * @return 0       No error.
+ *         -EINVAL Invalid argument.
+ */
 int deque_set_first(deque me, void *const data) {
     return deque_set_at(me, 0, data);
 }
 
+/**
+ * Sets the value of the deque at the specified index.
+ *
+ * @param me    The deque to set value of.
+ * @param index The index to set at.
+ * @param data  The data to set.
+ *
+ * @return 0       No error.
+ *         -EINVAL Invalid argument.
+ */
 int deque_set_at(deque me, int index, void *const data) {
     if (index < 0 || index >= deque_size(me)) {
         return -EINVAL;
@@ -220,14 +304,42 @@ int deque_set_at(deque me, int index, void *const data) {
     return 0;
 }
 
+/**
+ * Sets the last value of the deque.
+ *
+ * @param me   The deque to set value of.
+ * @param data The data to set.
+ *
+ * @return 0       No error.
+ *         -EINVAL Invalid argument.
+ */
 int deque_set_last(deque me, void *const data) {
     return deque_set_at(me, deque_size(me) - 1, data);
 }
 
+/**
+ * Gets the first value of the deque.
+ *
+ * @param data The data to set.
+ * @param me   The deque to set value of.
+ *
+ * @return 0       No error.
+ *         -EINVAL Invalid argument.
+ */
 int deque_get_first(void *const data, deque me) {
     return deque_get_at(data, me, 0);
 }
 
+/**
+ * Gets the value of the deque at the specified index.
+ *
+ * @param data  The data to set.
+ * @param me    The deque to set value of.
+ * @param index The index to set at.
+ *
+ * @return 0       No error.
+ *         -EINVAL Invalid argument.
+ */
 int deque_get_at(void *const data, deque me, int index) {
     if (index < 0 || index >= deque_size(me)) {
         return -EINVAL;
@@ -241,15 +353,58 @@ int deque_get_at(void *const data, deque me, int index) {
     return 0;
 }
 
+/**
+ * Gets the last value of the deque.
+ *
+ * @param data The data to set.
+ * @param me   The deque to set value of.
+ *
+ * @return 0       No error.
+ *         -EINVAL Invalid argument.
+ */
 int deque_get_last(void *const data, deque me) {
     return deque_get_at(data, me, deque_size(me) - 1);
 }
 
+/**
+ * Clears the deque and sets it to the original state from initialization.
+ *
+ * @param me The deque to clear.
+ *
+ * @return 0       No error.
+ *         -ENOMEM Out of memory.
+ */
 int deque_clear(deque me) {
-    deque_DEBUG(me);
-    return -ENOSYS; // TODO
+    for (int i = 0; i < me->block_count; i++) {
+        free(me->block[i].data);
+    }
+    free(me->block);
+    me->start_index = BLOCK_SIZE / 2;
+    me->end_index = me->start_index + 1;
+    me->block_count = 1;
+    me->block = malloc(sizeof(struct node));
+    if (me->block == NULL) {
+        return -ENOMEM;
+    }
+    me->block->data = malloc(BLOCK_SIZE * me->data_size);
+    if (me->block->data == NULL) {
+        return -ENOMEM;
+    }
+    return 0;
 }
 
+/**
+ * Destroys the deque.
+ *
+ * @param me The deque to destroy.
+ *
+ * @return NULL
+ */
 deque deque_destroy(deque me) {
-    return NULL; // TODO
+    for (int i = 0; i < me->block_count; i++) {
+        free(me->block[i].data);
+    }
+    free(me->block);
+    free(me);
+    return NULL;
 }

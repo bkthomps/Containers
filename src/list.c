@@ -98,7 +98,7 @@ void list_to_array(void *const array, list me) {
 /*
  * Get the node at index starting from the head.
  */
-static struct node *get_node_from_head(list me, const int index) {
+static struct node *list_get_node_from_head(list me, const int index) {
     struct node *traverse = me->head;
     for (int i = 0; i < index; i++) {
         traverse = traverse->next;
@@ -109,7 +109,7 @@ static struct node *get_node_from_head(list me, const int index) {
 /*
  * Get the node at index starting from tail.
  */
-static struct node *get_node_from_tail(list me, const int index) {
+static struct node *list_get_node_from_tail(list me, const int index) {
     struct node *traverse = me->tail;
     for (int i = me->space - 1; i > index; i--) {
         traverse = traverse->prev;
@@ -120,11 +120,11 @@ static struct node *get_node_from_tail(list me, const int index) {
 /*
  * Get the node at the specified index.
  */
-static struct node *get_node_at(list me, const int index) {
+static struct node *list_get_node_at(list me, const int index) {
     if (index <= me->space / 2) {
-        return get_node_from_head(me, index);
+        return list_get_node_from_head(me, index);
     } else {
-        return get_node_from_tail(me, index);
+        return list_get_node_from_tail(me, index);
     }
 }
 
@@ -184,7 +184,7 @@ int list_add_at(list me, const int index, void *const data) {
         return list_add_last(me, data);
     }
     // The new node will go right before this node.
-    struct node *const traverse = get_node_at(me, index);
+    struct node *const traverse = list_get_node_at(me, index);
     struct node *const add = malloc(sizeof(struct node));
     if (add == NULL) {
         return -ENOMEM;
@@ -237,7 +237,7 @@ int list_add_last(list me, void *const data) {
 /*
  * Determines if the input is illegal.
  */
-static bool is_illegal_input(list me, const int index) {
+static bool list_is_illegal_input(list me, const int index) {
     return index < 0 || index >= me->space || me->space == 0;
 }
 
@@ -263,10 +263,10 @@ int list_remove_first(list me) {
  *         -EINVAL Invalid argument.
  */
 int list_remove_at(list me, const int index) {
-    if (is_illegal_input(me, index)) {
+    if (list_is_illegal_input(me, index)) {
         return -EINVAL;
     }
-    struct node *const traverse = get_node_at(me, index);
+    struct node *const traverse = list_get_node_at(me, index);
     if (index == 0) {
         traverse->next->prev = NULL;
         me->head = traverse->next;
@@ -318,10 +318,10 @@ int list_set_first(list me, void *const data) {
  *         -EINVAL Invalid argument.
  */
 int list_set_at(list me, const int index, void *const data) {
-    if (is_illegal_input(me, index)) {
+    if (list_is_illegal_input(me, index)) {
         return -EINVAL;
     }
-    struct node *const traverse = get_node_at(me, index);
+    struct node *const traverse = list_get_node_at(me, index);
     memcpy(traverse->data, data, me->data_size);
     return 0;
 }
@@ -363,10 +363,10 @@ int list_get_first(void *const data, list me) {
  *         -EINVAL Invalid argument.
  */
 int list_get_at(void *const data, list me, const int index) {
-    if (is_illegal_input(me, index)) {
+    if (list_is_illegal_input(me, index)) {
         return -EINVAL;
     }
-    struct node *const traverse = get_node_at(me, index);
+    struct node *const traverse = list_get_node_at(me, index);
     memcpy(data, traverse->data, me->data_size);
     return 0;
 }

@@ -95,7 +95,7 @@ void forward_list_to_array(void *const array, forward_list me) {
 /*
  * Get the node at the specified index.
  */
-static struct node *get_node_at(forward_list me, const int index) {
+static struct node *forward_list_get_node_at(forward_list me, const int index) {
     struct node *traverse = me->head;
     for (int i = 0; i < index; i++) {
         traverse = traverse->next;
@@ -145,7 +145,7 @@ int forward_list_add_at(forward_list me, const int index, void *const data) {
         add->next = me->head;
         me->head = add;
     } else {
-        struct node *const traverse = get_node_at(me, index - 1);
+        struct node *const traverse = forward_list_get_node_at(me, index - 1);
         add->next = traverse->next;
         traverse->next = add;
     }
@@ -169,7 +169,7 @@ int forward_list_add_last(forward_list me, void *const data) {
 /*
  * Determines if the input is illegal.
  */
-static bool is_illegal_input(forward_list me, const int index) {
+static bool forward_list_is_illegal_input(forward_list me, const int index) {
     return index < 0 || index >= me->space || me->space == 0;
 }
 
@@ -195,7 +195,7 @@ int forward_list_remove_first(forward_list me) {
  *         -EINVAL Invalid argument.
  */
 int forward_list_remove_at(forward_list me, const int index) {
-    if (is_illegal_input(me, index)) {
+    if (forward_list_is_illegal_input(me, index)) {
         return -EINVAL;
     }
     if (index == 0) {
@@ -203,11 +203,11 @@ int forward_list_remove_at(forward_list me, const int index) {
         me->head = me->head->next;
         free(backup_head);
     } else if (index == me->space - 1) {
-        struct node *const traverse = get_node_at(me, index - 1);
+        struct node *const traverse = forward_list_get_node_at(me, index - 1);
         free(traverse->next);
         traverse->next = NULL;
     } else {
-        struct node *const traverse = get_node_at(me, index - 1);
+        struct node *const traverse = forward_list_get_node_at(me, index - 1);
         struct node *const backup = traverse->next;
         traverse->next = traverse->next->next;
         free(backup);
@@ -252,10 +252,10 @@ int forward_list_set_first(forward_list me, void *const data) {
  *         -EINVAL Invalid argument.
  */
 int forward_list_set_at(forward_list me, const int index, void *const data) {
-    if (is_illegal_input(me, index)) {
+    if (forward_list_is_illegal_input(me, index)) {
         return -EINVAL;
     }
-    struct node *const traverse = get_node_at(me, index);
+    struct node *const traverse = forward_list_get_node_at(me, index);
     memcpy(traverse->data, data, me->data_size);
     return 0;
 }
@@ -297,10 +297,10 @@ int forward_list_get_first(void *const data, forward_list me) {
  *         -EINVAL Invalid argument.
  */
 int forward_list_get_at(void *const data, forward_list me, const int index) {
-    if (is_illegal_input(me, index)) {
+    if (forward_list_is_illegal_input(me, index)) {
         return -EINVAL;
     }
-    struct node *const traverse = get_node_at(me, index);
+    struct node *const traverse = forward_list_get_node_at(me, index);
     memcpy(data, traverse->data, me->data_size);
     return 0;
 }

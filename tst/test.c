@@ -1,5 +1,4 @@
 #include <stdlib.h>
-#include <stdio.h>
 #include <errno.h>
 #include <assert.h>
 #include "../src/vector.h"
@@ -356,7 +355,6 @@ static void test_deque(void) {
         deque_get_first(&get, me);
         assert(get == val[i]);
     }
-    printf("ok\n");
     assert(deque_size(me) == 10);
     assert(!deque_is_empty(me));
     int get_arr[10] = {0};

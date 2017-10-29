@@ -32,9 +32,8 @@ vector vector_init(size_t data_size);
 // Utility
 int vector_size(vector me);
 bool vector_is_empty(vector me);
-bool vector_ensure_capacity(vector me, int capacity);
-int vector_set_space(vector me, int size);
-int vector_trim_to_size(vector me);
+int vector_reserve(vector me, int size);
+int vector_trim(vector me);
 void vector_to_array(void *array, vector me);
 // Adding
 int vector_add_first(vector me, void *data);

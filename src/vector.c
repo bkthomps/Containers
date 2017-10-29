@@ -79,30 +79,10 @@ bool vector_is_empty(vector me) {
     return vector_size(me) == 0;
 }
 
-/**
- * Checks if the vector is big enough for the capacity specified.
- *
- * @param me       The vector to check.
- * @param capacity The capacity to check the vector for.
- *
- * @return If big enough.
+/*
+ * Sets the space of the buffer.
  */
-bool vector_ensure_capacity(vector me, const int capacity) {
-    return capacity <= me->space;
-}
-
-/**
- * Sets the size to use for the vector buffer. The size is in units and not in
- * bytes. Each unit is of size specified from init. If the size to set is
- * smaller than the current size, the data is lost.
- *
- * @param me   The vector to set size.
- * @param size The size to set the vector to.
- *
- * @return 0       No error.
- *         -ENOMEM Out of memory.
- */
-int vector_set_space(vector me, const int size) {
+static int vector_set_space(vector me, const int size) {
     me->space = size;
     if (me->space < me->offset) {
         me->offset = me->space;
@@ -116,6 +96,23 @@ int vector_set_space(vector me, const int size) {
 }
 
 /**
+ * Reserves space specified. If more space than specified is already reserved,
+ * then the previous space will be kept.
+ *
+ * @param me   The deque to reserve space for.
+ * @param size The space to reserve.
+ *
+ * @return 0       No error.
+ *         -ENOMEM Out of memory.
+ */
+int vector_reserve(vector me, int size) {
+    if (me->space >= size) {
+        return 0;
+    }
+    return vector_set_space(me, size);
+}
+
+/**
  * Sets the size of the vector buffer to the current size being used.
  *
  * @param me   The vector to trim.
@@ -123,7 +120,7 @@ int vector_set_space(vector me, const int size) {
  * @return 0       No error.
  *         -ENOMEM Out of memory.
  */
-int vector_trim_to_size(vector me) {
+int vector_trim(vector me) {
     return vector_set_space(me, me->offset);
 }
 
@@ -200,7 +197,7 @@ int vector_add_last(vector me, void *const data) {
 /*
  * Determines if the input is illegal.
  */
-static bool is_illegal_input(vector me, const int index) {
+static bool vector_is_illegal_input(vector me, const int index) {
     return index < 0 || index >= me->offset || me->offset == 0;
 }
 
@@ -226,7 +223,7 @@ int vector_remove_first(vector me) {
  *         -EINVAL Invalid argument.
  */
 int vector_remove_at(vector me, const int index) {
-    if (is_illegal_input(me, index)) {
+    if (vector_is_illegal_input(me, index)) {
         return -EINVAL;
     }
     memmove(me->storage + index * me->data_size,
@@ -274,7 +271,7 @@ int vector_set_first(vector me, void *const data) {
  *         -EINVAL Invalid argument.
  */
 int vector_set_at(vector me, const int index, void *const data) {
-    if (is_illegal_input(me, index)) {
+    if (vector_is_illegal_input(me, index)) {
         return -EINVAL;
     }
     memcpy(me->storage + index * me->data_size, data, me->data_size);
@@ -317,7 +314,7 @@ int vector_get_first(void *const data, vector me) {
  *         -EINVAL Invalid argument.
  */
 int vector_get_at(void *const data, vector me, const int index) {
-    if (is_illegal_input(me, index)) {
+    if (vector_is_illegal_input(me, index)) {
         return -EINVAL;
     }
     memcpy(data, me->storage + index * me->data_size, me->data_size);
