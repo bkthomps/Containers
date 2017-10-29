@@ -142,7 +142,8 @@ void deque_to_array(void *const array, deque me) {
  * @param me   The deque to add an element to.
  * @param data The element to add.
  *
- * @return -ENOMEM Out of memory.
+ * @return 0       No error.
+ *         -ENOMEM Out of memory.
  */
 int deque_push_front(deque me, void *const data) {
     int block_index = me->start_index / BLOCK_SIZE;
@@ -192,7 +193,8 @@ int deque_push_front(deque me, void *const data) {
  * @param me   The deque to add an element to.
  * @param data The element to add.
  *
- * @return -ENOMEM Out of memory.
+ * @return 0       No error.
+ *         -ENOMEM Out of memory.
  */
 int deque_push_back(deque me, void *const data) {
     const int block_index = me->end_index / BLOCK_SIZE;
@@ -237,12 +239,12 @@ int deque_pop_front(void *const data, deque me) {
     if (deque_is_empty(me)) {
         return -EINVAL;
     }
+    me->start_index++;
     const int block_index = me->start_index / BLOCK_SIZE;
     const int inner_index = me->start_index % BLOCK_SIZE;
     memcpy(data,
            me->block[block_index].data + inner_index * me->data_size,
            me->data_size);
-    me->start_index++;
     return 0;
 }
 
@@ -259,12 +261,12 @@ int deque_pop_back(void *const data, deque me) {
     if (deque_is_empty(me)) {
         return -EINVAL;
     }
+    me->end_index--;
     const int block_index = me->end_index / BLOCK_SIZE;
     const int inner_index = me->end_index % BLOCK_SIZE;
     memcpy(data,
            me->block[block_index].data + inner_index * me->data_size,
            me->data_size);
-    me->end_index--;
     return 0;
 }
 

@@ -35,7 +35,7 @@ struct _vector {
 };
 
 /**
- * Initialize a vector.
+ * Initializes a vector.
  *
  * @param data_size The size of each element in the vector.
  *
@@ -58,7 +58,7 @@ vector vector_init(const size_t data_size) {
 }
 
 /**
- * Get the size being used by the vector.
+ * Gets the size being used by the vector.
  *
  * @param me The vector to check.
  *
@@ -69,7 +69,7 @@ int vector_size(vector me) {
 }
 
 /**
- * Whether or not the vector is empty.
+ * Determines whether or not the vector is empty.
  *
  * @param me The vector to check.
  *

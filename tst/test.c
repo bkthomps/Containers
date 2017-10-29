@@ -5,6 +5,7 @@
 #include "../src/list.h"
 #include "../src/forward_list.h"
 #include "../src/deque.h"
+#include "../src/stack.h"
 
 static void test_vector(void) {
     int val[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
@@ -370,6 +371,7 @@ static void test_deque(void) {
     deque_trim(me);
     for (int i = 0; i < 7; i++) {
         deque_pop_back(&stuff, me);
+        assert(stuff == val[i]);
     }
     deque_to_array(trimmed, me);
     assert(deque_size(me) == 3);
@@ -408,8 +410,11 @@ static void test_deque(void) {
     deque_get_last(&ff, me);
     assert(ff == -1);
     deque_pop_front(&stuff, me);
+    assert(stuff == 10);
     deque_pop_back(&stuff, me);
+    assert(stuff == -1);
     deque_pop_back(&stuff, me);
+    assert(stuff == -2);
     assert(deque_size(me) == 3);
     int get = 345;
     deque_get_first(&get, me);
@@ -450,10 +455,43 @@ static void test_deque(void) {
     assert(me == NULL);
 }
 
+static void test_stack(void) {
+    int val[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    stack me = stack_init(sizeof(int));
+    assert(me != NULL);
+    assert(stack_size(me) == 0);
+    assert(stack_is_empty(me));
+    for (int i = 0; i < 10; i++) {
+        stack_push(me, &val[i]);
+        int get = 0;
+        stack_top(&get, me);
+        assert(get == val[i]);
+    }
+    assert(stack_size(me) == 10);
+    assert(!stack_is_empty(me));
+    int get_arr[10] = {0};
+    stack_to_array(get_arr, me);
+    for (int i = 0; i < 10; i++) {
+        assert(get_arr[i] == i + 1);
+    }
+    for (int i = 0; i < 9; i++) {
+        int get = 0;
+        stack_pop(&get, me);
+        assert(get == 10 - i);
+    }
+    stack_trim(me);
+    assert(stack_size(me) == 1);
+    stack_clear(me);
+    assert(stack_size(me) == 0);
+    me = stack_destroy(me);
+    assert(me == NULL);
+}
+
 int main() {
     test_vector();
     test_list();
     test_forward_list();
     test_deque();
+    test_stack();
     return 0;
 }
