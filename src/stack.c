@@ -21,8 +21,8 @@
  */
 
 #include <stdlib.h>
-#include "stack.h"
 #include "deque.h"
+#include "stack.h"
 
 struct _stack {
     deque deque_data;
@@ -36,7 +36,7 @@ struct _stack {
  * @return The newly-initialized stack, or NULL if could not allocate memory.
  */
 stack stack_init(const size_t data_size) {
-    struct _stack *init = malloc(sizeof(struct _stack));
+    struct _stack *const init = malloc(sizeof(struct _stack));
     if (init == NULL) {
         return NULL;
     }
