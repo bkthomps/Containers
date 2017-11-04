@@ -29,18 +29,23 @@ typedef struct _queue *queue;
 
 // Starting
 queue queue_init(size_t data_size);
+
 // Utility
 int queue_size(queue me);
 bool queue_is_empty(queue me);
 int queue_trim(queue me);
 void queue_to_array(void *array, queue me);
+
 // Adding
 int queue_push(queue me, void *data);
+
 // Removing
 int queue_pop(void *data, queue me);
+
 // Getting
 int queue_front(void *data, queue me);
 int queue_back(void *data, queue me);
+
 // Ending
 int queue_clear(queue me);
 queue queue_destroy(queue me);
