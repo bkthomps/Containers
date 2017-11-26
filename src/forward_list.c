@@ -43,7 +43,8 @@ struct node {
  *
  * @return The singly-linked list, or NULL if memory could not be allocated.
  */
-forward_list forward_list_init(const size_t data_size) {
+forward_list forward_list_init(const size_t data_size)
+{
     struct _forward_list *const init = malloc(sizeof(struct _forward_list));
     if (init == NULL) {
         return NULL;
@@ -61,7 +62,8 @@ forward_list forward_list_init(const size_t data_size) {
  *
  * @return The amount of elements.
  */
-int forward_list_size(forward_list me) {
+int forward_list_size(forward_list me)
+{
     return me->space;
 }
 
@@ -72,7 +74,8 @@ int forward_list_size(forward_list me) {
  *
  * @return If the list is empty.
  */
-bool forward_list_is_empty(forward_list me) {
+bool forward_list_is_empty(forward_list me)
+{
     return forward_list_size(me) == 0;
 }
 
@@ -82,7 +85,8 @@ bool forward_list_is_empty(forward_list me) {
  * @param array The array to copy the list to.
  * @param me    The list to copy to the array.
  */
-void forward_list_to_array(void *const array, forward_list me) {
+void forward_list_to_array(void *const array, forward_list me)
+{
     struct node *traverse = me->head;
     int offset = 0;
     while (traverse != NULL) {
@@ -95,7 +99,8 @@ void forward_list_to_array(void *const array, forward_list me) {
 /*
  * Get the node at the specified index.
  */
-static struct node *forward_list_get_node_at(forward_list me, const int index) {
+static struct node *forward_list_get_node_at(forward_list me, const int index)
+{
     struct node *traverse = me->head;
     for (int i = 0; i < index; i++) {
         traverse = traverse->next;
@@ -112,7 +117,8 @@ static struct node *forward_list_get_node_at(forward_list me, const int index) {
  * @return 0       No error.
  *         -ENOMEM Out of memory.
  */
-int forward_list_add_first(forward_list me, void *const data) {
+int forward_list_add_first(forward_list me, void *const data)
+{
     return forward_list_add_at(me, 0, data);
 }
 
@@ -127,7 +133,8 @@ int forward_list_add_first(forward_list me, void *const data) {
  *         -ENOMEM Out of memory.
  *         -EINVAL Invalid argument.
  */
-int forward_list_add_at(forward_list me, const int index, void *const data) {
+int forward_list_add_at(forward_list me, const int index, void *const data)
+{
     if (index < 0 || index > me->space) {
         return -EINVAL;
     }
@@ -162,14 +169,16 @@ int forward_list_add_at(forward_list me, const int index, void *const data) {
  * @return 0       No error.
  *         -ENOMEM Out of memory.
  */
-int forward_list_add_last(forward_list me, void *const data) {
+int forward_list_add_last(forward_list me, void *const data)
+{
     return forward_list_add_at(me, me->space, data);
 }
 
 /*
  * Determines if the input is illegal.
  */
-static bool forward_list_is_illegal_input(forward_list me, const int index) {
+static bool forward_list_is_illegal_input(forward_list me, const int index)
+{
     return index < 0 || index >= me->space || me->space == 0;
 }
 
@@ -181,7 +190,8 @@ static bool forward_list_is_illegal_input(forward_list me, const int index) {
  * @return 0       No error.
  *         -EINVAL Invalid argument.
  */
-int forward_list_remove_first(forward_list me) {
+int forward_list_remove_first(forward_list me)
+{
     return forward_list_remove_at(me, 0);
 }
 
@@ -194,7 +204,8 @@ int forward_list_remove_first(forward_list me) {
  * @return 0       No error.
  *         -EINVAL Invalid argument.
  */
-int forward_list_remove_at(forward_list me, const int index) {
+int forward_list_remove_at(forward_list me, const int index)
+{
     if (forward_list_is_illegal_input(me, index)) {
         return -EINVAL;
     }
@@ -224,7 +235,8 @@ int forward_list_remove_at(forward_list me, const int index) {
  * @return 0       No error.
  *         -EINVAL Invalid argument.
  */
-int forward_list_remove_last(forward_list me) {
+int forward_list_remove_last(forward_list me)
+{
     return forward_list_remove_at(me, me->space - 1);
 }
 
@@ -237,7 +249,8 @@ int forward_list_remove_last(forward_list me) {
  * @return 0       No error.
  *         -EINVAL Invalid argument.
  */
-int forward_list_set_first(forward_list me, void *const data) {
+int forward_list_set_first(forward_list me, void *const data)
+{
     return forward_list_set_at(me, 0, data);
 }
 
@@ -251,7 +264,8 @@ int forward_list_set_first(forward_list me, void *const data) {
  * @return 0       No error.
  *         -EINVAL Invalid argument.
  */
-int forward_list_set_at(forward_list me, const int index, void *const data) {
+int forward_list_set_at(forward_list me, const int index, void *const data)
+{
     if (forward_list_is_illegal_input(me, index)) {
         return -EINVAL;
     }
@@ -269,7 +283,8 @@ int forward_list_set_at(forward_list me, const int index, void *const data) {
  * @return 0       No error.
  *         -EINVAL Invalid argument.
  */
-int forward_list_set_last(forward_list me, void *const data) {
+int forward_list_set_last(forward_list me, void *const data)
+{
     return forward_list_set_at(me, me->space - 1, data);
 }
 
@@ -282,7 +297,8 @@ int forward_list_set_last(forward_list me, void *const data) {
  * @return 0       No error.
  *         -EINVAL Invalid argument.
  */
-int forward_list_get_first(void *const data, forward_list me) {
+int forward_list_get_first(void *const data, forward_list me)
+{
     return forward_list_get_at(data, me, 0);
 }
 
@@ -296,7 +312,8 @@ int forward_list_get_first(void *const data, forward_list me) {
  * @return 0       No error.
  *         -EINVAL Invalid argument.
  */
-int forward_list_get_at(void *const data, forward_list me, const int index) {
+int forward_list_get_at(void *const data, forward_list me, const int index)
+{
     if (forward_list_is_illegal_input(me, index)) {
         return -EINVAL;
     }
@@ -314,7 +331,8 @@ int forward_list_get_at(void *const data, forward_list me, const int index) {
  * @return 0       No error.
  *         -EINVAL Invalid argument.
  */
-int forward_list_get_last(void *const data, forward_list me) {
+int forward_list_get_last(void *const data, forward_list me)
+{
     return forward_list_get_at(data, me, me->space - 1);
 }
 
@@ -323,7 +341,8 @@ int forward_list_get_last(void *const data, forward_list me) {
  *
  * @param me The list to clear.
  */
-void forward_list_clear(forward_list me) {
+void forward_list_clear(forward_list me)
+{
     struct node *traverse = me->head;
     while (traverse != NULL) {
         struct node *const temp = traverse;
@@ -341,7 +360,8 @@ void forward_list_clear(forward_list me) {
  *
  * @return NULL
  */
-forward_list forward_list_destroy(forward_list me) {
+forward_list forward_list_destroy(forward_list me)
+{
     forward_list_clear(me);
     free(me);
     return NULL;

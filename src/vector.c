@@ -35,13 +35,14 @@ struct _vector {
 };
 
 /**
- * Initializes a vector.
+ * Initializes a vector. Elements are guarantied to be contiguous in memory.
  *
  * @param data_size The size of each element in the vector.
  *
  * @return The newly-initialized vector, or NULL if memory allocation error.
  */
-vector vector_init(const size_t data_size) {
+vector vector_init(const size_t data_size)
+{
     struct _vector *const init = malloc(sizeof(struct _vector));
     if (init == NULL) {
         return NULL;
@@ -64,7 +65,8 @@ vector vector_init(const size_t data_size) {
  *
  * @return The size being used by the vector.
  */
-int vector_size(vector me) {
+int vector_size(vector me)
+{
     return me->offset;
 }
 
@@ -75,14 +77,16 @@ int vector_size(vector me) {
  *
  * @return If the vector is empty.
  */
-bool vector_is_empty(vector me) {
+bool vector_is_empty(vector me)
+{
     return vector_size(me) == 0;
 }
 
 /*
  * Sets the space of the buffer.
  */
-static int vector_set_space(vector me, const int size) {
+static int vector_set_space(vector me, const int size)
+{
     me->space = size;
     if (me->space < me->offset) {
         me->offset = me->space;
@@ -105,7 +109,8 @@ static int vector_set_space(vector me, const int size) {
  * @return 0       No error.
  *         -ENOMEM Out of memory.
  */
-int vector_reserve(vector me, int size) {
+int vector_reserve(vector me, int size)
+{
     if (me->space >= size) {
         return 0;
     }
@@ -120,7 +125,8 @@ int vector_reserve(vector me, int size) {
  * @return 0       No error.
  *         -ENOMEM Out of memory.
  */
-int vector_trim(vector me) {
+int vector_trim(vector me)
+{
     return vector_set_space(me, me->offset);
 }
 
@@ -130,7 +136,8 @@ int vector_trim(vector me) {
  * @param me    The vector to copy from.
  * @param array The array to copy to.
  */
-void vector_to_array(void *const array, vector me) {
+void vector_to_array(void *const array, vector me)
+{
     memcpy(array, me->storage, me->offset * me->data_size);
 }
 
@@ -143,7 +150,8 @@ void vector_to_array(void *const array, vector me) {
  * @return 0       No error.
  *         -ENOMEM Out of memory.
  */
-int vector_add_first(vector me, void *const data) {
+int vector_add_first(vector me, void *const data)
+{
     return vector_add_at(me, 0, data);
 }
 
@@ -158,7 +166,8 @@ int vector_add_first(vector me, void *const data) {
  *         -ENOMEM Out of memory.
  *         -EINVAL Invalid argument.
  */
-int vector_add_at(vector me, const int index, void *const data) {
+int vector_add_at(vector me, const int index, void *const data)
+{
     if (index < 0 || index > me->offset) {
         return -EINVAL;
     }
@@ -190,14 +199,16 @@ int vector_add_at(vector me, const int index, void *const data) {
  * @return 0       No error.
  *         -ENOMEM Out of memory.
  */
-int vector_add_last(vector me, void *const data) {
+int vector_add_last(vector me, void *const data)
+{
     return vector_add_at(me, me->offset, data);
 }
 
 /*
  * Determines if the input is illegal.
  */
-static bool vector_is_illegal_input(vector me, const int index) {
+static bool vector_is_illegal_input(vector me, const int index)
+{
     return index < 0 || index >= me->offset || me->offset == 0;
 }
 
@@ -209,7 +220,8 @@ static bool vector_is_illegal_input(vector me, const int index) {
  * @return 0       No error.
  *         -EINVAL Invalid argument.
  */
-int vector_remove_first(vector me) {
+int vector_remove_first(vector me)
+{
     return vector_remove_at(me, 0);
 }
 
@@ -222,7 +234,8 @@ int vector_remove_first(vector me) {
  * @return 0       No error.
  *         -EINVAL Invalid argument.
  */
-int vector_remove_at(vector me, const int index) {
+int vector_remove_at(vector me, const int index)
+{
     if (vector_is_illegal_input(me, index)) {
         return -EINVAL;
     }
@@ -241,7 +254,8 @@ int vector_remove_at(vector me, const int index) {
  * @return 0       No error.
  *         -EINVAL Invalid argument.
  */
-int vector_remove_last(vector me) {
+int vector_remove_last(vector me)
+{
     if (me->offset == 0) {
         return -EINVAL;
     }
@@ -257,7 +271,8 @@ int vector_remove_last(vector me) {
  * @return 0       No error.
  *         -EINVAL Invalid argument.
  */
-int vector_set_first(vector me, void *const data) {
+int vector_set_first(vector me, void *const data)
+{
     return vector_set_at(me, 0, data);
 }
 
@@ -270,7 +285,8 @@ int vector_set_first(vector me, void *const data) {
  * @return 0       No error.
  *         -EINVAL Invalid argument.
  */
-int vector_set_at(vector me, const int index, void *const data) {
+int vector_set_at(vector me, const int index, void *const data)
+{
     if (vector_is_illegal_input(me, index)) {
         return -EINVAL;
     }
@@ -286,7 +302,8 @@ int vector_set_at(vector me, const int index, void *const data) {
  * @return 0       No error.
  *         -EINVAL Invalid argument.
  */
-int vector_set_last(vector me, void *const data) {
+int vector_set_last(vector me, void *const data)
+{
     return vector_set_at(me, me->offset - 1, data);
 }
 
@@ -299,7 +316,8 @@ int vector_set_last(vector me, void *const data) {
  * @return 0       No error.
  *         -EINVAL Invalid argument.
  */
-int vector_get_first(void *const data, vector me) {
+int vector_get_first(void *const data, vector me)
+{
     return vector_get_at(data, me, 0);
 }
 
@@ -313,7 +331,8 @@ int vector_get_first(void *const data, vector me) {
  * @return 0       No error.
  *         -EINVAL Invalid argument.
  */
-int vector_get_at(void *const data, vector me, const int index) {
+int vector_get_at(void *const data, vector me, const int index)
+{
     if (vector_is_illegal_input(me, index)) {
         return -EINVAL;
     }
@@ -330,7 +349,8 @@ int vector_get_at(void *const data, vector me, const int index) {
  * @return 0       No error.
  *         -EINVAL Invalid argument.
  */
-int vector_get_last(void *const data, vector me) {
+int vector_get_last(void *const data, vector me)
+{
     return vector_get_at(data, me, me->offset - 1);
 }
 
@@ -342,7 +362,8 @@ int vector_get_last(void *const data, vector me) {
  * @return 0       No error.
  *         -ENOMEM Out of memory.
  */
-int vector_clear(vector me) {
+int vector_clear(vector me)
+{
     const int ret = vector_set_space(me, START_SPACE);
     me->offset = 0;
     return ret;
@@ -355,7 +376,8 @@ int vector_clear(vector me) {
  *
  * @return NULL
  */
-vector vector_destroy(vector me) {
+vector vector_destroy(vector me)
+{
     free(me->storage);
     me->storage = NULL;
     free(me);

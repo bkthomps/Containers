@@ -29,13 +29,15 @@ struct _stack {
 };
 
 /**
- * Initializes a stack which is last-in first-out.
+ * Initializes a stack which is last-in first-out. Uses a deque as the
+ * underlying implementation.
  *
  * @param data_size The size of each data element in the stack.
  *
  * @return The newly-initialized stack, or NULL if could not allocate memory.
  */
-stack stack_init(const size_t data_size) {
+stack stack_init(const size_t data_size)
+{
     struct _stack *const init = malloc(sizeof(struct _stack));
     if (init == NULL) {
         return NULL;
@@ -55,7 +57,8 @@ stack stack_init(const size_t data_size) {
  *
  * @return The size of the stack.
  */
-int stack_size(stack me) {
+int stack_size(stack me)
+{
     return deque_size(me->deque_data);
 }
 
@@ -66,7 +69,8 @@ int stack_size(stack me) {
  *
  * @return If empty.
  */
-bool stack_is_empty(stack me) {
+bool stack_is_empty(stack me)
+{
     return deque_is_empty(me->deque_data);
 }
 
@@ -78,7 +82,8 @@ bool stack_is_empty(stack me) {
  * @return 0       No error.
  *         -ENOMEM Out of memory.
  */
-int stack_trim(stack me) {
+int stack_trim(stack me)
+{
     return deque_trim(me->deque_data);
 }
 
@@ -88,7 +93,8 @@ int stack_trim(stack me) {
  * @param array The array to copy to.
  * @param me    The stack to copy from.
  */
-void stack_to_array(void *const array, stack me) {
+void stack_to_array(void *const array, stack me)
+{
     deque_to_array(array, me->deque_data);
 }
 
@@ -101,7 +107,8 @@ void stack_to_array(void *const array, stack me) {
  * @return 0       No error.
  *         -ENOMEM Out of memory.
  */
-int stack_push(stack me, void *const data) {
+int stack_push(stack me, void *const data)
+{
     return deque_push_back(me->deque_data, data);
 }
 
@@ -115,7 +122,8 @@ int stack_push(stack me, void *const data) {
  * @return 0       No error.
  *         -EINVAL Invalid argument.
  */
-int stack_pop(void *const data, stack me) {
+int stack_pop(void *const data, stack me)
+{
     return deque_pop_back(data, me->deque_data);
 }
 
@@ -128,7 +136,8 @@ int stack_pop(void *const data, stack me) {
  * @return 0       No error.
  *         -EINVAL Invalid argument.
  */
-int stack_top(void *const data, stack me) {
+int stack_top(void *const data, stack me)
+{
     return deque_get_last(data, me->deque_data);
 }
 
@@ -140,7 +149,8 @@ int stack_top(void *const data, stack me) {
  * @return 0       No error.
  *         -ENOMEM Out of memory.
  */
-int stack_clear(stack me) {
+int stack_clear(stack me)
+{
     return deque_clear(me->deque_data);
 }
 
@@ -151,7 +161,8 @@ int stack_clear(stack me) {
  *
  * @return NULL
  */
-stack stack_destroy(stack me) {
+stack stack_destroy(stack me)
+{
     deque_destroy(me->deque_data);
     free(me);
     return NULL;

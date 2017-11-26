@@ -32,13 +32,15 @@ struct _queue {
 };
 
 /**
- * Initializes a queue which is first-in first-out.
+ * Initializes a queue which is first-in first-out. Uses a deque as the
+ * underlying implementation.
  *
  * @param data_size The size of each element.
  *
  * @return The newly-initialized queue, or NULL if out of memory.
  */
-queue queue_init(const size_t data_size) {
+queue queue_init(const size_t data_size)
+{
     struct _queue *const init = malloc(sizeof(struct _queue));
     if (init == NULL) {
         return NULL;
@@ -59,7 +61,8 @@ queue queue_init(const size_t data_size) {
  *
  * @return The queue size.
  */
-int queue_size(queue me) {
+int queue_size(queue me)
+{
     return deque_size(me->deque_data);
 }
 
@@ -71,7 +74,8 @@ int queue_size(queue me) {
  *
  * @return If the queue is empty.
  */
-bool queue_is_empty(queue me) {
+bool queue_is_empty(queue me)
+{
     return deque_is_empty(me->deque_data);
 }
 
@@ -83,7 +87,8 @@ bool queue_is_empty(queue me) {
  * @return 0       No error.
  *         -ENOMEM Out of memory.
  */
-int queue_trim(queue me) {
+int queue_trim(queue me)
+{
     return deque_trim(me->deque_data);
 }
 
@@ -93,7 +98,8 @@ int queue_trim(queue me) {
  * @param array The array to have copied from the queue.
  * @param me    The queue to copy to the array.
  */
-void queue_to_array(void *const array, queue me) {
+void queue_to_array(void *const array, queue me)
+{
     deque_to_array(array, me->deque_data);
 }
 
@@ -106,7 +112,8 @@ void queue_to_array(void *const array, queue me) {
  * @return 0       No error.
  *         -ENOMEM Out of memory.
  */
-int queue_push(queue me, void *const data) {
+int queue_push(queue me, void *const data)
+{
     return deque_push_back(me->deque_data, data);
 }
 
@@ -119,7 +126,8 @@ int queue_push(queue me, void *const data) {
  * @return 0       No error.
  *         -EINVAL Invalid argument.
  */
-int queue_pop(void *const data, queue me) {
+int queue_pop(void *const data, queue me)
+{
     me->trim_count++;
     if (me->trim_count >= TRIM_SIZE) {
         deque_trim(me->deque_data);
@@ -137,7 +145,8 @@ int queue_pop(void *const data, queue me) {
  * @return 0       No error.
  *         -EINVAL Invalid argument.
  */
-int queue_front(void *const data, queue me) {
+int queue_front(void *const data, queue me)
+{
     return deque_get_first(data, me->deque_data);
 }
 
@@ -150,7 +159,8 @@ int queue_front(void *const data, queue me) {
  * @return 0       No error.
  *         -EINVAL Invalid argument.
  */
-int queue_back(void *const data, queue me) {
+int queue_back(void *const data, queue me)
+{
     return deque_get_last(data, me->deque_data);
 }
 
@@ -162,7 +172,8 @@ int queue_back(void *const data, queue me) {
  * @return 0       No error.
  *         -ENOMEM Out of memory.
  */
-int queue_clear(queue me) {
+int queue_clear(queue me)
+{
     return deque_clear(me->deque_data);
 }
 
@@ -173,7 +184,8 @@ int queue_clear(queue me) {
  *
  * @return NULL
  */
-queue queue_destroy(queue me) {
+queue queue_destroy(queue me)
+{
     deque_destroy(me->deque_data);
     free(me);
     return NULL;

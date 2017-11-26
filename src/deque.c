@@ -41,13 +41,14 @@ struct node {
 };
 
 /**
- * Initializes a deque.
+ * Initializes a deque. Implemented using an array containing arrays.
  *
  * @param data_size The size of each element in the deque.
  *
  * @return The newly-allocated deque, or NULL if could not allocate memory.
  */
-deque deque_init(const size_t data_size) {
+deque deque_init(const size_t data_size)
+{
     struct _deque *const init = malloc(sizeof(struct _deque));
     if (init == NULL) {
         return NULL;
@@ -79,7 +80,8 @@ deque deque_init(const size_t data_size) {
  *
  * @return The size of the deque.
  */
-int deque_size(deque me) {
+int deque_size(deque me)
+{
     return me->end_index - me->start_index - 1;
 }
 
@@ -90,7 +92,8 @@ int deque_size(deque me) {
  *
  * @return If empty.
  */
-bool deque_is_empty(deque me) {
+bool deque_is_empty(deque me)
+{
     return deque_size(me) == 0;
 }
 
@@ -103,7 +106,8 @@ bool deque_is_empty(deque me) {
  * @return 0       No error.
  *         -ENOMEM Out of memory.
  */
-int deque_trim(deque me) {
+int deque_trim(deque me)
+{
     const int start_block = me->start_index / BLOCK_SIZE;
     const int end_block = me->end_index / BLOCK_SIZE;
     me->block_count = end_block - start_block + 1;
@@ -124,7 +128,8 @@ int deque_trim(deque me) {
  * @param array The array to copy the deque to.
  * @param me    The deque to copy from.
  */
-void deque_to_array(void *const array, deque me) {
+void deque_to_array(void *const array, deque me)
+{
     void *const temp = malloc(me->data_size);
     if (temp == NULL) {
         return;
@@ -145,7 +150,8 @@ void deque_to_array(void *const array, deque me) {
  * @return 0       No error.
  *         -ENOMEM Out of memory.
  */
-int deque_push_front(deque me, void *const data) {
+int deque_push_front(deque me, void *const data)
+{
     int block_index = me->start_index / BLOCK_SIZE;
     int inner_index = me->start_index % BLOCK_SIZE;
     if (inner_index == -1) {
@@ -196,7 +202,8 @@ int deque_push_front(deque me, void *const data) {
  * @return 0       No error.
  *         -ENOMEM Out of memory.
  */
-int deque_push_back(deque me, void *const data) {
+int deque_push_back(deque me, void *const data)
+{
     const int block_index = me->end_index / BLOCK_SIZE;
     const int inner_index = me->end_index % BLOCK_SIZE;
     if (inner_index == 0) {
@@ -235,7 +242,8 @@ int deque_push_back(deque me, void *const data) {
  * @return 0       No error.
  *         -EINVAL Invalid argument.
  */
-int deque_pop_front(void *const data, deque me) {
+int deque_pop_front(void *const data, deque me)
+{
     if (deque_is_empty(me)) {
         return -EINVAL;
     }
@@ -257,7 +265,8 @@ int deque_pop_front(void *const data, deque me) {
  * @return 0       No error.
  *         -EINVAL Invalid argument.
  */
-int deque_pop_back(void *const data, deque me) {
+int deque_pop_back(void *const data, deque me)
+{
     if (deque_is_empty(me)) {
         return -EINVAL;
     }
@@ -279,7 +288,8 @@ int deque_pop_back(void *const data, deque me) {
  * @return 0       No error.
  *         -EINVAL Invalid argument.
  */
-int deque_set_first(deque me, void *const data) {
+int deque_set_first(deque me, void *const data)
+{
     return deque_set_at(me, 0, data);
 }
 
@@ -293,7 +303,8 @@ int deque_set_first(deque me, void *const data) {
  * @return 0       No error.
  *         -EINVAL Invalid argument.
  */
-int deque_set_at(deque me, int index, void *const data) {
+int deque_set_at(deque me, int index, void *const data)
+{
     if (index < 0 || index >= deque_size(me)) {
         return -EINVAL;
     }
@@ -315,7 +326,8 @@ int deque_set_at(deque me, int index, void *const data) {
  * @return 0       No error.
  *         -EINVAL Invalid argument.
  */
-int deque_set_last(deque me, void *const data) {
+int deque_set_last(deque me, void *const data)
+{
     return deque_set_at(me, deque_size(me) - 1, data);
 }
 
@@ -328,7 +340,8 @@ int deque_set_last(deque me, void *const data) {
  * @return 0       No error.
  *         -EINVAL Invalid argument.
  */
-int deque_get_first(void *const data, deque me) {
+int deque_get_first(void *const data, deque me)
+{
     return deque_get_at(data, me, 0);
 }
 
@@ -342,7 +355,8 @@ int deque_get_first(void *const data, deque me) {
  * @return 0       No error.
  *         -EINVAL Invalid argument.
  */
-int deque_get_at(void *const data, deque me, int index) {
+int deque_get_at(void *const data, deque me, int index)
+{
     if (index < 0 || index >= deque_size(me)) {
         return -EINVAL;
     }
@@ -364,7 +378,8 @@ int deque_get_at(void *const data, deque me, int index) {
  * @return 0       No error.
  *         -EINVAL Invalid argument.
  */
-int deque_get_last(void *const data, deque me) {
+int deque_get_last(void *const data, deque me)
+{
     return deque_get_at(data, me, deque_size(me) - 1);
 }
 
@@ -376,7 +391,8 @@ int deque_get_last(void *const data, deque me) {
  * @return 0       No error.
  *         -ENOMEM Out of memory.
  */
-int deque_clear(deque me) {
+int deque_clear(deque me)
+{
     for (int i = 0; i < me->block_count; i++) {
         free(me->block[i].data);
     }
@@ -402,7 +418,8 @@ int deque_clear(deque me) {
  *
  * @return NULL
  */
-deque deque_destroy(deque me) {
+deque deque_destroy(deque me)
+{
     for (int i = 0; i < me->block_count; i++) {
         free(me->block[i].data);
     }
