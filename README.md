@@ -5,28 +5,28 @@ Inspired by the C++ STL. Implementation of the STL data structures using C; howe
 
 # Sequence containers
 Data structures which can be accessed sequentially.
-array (todo) - static contiguous array
-vector - dynamic contiguous array
-deque - double-ended queue
-forward_list - singly-linked list
-list - doubly-linked list
+<p> array (todo) - static contiguous array
+<p> vector - dynamic contiguous array
+<p> deque - double-ended queue
+<p> forward_list - singly-linked list
+<p> list - doubly-linked list
 
 # Associative containers
 Data structures that can be quickly searched which use comparators.
-set (todo) - collection of unique keys, sorted by keys
-map (todo) - collection of key-value pairs, sorted by keys, keys are unique
-multiset (todo) - collection of keys, sorted by keys
-multimap (todo) - collection of key-value pairs, sorted by keys
+<p> set (todo) - collection of unique keys, sorted by keys
+<p> map (todo) - collection of key-value pairs, sorted by keys, keys are unique
+<p> multiset (todo) - collection of keys, sorted by keys
+<p> multimap (todo) - collection of key-value pairs, sorted by keys
 
 # Unordered associative containers
 Data structures that can be quickly searched which use hashing.
-unordered_set (todo) - collection of unique keys, hashed by keys
-unordered_map (todo) - collection of key-value pairs, hashed by keys, keys are unique
-unordered_multiset (todo) - collection of keys, hashed by keys
-unordered_multimap (todo) - collection of key-value pairs, hashed by keys
+<p> unordered_set (todo) - collection of unique keys, hashed by keys
+<p> unordered_map (todo) - collection of key-value pairs, hashed by keys, keys are unique
+<p> unordered_multiset (todo) - collection of keys, hashed by keys
+<p> unordered_multimap (todo) - collection of key-value pairs, hashed by keys
 
 # Container adaptors
 Data structures which adapt other containers to enhance functionality.
-stack - adapts a container to provide stack (last-in first-out)
-queue - adapts a container to provide queue (first-in first-out)
-priority_queue (todo) - adapts a container to provide priority queue
+<p> stack - adapts a container to provide stack (last-in first-out)
+<p> queue - adapts a container to provide queue (first-in first-out)
+<p> priority_queue (todo) - adapts a container to provide priority queue
