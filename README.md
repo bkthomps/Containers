@@ -1,2 +1,32 @@
 # Containers
 This library provides various containers. Each container has utility functions to manipulate the data it holds. This is an abstraction as to not have to manually manage and reallocate memory. 
+
+Inspired by the C++ STL. Implementation of the STL data structures using C; however, the data structures have different interfaces than those in the STL.
+
+# Sequence containers
+Data structures which can be accessed sequentially.
+array (todo) - static contiguous array
+vector - dynamic contiguous array
+deque - double-ended queue
+forward_list - singly-linked list
+list - doubly-linked list
+
+# Associative containers
+Data structures that can be quickly searched which use comparators.
+set (todo) - collection of unique keys, sorted by keys
+map (todo) - collection of key-value pairs, sorted by keys, keys are unique
+multiset (todo) - collection of keys, sorted by keys
+multimap (todo) - collection of key-value pairs, sorted by keys
+
+# Unordered associative containers
+Data structures that can be quickly searched which use hashing.
+unordered_set (todo) - collection of unique keys, hashed by keys
+unordered_map (todo) - collection of key-value pairs, hashed by keys, keys are unique
+unordered_multiset (todo) - collection of keys, hashed by keys
+unordered_multimap (todo) - collection of key-value pairs, hashed by keys
+
+# Container adaptors
+Data structures which adapt other containers to enhance functionality.
+stack - adapts a container to provide stack (last-in first-out)
+queue - adapts a container to provide queue (first-in first-out)
+priority_queue (todo) - adapts a container to provide priority queue
