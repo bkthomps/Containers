@@ -11,5 +11,6 @@ void test_forward_list(void);
 void test_deque(void);
 void test_stack(void);
 void test_queue(void);
+void test_set(void);
 
 #endif /* CONTAINERS_TEST_H */

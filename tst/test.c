@@ -8,5 +8,6 @@ int main()
     test_deque();
     test_stack();
     test_queue();
+    test_set();
     return 0;
 }

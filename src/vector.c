@@ -35,7 +35,7 @@ struct _vector {
 };
 
 /**
- * Initializes a vector. Elements are guarantied to be contiguous in memory.
+ * Initializes a vector, which is a dynamic contiguous array.
  *
  * @param data_size The size of each element in the vector.
  *

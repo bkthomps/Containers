@@ -41,7 +41,7 @@ struct node {
 };
 
 /**
- * Initializes a deque. Implemented using an array containing arrays.
+ * Initializes a deque, which is a doubly-ended queue.
  *
  * @param data_size The size of each element in the deque.
  *
