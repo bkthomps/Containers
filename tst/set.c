@@ -111,4 +111,79 @@ void test_set(void)
     assert(set_is_empty(a));
     a = set_destroy(a);
     assert(a == NULL);
+    // Create odd shape graph.
+    a = set_init(sizeof(int), compare_int);
+    int tmp = 10;
+    set_add(a, &tmp);
+    tmp = 5;
+    set_add(a, &tmp);
+    tmp = 15;
+    set_add(a, &tmp);
+    tmp = 3;
+    set_add(a, &tmp);
+    tmp = 8;
+    set_add(a, &tmp);
+    tmp = 12;
+    set_add(a, &tmp);
+    tmp = 18;
+    set_add(a, &tmp);
+    tmp = 12;
+    set_remove(a, &tmp);
+    tmp = 5;
+    set_remove(a, &tmp);
+    tmp = 3;
+    set_remove(a, &tmp);
+    tmp = 8;
+    set_remove(a, &tmp);
+    set_clear(a);
+    // Allocate many nodes.
+    for (int i = 8123; i < 12314; i += 3) {
+        set_add(a, &i);
+    }
+    for (int i = 13000; i > 8000; i--) {
+        set_remove(a, &i);
+    }
+    set_clear(a);
+    // Create another odd shape graph.
+    tmp = 20;
+    set_add(a, &tmp);
+    tmp = 10;
+    set_add(a, &tmp);
+    tmp = 40;
+    set_add(a, &tmp);
+    tmp = 5;
+    set_add(a, &tmp);
+    tmp = 15;
+    set_add(a, &tmp);
+    tmp = 30;
+    set_add(a, &tmp);
+    tmp = 50;
+    set_add(a, &tmp);
+    tmp = 25;
+    set_add(a, &tmp);
+    tmp = 35;
+    set_add(a, &tmp);
+    tmp = 36;
+    set_add(a, &tmp);
+    tmp = 34;
+    set_add(a, &tmp);
+    tmp = 33;
+    set_add(a, &tmp);
+    tmp = 32;
+    set_add(a, &tmp);
+    tmp = 30;
+    set_remove(a, &tmp);
+    set_clear(a);
+    // One sided tree.
+    tmp = 10;
+    set_add(a, &tmp);
+    tmp = 9;
+    set_add(a, &tmp);
+    tmp = 8;
+    set_add(a, &tmp);
+    tmp = 7;
+    set_add(a, &tmp);
+    tmp = 8;
+    set_remove(a, &tmp);
+    set_destroy(a);
 }
