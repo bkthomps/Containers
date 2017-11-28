@@ -13,7 +13,7 @@ Data structures which can be accessed sequentially.
 
 # Associative containers
 Data structures that can be quickly searched which use comparators.
-<p> set (todo) - collection of unique keys, sorted by keys
+<p> set - collection of unique keys, sorted by keys
 <p> map (todo) - collection of key-value pairs, sorted by keys, keys are unique
 <p> multiset (todo) - collection of keys, sorted by keys
 <p> multimap (todo) - collection of key-value pairs, sorted by keys
