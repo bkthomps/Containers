@@ -290,6 +290,7 @@ int list_remove_at(list me, const int index)
         traverse->prev->next = traverse->next;
         traverse->next->prev = traverse->prev;
     }
+    free(traverse->data);
     free(traverse);
     me->space--;
     return 0;
@@ -415,6 +416,7 @@ void list_clear(list me)
     while (traverse != NULL) {
         struct node *const temp = traverse;
         traverse = traverse->next;
+        free(temp->data);
         free(temp);
     }
     me->head = NULL;

@@ -217,22 +217,22 @@ static struct node *set_remove_parent_two_children(struct node *traverse)
  */
 static void set_remove_root(set me)
 {
-    struct node *backup = me->root;
-    if (me->root->left == NULL && me->root->right == NULL) {
+    struct node *temp = me->root;
+    if (temp->left == NULL && temp->right == NULL) {
         me->root = NULL;
-        free(backup->key);
-    } else if (me->root->left == NULL || me->root->right == NULL) {
-        if (me->root->left != NULL) {
-            me->root = me->root->left;
+        free(temp->key);
+    } else if (temp->left == NULL || temp->right == NULL) {
+        if (temp->left != NULL) {
+            me->root = temp->left;
         } else {
-            me->root = me->root->right;
+            me->root = temp->right;
         }
-        free(backup->key);
+        free(temp->key);
     } else {
-        backup = set_remove_parent_two_children(backup);
+        temp = set_remove_parent_two_children(temp);
     }
     me->size--;
-    free(backup);
+    free(temp);
 }
 
 /*
@@ -284,12 +284,12 @@ bool set_remove(set me, void *const data)
     if (me->root == NULL) {
         return false;
     }
-    if (me->comparator(data, me->root->key) == 0) {
+    struct node *parent = NULL;
+    struct node *traverse = me->root;
+    if (me->comparator(data, traverse->key) == 0) {
         set_remove_root(me);
         return true;
     }
-    struct node *parent = NULL;
-    struct node *traverse = me->root;
     while (true) {
         const int compare = me->comparator(data, traverse->key);
         if (compare < 0) {

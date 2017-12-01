@@ -210,17 +210,20 @@ int forward_list_remove_at(forward_list me, const int index)
         return -EINVAL;
     }
     if (index == 0) {
-        struct node *const backup_head = me->head;
-        me->head = me->head->next;
-        free(backup_head);
+        struct node *const temp = me->head;
+        me->head = temp->next;
+        free(temp->data);
+        free(temp);
     } else if (index == me->space - 1) {
         struct node *const traverse = forward_list_get_node_at(me, index - 1);
+        free(traverse->next->data);
         free(traverse->next);
         traverse->next = NULL;
     } else {
         struct node *const traverse = forward_list_get_node_at(me, index - 1);
         struct node *const backup = traverse->next;
         traverse->next = traverse->next->next;
+        free(backup->data);
         free(backup);
     }
     me->space--;
@@ -347,6 +350,7 @@ void forward_list_clear(forward_list me)
     while (traverse != NULL) {
         struct node *const temp = traverse;
         traverse = traverse->next;
+        free(temp->data);
         free(temp);
     }
     me->head = NULL;
