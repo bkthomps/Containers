@@ -5,7 +5,7 @@ Inspired by the C++ STL. Implementation of the STL data structures using C; howe
 
 # Sequence containers
 Data structures which can be accessed sequentially.
-<p> array (todo) - static contiguous array
+<p> array - static contiguous array
 <p> vector - dynamic contiguous array
 <p> deque - double-ended queue
 <p> forward_list - singly-linked list
