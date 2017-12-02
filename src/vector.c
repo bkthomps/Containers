@@ -171,7 +171,6 @@ int vector_add_at(vector me, const int index, void *const data)
     if (index < 0 || index > me->offset) {
         return -EINVAL;
     }
-    const int full_space = me->space;
     if (me->offset + 1 >= me->space) {
         me->space *= 1.5;
         void *const temp = realloc(me->storage, me->space * me->data_size);
@@ -183,7 +182,7 @@ int vector_add_at(vector me, const int index, void *const data)
     if (index != me->offset) {
         memmove(me->storage + (index + 1) * me->data_size,
                 me->storage + index * me->data_size,
-                (full_space - index) * me->data_size);
+                (me->offset - index) * me->data_size);
     }
     memcpy(me->storage + index * me->data_size, data, me->data_size);
     me->offset++;
@@ -239,10 +238,10 @@ int vector_remove_at(vector me, const int index)
     if (vector_is_illegal_input(me, index)) {
         return -EINVAL;
     }
+    me->offset--;
     memmove(me->storage + index * me->data_size,
             me->storage + (index + 1) * me->data_size,
-            (me->space - index) * me->data_size);
-    me->offset--;
+            (me->offset - index) * me->data_size);
     return 0;
 }
 
