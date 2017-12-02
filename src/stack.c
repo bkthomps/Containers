@@ -90,12 +90,12 @@ int stack_trim(stack me)
 /**
  * Copies the stack into an array representation.
  *
- * @param array The array to copy to.
- * @param me    The stack to copy from.
+ * @param arr The array to copy to.
+ * @param me  The stack to copy from.
  */
-void stack_to_array(void *const array, stack me)
+void stack_to_array(void *const arr, stack me)
 {
-    deque_to_array(array, me->deque_data);
+    deque_to_array(arr, me->deque_data);
 }
 
 /**

@@ -20,33 +20,25 @@
  * SOFTWARE.
  */
 
-#ifndef CONTAINERS_STACK_H
-#define CONTAINERS_STACK_H
+#ifndef CONTAINERS_ARRAY_H
+#define CONTAINERS_ARRAY_H
 
 #include <stdbool.h>
 
-typedef struct _stack *stack;
+typedef struct _array *array;
 
 // Starting
-stack stack_init(size_t data_size);
+array array_init(int element_count, size_t data_size);
 
 // Utility
-int stack_size(stack me);
-bool stack_is_empty(stack me);
-int stack_trim(stack me);
-void stack_to_array(void *arr, stack me);
+int array_size(array me);
+void array_to_array(void *arr, array me);
 
-// Adding
-int stack_push(stack me, void *data);
-
-// Removing
-int stack_pop(void *data, stack me);
-
-// Getting
-int stack_top(void *data, stack me);
+// Accessing
+int array_set(array me, int index, void *data);
+int array_get(void *data, array me, int index);
 
 // Ending
-int stack_clear(stack me);
-stack stack_destroy(stack me);
+array array_destroy(array me);
 
-#endif /* CONTAINERS_STACK_H */
+#endif /* CONTAINERS_ARRAY_H */

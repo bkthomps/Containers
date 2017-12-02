@@ -85,15 +85,15 @@ bool list_is_empty(list me)
 /**
  * Copies the nodes of the doubly-linked list to an array.
  *
- * @param array The array to copy the list to.
- * @param me    The list to copy to the array.
+ * @param arr The array to copy the list to.
+ * @param me  The list to copy to the array.
  */
-void list_to_array(void *const array, list me)
+void list_to_array(void *const arr, list me)
 {
     struct node *traverse = me->head;
     int offset = 0;
     while (traverse != NULL) {
-        memcpy(array + offset, traverse->data, me->data_size);
+        memcpy(arr + offset, traverse->data, me->data_size);
         offset += me->data_size;
         traverse = traverse->next;
     }

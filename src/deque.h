@@ -34,7 +34,7 @@ deque deque_init(size_t data_size);
 int deque_size(deque me);
 bool deque_is_empty(deque me);
 int deque_trim(deque me);
-void deque_to_array(void *array, deque me);
+void deque_to_array(void *arr, deque me);
 
 // Adding
 int deque_push_front(deque me, void *data);

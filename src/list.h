@@ -33,7 +33,7 @@ list list_init(size_t data_size);
 // Utility
 int list_size(list me);
 bool list_is_empty(list me);
-void list_to_array(void *array, list me);
+void list_to_array(void *arr, list me);
 
 // Adding
 int list_add_first(list me, void *data);

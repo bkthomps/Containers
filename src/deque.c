@@ -131,10 +131,10 @@ int deque_trim(deque me)
 /**
  * Copies the deque to an array representation.
  *
- * @param array The array to copy the deque to.
- * @param me    The deque to copy from.
+ * @param arr The array to copy the deque to.
+ * @param me  The deque to copy from.
  */
-void deque_to_array(void *const array, deque me)
+void deque_to_array(void *const arr, deque me)
 {
     void *const temp = malloc(me->data_size);
     if (temp == NULL) {
@@ -142,7 +142,7 @@ void deque_to_array(void *const array, deque me)
     }
     for (int i = 0; i < deque_size(me); i++) {
         deque_get_at(temp, me, i);
-        memcpy(array + i * me->data_size, temp, me->data_size);
+        memcpy(arr + i * me->data_size, temp, me->data_size);
     }
     free(temp);
 }

@@ -82,15 +82,15 @@ bool forward_list_is_empty(forward_list me)
 /**
  * Copies the nodes of the singly-linked list to an array.
  *
- * @param array The array to copy the list to.
- * @param me    The list to copy to the array.
+ * @param arr The array to copy the list to.
+ * @param me  The list to copy to the array.
  */
-void forward_list_to_array(void *const array, forward_list me)
+void forward_list_to_array(void *const arr, forward_list me)
 {
     struct node *traverse = me->head;
     int offset = 0;
     while (traverse != NULL) {
-        memcpy(array + offset, traverse->data, me->data_size);
+        memcpy(arr + offset, traverse->data, me->data_size);
         offset += me->data_size;
         traverse = traverse->next;
     }

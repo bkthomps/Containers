@@ -133,12 +133,12 @@ int vector_trim(vector me)
 /**
  * Copies the storage element of vector to an array.
  *
- * @param me    The vector to copy from.
- * @param array The array to copy to.
+ * @param arr The array to copy to.
+ * @param me  The vector to copy from.
  */
-void vector_to_array(void *const array, vector me)
+void vector_to_array(void *const arr, vector me)
 {
-    memcpy(array, me->storage, me->offset * me->data_size);
+    memcpy(arr, me->storage, me->offset * me->data_size);
 }
 
 /**
@@ -276,6 +276,7 @@ int vector_set_first(vector me, void *const data)
 }
 
 /**
+ * Sets the data for a specified element in the vector.
  *
  * @param me    The vector to set data for.
  * @param index The location to set data at in the vector.

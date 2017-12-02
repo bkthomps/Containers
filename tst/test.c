@@ -9,5 +9,6 @@ int main()
     test_stack();
     test_queue();
     test_set();
+    test_array();
     return 0;
 }
