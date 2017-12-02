@@ -110,6 +110,12 @@ int deque_trim(deque me)
 {
     const int start_block = me->start_index / BLOCK_SIZE;
     const int end_block = me->end_index / BLOCK_SIZE;
+    for (int i = 0; i < start_block; i++) {
+        free(me->block[i].data);
+    }
+    for (int i = end_block + 1; i < me->block_count; i++) {
+        free(me->block[i].data);
+    }
     me->block_count = end_block - start_block + 1;
     memmove(me->block,
             &me->block[start_block],
