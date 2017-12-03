@@ -26,7 +26,7 @@
 #include "set.h"
 
 struct _set {
-    size_t data_size;
+    size_t key_size;
     int (*comparator)(const void *const one, const void *const two);
     int size;
     struct node *root;
@@ -46,14 +46,14 @@ struct node {
  *
  * @return The newly-initialized set, or NULL if memory allocation error.
  */
-set set_init(const size_t data_size,
+set set_init(const size_t key_size,
              int (*const comparator)(const void *const, const void *const))
 {
     struct _set *const init = malloc(sizeof(struct _set));
     if (init == NULL) {
         return NULL;
     }
-    init->data_size = data_size;
+    init->key_size = key_size;
     init->comparator = comparator;
     init->size = 0;
     init->root = NULL;
@@ -93,12 +93,12 @@ static struct node *set_create_node(set me, void *const data)
     if (insert == NULL) {
         return NULL;
     }
-    insert->key = malloc(me->data_size);
+    insert->key = malloc(me->key_size);
     if (insert->key == NULL) {
         free(insert);
         return NULL;
     }
-    memcpy(insert->key, data, me->data_size);
+    memcpy(insert->key, data, me->key_size);
     insert->left = NULL;
     insert->right = NULL;
     me->size++;
@@ -114,10 +114,10 @@ static struct node *set_create_node(set me, void *const data)
  * @return 0       No error.
  *         -ENOMEM Out of memory.
  */
-int set_add(set me, void *const data)
+int set_add(set me, void *const key)
 {
     if (me->root == NULL) {
-        struct node *insert = set_create_node(me, data);
+        struct node *insert = set_create_node(me, key);
         if (insert == NULL) {
             return -ENOMEM;
         }
@@ -126,12 +126,12 @@ int set_add(set me, void *const data)
     }
     struct node *traverse = me->root;
     while (true) {
-        const int compare = me->comparator(data, traverse->key);
+        const int compare = me->comparator(key, traverse->key);
         if (compare < 0) {
             if (traverse->left != NULL) {
                 traverse = traverse->left;
             } else {
-                struct node *insert = set_create_node(me, data);
+                struct node *insert = set_create_node(me, key);
                 if (insert == NULL) {
                     return -ENOMEM;
                 }
@@ -142,7 +142,7 @@ int set_add(set me, void *const data)
             if (traverse->right != NULL) {
                 traverse = traverse->right;
             } else {
-                struct node *insert = set_create_node(me, data);
+                struct node *insert = set_create_node(me, key);
                 if (insert == NULL) {
                     return -ENOMEM;
                 }
@@ -163,14 +163,14 @@ int set_add(set me, void *const data)
  *
  * @return If the set contained the element.
  */
-bool set_contains(set me, void *const data)
+bool set_contains(set me, void *const key)
 {
     if (me->root == NULL) {
         return false;
     }
     struct node *traverse = me->root;
     while (true) {
-        const int compare = me->comparator(data, traverse->key);
+        const int compare = me->comparator(key, traverse->key);
         if (compare < 0) {
             if (traverse->left != NULL) {
                 traverse = traverse->left;
@@ -279,19 +279,19 @@ static void set_remove_non_root(set me,
  *
  * @return If the set contained the element.
  */
-bool set_remove(set me, void *const data)
+bool set_remove(set me, void *const key)
 {
     if (me->root == NULL) {
         return false;
     }
     struct node *parent = NULL;
     struct node *traverse = me->root;
-    if (me->comparator(data, traverse->key) == 0) {
+    if (me->comparator(key, traverse->key) == 0) {
         set_remove_root(me);
         return true;
     }
     while (true) {
-        const int compare = me->comparator(data, traverse->key);
+        const int compare = me->comparator(key, traverse->key);
         if (compare < 0) {
             if (traverse->left != NULL) {
                 parent = traverse;
