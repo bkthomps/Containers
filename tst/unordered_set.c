@@ -8,8 +8,11 @@ static int compare_int(const void *const one, const void *const two)
     return a - b;
 }
 
+static int hash_count;
+
 static unsigned long hash_int(const void *const key)
 {
+    hash_count++;
     unsigned long hash = 17;
     hash = 31 * hash + *(int *) key;
     return hash;
@@ -111,6 +114,9 @@ void test_unordered_set(void)
         assert(unordered_set_contains(a, &i));
     }
     assert(unordered_set_size(a) == 1000);
+    hash_count = 0;
+    unordered_set_rehash(a);
+    assert(hash_count == 1000);
     unordered_set_clear(a);
     int p = 0xdeadbeef;
     assert(!unordered_set_remove(a, &p));

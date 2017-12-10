@@ -44,6 +44,17 @@ struct node {
     struct node *next;
 };
 
+/**
+ * Initializes an unordered set, which is a collection of unique keys, hashed by
+ * keys.
+ *
+ * @param data_size  The size of each element in the unordered set.
+ * @param hash       The hash function which computes the hash from the key.
+ * @param comparator The comparator function which compares two keys.
+ *
+ * @return The newly-initialized unordered set, or NULL if memory allocation
+ *         error.
+ */
 unordered_set unordered_set_init(const size_t key_size,
                                  unsigned long (*hash)(const void *const),
                                  int (*comparator)(const void *const,
@@ -58,7 +69,7 @@ unordered_set unordered_set_init(const size_t key_size,
     init->comparator = comparator;
     init->size = 0;
     init->capacity = STARTING_BUCKETS;
-    init->buckets = calloc(STARTING_BUCKETS, sizeof(struct node));
+    init->buckets = calloc(STARTING_BUCKETS, sizeof(struct node *));
     if (init->buckets == NULL) {
         free(init);
         return NULL;
@@ -66,21 +77,9 @@ unordered_set unordered_set_init(const size_t key_size,
     return init;
 }
 
-void unordered_set_rehash(unordered_set me)
-{
-    // TODO: rehash
-}
-
-int unordered_set_size(unordered_set me)
-{
-    return me->size;
-}
-
-bool unordered_set_is_empty(unordered_set me)
-{
-    return unordered_set_size(me) == 0;
-}
-
+/*
+ * Determines if both nodes are equivalent.
+ */
 static bool unordered_set_is_equal(unordered_set me,
                                    const struct node *const one,
                                    const struct node *const two)
@@ -88,6 +87,9 @@ static bool unordered_set_is_equal(unordered_set me,
     return one->hash == two->hash && me->comparator(one->key, two->key) == 0;
 }
 
+/*
+ * Adds the specified node to the set.
+ */
 static bool unordered_set_is_add_new(unordered_set me, struct node *const add)
 {
     const int index = (int) (add->hash % me->capacity);
@@ -109,6 +111,97 @@ static bool unordered_set_is_add_new(unordered_set me, struct node *const add)
     return false;
 }
 
+/**
+ * Rehashes all the keys in the unordered set. Used when storing references and
+ * changing the keys. This should rarely be used.
+ *
+ * @param me The unordered set to rehash.
+ *
+ * @return 0       No error.
+ *         -ENOMEM Out of memory.
+ */
+int unordered_set_rehash(unordered_set me)
+{
+    struct node **old_buckets = me->buckets;
+    me->buckets = calloc((size_t) me->capacity, sizeof(struct node *));
+    if (me->buckets == NULL) {
+        me->buckets = old_buckets;
+        return -ENOMEM;
+    }
+    for (int i = 0; i < me->capacity; i++) {
+        struct node *traverse = old_buckets[i];
+        while (traverse != NULL) {
+            struct node *const backup = traverse->next;
+            traverse->hash = me->hash(traverse->key);
+            traverse->next = NULL;
+            unordered_set_is_add_new(me, traverse);
+            traverse = backup;
+        }
+    }
+    free(old_buckets);
+    return 0;
+}
+
+/**
+ * Gets the size of the unordered set.
+ *
+ * @param me The unordered set to check.
+ *
+ * @return The size of the unordered set.
+ */
+int unordered_set_size(unordered_set me)
+{
+    return me->size;
+}
+
+/**
+ * Determines whether or not the unordered set is empty.
+ *
+ * @param me The unordered set to check.
+ *
+ * @return If the unordered set is empty.
+ */
+bool unordered_set_is_empty(unordered_set me)
+{
+    return unordered_set_size(me) == 0;
+}
+
+/*
+ * Increases the size of the set and redistributes the nodes.
+ */
+static int unordered_set_resize(unordered_set me)
+{
+    const int old_capacity = me->capacity;
+    me->capacity *= RESIZE_RATIO;
+    struct node **old_buckets = me->buckets;
+    me->buckets = calloc((size_t) me->capacity, sizeof(struct node *));
+    if (me->buckets == NULL) {
+        me->buckets = old_buckets;
+        return -ENOMEM;
+    }
+    for (int i = 0; i < old_capacity; i++) {
+        struct node *traverse = old_buckets[i];
+        while (traverse != NULL) {
+            struct node *const backup = traverse->next;
+            traverse->next = NULL;
+            unordered_set_is_add_new(me, traverse);
+            traverse = backup;
+        }
+    }
+    free(old_buckets);
+    return 0;
+}
+
+/**
+ * Adds an element to the unordered set if the unordered set does not already
+ * contain it.
+ *
+ * @param me   The unordered set to add to.
+ * @param data The element to add.
+ *
+ * @return 0       No error.
+ *         -ENOMEM Out of memory.
+ */
 int unordered_set_add(unordered_set me, void *const key)
 {
     struct node *const init = malloc(sizeof(struct node));
@@ -130,29 +223,19 @@ int unordered_set_add(unordered_set me, void *const key)
     }
     me->size++;
     if (me->size >= RESIZE_AT * me->capacity) {
-        // TODO: make this work
-#if 0
-        const int old_capacity = me->capacity;
-        me->capacity *= RESIZE_RATIO;
-        struct node **old_buckets = me->buckets;
-        me->buckets = calloc((size_t) me->capacity, sizeof(struct node));
-        if (me->buckets == NULL) {
-            me->buckets = old_buckets;
-            return -ENOMEM;
-        }
-        for (int i = 0; i < old_capacity; i++) {
-            struct node *traverse = old_buckets[i];
-            while (traverse != NULL) {
-                unordered_set_is_add_new(me, traverse);
-                traverse = traverse->next;
-            }
-        }
-        free(old_buckets);
-#endif
+        return unordered_set_resize(me);
     }
     return 0;
 }
 
+/**
+ * Determines if the unordered set contains the specified element.
+ *
+ * @param me   The unordered set to check for the element.
+ * @param data The element to check.
+ *
+ * @return If the unordered set contained the element.
+ */
 bool unordered_set_contains(unordered_set me, void *const key)
 {
     const int index = (int) (me->hash(key) % me->capacity);
@@ -173,7 +256,15 @@ bool unordered_set_contains(unordered_set me, void *const key)
     return false;
 }
 
-bool unordered_set_remove(unordered_set me, void *key)
+/**
+ * Removes the element from the unordered set if it contains it.
+ *
+ * @param me   The unordered set to remove an element from.
+ * @param data The element to remove.
+ *
+ * @return If the unordered set contained the element.
+ */
+bool unordered_set_remove(unordered_set me, void *const key)
 {
     const int index = (int) (me->hash(key) % me->capacity);
     if (me->buckets[index] == NULL) {
@@ -202,6 +293,11 @@ bool unordered_set_remove(unordered_set me, void *key)
     return false;
 }
 
+/**
+ * Clears the elements from the unordered set.
+ *
+ * @param me The unordered set to clear.
+ */
 void unordered_set_clear(unordered_set me)
 {
     for (int i = 0; i < me->capacity; i++) {
@@ -217,6 +313,13 @@ void unordered_set_clear(unordered_set me)
     me->size = 0;
 }
 
+/**
+ * Frees the unordered set memory.
+ *
+ * @param me The unordered set to free from memory.
+ *
+ * @return NULL
+ */
 unordered_set unordered_set_destroy(unordered_set me)
 {
     unordered_set_clear(me);

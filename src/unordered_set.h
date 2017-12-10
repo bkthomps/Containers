@@ -34,7 +34,7 @@ unordered_set unordered_set_init(size_t key_size,
                                                    const void *const two));
 
 // Utility
-void unordered_set_rehash(unordered_set me);
+int unordered_set_rehash(unordered_set me);
 int unordered_set_size(unordered_set me);
 bool unordered_set_is_empty(unordered_set me);
 
