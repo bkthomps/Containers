@@ -13,5 +13,6 @@ void test_stack(void);
 void test_queue(void);
 void test_set(void);
 void test_array(void);
+void test_unordered_set(void);
 
 #endif /* CONTAINERS_TEST_H */

@@ -10,5 +10,6 @@ int main()
     test_queue();
     test_set();
     test_array();
+    test_unordered_set();
     return 0;
 }
