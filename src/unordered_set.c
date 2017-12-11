@@ -78,37 +78,21 @@ unordered_set unordered_set_init(const size_t key_size,
 }
 
 /*
- * Determines if both nodes are equivalent.
- */
-static bool unordered_set_is_equal(unordered_set me,
-                                   const struct node *const one,
-                                   const struct node *const two)
-{
-    return one->hash == two->hash && me->comparator(one->key, two->key) == 0;
-}
-
-/*
  * Adds the specified node to the set.
  */
-static bool unordered_set_is_add_new(unordered_set me, struct node *const add)
+static void unordered_set_add_item(unordered_set me, struct node *const add)
 {
     const int index = (int) (add->hash % me->capacity);
+    add->next = NULL;
     if (me->buckets[index] == NULL) {
         me->buckets[index] = add;
-    } else {
-        struct node *traverse = me->buckets[index];
-        if (unordered_set_is_equal(me, traverse, add)) {
-            return true;
-        }
-        while (traverse->next != NULL) {
-            traverse = traverse->next;
-            if (unordered_set_is_equal(me, traverse, add)) {
-                return true;
-            }
-        }
-        traverse->next = add;
+        return;
     }
-    return false;
+    struct node *traverse = me->buckets[index];
+    while (traverse->next != NULL) {
+        traverse = traverse->next;
+    }
+    traverse->next = add;
 }
 
 /**
@@ -133,8 +117,7 @@ int unordered_set_rehash(unordered_set me)
         while (traverse != NULL) {
             struct node *const backup = traverse->next;
             traverse->hash = me->hash(traverse->key);
-            traverse->next = NULL;
-            unordered_set_is_add_new(me, traverse);
+            unordered_set_add_item(me, traverse);
             traverse = backup;
         }
     }
@@ -183,13 +166,45 @@ static int unordered_set_resize(unordered_set me)
         struct node *traverse = old_buckets[i];
         while (traverse != NULL) {
             struct node *const backup = traverse->next;
-            traverse->next = NULL;
-            unordered_set_is_add_new(me, traverse);
+            unordered_set_add_item(me, traverse);
             traverse = backup;
         }
     }
     free(old_buckets);
     return 0;
+}
+
+/*
+ * Determines if an element is equal to the key.
+ */
+inline static bool unordered_set_is_equal(unordered_set me,
+                                          const struct node *const item,
+                                          const unsigned long hash,
+                                          const void *const key)
+{
+    return item->hash == hash && me->comparator(item->key, key) == 0;
+}
+
+/*
+ * Creates an element to add.
+ */
+static struct node *const unordered_set_create_element(unordered_set me,
+                                                       const unsigned long hash,
+                                                       const void *const key)
+{
+    struct node *const init = malloc(sizeof(struct node));
+    if (init == NULL) {
+        return NULL;
+    }
+    init->key = malloc(me->key_size);
+    if (init->key == NULL) {
+        free(init);
+        return NULL;
+    }
+    memcpy(init->key, key, me->key_size);
+    init->hash = hash;
+    init->next = NULL;
+    return init;
 }
 
 /**
@@ -204,22 +219,29 @@ static int unordered_set_resize(unordered_set me)
  */
 int unordered_set_add(unordered_set me, void *const key)
 {
-    struct node *const init = malloc(sizeof(struct node));
-    if (init == NULL) {
-        return -ENOMEM;
-    }
-    init->key = malloc(me->key_size);
-    if (init->key == NULL) {
-        free(init);
-        return -ENOMEM;
-    }
-    memcpy(init->key, key, me->key_size);
-    init->hash = me->hash(key);
-    init->next = NULL;
-    if (unordered_set_is_add_new(me, init)) {
-        free(init->key);
-        free(init);
-        return 0;
+
+    const unsigned long hash = me->hash(key);
+    const int index = (int) (hash % me->capacity);
+    if (me->buckets[index] == NULL) {
+        me->buckets[index] = unordered_set_create_element(me, hash, key);
+        if (me->buckets[index] == NULL) {
+            return -ENOMEM;
+        }
+    } else {
+        struct node *traverse = me->buckets[index];
+        if (unordered_set_is_equal(me, traverse, hash, key)) {
+            return 0;
+        }
+        while (traverse->next != NULL) {
+            traverse = traverse->next;
+            if (unordered_set_is_equal(me, traverse, hash, key)) {
+                return 0;
+            }
+        }
+        traverse->next = unordered_set_create_element(me, hash, key);
+        if (traverse->next == NULL) {
+            return -ENOMEM;
+        }
     }
     me->size++;
     if (me->size >= RESIZE_AT * me->capacity) {
@@ -238,20 +260,17 @@ int unordered_set_add(unordered_set me, void *const key)
  */
 bool unordered_set_contains(unordered_set me, void *const key)
 {
-    const int index = (int) (me->hash(key) % me->capacity);
+    const unsigned long hash = me->hash(key);
+    const int index = (int) (hash % me->capacity);
     if (me->buckets[index] == NULL) {
         return false;
     }
-    const struct node check = {.key = key, .hash = me->hash(key)};
     const struct node *traverse = me->buckets[index];
-    if (unordered_set_is_equal(me, traverse, &check)) {
-        return true;
-    }
-    while (traverse->next != NULL) {
-        traverse = traverse->next;
-        if (unordered_set_is_equal(me, traverse, &check)) {
+    while (traverse != NULL) {
+        if (unordered_set_is_equal(me, traverse, hash, key)) {
             return true;
         }
+        traverse = traverse->next;
     }
     return false;
 }
@@ -266,13 +285,13 @@ bool unordered_set_contains(unordered_set me, void *const key)
  */
 bool unordered_set_remove(unordered_set me, void *const key)
 {
-    const int index = (int) (me->hash(key) % me->capacity);
+    const unsigned long hash = me->hash(key);
+    const int index = (int) (hash % me->capacity);
     if (me->buckets[index] == NULL) {
         return false;
     }
-    const struct node check = {.key = key, .hash = me->hash(key)};
     struct node *traverse = me->buckets[index];
-    if (unordered_set_is_equal(me, traverse, &check)) {
+    if (unordered_set_is_equal(me, traverse, hash, key)) {
         me->buckets[index] = traverse->next;
         free(traverse->key);
         free(traverse);
@@ -280,7 +299,7 @@ bool unordered_set_remove(unordered_set me, void *const key)
         return true;
     }
     while (traverse->next != NULL) {
-        if (unordered_set_is_equal(me, traverse->next, &check)) {
+        if (unordered_set_is_equal(me, traverse->next, hash, key)) {
             struct node *const backup = traverse->next;
             traverse->next = traverse->next->next;
             free(backup->key);
