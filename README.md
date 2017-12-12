@@ -21,7 +21,7 @@ Data structures that can be quickly searched which use comparators.
 # Unordered associative containers
 Data structures that can be quickly searched which use hashing.
 <p> unordered_set - collection of unique keys, hashed by keys
-<p> unordered_map (todo) - collection of key-value pairs, hashed by keys, keys are unique
+<p> unordered_map - collection of key-value pairs, hashed by keys, keys are unique
 <p> unordered_multiset (todo) - collection of keys, hashed by keys
 <p> unordered_multimap (todo) - collection of key-value pairs, hashed by keys
 
