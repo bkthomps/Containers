@@ -20,31 +20,33 @@
  * SOFTWARE.
  */
 
-#ifndef CONTAINERS_UNORDERED_SET_H
-#define CONTAINERS_UNORDERED_SET_H
+#ifndef CONTAINERS_UNORDERED_MAP_H
+#define CONTAINERS_UNORDERED_MAP_H
 
 #include <stdbool.h>
 
-typedef struct _unordered_set *unordered_set;
+typedef struct _unordered_map *unordered_map;
 
 // Starting
-unordered_set unordered_set_init(size_t key_size,
+unordered_map unordered_map_init(size_t key_size,
+                                 size_t value_size,
                                  unsigned long (*hash)(const void *const key),
                                  int (*comparator)(const void *const one,
                                                    const void *const two));
 
 // Utility
-int unordered_set_rehash(unordered_set me);
-int unordered_set_size(unordered_set me);
-bool unordered_set_is_empty(unordered_set me);
+int unordered_map_rehash(unordered_map me);
+int unordered_map_size(unordered_map me);
+bool unordered_map_is_empty(unordered_map me);
 
 // Accessing
-int unordered_set_put(unordered_set me, void *key);
-bool unordered_set_contains(unordered_set me, void *key);
-bool unordered_set_remove(unordered_set me, void *key);
+int unordered_map_put(unordered_map me, void *key, void *value);
+void unordered_map_get(void *value, unordered_map me, void *key);
+bool unordered_map_contains(unordered_map me, void *key);
+bool unordered_map_remove(unordered_map me, void *key);
 
 // Ending
-void unordered_set_clear(unordered_set me);
-unordered_set unordered_set_destroy(unordered_set me);
+void unordered_map_clear(unordered_map me);
+unordered_map unordered_map_destroy(unordered_map me);
 
-#endif /* CONTAINERS_UNORDERED_SET_H */
+#endif /* CONTAINERS_UNORDERED_MAP_H */

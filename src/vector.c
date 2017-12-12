@@ -25,7 +25,8 @@
 #include <errno.h>
 #include "vector.h"
 
-const int START_SPACE = 8;
+static const int START_SPACE = 8;
+static const double RESIZE_RATIO = 1.5;
 
 struct _vector {
     size_t data_size;
@@ -172,7 +173,7 @@ int vector_add_at(vector me, const int index, void *const data)
         return -EINVAL;
     }
     if (me->offset + 1 >= me->space) {
-        me->space *= 1.5;
+        me->space *= RESIZE_RATIO;
         void *const temp = realloc(me->storage, me->space * me->data_size);
         if (temp == NULL) {
             return -ENOMEM;

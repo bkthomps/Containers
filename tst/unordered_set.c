@@ -24,20 +24,20 @@ void test_unordered_set(void)
     assert(unordered_set_size(a) == 0);
     assert(unordered_set_is_empty(a));
     int b = 4;
-    unordered_set_add(a, &b);
+    unordered_set_put(a, &b);
     assert(unordered_set_size(a) == 1);
-    unordered_set_add(a, &b);
+    unordered_set_put(a, &b);
     assert(unordered_set_size(a) == 1);
     assert(!unordered_set_is_empty(a));
     assert(unordered_set_contains(a, &b));
     b = 7;
     assert(!unordered_set_contains(a, &b));
-    unordered_set_add(a, &b);
+    unordered_set_put(a, &b);
     assert(unordered_set_size(a) == 2);
     assert(unordered_set_contains(a, &b));
     int c[10] = {5, 9, 4, -5, 0, 6, 1, 5, 7, 2};
     for (int i = 0; i < 10; i++) {
-        unordered_set_add(a, &c[i]);
+        unordered_set_put(a, &c[i]);
         assert(unordered_set_contains(a, &c[i]));
     }
     assert(unordered_set_size(a) == 9);
@@ -95,7 +95,7 @@ void test_unordered_set(void)
     assert(!unordered_set_contains(a, &num));
     // Add a lot of items and remove individually.
     for (int i = 5000; i < 6000; i++) {
-        unordered_set_add(a, &i);
+        unordered_set_put(a, &i);
         assert(unordered_set_contains(a, &i));
     }
     assert(unordered_set_size(a) == 1000);
@@ -110,7 +110,7 @@ void test_unordered_set(void)
     assert(unordered_set_is_empty(a));
     // Add a lot of items and clear.
     for (int i = 5000; i < 6000; i++) {
-        unordered_set_add(a, &i);
+        unordered_set_put(a, &i);
         assert(unordered_set_contains(a, &i));
     }
     assert(unordered_set_size(a) == 1000);

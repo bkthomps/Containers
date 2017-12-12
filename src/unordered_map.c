@@ -23,14 +23,15 @@
 #include <stdlib.h>
 #include <memory.h>
 #include <errno.h>
-#include "unordered_set.h"
+#include "unordered_map.h"
 
 static const int STARTING_BUCKETS = 8;
 static const double RESIZE_AT = 0.75;
 static const double RESIZE_RATIO = 1.5;
 
-struct _unordered_set {
+struct _unordered_map {
     size_t key_size;
+    size_t value_size;
     unsigned long (*hash)(const void *const key);
     int (*comparator)(const void *const one, const void *const two);
     int size;
@@ -40,31 +41,34 @@ struct _unordered_set {
 
 struct node {
     void *key;
+    void *value;
     unsigned long hash;
     struct node *next;
 };
 
 /**
- * Initializes an unordered set, which is a collection of unique keys, hashed by
- * keys.
+ * Initializes an unordered map, which is a collection of key-value pairs,
+ * hashed by keys, keys are unique
  *
- * @param data_size  The size of each element in the unordered set.
+ * @param data_size  The size of each element in the unordered map.
  * @param hash       The hash function which computes the hash from the key.
  * @param comparator The comparator function which compares two keys.
  *
- * @return The newly-initialized unordered set, or NULL if memory allocation
+ * @return The newly-initialized unordered map, or NULL if memory allocation
  *         error.
  */
-unordered_set unordered_set_init(const size_t key_size,
+unordered_map unordered_map_init(const size_t key_size,
+                                 const size_t value_size,
                                  unsigned long (*hash)(const void *const),
                                  int (*comparator)(const void *const,
                                                    const void *const))
 {
-    struct _unordered_set *const init = malloc(sizeof(struct _unordered_set));
+    struct _unordered_map *const init = malloc(sizeof(struct _unordered_map));
     if (init == NULL) {
         return NULL;
     }
     init->key_size = key_size;
+    init->value_size = value_size;
     init->hash = hash;
     init->comparator = comparator;
     init->size = 0;
@@ -78,9 +82,9 @@ unordered_set unordered_set_init(const size_t key_size,
 }
 
 /*
- * Adds the specified node to the set.
+ * Adds the specified node to the map.
  */
-static void unordered_set_add_item(unordered_set me, struct node *const add)
+static void unordered_map_add_item(unordered_map me, struct node *const add)
 {
     const int index = (int) (add->hash % me->capacity);
     add->next = NULL;
@@ -96,15 +100,15 @@ static void unordered_set_add_item(unordered_set me, struct node *const add)
 }
 
 /**
- * Rehashes all the keys in the unordered set. Used when storing references and
+ * Rehashes all the keys in the unordered map. Used when storing references and
  * changing the keys. This should rarely be used.
  *
- * @param me The unordered set to rehash.
+ * @param me The unordered map to rehash.
  *
  * @return 0       No error.
  *         -ENOMEM Out of memory.
  */
-int unordered_set_rehash(unordered_set me)
+int unordered_map_rehash(unordered_map me)
 {
     struct node **old_buckets = me->buckets;
     me->buckets = calloc((size_t) me->capacity, sizeof(struct node *));
@@ -117,7 +121,7 @@ int unordered_set_rehash(unordered_set me)
         while (traverse != NULL) {
             struct node *const backup = traverse->next;
             traverse->hash = me->hash(traverse->key);
-            unordered_set_add_item(me, traverse);
+            unordered_map_add_item(me, traverse);
             traverse = backup;
         }
     }
@@ -126,33 +130,33 @@ int unordered_set_rehash(unordered_set me)
 }
 
 /**
- * Gets the size of the unordered set.
+ * Gets the size of the unordered map.
  *
- * @param me The unordered set to check.
+ * @param me The unordered map to check.
  *
- * @return The size of the unordered set.
+ * @return The size of the unordered map.
  */
-int unordered_set_size(unordered_set me)
+int unordered_map_size(unordered_map me)
 {
     return me->size;
 }
 
 /**
- * Determines whether or not the unordered set is empty.
+ * Determines whether or not the unordered map is empty.
  *
- * @param me The unordered set to check.
+ * @param me The unordered map to check.
  *
- * @return If the unordered set is empty.
+ * @return If the unordered map is empty.
  */
-bool unordered_set_is_empty(unordered_set me)
+bool unordered_map_is_empty(unordered_map me)
 {
-    return unordered_set_size(me) == 0;
+    return unordered_map_size(me) == 0;
 }
 
 /*
- * Increases the size of the set and redistributes the nodes.
+ * Increases the size of the map and redistributes the nodes.
  */
-static int unordered_set_resize(unordered_set me)
+static int unordered_map_resize(unordered_map me)
 {
     const int old_capacity = me->capacity;
     me->capacity *= RESIZE_RATIO;
@@ -166,7 +170,7 @@ static int unordered_set_resize(unordered_set me)
         struct node *traverse = old_buckets[i];
         while (traverse != NULL) {
             struct node *const backup = traverse->next;
-            unordered_set_add_item(me, traverse);
+            unordered_map_add_item(me, traverse);
             traverse = backup;
         }
     }
@@ -177,7 +181,7 @@ static int unordered_set_resize(unordered_set me)
 /*
  * Determines if an element is equal to the key.
  */
-inline static bool unordered_set_is_equal(unordered_set me,
+inline static bool unordered_map_is_equal(unordered_map me,
                                           const struct node *const item,
                                           const unsigned long hash,
                                           const void *const key)
@@ -188,9 +192,10 @@ inline static bool unordered_set_is_equal(unordered_set me,
 /*
  * Creates an element to add.
  */
-static struct node *const unordered_set_create_element(unordered_set me,
+static struct node *const unordered_map_create_element(unordered_map me,
                                                        const unsigned long hash,
-                                                       const void *const key)
+                                                       const void *const key,
+                                                       const void *const value)
 {
     struct node *const init = malloc(sizeof(struct node));
     if (init == NULL) {
@@ -202,69 +207,99 @@ static struct node *const unordered_set_create_element(unordered_set me,
         return NULL;
     }
     memcpy(init->key, key, me->key_size);
+    init->value = malloc(me->value_size);
+    if (init->value == NULL) {
+        free(init->key);
+        free(init);
+        return NULL;
+    }
+    memcpy(init->value, value, me->value_size);
     init->hash = hash;
     init->next = NULL;
     return init;
 }
 
 /**
- * Adds an element to the unordered set if the unordered set does not already
- * contain it.
+ * Adds a key-value pair to the unordered map if the unordered map does not
+ * already contain it.
  *
- * @param me   The unordered set to add to.
+ * @param me   The unordered map to add to.
  * @param data The element to add.
  *
  * @return 0       No error.
  *         -ENOMEM Out of memory.
  */
-int unordered_set_put(unordered_set me, void *const key)
+int unordered_map_put(unordered_map me, void *const key, void *const value)
 {
 
     const unsigned long hash = me->hash(key);
     const int index = (int) (hash % me->capacity);
     if (me->buckets[index] == NULL) {
-        me->buckets[index] = unordered_set_create_element(me, hash, key);
+        me->buckets[index] = unordered_map_create_element(me, hash, key, value);
         if (me->buckets[index] == NULL) {
             return -ENOMEM;
         }
     } else {
         struct node *traverse = me->buckets[index];
-        if (unordered_set_is_equal(me, traverse, hash, key)) {
+        if (unordered_map_is_equal(me, traverse, hash, key)) {
+            memcpy(traverse->value, value, me->value_size);
             return 0;
         }
         while (traverse->next != NULL) {
             traverse = traverse->next;
-            if (unordered_set_is_equal(me, traverse, hash, key)) {
+            if (unordered_map_is_equal(me, traverse, hash, key)) {
+                memcpy(traverse->value, value, me->value_size);
                 return 0;
             }
         }
-        traverse->next = unordered_set_create_element(me, hash, key);
+        traverse->next = unordered_map_create_element(me, hash, key, value);
         if (traverse->next == NULL) {
             return -ENOMEM;
         }
     }
     me->size++;
     if (me->size >= RESIZE_AT * me->capacity) {
-        return unordered_set_resize(me);
+        return unordered_map_resize(me);
     }
     return 0;
 }
 
 /**
- * Determines if the unordered set contains the specified element.
+ * Gets the value associated with a key in the unordered map.
  *
- * @param me   The unordered set to check for the element.
+ * @param value The value to copy to.
+ * @param me    The unordered map to get from.
+ * @param key   The key to search for.
+ */
+void unordered_map_get(void *const value, unordered_map me, void *const key)
+{
+    const unsigned long hash = me->hash(key);
+    const int index = (int) (hash % me->capacity);
+    struct node *traverse = me->buckets[index];
+    while (traverse != NULL) {
+        if (unordered_map_is_equal(me, traverse, hash, key)) {
+            memcpy(value, traverse->value, me->value_size);
+            return;
+        }
+        traverse = traverse->next;
+    }
+}
+
+/**
+ * Determines if the unordered map contains the specified element.
+ *
+ * @param me   The unordered map to check for the element.
  * @param data The element to check.
  *
- * @return If the unordered set contained the element.
+ * @return If the unordered map contained the element.
  */
-bool unordered_set_contains(unordered_set me, void *const key)
+bool unordered_map_contains(unordered_map me, void *const key)
 {
     const unsigned long hash = me->hash(key);
     const int index = (int) (hash % me->capacity);
     const struct node *traverse = me->buckets[index];
     while (traverse != NULL) {
-        if (unordered_set_is_equal(me, traverse, hash, key)) {
+        if (unordered_map_is_equal(me, traverse, hash, key)) {
             return true;
         }
         traverse = traverse->next;
@@ -273,14 +308,14 @@ bool unordered_set_contains(unordered_set me, void *const key)
 }
 
 /**
- * Removes the element from the unordered set if it contains it.
+ * Removes the element from the unordered map if it contains it.
  *
- * @param me   The unordered set to remove an element from.
+ * @param me   The unordered map to remove an element from.
  * @param data The element to remove.
  *
- * @return If the unordered set contained the element.
+ * @return If the unordered map contained the element.
  */
-bool unordered_set_remove(unordered_set me, void *const key)
+bool unordered_map_remove(unordered_map me, void *const key)
 {
     const unsigned long hash = me->hash(key);
     const int index = (int) (hash % me->capacity);
@@ -288,18 +323,20 @@ bool unordered_set_remove(unordered_set me, void *const key)
         return false;
     }
     struct node *traverse = me->buckets[index];
-    if (unordered_set_is_equal(me, traverse, hash, key)) {
+    if (unordered_map_is_equal(me, traverse, hash, key)) {
         me->buckets[index] = traverse->next;
         free(traverse->key);
+        free(traverse->value);
         free(traverse);
         me->size--;
         return true;
     }
     while (traverse->next != NULL) {
-        if (unordered_set_is_equal(me, traverse->next, hash, key)) {
+        if (unordered_map_is_equal(me, traverse->next, hash, key)) {
             struct node *const backup = traverse->next;
             traverse->next = traverse->next->next;
             free(backup->key);
+            free(backup->value);
             free(backup);
             me->size--;
             return true;
@@ -310,11 +347,11 @@ bool unordered_set_remove(unordered_set me, void *const key)
 }
 
 /**
- * Clears the elements from the unordered set.
+ * Clears the elements from the unordered map.
  *
- * @param me The unordered set to clear.
+ * @param me The unordered map to clear.
  */
-void unordered_set_clear(unordered_set me)
+void unordered_map_clear(unordered_map me)
 {
     for (int i = 0; i < me->capacity; i++) {
         struct node *traverse = me->buckets[i];
@@ -322,6 +359,7 @@ void unordered_set_clear(unordered_set me)
             struct node *const backup = traverse;
             traverse = traverse->next;
             free(backup->key);
+            free(backup->value);
             free(backup);
         }
         me->buckets[i] = NULL;
@@ -330,15 +368,15 @@ void unordered_set_clear(unordered_set me)
 }
 
 /**
- * Frees the unordered set memory.
+ * Frees the unordered map memory.
  *
- * @param me The unordered set to free from memory.
+ * @param me The unordered map to free from memory.
  *
  * @return NULL
  */
-unordered_set unordered_set_destroy(unordered_set me)
+unordered_map unordered_map_destroy(unordered_map me)
 {
-    unordered_set_clear(me);
+    unordered_map_clear(me);
     free(me->buckets);
     free(me);
     return NULL;

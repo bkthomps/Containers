@@ -24,7 +24,7 @@
 #include "deque.h"
 #include "queue.h"
 
-const int TRIM_SIZE = 64;
+static const int TRIM_SIZE = 64;
 
 struct _queue {
     int trim_count;

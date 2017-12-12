@@ -11,5 +11,6 @@ int main()
     test_set();
     test_array();
     test_unordered_set();
+    test_unordered_map();
     return 0;
 }

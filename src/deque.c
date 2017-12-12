@@ -26,7 +26,8 @@
 #include <errno.h>
 #include "deque.h"
 
-const int BLOCK_SIZE = 8;
+static const int BLOCK_SIZE = 8;
+static const double RESIZE_RATIO = 1.5;
 
 struct _deque {
     size_t data_size;
@@ -167,7 +168,7 @@ int deque_push_front(deque me, void *const data)
     if (inner_index == BLOCK_SIZE - 1) {
         if (block_index == -1) {
             const int old_block_count = me->block_count;
-            me->block_count = (int) ceil(1.5 * me->block_count);
+            me->block_count = (int) ceil(RESIZE_RATIO * me->block_count);
             const int added_blocks = me->block_count - old_block_count;
             void *temp = realloc(me->block,
                                  me->block_count * sizeof(struct node));
@@ -214,7 +215,7 @@ int deque_push_back(deque me, void *const data)
     const int inner_index = me->end_index % BLOCK_SIZE;
     if (inner_index == 0) {
         if (block_index == me->block_count) {
-            me->block_count = (int) ceil(1.5 * me->block_count);
+            me->block_count = (int) ceil(RESIZE_RATIO * me->block_count);
             void *temp = realloc(me->block,
                                  me->block_count * sizeof(struct node));
             if (temp == NULL) {
