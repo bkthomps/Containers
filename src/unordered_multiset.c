@@ -361,20 +361,20 @@ bool unordered_multiset_remove_all(unordered_multiset me, void *const key)
     struct node *traverse = me->buckets[index];
     if (unordered_multiset_is_equal(me, traverse, hash, key)) {
         me->buckets[index] = traverse->next;
+        me->size -= traverse->count;
         free(traverse->key);
         free(traverse);
         me->used--;
-        me->size -= traverse->count;
         return true;
     }
     while (traverse->next != NULL) {
         if (unordered_multiset_is_equal(me, traverse->next, hash, key)) {
             struct node *const backup = traverse->next;
             traverse->next = traverse->next->next;
+            me->size -= traverse->count;
             free(backup->key);
             free(backup);
             me->used--;
-            me->size -= traverse->count;
             return true;
         }
         traverse = traverse->next;
