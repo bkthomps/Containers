@@ -48,7 +48,7 @@ struct node {
  * Initializes an unordered set, which is a collection of unique keys, hashed by
  * keys.
  *
- * @param data_size  The size of each element in the unordered set.
+ * @param key_size   The size of each element in the unordered set.
  * @param hash       The hash function which computes the hash from the key.
  * @param comparator The comparator function which compares two keys.
  *
@@ -211,8 +211,8 @@ static struct node *const unordered_set_create_element(unordered_set me,
  * Adds an element to the unordered set if the unordered set does not already
  * contain it.
  *
- * @param me   The unordered set to add to.
- * @param data The element to add.
+ * @param me  The unordered set to add to.
+ * @param key The element to add.
  *
  * @return 0       No error.
  *         -ENOMEM Out of memory.
@@ -253,8 +253,8 @@ int unordered_set_put(unordered_set me, void *const key)
 /**
  * Determines if the unordered set contains the specified element.
  *
- * @param me   The unordered set to check for the element.
- * @param data The element to check.
+ * @param me  The unordered set to check for the element.
+ * @param key The element to check.
  *
  * @return If the unordered set contained the element.
  */
@@ -275,8 +275,8 @@ bool unordered_set_contains(unordered_set me, void *const key)
 /**
  * Removes the element from the unordered set if it contains it.
  *
- * @param me   The unordered set to remove an element from.
- * @param data The element to remove.
+ * @param me  The unordered set to remove an element from.
+ * @param key The element to remove.
  *
  * @return If the unordered set contained the element.
  */

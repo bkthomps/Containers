@@ -135,6 +135,16 @@ void test_unordered_multiset(void)
     assert(!unordered_multiset_remove(a, &p));
     assert(unordered_multiset_size(a) == 0);
     assert(unordered_multiset_is_empty(a));
+    int m = 5;
+    unordered_multiset_put(a, &m);
+    assert(unordered_multiset_size(a) == 1);
+    m = 7;
+    for (int i = 0; i < 10; i++) {
+        unordered_multiset_put(a, &m);
+    }
+    assert(unordered_multiset_size(a) == 11);
+    unordered_multiset_remove_all(a, &m);
+    assert(unordered_multiset_size(a) == 1);
     a = unordered_multiset_destroy(a);
     assert(a == NULL);
 }

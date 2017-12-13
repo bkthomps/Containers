@@ -16,5 +16,6 @@ void test_array(void);
 void test_unordered_set(void);
 void test_unordered_map(void);
 void test_unordered_multiset(void);
+void test_unordered_multimap(void);
 
 #endif /* CONTAINERS_TEST_H */

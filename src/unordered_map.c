@@ -50,7 +50,8 @@ struct node {
  * Initializes an unordered map, which is a collection of key-value pairs,
  * hashed by keys, keys are unique
  *
- * @param data_size  The size of each element in the unordered map.
+ * @param key_size   The size of each key in the unordered map.
+ * @param value_size The size of each value in the unordered map.
  * @param hash       The hash function which computes the hash from the key.
  * @param comparator The comparator function which compares two keys.
  *
@@ -223,8 +224,9 @@ static struct node *const unordered_map_create_element(unordered_map me,
  * Adds a key-value pair to the unordered map if the unordered map does not
  * already contain it.
  *
- * @param me   The unordered map to add to.
- * @param data The element to add.
+ * @param me    The unordered map to add to.
+ * @param key   The key to add.
+ * @param value The value to add.
  *
  * @return 0       No error.
  *         -ENOMEM Out of memory.
@@ -271,7 +273,7 @@ int unordered_map_put(unordered_map me, void *const key, void *const value)
  * @param me    The unordered map to get from.
  * @param key   The key to search for.
  *
- * @return If the unordered map contained the element.
+ * @return If the unordered map contained the key-value pair.
  */
 bool unordered_map_get(void *const value, unordered_map me, void *const key)
 {
@@ -289,12 +291,12 @@ bool unordered_map_get(void *const value, unordered_map me, void *const key)
 }
 
 /**
- * Determines if the unordered map contains the specified element.
+ * Determines if the unordered map contains the specified key.
  *
- * @param me   The unordered map to check for the element.
- * @param data The element to check.
+ * @param me  The unordered map to check for the key.
+ * @param key The key to check.
  *
- * @return If the unordered map contained the element.
+ * @return If the unordered map contained the key.
  */
 bool unordered_map_contains(unordered_map me, void *const key)
 {
@@ -311,12 +313,12 @@ bool unordered_map_contains(unordered_map me, void *const key)
 }
 
 /**
- * Removes the element from the unordered map if it contains it.
+ * Removes the key-value pair from the unordered map if it contains it.
  *
- * @param me   The unordered map to remove an element from.
- * @param data The element to remove.
+ * @param me  The unordered map to remove an key from.
+ * @param key The key to remove.
  *
- * @return If the unordered map contained the element.
+ * @return If the unordered map contained the key.
  */
 bool unordered_map_remove(unordered_map me, void *const key)
 {
@@ -350,7 +352,7 @@ bool unordered_map_remove(unordered_map me, void *const key)
 }
 
 /**
- * Clears the elements from the unordered map.
+ * Clears the key-value pairs from the unordered map.
  *
  * @param me The unordered map to clear.
  *

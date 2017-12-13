@@ -44,6 +44,7 @@ int unordered_multiset_put(unordered_multiset me, void *key);
 int unordered_multiset_count(unordered_multiset me, void *key);
 bool unordered_multiset_contains(unordered_multiset me, void *key);
 bool unordered_multiset_remove(unordered_multiset me, void *key);
+bool unordered_multiset_remove_all(unordered_multiset me, void *key);
 
 // Ending
 int unordered_multiset_clear(unordered_multiset me);

@@ -1,6 +1,6 @@
 #include "test.h"
 
-int main()
+int main(void)
 {
     test_vector();
     test_list();
@@ -13,5 +13,6 @@ int main()
     test_unordered_set();
     test_unordered_map();
     test_unordered_multiset();
+    test_unordered_multimap();
     return 0;
 }

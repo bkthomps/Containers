@@ -50,7 +50,7 @@ struct node {
  * Initializes an unordered multi-set, which is a collection of keys, hashed by
  * keys.
  *
- * @param data_size  The size of each element in the unordered multi-set.
+ * @param key_size   The size of each element in the unordered multi-set.
  * @param hash       The hash function which computes the hash from the key.
  * @param comparator The comparator function which compares two keys.
  *
@@ -218,8 +218,8 @@ unordered_multiset_create_element(unordered_multiset me,
  * Adds an element to the unordered multi-set if the unordered multi-set does
  * not already contain it.
  *
- * @param me   The unordered multi-set to add to.
- * @param data The element to add.
+ * @param me  The unordered multi-set to add to.
+ * @param key The element to add.
  *
  * @return 0       No error.
  *         -ENOMEM Out of memory.
@@ -265,8 +265,8 @@ int unordered_multiset_put(unordered_multiset me, void *const key)
 /**
  * Determines the count of a specific key in the unordered multi-set.
  *
- * @param me   The unordered multi-set to check for the count.
- * @param data The element to check.
+ * @param me  The unordered multi-set to check for the count.
+ * @param key The element to check.
  *
  * @return The count of a specific key in the unordered multi-set.
  */
@@ -287,8 +287,8 @@ int unordered_multiset_count(unordered_multiset me, void *const key)
 /**
  * Determines if the unordered multi-set contains the specified element.
  *
- * @param me   The unordered multi-set to check for the element.
- * @param data The element to check.
+ * @param me  The unordered multi-set to check for the element.
+ * @param key The element to check.
  *
  * @return If the unordered multi-set contained the element.
  */
@@ -298,10 +298,10 @@ bool unordered_multiset_contains(unordered_multiset me, void *const key)
 }
 
 /**
- * Removes the element from the unordered multi-set if it contains it.
+ * Removes an element from the unordered multi-set if it contains it.
  *
- * @param me   The unordered multi-set to remove an element from.
- * @param data The element to remove.
+ * @param me  The unordered multi-set to remove an element from.
+ * @param key The element to remove.
  *
  * @return If the unordered multi-set contained the element.
  */
@@ -335,6 +335,46 @@ bool unordered_multiset_remove(unordered_multiset me, void *const key)
                 me->used--;
             }
             me->size--;
+            return true;
+        }
+        traverse = traverse->next;
+    }
+    return false;
+}
+
+/**
+ * Removes all the elements specified by the key from an unordered multi-set if
+ * it contains the key.
+ *
+ * @param me  The unordered multi-set to remove an element from.
+ * @param key The element to remove.
+ *
+ * @return If the unordered multi-set contained the element.
+ */
+bool unordered_multiset_remove_all(unordered_multiset me, void *const key)
+{
+    const unsigned long hash = me->hash(key);
+    const int index = (int) (hash % me->capacity);
+    if (me->buckets[index] == NULL) {
+        return false;
+    }
+    struct node *traverse = me->buckets[index];
+    if (unordered_multiset_is_equal(me, traverse, hash, key)) {
+        me->buckets[index] = traverse->next;
+        free(traverse->key);
+        free(traverse);
+        me->used--;
+        me->size -= traverse->count;
+        return true;
+    }
+    while (traverse->next != NULL) {
+        if (unordered_multiset_is_equal(me, traverse->next, hash, key)) {
+            struct node *const backup = traverse->next;
+            traverse->next = traverse->next->next;
+            free(backup->key);
+            free(backup);
+            me->used--;
+            me->size -= traverse->count;
             return true;
         }
         traverse = traverse->next;
