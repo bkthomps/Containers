@@ -346,8 +346,11 @@ bool unordered_multiset_remove(unordered_multiset me, void *const key)
  * Clears the elements from the unordered multi-set.
  *
  * @param me The unordered multi-set to clear.
+ *
+ * @return 0       No error.
+ *         -ENOMEM Out of memory.
  */
-void unordered_multiset_clear(unordered_multiset me)
+int unordered_multiset_clear(unordered_multiset me)
 {
     for (int i = 0; i < me->capacity; i++) {
         struct node *traverse = me->buckets[i];
@@ -361,6 +364,14 @@ void unordered_multiset_clear(unordered_multiset me)
     }
     me->size = 0;
     me->used = 0;
+    me->capacity = STARTING_BUCKETS;
+    struct node **temp = calloc((size_t) me->capacity, sizeof(struct node *));
+    if (temp == NULL) {
+        return -ENOMEM;
+    }
+    free(me->buckets);
+    me->buckets = temp;
+    return 0;
 }
 
 /**

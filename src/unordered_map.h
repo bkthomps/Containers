@@ -46,7 +46,7 @@ bool unordered_map_contains(unordered_map me, void *key);
 bool unordered_map_remove(unordered_map me, void *key);
 
 // Ending
-void unordered_map_clear(unordered_map me);
+int unordered_map_clear(unordered_map me);
 unordered_map unordered_map_destroy(unordered_map me);
 
 #endif /* CONTAINERS_UNORDERED_MAP_H */

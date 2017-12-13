@@ -44,7 +44,7 @@ bool unordered_set_contains(unordered_set me, void *key);
 bool unordered_set_remove(unordered_set me, void *key);
 
 // Ending
-void unordered_set_clear(unordered_set me);
+int unordered_set_clear(unordered_set me);
 unordered_set unordered_set_destroy(unordered_set me);
 
 #endif /* CONTAINERS_UNORDERED_SET_H */

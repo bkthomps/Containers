@@ -313,8 +313,11 @@ bool unordered_set_remove(unordered_set me, void *const key)
  * Clears the elements from the unordered set.
  *
  * @param me The unordered set to clear.
+ *
+ * @return 0       No error.
+ *         -ENOMEM Out of memory.
  */
-void unordered_set_clear(unordered_set me)
+int unordered_set_clear(unordered_set me)
 {
     for (int i = 0; i < me->capacity; i++) {
         struct node *traverse = me->buckets[i];
@@ -327,6 +330,14 @@ void unordered_set_clear(unordered_set me)
         me->buckets[i] = NULL;
     }
     me->size = 0;
+    me->capacity = STARTING_BUCKETS;
+    struct node **temp = calloc((size_t) me->capacity, sizeof(struct node *));
+    if (temp == NULL) {
+        return -ENOMEM;
+    }
+    free(me->buckets);
+    me->buckets = temp;
+    return 0;
 }
 
 /**

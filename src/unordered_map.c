@@ -350,8 +350,11 @@ bool unordered_map_remove(unordered_map me, void *const key)
  * Clears the elements from the unordered map.
  *
  * @param me The unordered map to clear.
+ *
+ * @return 0       No error.
+ *         -ENOMEM Out of memory.
  */
-void unordered_map_clear(unordered_map me)
+int unordered_map_clear(unordered_map me)
 {
     for (int i = 0; i < me->capacity; i++) {
         struct node *traverse = me->buckets[i];
@@ -365,6 +368,14 @@ void unordered_map_clear(unordered_map me)
         me->buckets[i] = NULL;
     }
     me->size = 0;
+    me->capacity = STARTING_BUCKETS;
+    struct node **temp = calloc((size_t) me->capacity, sizeof(struct node *));
+    if (temp == NULL) {
+        return -ENOMEM;
+    }
+    free(me->buckets);
+    me->buckets = temp;
+    return 0;
 }
 
 /**

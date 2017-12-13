@@ -46,7 +46,7 @@ bool unordered_multiset_contains(unordered_multiset me, void *key);
 bool unordered_multiset_remove(unordered_multiset me, void *key);
 
 // Ending
-void unordered_multiset_clear(unordered_multiset me);
+int unordered_multiset_clear(unordered_multiset me);
 unordered_multiset unordered_multiset_destroy(unordered_multiset me);
 
 #endif /* CONTAINERS_UNORDERED_MULTISET_H */
