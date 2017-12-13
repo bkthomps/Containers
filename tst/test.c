@@ -12,5 +12,6 @@ int main()
     test_array();
     test_unordered_set();
     test_unordered_map();
+    test_unordered_multiset();
     return 0;
 }
