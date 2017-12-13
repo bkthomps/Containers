@@ -41,7 +41,7 @@ bool unordered_map_is_empty(unordered_map me);
 
 // Accessing
 int unordered_map_put(unordered_map me, void *key, void *value);
-void unordered_map_get(void *value, unordered_map me, void *key);
+bool unordered_map_get(void *value, unordered_map me, void *key);
 bool unordered_map_contains(unordered_map me, void *key);
 bool unordered_map_remove(unordered_map me, void *key);
 

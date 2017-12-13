@@ -270,8 +270,10 @@ int unordered_map_put(unordered_map me, void *const key, void *const value)
  * @param value The value to copy to.
  * @param me    The unordered map to get from.
  * @param key   The key to search for.
+ *
+ * @return If the unordered map contained the element.
  */
-void unordered_map_get(void *const value, unordered_map me, void *const key)
+bool unordered_map_get(void *const value, unordered_map me, void *const key)
 {
     const unsigned long hash = me->hash(key);
     const int index = (int) (hash % me->capacity);
@@ -279,10 +281,11 @@ void unordered_map_get(void *const value, unordered_map me, void *const key)
     while (traverse != NULL) {
         if (unordered_map_is_equal(me, traverse, hash, key)) {
             memcpy(value, traverse->value, me->value_size);
-            return;
+            return true;
         }
         traverse = traverse->next;
     }
+    return false;
 }
 
 /**
