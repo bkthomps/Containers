@@ -1,7 +1,7 @@
 # Containers
 This library provides various containers. Each container has utility functions to manipulate the data it holds. This is an abstraction as to not have to manually manage and reallocate memory. 
 
-Inspired by the C++ STL. Implementation of the STL data structures using C; however, the data structures have different interfaces than those in the STL.
+Inspired by the C++ standard library. Implementation of the C++ standard library data structures using C; however, the data structures have different interfaces than those in the C++ standard library.
 
 # Sequence containers
 Data structures which can be accessed sequentially.
