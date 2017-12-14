@@ -137,15 +137,9 @@ int deque_trim(deque me)
  */
 void deque_to_array(void *const arr, deque me)
 {
-    void *const temp = malloc(me->data_size);
-    if (temp == NULL) {
-        return;
-    }
     for (int i = 0; i < deque_size(me); i++) {
-        deque_get_at(temp, me, i);
-        memcpy(arr + i * me->data_size, temp, me->data_size);
+        deque_get_at(arr + i * me->data_size, me, i);
     }
-    free(temp);
 }
 
 /**
