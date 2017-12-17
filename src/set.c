@@ -24,6 +24,8 @@
 #include <memory.h>
 #include <errno.h>
 #include "set.h"
+// Remove when released
+#include <assert.h>
 
 struct _set {
     size_t key_size;
@@ -33,6 +35,7 @@ struct _set {
 };
 
 struct node {
+    struct node *parent;
     void *key;
     struct node *left;
     struct node *right;
@@ -87,12 +90,15 @@ bool set_is_empty(set me)
 /*
  * Creates and allocates a node.
  */
-static struct node *set_create_node(set me, void *const data)
+static struct node *set_create_node(set me,
+                                    void *const data,
+                                    struct node *const parent)
 {
     struct node *const insert = malloc(sizeof(struct node));
     if (insert == NULL) {
         return NULL;
     }
+    insert->parent = parent;
     insert->key = malloc(me->key_size);
     if (insert->key == NULL) {
         free(insert);
@@ -117,7 +123,7 @@ static struct node *set_create_node(set me, void *const data)
 int set_add(set me, void *const key)
 {
     if (me->root == NULL) {
-        struct node *insert = set_create_node(me, key);
+        struct node *insert = set_create_node(me, key, NULL);
         if (insert == NULL) {
             return -ENOMEM;
         }
@@ -131,7 +137,7 @@ int set_add(set me, void *const key)
             if (traverse->left != NULL) {
                 traverse = traverse->left;
             } else {
-                struct node *insert = set_create_node(me, key);
+                struct node *insert = set_create_node(me, key, traverse);
                 if (insert == NULL) {
                     return -ENOMEM;
                 }
@@ -142,7 +148,7 @@ int set_add(set me, void *const key)
             if (traverse->right != NULL) {
                 traverse = traverse->right;
             } else {
-                struct node *insert = set_create_node(me, key);
+                struct node *insert = set_create_node(me, key, traverse);
                 if (insert == NULL) {
                     return -ENOMEM;
                 }
@@ -186,6 +192,8 @@ bool set_contains(set me, void *const key)
         } else {
             return true;
         }
+        assert(traverse->left == NULL || traverse->left->parent == traverse);
+        assert(traverse->right == NULL || traverse->right->parent == traverse);
     }
 }
 
@@ -253,14 +261,18 @@ static void set_remove_non_root(set me,
         if (parent->left == traverse) {
             if (traverse->left != NULL) {
                 parent->left = traverse->left;
+                traverse->left->parent = parent;
             } else {
                 parent->left = traverse->right;
+                traverse->right->parent = parent;
             }
         } else {
             if (traverse->left != NULL) {
                 parent->right = traverse->left;
+                traverse->left->parent = parent;
             } else {
                 parent->right = traverse->right;
+                traverse->right->parent = parent;
             }
         }
         free(traverse->key);
@@ -288,6 +300,10 @@ bool set_remove(set me, void *const key)
     struct node *traverse = me->root;
     if (me->comparator(key, traverse->key) == 0) {
         set_remove_root(me);
+        struct node *const new_root = me->root;
+        if (new_root != NULL) {
+            new_root->parent = NULL;
+        }
         return true;
     }
     while (true) {
@@ -319,9 +335,11 @@ bool set_remove(set me, void *const key)
 static void set_clear_root(struct node *const root)
 {
     if (root->left != NULL) {
+        assert(root->left->parent == root);
         set_clear_root(root->left);
     }
     if (root->right != NULL) {
+        assert(root->right->parent == root);
         set_clear_root(root->right);
     }
     free(root->key);

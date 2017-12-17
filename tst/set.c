@@ -139,9 +139,11 @@ void test_set(void)
     // Allocate many nodes.
     for (int i = 8123; i < 12314; i += 3) {
         set_add(a, &i);
+        assert(set_contains(a, &i));
     }
     for (int i = 13000; i > 8000; i--) {
         set_remove(a, &i);
+        assert(!set_contains(a, &i));
     }
     set_clear(a);
     // Create another odd shape graph.
@@ -173,6 +175,8 @@ void test_set(void)
     set_add(a, &tmp);
     tmp = 30;
     set_remove(a, &tmp);
+    tmp = 32;
+    assert(set_contains(a, &tmp));
     set_clear(a);
     // One sided tree.
     tmp = 10;
@@ -185,5 +189,7 @@ void test_set(void)
     set_add(a, &tmp);
     tmp = 8;
     set_remove(a, &tmp);
+    tmp = 7;
+    assert(set_contains(a, &tmp));
     set_destroy(a);
 }
