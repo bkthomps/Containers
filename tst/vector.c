@@ -1,5 +1,33 @@
+#include <string.h>
 #include "test.h"
 #include "../src/vector.h"
+
+static void test_vector_dynamic(void)
+{
+    char **str = malloc(5 * sizeof(char **));
+    for (int i = 0; i < 5; i++) {
+        str[i] = malloc(10 * sizeof(char *));
+        for (int j = 0; j < 9; j++) {
+            str[i][j] = (char) ('a' + i);
+        }
+        str[i][9] = '\0';
+    }
+    vector str_vector = vector_init(sizeof(char *));
+    for (int i = 0; i < 5; i++) {
+        vector_add_last(str_vector, &str[i]);
+    }
+    assert(vector_size(str_vector) == 5);
+    for (int i = 0; i < 5; i++) {
+        char *retrieve = NULL;
+        vector_get_first(&retrieve, str_vector);
+        vector_remove_first(str_vector);
+        assert(strcmp(retrieve, str[i]) == 0);
+        free(retrieve);
+    }
+    free(str);
+    assert(vector_size(str_vector) == 0);
+    vector_destroy(str_vector);
+}
 
 void test_vector(void)
 {
@@ -113,4 +141,5 @@ void test_vector(void)
     assert(vector_remove_last(me) == -EINVAL);
     me = vector_destroy(me);
     assert(me == NULL);
+    test_vector_dynamic();
 }
