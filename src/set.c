@@ -26,6 +26,7 @@
 #include "set.h"
 // Remove when released
 #include <assert.h>
+#include <stdio.h>
 
 struct _set {
     size_t key_size;
@@ -36,10 +37,40 @@ struct _set {
 
 struct node {
     struct node *parent;
+    int balance;
     void *key;
     struct node *left;
     struct node *right;
 };
+
+static void set_dump_recursive(struct node *item, const int depth)
+{
+    if (item == NULL) {
+        return;
+    }
+    printf("\n");
+    for (int i = 0; i < depth; i++) {
+        printf("  ");
+    }
+    int *key_val = item->key;
+    printf("%d,%d", *key_val, item->balance);
+    set_dump_recursive(item->left, depth + 1);
+    set_dump_recursive(item->right, depth + 1);
+}
+
+static void set_dump(set me)
+{
+    struct node *const item = me->root;
+    if (item != NULL) {
+        int *key_val = item->key;
+        printf("root -> %d,%d", *key_val, item->balance);
+        assert(item->parent == NULL);
+    } else {
+        printf("root -> NULL");
+    }
+    set_dump_recursive(me->root, 0);
+    printf("\n");
+}
 
 /**
  * Initializes a set, which is a collection of unique keys, sorted by keys.
@@ -88,6 +119,112 @@ bool set_is_empty(set me)
 }
 
 /*
+ * Makes the parent of the affected node point to it.
+ */
+static void set_insert_reference_parent(set me,
+                                        struct node *const parent,
+                                        struct node *const child)
+{
+    if (parent->parent == NULL) {
+        assert(parent == me->root);
+        me->root = child;
+    } else if (parent->parent->left == parent) {
+        parent->parent->left = child;
+    } else {
+        assert(parent->parent->right == parent);
+        parent->parent->right = child;
+    }
+    child->parent = parent->parent;
+    parent->parent = child;
+}
+
+/*
+ * Rotates two nodes left when inserting.
+ */
+static void set_insert_rotate_left(set me,
+                                   struct node *const parent,
+                                   struct node *const child)
+{
+    set_insert_reference_parent(me, parent, child);
+    parent->left = child->right;
+    child->right = parent;
+}
+
+/*
+ * Rotates two nodes right when inserting.
+ */
+static void set_insert_rotate_right(set me,
+                                    struct node *const parent,
+                                    struct node *const child)
+{
+    set_insert_reference_parent(me, parent, child);
+    parent->right = child->left;
+    child->left = parent;
+}
+
+/*
+ * Repairs the AVL tree on insert.
+ */
+static void set_insert_repair(set me,
+                              struct node *const parent,
+                              struct node *const child,
+                              struct node *const grand_child)
+{
+    assert(grand_child != NULL);
+    if (parent->balance == -2 && child->balance == -1) {
+        set_insert_rotate_left(me, parent, child);
+        assert(parent->parent == child);
+    } else if (parent->balance == 2 && child->balance == 1) {
+        set_insert_rotate_right(me, parent, child);
+        assert(parent->parent == child);
+    } else if (parent->balance == -2 && child->balance == 1) {
+        set_insert_rotate_right(me, child, grand_child);
+        set_insert_rotate_left(me, parent, grand_child);
+        assert(parent->parent == grand_child);
+        assert(child->parent == grand_child);
+    } else {
+        assert(parent->balance == 2 && child->balance == -1);
+        set_insert_rotate_left(me, child, grand_child);
+        set_insert_rotate_right(me, parent, grand_child);
+        assert(parent->parent == grand_child);
+        assert(child->parent == grand_child);
+    }
+    if (parent->left != NULL) {
+        parent->left->parent = parent;
+    }
+    if (parent->right != NULL) {
+        parent->right->parent = parent;
+    }
+    parent->balance = 0;
+    child->balance = 0;
+}
+
+/*
+ * Balances the AVL tree on insert.
+ */
+static void set_insert_balance(set me, struct node *const item)
+{
+    struct node *grand_child = NULL;
+    struct node *child = item;
+    struct node *parent = item->parent;
+    while (parent != NULL) {
+        if (parent->left == child) {
+            parent->balance--;
+        } else {
+            parent->balance++;
+        }
+        // Must re-balance if not in {-1, 0, 1}
+        if (parent->balance > 1 || parent->balance < -1) {
+            set_insert_repair(me, parent, child, grand_child);
+            return;
+        }
+        grand_child = child;
+        child = parent;
+        parent = parent->parent;
+    }
+}
+
+/*
  * Creates and allocates a node.
  */
 static struct node *set_create_node(set me,
@@ -99,6 +236,7 @@ static struct node *set_create_node(set me,
         return NULL;
     }
     insert->parent = parent;
+    insert->balance = 0;
     insert->key = malloc(me->key_size);
     if (insert->key == NULL) {
         free(insert);
@@ -142,6 +280,7 @@ int set_add(set me, void *const key)
                     return -ENOMEM;
                 }
                 traverse->left = insert;
+                set_insert_balance(me, insert);
                 return 0;
             }
         } else if (compare > 0) {
@@ -153,6 +292,7 @@ int set_add(set me, void *const key)
                     return -ENOMEM;
                 }
                 traverse->right = insert;
+                set_insert_balance(me, insert);
                 return 0;
             }
         } else {

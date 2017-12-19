@@ -11,9 +11,63 @@ static int compare_int(const void *const one, const void *const two)
 void test_set(void)
 {
     set a = set_init(sizeof(int), compare_int);
+    int b;
+    // left-left
+    b = 5;
+    set_add(a, &b);
+    b = 3;
+    set_add(a, &b);
+    b = 1;
+    set_add(a, &b);
+    b = 0xdeadbeef;
+    set_contains(a, &b);
+    set_clear(a);
+    // right-right
+    b = 1;
+    set_add(a, &b);
+    b = 3;
+    set_add(a, &b);
+    b = 5;
+    set_add(a, &b);
+    b = 0xdeadbeef;
+    set_contains(a, &b);
+    set_clear(a);
+    // left-right
+    b = 5;
+    set_add(a, &b);
+    b = 1;
+    set_add(a, &b);
+    b = 3;
+    set_add(a, &b);
+    b = 0xdeadbeef;
+    set_contains(a, &b);
+    set_clear(a);
+    // right-left
+    b = 1;
+    set_add(a, &b);
+    b = 5;
+    set_add(a, &b);
+    b = 3;
+    set_add(a, &b);
+    b = 0xdeadbeef;
+    set_contains(a, &b);
+    set_clear(a);
+    bool flip = false;
+    for (int i = 1234; i < 2400; i++) {
+        int n = i % 765;
+        set_add(a, &n);
+        assert(set_contains(a, &n));
+        if (i == 1857 && !flip) {
+            i *= -1;
+            flip = true;
+        }
+    }
+    set_contains(a, &b);
+    set_destroy(a);
+    /*a = set_init(sizeof(int), compare_int);
     assert(set_size(a) == 0);
     assert(set_is_empty(a));
-    int b = 4;
+    b = 4;
     set_add(a, &b);
     assert(set_size(a) == 1);
     set_add(a, &b);
@@ -191,5 +245,5 @@ void test_set(void)
     set_remove(a, &tmp);
     tmp = 7;
     assert(set_contains(a, &tmp));
-    set_destroy(a);
+    set_destroy(a);*/
 }
