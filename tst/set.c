@@ -52,16 +52,23 @@ void test_set(void)
     b = 0xdeadbeef;
     set_contains(a, &b);
     set_clear(a);
+    int count = 0;
     bool flip = false;
     for (int i = 1234; i < 2400; i++) {
         int n = i % 765;
+        const bool is_already_present = set_contains(a, &n);
         set_add(a, &n);
-        assert(set_contains(a, &n));
+        const bool is_now_present = set_contains(a, &n);
+        assert(is_now_present);
+        if (!is_already_present && is_now_present) {
+            count++;
+        }
         if (i == 1857 && !flip) {
             i *= -1;
             flip = true;
         }
     }
+    assert(count == set_size(a));
     set_contains(a, &b);
     set_destroy(a);
     /*a = set_init(sizeof(int), compare_int);

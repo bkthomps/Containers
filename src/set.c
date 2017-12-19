@@ -170,30 +170,19 @@ static void set_insert_repair(set me,
                               struct node *const child,
                               struct node *const grand_child)
 {
-    assert(grand_child != NULL);
     if (parent->balance == -2 && child->balance == -1) {
         set_insert_rotate_left(me, parent, child);
-        assert(parent->parent == child);
     } else if (parent->balance == 2 && child->balance == 1) {
         set_insert_rotate_right(me, parent, child);
-        assert(parent->parent == child);
     } else if (parent->balance == -2 && child->balance == 1) {
         set_insert_rotate_right(me, child, grand_child);
         set_insert_rotate_left(me, parent, grand_child);
-        assert(parent->parent == grand_child);
-        assert(child->parent == grand_child);
-    } else {
-        assert(parent->balance == 2 && child->balance == -1);
+    } else if (parent->balance == 2 && child->balance == -1) {
         set_insert_rotate_left(me, child, grand_child);
         set_insert_rotate_right(me, parent, grand_child);
-        assert(parent->parent == grand_child);
-        assert(child->parent == grand_child);
-    }
-    if (parent->left != NULL) {
-        parent->left->parent = parent;
-    }
-    if (parent->right != NULL) {
-        parent->right->parent = parent;
+    } else {
+        set_dump(me);
+        assert(0);
     }
     parent->balance = 0;
     child->balance = 0;
