@@ -85,6 +85,7 @@ static void set_depth_recursive(struct node *item, const int depth)
 
 static void set_depth(set me)
 {
+    printf("***************\n");
     set_depth_recursive(me->root, 0);
 }
 
@@ -195,30 +196,18 @@ static void set_insert_repair(set me,
                               struct node *const grand_child)
 {
     if (parent->balance == 2 && child->balance == 1) {
-        printf("left *********\n");
-        set_depth(me);
         set_insert_rotate_left(me, parent, child);
     } else if (parent->balance == -2 && child->balance == -1) {
-        printf("right ********\n");
-        set_depth(me);
         set_insert_rotate_right(me, parent, child);
     } else if (parent->balance == -2 && child->balance == 1) {
-        printf("left-right ***\n");
-        set_depth(me);
-        set_dump(me);
-        assert(0);
         set_insert_rotate_left(me, child, grand_child);
         set_insert_rotate_right(me, parent, grand_child);
+        grand_child->balance = 0;
     } else if (parent->balance == 2 && child->balance == -1) {
-        printf("right-left ***\n");
-        set_depth(me);
-        set_dump(me);
-        assert(0);
         set_insert_rotate_right(me, child, grand_child);
         set_insert_rotate_left(me, parent, grand_child);
+        grand_child->balance = 0;
     } else {
-        set_dump(me);
-        set_depth(me);
         assert(0);
     }
     parent->balance = 0;
@@ -230,7 +219,6 @@ static void set_insert_repair(set me,
  */
 static void set_insert_balance(set me, struct node *const item)
 {
-    printf("added ---\n");
     struct node *grand_child = NULL;
     struct node *child = item;
     struct node *parent = item->parent;
@@ -524,6 +512,7 @@ static void set_clear_root(struct node *const root)
 void set_clear(set me)
 {
     if (me->root != NULL) {
+        set_depth(me);
         set_clear_root(me->root);
         me->root = NULL;
         me->size = 0;
