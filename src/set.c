@@ -45,12 +45,13 @@ struct node {
 
 static void set_dump_recursive(struct node *item, const int depth)
 {
-    if (item == NULL) {
-        return;
-    }
     printf("\n");
     for (int i = 0; i < depth; i++) {
         printf("  ");
+    }
+    if (item == NULL) {
+        printf("NULL");
+        return;
     }
     int *key_val = item->key;
     printf("%d,%d", *key_val, item->balance);
@@ -70,6 +71,21 @@ static void set_dump(set me)
     }
     set_dump_recursive(me->root, 0);
     printf("\n");
+}
+
+static void set_depth_recursive(struct node *item, const int depth)
+{
+    if (item == NULL) {
+        printf("depth = %d\n", depth);
+        return;
+    }
+    set_depth_recursive(item->left, depth + 1);
+    set_depth_recursive(item->right, depth + 1);
+}
+
+static void set_depth(set me)
+{
+    set_depth_recursive(me->root, 0);
 }
 
 /**
@@ -119,14 +135,14 @@ bool set_is_empty(set me)
 }
 
 /*
- * Makes the parent of the affected node point to it.
+ * Resets the parent reference.
  */
 static void set_insert_reference_parent(set me,
                                         struct node *const parent,
                                         struct node *const child)
 {
+    child->parent = parent->parent;
     if (parent->parent == NULL) {
-        assert(parent == me->root);
         me->root = child;
     } else if (parent->parent->left == parent) {
         parent->parent->left = child;
@@ -134,32 +150,40 @@ static void set_insert_reference_parent(set me,
         assert(parent->parent->right == parent);
         parent->parent->right = child;
     }
-    child->parent = parent->parent;
-    parent->parent = child;
 }
 
 /*
- * Rotates two nodes left when inserting.
+ * Rotates the AVL tree to the left.
  */
 static void set_insert_rotate_left(set me,
                                    struct node *const parent,
                                    struct node *const child)
 {
     set_insert_reference_parent(me, parent, child);
-    parent->left = child->right;
-    child->right = parent;
+    struct node *const grand_child = child->left;
+    if (grand_child != NULL) {
+        grand_child->parent = parent;
+    }
+    parent->parent = child;
+    parent->right = grand_child;
+    child->left = parent;
 }
 
 /*
- * Rotates two nodes right when inserting.
+ * Rotates the AVL tree to the right.
  */
 static void set_insert_rotate_right(set me,
                                     struct node *const parent,
                                     struct node *const child)
 {
     set_insert_reference_parent(me, parent, child);
-    parent->right = child->left;
-    child->left = parent;
+    struct node *const grand_child = child->right;
+    if (grand_child != NULL) {
+        grand_child->parent = parent;
+    }
+    parent->parent = child;
+    parent->left = grand_child;
+    child->right = parent;
 }
 
 /*
@@ -170,18 +194,31 @@ static void set_insert_repair(set me,
                               struct node *const child,
                               struct node *const grand_child)
 {
-    if (parent->balance == -2 && child->balance == -1) {
+    if (parent->balance == 2 && child->balance == 1) {
+        printf("left *********\n");
+        set_depth(me);
         set_insert_rotate_left(me, parent, child);
-    } else if (parent->balance == 2 && child->balance == 1) {
+    } else if (parent->balance == -2 && child->balance == -1) {
+        printf("right ********\n");
+        set_depth(me);
         set_insert_rotate_right(me, parent, child);
     } else if (parent->balance == -2 && child->balance == 1) {
-        set_insert_rotate_right(me, child, grand_child);
-        set_insert_rotate_left(me, parent, grand_child);
-    } else if (parent->balance == 2 && child->balance == -1) {
+        printf("left-right ***\n");
+        set_depth(me);
+        set_dump(me);
+        assert(0);
         set_insert_rotate_left(me, child, grand_child);
         set_insert_rotate_right(me, parent, grand_child);
+    } else if (parent->balance == 2 && child->balance == -1) {
+        printf("right-left ***\n");
+        set_depth(me);
+        set_dump(me);
+        assert(0);
+        set_insert_rotate_right(me, child, grand_child);
+        set_insert_rotate_left(me, parent, grand_child);
     } else {
         set_dump(me);
+        set_depth(me);
         assert(0);
     }
     parent->balance = 0;
@@ -193,6 +230,7 @@ static void set_insert_repair(set me,
  */
 static void set_insert_balance(set me, struct node *const item)
 {
+    printf("added ---\n");
     struct node *grand_child = NULL;
     struct node *child = item;
     struct node *parent = item->parent;
@@ -201,6 +239,9 @@ static void set_insert_balance(set me, struct node *const item)
             parent->balance--;
         } else {
             parent->balance++;
+        }
+        if (parent->balance == 0) {
+            return;
         }
         // Must re-balance if not in {-1, 0, 1}
         if (parent->balance > 1 || parent->balance < -1) {

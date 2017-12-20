@@ -13,7 +13,7 @@ void test_set(void)
     set a = set_init(sizeof(int), compare_int);
     int b;
     // left-left
-    b = 5;
+    /*b = 5;
     set_add(a, &b);
     b = 3;
     set_add(a, &b);
@@ -51,10 +51,10 @@ void test_set(void)
     set_add(a, &b);
     b = 0xdeadbeef;
     set_contains(a, &b);
-    set_clear(a);
+    set_clear(a);*/
     int count = 0;
     bool flip = false;
-    for (int i = 1234; i < 2400; i++) {
+    for (int i = 1234; i < 82400; i++) {
         int n = i % 765;
         const bool is_already_present = set_contains(a, &n);
         set_add(a, &n);
