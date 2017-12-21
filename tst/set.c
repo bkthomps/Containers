@@ -8,6 +8,8 @@ static int compare_int(const void *const one, const void *const two)
     return a - b;
 }
 
+void set_depth(set me);
+
 void test_set(void)
 {
     set a = set_init(sizeof(int), compare_int);
@@ -71,7 +73,7 @@ void test_set(void)
     assert(count == set_size(a));
     set_contains(a, &b);
     set_destroy(a);
-    /*a = set_init(sizeof(int), compare_int);
+    a = set_init(sizeof(int), compare_int);
     assert(set_size(a) == 0);
     assert(set_is_empty(a));
     b = 4;
@@ -150,12 +152,13 @@ void test_set(void)
         assert(set_contains(a, &i));
     }
     assert(set_size(a) == 1000);
-    for (int i = 5000; i < 6000; i++) {
+    for (int i = 5000; i < 5500; i++) {
         set_remove(a, &i);
         assert(!set_contains(a, &i));
     }
-    assert(set_size(a) == 0);
-    assert(set_is_empty(a));
+    assert(set_size(a) == 500);
+    assert(!set_is_empty(a));
+    set_depth(a);
     set_clear(a);
     assert(set_size(a) == 0);
     assert(set_is_empty(a));
@@ -252,5 +255,5 @@ void test_set(void)
     set_remove(a, &tmp);
     tmp = 7;
     assert(set_contains(a, &tmp));
-    set_destroy(a);*/
+    set_destroy(a);
 }

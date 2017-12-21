@@ -83,7 +83,7 @@ static void set_depth_recursive(struct node *item, const int depth)
     set_depth_recursive(item->right, depth + 1);
 }
 
-static void set_depth(set me)
+void set_depth(set me)
 {
     printf("***************\n");
     set_depth_recursive(me->root, 0);
@@ -138,9 +138,9 @@ bool set_is_empty(set me)
 /*
  * Resets the parent reference.
  */
-static void set_insert_reference_parent(set me,
-                                        struct node *const parent,
-                                        struct node *const child)
+static void set_reference_parent(set me,
+                                 struct node *const parent,
+                                 struct node *const child)
 {
     child->parent = parent->parent;
     if (parent->parent == NULL) {
@@ -156,11 +156,11 @@ static void set_insert_reference_parent(set me,
 /*
  * Rotates the AVL tree to the left.
  */
-static void set_insert_rotate_left(set me,
-                                   struct node *const parent,
-                                   struct node *const child)
+static void set_rotate_left(set me,
+                            struct node *const parent,
+                            struct node *const child)
 {
-    set_insert_reference_parent(me, parent, child);
+    set_reference_parent(me, parent, child);
     struct node *const grand_child = child->left;
     if (grand_child != NULL) {
         grand_child->parent = parent;
@@ -173,11 +173,11 @@ static void set_insert_rotate_left(set me,
 /*
  * Rotates the AVL tree to the right.
  */
-static void set_insert_rotate_right(set me,
-                                    struct node *const parent,
-                                    struct node *const child)
+static void set_rotate_right(set me,
+                             struct node *const parent,
+                             struct node *const child)
 {
-    set_insert_reference_parent(me, parent, child);
+    set_reference_parent(me, parent, child);
     struct node *const grand_child = child->right;
     if (grand_child != NULL) {
         grand_child->parent = parent;
@@ -190,22 +190,22 @@ static void set_insert_rotate_right(set me,
 /*
  * Repairs the AVL tree on insert.
  */
-static void set_insert_repair(set me,
-                              struct node *const parent,
-                              struct node *const child,
-                              struct node *const grand_child)
+static void set_repair(set me,
+                       struct node *const parent,
+                       struct node *const child,
+                       struct node *const grand_child)
 {
     if (parent->balance == 2 && child->balance == 1) {
-        set_insert_rotate_left(me, parent, child);
+        set_rotate_left(me, parent, child);
     } else if (parent->balance == -2 && child->balance == -1) {
-        set_insert_rotate_right(me, parent, child);
+        set_rotate_right(me, parent, child);
     } else if (parent->balance == -2 && child->balance == 1) {
-        set_insert_rotate_left(me, child, grand_child);
-        set_insert_rotate_right(me, parent, grand_child);
+        set_rotate_left(me, child, grand_child);
+        set_rotate_right(me, parent, grand_child);
         grand_child->balance = 0;
     } else if (parent->balance == 2 && child->balance == -1) {
-        set_insert_rotate_right(me, child, grand_child);
-        set_insert_rotate_left(me, parent, grand_child);
+        set_rotate_right(me, child, grand_child);
+        set_rotate_left(me, parent, grand_child);
         grand_child->balance = 0;
     } else {
         assert(0);
@@ -233,7 +233,7 @@ static void set_insert_balance(set me, struct node *const item)
         }
         // Must re-balance if not in {-1, 0, 1}
         if (parent->balance > 1 || parent->balance < -1) {
-            set_insert_repair(me, parent, child, grand_child);
+            set_repair(me, parent, child, grand_child);
             return;
         }
         grand_child = child;
@@ -462,6 +462,7 @@ bool set_remove(set me, void *const key)
         if (new_root != NULL) {
             new_root->parent = NULL;
         }
+        //set_insert_balance(me, new_root);  // TODO: create delete version
         return true;
     }
     while (true) {
@@ -482,6 +483,7 @@ bool set_remove(set me, void *const key)
             }
         } else {
             set_remove_non_root(me, parent, traverse);
+            //set_insert_balance(me, parent);  // TODO: create delete version
             return true;
         }
     }
@@ -512,7 +514,6 @@ static void set_clear_root(struct node *const root)
 void set_clear(set me)
 {
     if (me->root != NULL) {
-        set_depth(me);
         set_clear_root(me->root);
         me->root = NULL;
         me->size = 0;
