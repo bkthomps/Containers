@@ -43,7 +43,7 @@ struct node {
     struct node *right;
 };
 
-static void set_dump_recursive(struct node *item, const int depth)
+static void set_dump_recursive(const struct node *const item, const int depth)
 {
     printf("\n");
     for (int i = 0; i < depth; i++) {
@@ -73,7 +73,7 @@ static void set_dump(set me)
     printf("\n");
 }
 
-static void set_depth_recursive(struct node *item, const int depth)
+static void set_depth_recursive(const struct node *const item, const int depth)
 {
     if (item == NULL) {
         printf("depth = %d\n", depth);
@@ -245,7 +245,7 @@ static void set_insert_balance(set me, struct node *const item)
  * Creates and allocates a node.
  */
 static struct node *set_create_node(set me,
-                                    void *const data,
+                                    const void *const data,
                                     struct node *const parent)
 {
     struct node *const insert = malloc(sizeof(struct node));
@@ -321,7 +321,7 @@ int set_add(set me, void *const key)
 /*
  * If a match occurs, returns the match. Else, returns NULL.
  */
-static struct node *set_equal_match(set me, void *const key)
+static struct node *set_equal_match(set me, const void *const key)
 {
     struct node *traverse = me->root;
     if (traverse == NULL) {
@@ -365,7 +365,7 @@ bool set_contains(set me, void *const key)
 /*
  * Removes traverse when it has no children.
  */
-static struct node *set_remove_no_children(struct node *const traverse)
+static struct node *set_remove_no_children(const struct node *const traverse)
 {
     struct node *const parent = traverse->parent;
     // If no parent and no children, then the only node is traverse.
@@ -384,7 +384,7 @@ static struct node *set_remove_no_children(struct node *const traverse)
 /*
  * Removes traverse when it has one child.
  */
-static struct node *set_remove_one_child(struct node *const traverse)
+static struct node *set_remove_one_child(const struct node *const traverse)
 {
     struct node *const parent = traverse->parent;
     // If no parent, make the child of traverse the new root.
@@ -420,7 +420,7 @@ static struct node *set_remove_one_child(struct node *const traverse)
 /*
  * Removes traverse when it has two children.
  */
-static struct node *set_remove_two_children(struct node *const traverse)
+static struct node *set_remove_two_children(const struct node *const traverse)
 {
     struct node *item;
     if (traverse->right->left == NULL) {
