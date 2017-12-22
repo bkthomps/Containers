@@ -362,6 +362,90 @@ bool set_contains(set me, void *const key)
     return set_equal_match(me, key) != NULL;
 }
 
+/*
+ * Removes traverse when it has no children.
+ */
+static struct node *set_remove_no_children(struct node *const traverse)
+{
+    struct node *const parent = traverse->parent;
+    // If no parent and no children, then the only node is traverse.
+    if (parent == NULL) {
+        return NULL;
+    }
+    // No re-reference needed since traverse has no children.
+    if (parent->left == traverse) {
+        parent->left = NULL;
+    } else {
+        parent->right = NULL;
+    }
+    return parent;
+}
+
+/*
+ * Removes traverse when it has one child.
+ */
+static struct node *set_remove_one_child(struct node *const traverse)
+{
+    struct node *const parent = traverse->parent;
+    // If no parent, make the child of traverse the new root.
+    if (parent == NULL) {
+        if (traverse->left != NULL) {
+            traverse->left->parent = NULL;
+            return traverse->left;
+        }
+        traverse->right->parent = NULL;
+        return traverse->right;
+    }
+    // The parent of traverse now references the child of traverse.
+    if (parent->left == traverse) {
+        if (traverse->left != NULL) {
+            parent->left = traverse->left;
+            traverse->left->parent = parent;
+        } else {
+            parent->left = traverse->right;
+            traverse->right->parent = parent;
+        }
+    } else {
+        if (traverse->left != NULL) {
+            parent->right = traverse->left;
+            traverse->left->parent = parent;
+        } else {
+            parent->right = traverse->right;
+            traverse->right->parent = parent;
+        }
+    }
+    return parent;
+}
+
+/*
+ * Removes traverse when it has two children.
+ */
+static struct node *set_remove_two_children(struct node *const traverse)
+{
+    struct node *item;
+    if (traverse->right->left == NULL) {
+        item = traverse->right;
+    } else {
+        item = traverse->right->left;
+        while (item->left != NULL) {
+            item = item->left;
+        }
+        item->parent->left = item->right;
+        item->right = traverse->right;
+        item->right->parent = item;
+    }
+    item->parent = traverse->parent;
+    if (item->parent != NULL) {
+        item->parent->left = item;
+    }
+    item->left = traverse->left;
+    item->left->parent = item;
+    if (traverse->parent == NULL) {
+        return item;
+    }
+    return traverse->parent;
+}
+
 /**
  * Removes the element from the set if it contains it.
  *
@@ -376,7 +460,20 @@ bool set_remove(set me, void *const key)
     if (traverse == NULL) {
         return false;
     }
-    // TODO: logic for node removal
+    struct node *parent;
+    if (traverse->left == NULL && traverse->right == NULL) {
+        parent = set_remove_no_children(traverse);
+    } else if (traverse->left == NULL || traverse->right == NULL) {
+        parent = set_remove_one_child(traverse);
+    } else {
+        parent = set_remove_two_children(traverse);
+    }
+    free(traverse->key);
+    free(traverse);
+    if (parent == NULL || parent->parent == NULL) {
+        me->root = parent;
+    }
+    me->size--;
     return true;
 }
 
