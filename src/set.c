@@ -228,12 +228,11 @@ static void set_insert_balance(set me, struct node *const item)
         } else {
             parent->balance++;
         }
-        if (parent->balance == 0) {
-            return;
-        }
         // Must re-balance if not in {-1, 0, 1}
         if (parent->balance > 1 || parent->balance < -1) {
             set_repair(me, parent, child, grand_child);
+        }
+        if (parent->balance == 0) {
             return;
         }
         grand_child = child;
@@ -319,6 +318,37 @@ int set_add(set me, void *const key)
     }
 }
 
+/*
+ * If a match occurs, returns the match. Else, returns NULL.
+ */
+static struct node *set_equal_match(set me, void *const key)
+{
+    struct node *traverse = me->root;
+    if (traverse == NULL) {
+        return false;
+    }
+    while (true) {
+        const int compare = me->comparator(key, traverse->key);
+        if (compare < 0) {
+            if (traverse->left != NULL) {
+                traverse = traverse->left;
+            } else {
+                return NULL;
+            }
+        } else if (compare > 0) {
+            if (traverse->right != NULL) {
+                traverse = traverse->right;
+            } else {
+                return NULL;
+            }
+        } else {
+            return traverse;
+        }
+        assert(traverse->left == NULL || traverse->left->parent == traverse);
+        assert(traverse->right == NULL || traverse->right->parent == traverse);
+    }
+}
+
 /**
  * Determines if the set contains the specified element.
  *
@@ -329,116 +359,7 @@ int set_add(set me, void *const key)
  */
 bool set_contains(set me, void *const key)
 {
-    if (me->root == NULL) {
-        return false;
-    }
-    struct node *traverse = me->root;
-    while (true) {
-        const int compare = me->comparator(key, traverse->key);
-        if (compare < 0) {
-            if (traverse->left != NULL) {
-                traverse = traverse->left;
-            } else {
-                return false;
-            }
-        } else if (compare > 0) {
-            if (traverse->right != NULL) {
-                traverse = traverse->right;
-            } else {
-                return false;
-            }
-        } else {
-            return true;
-        }
-        assert(traverse->left == NULL || traverse->left->parent == traverse);
-        assert(traverse->right == NULL || traverse->right->parent == traverse);
-    }
-}
-
-/*
- * Removes a node and frees the key for a node which has two children.
- */
-static struct node *set_remove_parent_two_children(struct node *traverse)
-{
-    struct node *const item = traverse;
-    if (item->right->left == NULL) {
-        traverse = item->right;
-        item->right = traverse->right;
-    } else {
-        struct node *parent = traverse->right;
-        traverse = traverse->right->left;
-        while (traverse->left != NULL) {
-            parent = traverse;
-            traverse = traverse->left;
-        }
-        parent->left = traverse->right;
-    }
-    free(item->key);
-    item->key = traverse->key;
-    return traverse;
-}
-
-/*
- * Removes the root node of the set and replaces it with another node.
- */
-static void set_remove_root(set me)
-{
-    struct node *temp = me->root;
-    if (temp->left == NULL && temp->right == NULL) {
-        me->root = NULL;
-        free(temp->key);
-    } else if (temp->left == NULL || temp->right == NULL) {
-        if (temp->left != NULL) {
-            me->root = temp->left;
-        } else {
-            me->root = temp->right;
-        }
-        free(temp->key);
-    } else {
-        temp = set_remove_parent_two_children(temp);
-    }
-    me->size--;
-    free(temp);
-}
-
-/*
- * Removes a node which is not the root and replaces it with another node.
- */
-static void set_remove_non_root(set me,
-                                struct node *const parent,
-                                struct node *traverse)
-{
-    if (traverse->left == NULL && traverse->right == NULL) {
-        if (parent->left == traverse) {
-            parent->left = NULL;
-        } else {
-            parent->right = NULL;
-        }
-        free(traverse->key);
-    } else if (traverse->left == NULL || traverse->right == NULL) {
-        if (parent->left == traverse) {
-            if (traverse->left != NULL) {
-                parent->left = traverse->left;
-                traverse->left->parent = parent;
-            } else {
-                parent->left = traverse->right;
-                traverse->right->parent = parent;
-            }
-        } else {
-            if (traverse->left != NULL) {
-                parent->right = traverse->left;
-                traverse->left->parent = parent;
-            } else {
-                parent->right = traverse->right;
-                traverse->right->parent = parent;
-            }
-        }
-        free(traverse->key);
-    } else {
-        traverse = set_remove_parent_two_children(traverse);
-    }
-    me->size--;
-    free(traverse);
+    return set_equal_match(me, key) != NULL;
 }
 
 /**
@@ -451,46 +372,16 @@ static void set_remove_non_root(set me,
  */
 bool set_remove(set me, void *const key)
 {
-    if (me->root == NULL) {
+    struct node *const traverse = set_equal_match(me, key);
+    if (traverse == NULL) {
         return false;
     }
-    struct node *parent = NULL;
-    struct node *traverse = me->root;
-    if (me->comparator(key, traverse->key) == 0) {
-        set_remove_root(me);
-        struct node *const new_root = me->root;
-        if (new_root != NULL) {
-            new_root->parent = NULL;
-        }
-        //set_insert_balance(me, new_root);  // TODO: create delete version
-        return true;
-    }
-    while (true) {
-        const int compare = me->comparator(key, traverse->key);
-        if (compare < 0) {
-            if (traverse->left != NULL) {
-                parent = traverse;
-                traverse = traverse->left;
-            } else {
-                return false;
-            }
-        } else if (compare > 0) {
-            if (traverse->right != NULL) {
-                parent = traverse;
-                traverse = traverse->right;
-            } else {
-                return false;
-            }
-        } else {
-            set_remove_non_root(me, parent, traverse);
-            //set_insert_balance(me, parent);  // TODO: create delete version
-            return true;
-        }
-    }
+    // TODO: logic for node removal
+    return true;
 }
 
 /*
- * Recursively frees the passed in node.
+ * Recursively frees the node passed in.
  */
 static void set_clear_root(struct node *const root)
 {
