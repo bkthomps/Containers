@@ -365,12 +365,13 @@ bool set_contains(set me, void *const key)
 /*
  * Removes traverse when it has no children.
  */
-static struct node *set_remove_no_children(const struct node *const traverse)
+void set_remove_no_children(set me, const struct node *const traverse)
 {
     struct node *const parent = traverse->parent;
     // If no parent and no children, then the only node is traverse.
     if (parent == NULL) {
-        return NULL;
+        me->root = NULL;
+        return;
     }
     // No re-reference needed since traverse has no children.
     if (parent->left == traverse) {
@@ -378,23 +379,24 @@ static struct node *set_remove_no_children(const struct node *const traverse)
     } else {
         parent->right = NULL;
     }
-    return parent;
 }
 
 /*
  * Removes traverse when it has one child.
  */
-static struct node *set_remove_one_child(const struct node *const traverse)
+void set_remove_one_child(set me, const struct node *const traverse)
 {
     struct node *const parent = traverse->parent;
     // If no parent, make the child of traverse the new root.
     if (parent == NULL) {
         if (traverse->left != NULL) {
             traverse->left->parent = NULL;
-            return traverse->left;
+            me->root = traverse->left;
+        } else {
+            traverse->right->parent = NULL;
+            me->root = traverse->right;
         }
-        traverse->right->parent = NULL;
-        return traverse->right;
+        return;
     }
     // The parent of traverse now references the child of traverse.
     if (parent->left == traverse) {
@@ -414,13 +416,12 @@ static struct node *set_remove_one_child(const struct node *const traverse)
             traverse->right->parent = parent;
         }
     }
-    return parent;
 }
 
 /*
  * Removes traverse when it has two children.
  */
-static struct node *set_remove_two_children(const struct node *const traverse)
+void set_remove_two_children(set me, const struct node *const traverse)
 {
     struct node *item;
     if (traverse->right->left == NULL) {
@@ -441,9 +442,8 @@ static struct node *set_remove_two_children(const struct node *const traverse)
     item->left = traverse->left;
     item->left->parent = item;
     if (traverse->parent == NULL) {
-        return item;
+        me->root = item;
     }
-    return traverse->parent;
 }
 
 /**
@@ -462,17 +462,14 @@ bool set_remove(set me, void *const key)
     }
     struct node *parent;
     if (traverse->left == NULL && traverse->right == NULL) {
-        parent = set_remove_no_children(traverse);
+        set_remove_no_children(me, traverse);
     } else if (traverse->left == NULL || traverse->right == NULL) {
-        parent = set_remove_one_child(traverse);
+        set_remove_one_child(me, traverse);
     } else {
-        parent = set_remove_two_children(traverse);
+        set_remove_two_children(me, traverse);
     }
     free(traverse->key);
     free(traverse);
-    if (parent == NULL || parent->parent == NULL) {
-        me->root = parent;
-    }
     me->size--;
     return true;
 }
