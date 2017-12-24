@@ -228,11 +228,14 @@ static void set_insert_balance(set me, struct node *const item)
         } else {
             parent->balance++;
         }
+        // If balance is zero after modification, then the tree is balanced.
+        if (parent->balance == 0) {
+            return;
+        }
         // Must re-balance if not in {-1, 0, 1}
         if (parent->balance > 1 || parent->balance < -1) {
+            // After one repair, the tree is balanced.
             set_repair(me, parent, child, grand_child);
-        }
-        if (parent->balance == 0) {
             return;
         }
         grand_child = child;
