@@ -1,4 +1,3 @@
-
 /*
  * Copyright (c) 2017 Bailey Thompson
  *
@@ -196,55 +195,23 @@ static void set_repair(set me,
                        struct node *const child,
                        struct node *const grand_child)
 {
-    if (parent->balance == 2 && child->balance >= 0) {
+    if (parent->balance == 2 && child->balance == 1) {
         set_rotate_left(me, parent, child);
-        if (child->balance == 0) {
-            parent->balance = 1;
-            child->balance = -1;
-        } else {
-            parent->balance = 0;
-            child->balance = 0;
-        }
-    } else if (parent->balance == -2 && child->balance <= 0) {
+    } else if (parent->balance == -2 && child->balance == -1) {
         set_rotate_right(me, parent, child);
-        if (child->balance == 0) {
-            parent->balance = -1;
-            child->balance = 1;
-        } else {
-            parent->balance = 0;
-            child->balance = 0;
-        }
     } else if (parent->balance == -2 && child->balance == 1) {
         set_rotate_left(me, child, grand_child);
         set_rotate_right(me, parent, grand_child);
-        if (grand_child->balance > 0) {
-            parent->balance = 1;
-            child->balance = 0;
-        } else if (grand_child->balance == 0) {
-            parent->balance = 0;
-            child->balance = 0;
-        } else {
-            parent->balance = 0;
-            child->balance = -1;
-        }
         grand_child->balance = 0;
     } else if (parent->balance == 2 && child->balance == -1) {
         set_rotate_right(me, child, grand_child);
         set_rotate_left(me, parent, grand_child);
-        if (grand_child->balance > 0) {
-            parent->balance = -1;
-            child->balance = 0;
-        } else if (grand_child->balance == 0) {
-            parent->balance = 0;
-            child->balance = 0;
-        } else {
-            parent->balance = 0;
-            child->balance = 1;
-        }
         grand_child->balance = 0;
     } else {
         assert(0);
     }
+    parent->balance = 0;
+    child->balance = 0;
 }
 
 /*
