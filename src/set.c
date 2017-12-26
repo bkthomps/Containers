@@ -59,7 +59,7 @@ static void set_dump_recursive(const struct node *const item, const int depth)
     set_dump_recursive(item->right, depth + 1);
 }
 
-static void set_dump(set me)
+void set_dump(set me)
 {
     struct node *const item = me->root;
     if (item != NULL) {

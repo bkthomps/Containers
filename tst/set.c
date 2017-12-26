@@ -8,6 +8,7 @@ static int compare_int(const void *const one, const void *const two)
     return a - b;
 }
 
+void set_dump(set me);
 void set_depth(set me);
 
 void test_set(void)
