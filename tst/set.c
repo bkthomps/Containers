@@ -1,6 +1,8 @@
 #include "test.h"
 #include "../src/set.h"
 
+#include <stdio.h>
+
 static int compare_int(const void *const one, const void *const two)
 {
     const int a = *(int *) one;
