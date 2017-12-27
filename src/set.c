@@ -401,6 +401,58 @@ bool set_contains(set me, void *const key)
     return set_equal_match(me, key) != NULL;
 }
 
+static void set_repair_pivot(set me,
+                             struct node *const item,
+                             const bool is_left_pivot)
+{
+    struct node *const child = is_left_pivot ? item->right : item->left;
+    struct node *const grand_child =
+            child->balance == 1 ? child->right : child->left;
+    set_repair(me, item, child, grand_child);
+    // FIXME: old parent will no longer be new parent
+}
+
+/*
+ * Balances the AVL tree on deletion.
+ */
+static void set_delete_balance(set me,
+                               struct node *const item,
+                               const bool is_left_deleted)
+{
+    if (is_left_deleted) {
+        item->balance++;
+    } else {
+        item->balance--;
+    }
+    // If balance is -1 or +1 after modification, then the tree is balanced.
+    if (item->balance == -1 || item->balance == 1) {
+        return;
+    }
+    // Must re-balance if not in {-1, 0, 1}
+    if (item->balance > 1 || item->balance < -1) {
+        set_repair_pivot(me, item, is_left_deleted);
+    }
+    struct node *child = item;
+    struct node *parent = item->parent;
+    while (parent != NULL) {
+        if (parent->left == child) {
+            parent->balance++;
+        } else {
+            parent->balance--;
+        }
+        // If balance is -1 or +1 after modification, then the tree is balanced.
+        if (parent->balance == -1 || parent->balance == 1) {
+            return;
+        }
+        // Must re-balance if not in {-1, 0, 1}
+        if (parent->balance > 1 || parent->balance < -1) {
+            set_repair_pivot(me, parent, parent->left == child);
+        }
+        child = parent;
+        parent = parent->parent;
+    }
+}
+
 /*
  * Removes traverse when it has no children.
  */
@@ -415,8 +467,10 @@ void set_remove_no_children(set me, const struct node *const traverse)
     // No re-reference needed since traverse has no children.
     if (parent->left == traverse) {
         parent->left = NULL;
+        set_delete_balance(me, parent, true);
     } else {
         parent->right = NULL;
+        set_delete_balance(me, parent, false);
     }
 }
 
@@ -446,6 +500,7 @@ void set_remove_one_child(set me, const struct node *const traverse)
             parent->left = traverse->right;
             traverse->right->parent = parent;
         }
+        set_delete_balance(me, parent, true);
     } else {
         if (traverse->left != NULL) {
             parent->right = traverse->left;
@@ -454,6 +509,7 @@ void set_remove_one_child(set me, const struct node *const traverse)
             parent->right = traverse->right;
             traverse->right->parent = parent;
         }
+        set_delete_balance(me, parent, false);
     }
 }
 
@@ -483,6 +539,7 @@ void set_remove_two_children(set me, const struct node *const traverse)
     if (traverse->parent == NULL) {
         me->root = item;
     }
+    // FIXME: call the set_delete_balance function
 }
 
 /**
