@@ -71,6 +71,7 @@ void test_set(void)
             flip = true;
         }
     }
+    set_depth(a);
     assert(count == set_size(a));
     set_contains(a, &b);
     set_destroy(a);
