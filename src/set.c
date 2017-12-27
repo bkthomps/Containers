@@ -571,7 +571,6 @@ bool set_remove(set me, void *const key)
     if (traverse == NULL) {
         return false;
     }
-    struct node *parent;
     if (traverse->left == NULL && traverse->right == NULL) {
         set_remove_no_children(me, traverse);
     } else if (traverse->left == NULL || traverse->right == NULL) {
