@@ -300,4 +300,5 @@ void test_set(void)
     b = 1;
     set_remove(a, &b);
     assert(!set_contains(a, &b));
+    set_destroy(a);
 }
