@@ -26,6 +26,7 @@
 #include "set.h"
 // Remove when released
 #include <assert.h>
+#include <stdio.h>
 
 struct _set {
     size_t key_size;
@@ -484,13 +485,12 @@ void set_remove_one_child(set me, const struct node *const traverse)
 /*
  * Removes traverse when it has two children.
  */
-void set_remove_two_children(set me, struct node *const traverse)
+void set_remove_two_children(set me, const struct node *const traverse)
 {
     bool is_left_deleted;
     struct node *item;
     if (traverse->right->left == NULL) {
         item = traverse->right;
-        traverse->right = NULL;
         is_left_deleted = false;
     } else {
         item = traverse->right->left;
@@ -510,7 +510,7 @@ void set_remove_two_children(set me, struct node *const traverse)
     }
     item->left = traverse->left;
     item->left->parent = item;
-    if (traverse->parent == NULL) {
+    if (item->parent == NULL) {
         me->root = item;
     }
     set_delete_balance(me, parent, is_left_deleted);
