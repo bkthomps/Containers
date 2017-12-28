@@ -26,7 +26,6 @@
 #include "set.h"
 // Remove when released
 #include <assert.h>
-#include <stdio.h>
 
 struct _set {
     size_t key_size;
@@ -42,52 +41,6 @@ struct node {
     struct node *left;
     struct node *right;
 };
-
-static void set_dump_recursive(const struct node *const item, const int depth)
-{
-    printf("\n");
-    for (int i = 0; i < depth; i++) {
-        printf("  ");
-    }
-    if (item == NULL) {
-        printf("NULL");
-        return;
-    }
-    int *key_val = item->key;
-    printf("%d,%d", *key_val, item->balance);
-    set_dump_recursive(item->left, depth + 1);
-    set_dump_recursive(item->right, depth + 1);
-}
-
-void set_dump(set me)
-{
-    struct node *const item = me->root;
-    if (item != NULL) {
-        int *key_val = item->key;
-        printf("root -> %d,%d", *key_val, item->balance);
-        assert(item->parent == NULL);
-    } else {
-        printf("root -> NULL");
-    }
-    set_dump_recursive(me->root, 0);
-    printf("\n");
-}
-
-static void set_depth_recursive(const struct node *const item, const int depth)
-{
-    if (item == NULL) {
-        printf("depth = %d\n", depth);
-        return;
-    }
-    set_depth_recursive(item->left, depth + 1);
-    set_depth_recursive(item->right, depth + 1);
-}
-
-void set_depth(set me)
-{
-    printf("***************\n");
-    set_depth_recursive(me->root, 0);
-}
 
 /**
  * Initializes a set, which is a collection of unique keys, sorted by keys.
@@ -531,11 +484,14 @@ void set_remove_one_child(set me, const struct node *const traverse)
 /*
  * Removes traverse when it has two children.
  */
-void set_remove_two_children(set me, const struct node *const traverse)
+void set_remove_two_children(set me, struct node *const traverse)
 {
+    bool is_left_deleted;
     struct node *item;
     if (traverse->right->left == NULL) {
         item = traverse->right;
+        traverse->right = NULL;
+        is_left_deleted = false;
     } else {
         item = traverse->right->left;
         while (item->left != NULL) {
@@ -544,7 +500,10 @@ void set_remove_two_children(set me, const struct node *const traverse)
         item->parent->left = item->right;
         item->right = traverse->right;
         item->right->parent = item;
+        is_left_deleted = true;
     }
+    struct node *const parent = item->parent;
+    item->balance = traverse->balance;
     item->parent = traverse->parent;
     if (item->parent != NULL) {
         item->parent->left = item;
@@ -554,7 +513,7 @@ void set_remove_two_children(set me, const struct node *const traverse)
     if (traverse->parent == NULL) {
         me->root = item;
     }
-    // FIXME: call the set_delete_balance function
+    set_delete_balance(me, parent, is_left_deleted);
 }
 
 /**
