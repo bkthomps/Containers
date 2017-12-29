@@ -73,6 +73,7 @@ static void set_dump(set me)
     printf("\n");
 }
 
+static char *info;
 static int line_num;
 static char *old_operation;
 static char *operation;
@@ -92,7 +93,8 @@ static int set_verify_recursive(struct node *const item)
         count++;
         if (count == 1) {
             printf("failed on %s due to %s\n", operation, old_operation);
-            printf("failed on line %d\n", line_num);
+            printf("failed on line %d with info %s\n", line_num, info);
+            info = NULL;
             set_dump_recursive(item, 0);
             assert(0);
         }
@@ -462,7 +464,12 @@ static void set_delete_balance(set me,
     }
     // Must re-balance if not in {-1, 0, 1}
     if (item->balance > 1 || item->balance < -1) {
-        set_repair_pivot(me, item, is_left_deleted);
+        const struct node *const child =
+                set_repair_pivot(me, item, is_left_deleted);
+        const struct node *const parent = child->parent;
+        if (parent == NULL || child->balance == -1 || child->balance == 1) {
+            return;
+        }
     }
     struct node *child = item;
     struct node *parent = item->parent;
@@ -499,14 +506,17 @@ static void set_remove_no_children(set me, const struct node *const traverse)
     struct node *const parent = traverse->parent;
     // If no parent and no children, then the only node is traverse.
     if (parent == NULL) {
+        info = "no 1";
         me->root = NULL;
         return;
     }
     // No re-reference needed since traverse has no children.
     if (parent->left == traverse) {
+        info = "no 2";
         parent->left = NULL;
         set_delete_balance(me, parent, true);
     } else {
+        info = "no 3";
         parent->right = NULL;
         set_delete_balance(me, parent, false);
     }
@@ -521,9 +531,11 @@ static void set_remove_one_child(set me, const struct node *const traverse)
     // If no parent, make the child of traverse the new root.
     if (parent == NULL) {
         if (traverse->left != NULL) {
+            info = "one 1";
             traverse->left->parent = NULL;
             me->root = traverse->left;
         } else {
+            info = "one 2";
             traverse->right->parent = NULL;
             me->root = traverse->right;
         }
@@ -532,18 +544,22 @@ static void set_remove_one_child(set me, const struct node *const traverse)
     // The parent of traverse now references the child of traverse.
     if (parent->left == traverse) {
         if (traverse->left != NULL) {
+            info = "one 3";
             parent->left = traverse->left;
             traverse->left->parent = parent;
         } else {
+            info = "one 4";
             parent->left = traverse->right;
             traverse->right->parent = parent;
         }
         set_delete_balance(me, parent, true);
     } else {
         if (traverse->left != NULL) {
+            info = "one 5";
             parent->right = traverse->left;
             traverse->left->parent = parent;
         } else {
+            info = "one 6";
             parent->right = traverse->right;
             traverse->right->parent = parent;
         }
@@ -559,9 +575,11 @@ static void set_remove_two_children(set me, const struct node *const traverse)
     bool is_left_deleted;
     struct node *item;
     if (traverse->right->left == NULL) {
+        info = "two 1";
         item = traverse->right;
         is_left_deleted = false;
     } else {
+        info = "two 2";
         item = traverse->right->left;
         while (item->left != NULL) {
             item = item->left;
@@ -604,10 +622,13 @@ bool set_remove(set me, void *const key, int line_number)
         return false;
     }
     if (traverse->left == NULL && traverse->right == NULL) {
+        info = "no";
         set_remove_no_children(me, traverse);
     } else if (traverse->left == NULL || traverse->right == NULL) {
+        info = "one";
         set_remove_one_child(me, traverse);
     } else {
+        info = "two";
         set_remove_two_children(me, traverse);
     }
     free(traverse->key);
