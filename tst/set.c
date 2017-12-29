@@ -11,9 +11,70 @@ static int compare_int(const void *const one, const void *const two)
 void test_set(void)
 {
     set a = set_init(sizeof(int), compare_int);
+    int b;
+    // left-left
+    b = 5;
+    set_add(a, &b);
+    b = 3;
+    set_add(a, &b);
+    b = 1;
+    set_add(a, &b);
+    b = 0xdeadbeef;
+    set_contains(a, &b);
+    set_clear(a);
+    // right-right
+    b = 1;
+    set_add(a, &b);
+    b = 3;
+    set_add(a, &b);
+    b = 5;
+    set_add(a, &b);
+    b = 0xdeadbeef;
+    set_contains(a, &b);
+    set_clear(a);
+    // left-right
+    b = 5;
+    set_add(a, &b);
+    b = 1;
+    set_add(a, &b);
+    b = 3;
+    set_add(a, &b);
+    b = 0xdeadbeef;
+    set_contains(a, &b);
+    set_clear(a);
+    // right-left
+    b = 1;
+    set_add(a, &b);
+    b = 5;
+    set_add(a, &b);
+    b = 3;
+    set_add(a, &b);
+    b = 0xdeadbeef;
+    set_contains(a, &b);
+    set_clear(a);
+    int count = 0;
+    bool flip = false;
+    for (int i = 1234; i < 82400; i++) {
+        int n = i % 765;
+        const bool is_already_present = set_contains(a, &n);
+        set_add(a, &n);
+        const bool is_now_present = set_contains(a, &n);
+        assert(is_now_present);
+        if (!is_already_present && is_now_present) {
+            count++;
+        }
+        if (i == 1857 && !flip) {
+            i *= -1;
+            flip = true;
+        }
+    }
+    assert(count == set_size(a));
+    set_contains(a, &b);
+    set_destroy(a);
+    a = set_init(sizeof(int), compare_int);
     assert(set_size(a) == 0);
     assert(set_is_empty(a));
-    int b = 4;
+    b = 4;
     set_add(a, &b);
     assert(set_size(a) == 1);
     set_add(a, &b);
@@ -89,12 +150,12 @@ void test_set(void)
         assert(set_contains(a, &i));
     }
     assert(set_size(a) == 1000);
-    for (int i = 5000; i < 6000; i++) {
+    for (int i = 5000; i < 5500; i++) {
         set_remove(a, &i);
         assert(!set_contains(a, &i));
     }
-    assert(set_size(a) == 0);
-    assert(set_is_empty(a));
+    assert(set_size(a) == 500);
+    assert(!set_is_empty(a));
     set_clear(a);
     assert(set_size(a) == 0);
     assert(set_is_empty(a));
@@ -191,5 +252,53 @@ void test_set(void)
     set_remove(a, &tmp);
     tmp = 7;
     assert(set_contains(a, &tmp));
+    set_destroy(a);
+    // Replace two sided two children
+    a = set_init(sizeof(int), compare_int);
+    b = 5;
+    set_add(a, &b);
+    b = 1;
+    set_add(a, &b);
+    b = 6;
+    set_add(a, &b);
+    b = -1;
+    set_add(a, &b);
+    b = 3;
+    set_add(a, &b);
+    b = 7;
+    set_add(a, &b);
+    b = -2;
+    set_add(a, &b);
+    b = 0;
+    set_add(a, &b);
+    b = 2;
+    set_add(a, &b);
+    b = 4;
+    set_add(a, &b);
+    b = 1;
+    set_remove(a, &b);
+    assert(!set_contains(a, &b));
+    set_clear(a);
+    b = 5;
+    set_add(a, &b);
+    b = 1;
+    set_add(a, &b);
+    b = 6;
+    set_add(a, &b);
+    b = -1;
+    set_add(a, &b);
+    b = 3;
+    set_add(a, &b);
+    b = 7;
+    set_add(a, &b);
+    b = -2;
+    set_add(a, &b);
+    b = 0;
+    set_add(a, &b);
+    b = 4;
+    set_add(a, &b);
+    b = 1;
+    set_remove(a, &b);
+    assert(!set_contains(a, &b));
     set_destroy(a);
 }
