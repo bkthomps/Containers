@@ -45,6 +45,14 @@ static int set_verify_recursive(struct node *const item)
         const int right_val = *(int *) item->right->key;
         assert(left_val < right_val);
     }
+    if (item->left != NULL) {
+        assert(item->left->parent == item);
+        assert(item->left->parent->key == item->key);
+    }
+    if (item->right != NULL) {
+        assert(item->right->parent == item);
+        assert(item->right->parent->key == item->key);
+    }
     return max + 1;
 #else
     return 0;
@@ -80,9 +88,9 @@ static void stub_set_clear(set me)
 
 static set stub_set_destroy(set me)
 {
-    set_destroy(me);
+    set ret = set_destroy(me);
     set_verify_recursive(me->root);
-    return NULL;
+    return ret;
 }
 
 static int compare_int(const void *const one, const void *const two)

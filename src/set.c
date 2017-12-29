@@ -24,8 +24,6 @@
 #include <memory.h>
 #include <errno.h>
 #include "set.h"
-// Remove when released
-#include <assert.h>
 
 struct _set {
     size_t key_size;
@@ -101,7 +99,6 @@ static void set_reference_parent(set me,
     } else if (parent->parent->left == parent) {
         parent->parent->left = child;
     } else {
-        assert(parent->parent->right == parent);
         parent->parent->right = child;
     }
 }
@@ -154,7 +151,6 @@ static struct node *set_repair(set me,
             parent->balance = 1;
             child->balance = -1;
         } else {
-            assert(child->balance == 1);
             parent->balance = 0;
             child->balance = 0;
         }
@@ -166,7 +162,6 @@ static struct node *set_repair(set me,
             parent->balance = -1;
             child->balance = 1;
         } else {
-            assert(child->balance == -1);
             parent->balance = 0;
             child->balance = 0;
         }
@@ -182,7 +177,6 @@ static struct node *set_repair(set me,
             parent->balance = 0;
             child->balance = 0;
         } else {
-            assert(grand_child->balance == -1);
             parent->balance = 1;
             child->balance = 0;
         }
@@ -199,14 +193,13 @@ static struct node *set_repair(set me,
             parent->balance = 0;
             child->balance = 0;
         } else {
-            assert(grand_child->balance == -1);
             parent->balance = 0;
             child->balance = 1;
         }
         grand_child->balance = 0;
         return grand_child;
     }
-    assert(0);
+    // Impossible to get here.
     return NULL;
 }
 
@@ -343,8 +336,6 @@ static struct node *set_equal_match(set me, const void *const key)
         } else {
             return traverse;
         }
-        assert(traverse->left == NULL || traverse->left->parent == traverse);
-        assert(traverse->right == NULL || traverse->right->parent == traverse);
     }
 }
 
@@ -556,11 +547,9 @@ bool set_remove(set me, void *const key)
 static void set_clear_root(struct node *const root)
 {
     if (root->left != NULL) {
-        assert(root->left->parent == root);
         set_clear_root(root->left);
     }
     if (root->right != NULL) {
-        assert(root->right->parent == root);
         set_clear_root(root->right);
     }
     free(root->key);
