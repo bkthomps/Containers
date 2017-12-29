@@ -26,7 +26,6 @@
 #include "set.h"
 // Remove when released
 #include <assert.h>
-#include <stdio.h>
 
 struct _set {
     size_t key_size;
@@ -42,75 +41,6 @@ struct node {
     struct node *left;
     struct node *right;
 };
-
-static void set_dump_recursive(const struct node *const item, const int depth)
-{
-    printf("\n");
-    for (int i = 0; i < depth; i++) {
-        printf("  ");
-    }
-    if (item == NULL) {
-        printf("NULL");
-        return;
-    }
-    int *key_val = item->key;
-    printf("%d,%d", *key_val, item->balance);
-    set_dump_recursive(item->left, depth + 1);
-    set_dump_recursive(item->right, depth + 1);
-}
-
-static void set_dump(set me)
-{
-    struct node *const item = me->root;
-    if (item != NULL) {
-        int *key_val = item->key;
-        printf("root -> %d,%d", *key_val, item->balance);
-        assert(item->parent == NULL);
-    } else {
-        printf("root -> NULL");
-    }
-    set_dump_recursive(me->root, 0);
-    printf("\n");
-}
-
-static char *info;
-static int line_num;
-static char *old_operation;
-static char *operation;
-
-static int set_verify_recursive(struct node *const item)
-{
-    if (item == NULL) {
-        return 0;
-    }
-    const int left = set_verify_recursive(item->left);
-    const int right = set_verify_recursive(item->right);
-    const int max = left > right ? left : right;
-    //printf("%d,%d,%d,%d\n", left, right, max, item->balance);
-    if (right - left != item->balance) {
-        //set_dump_recursive(item, 0);
-        static int count = 0;
-        count++;
-        if (count == 1) {
-            printf("failed on %s due to %s\n", operation, old_operation);
-            printf("failed on line %d with info %s\n", line_num, info);
-            info = NULL;
-            set_dump_recursive(item, 0);
-            assert(0);
-        }
-        //printf("%d\n", count);
-    }
-    //assert(right - left == item->balance);
-    return max + 1;
-}
-
-static void set_verify(set me, char *const message, int line_number)
-{
-    line_num = line_number;
-    old_operation = operation;
-    operation = message;
-    set_verify_recursive(me->root);
-}
 
 /**
  * Initializes a set, which is a collection of unique keys, sorted by keys.
@@ -344,9 +274,8 @@ static struct node *set_create_node(set me,
  * @return 0       No error.
  *         -ENOMEM Out of memory.
  */
-int set_add(set me, void *const key, int line_number)
+int set_add(set me, void *const key)
 {
-    set_verify(me, "set_add", line_number);
     if (me->root == NULL) {
         struct node *insert = set_create_node(me, key, NULL);
         if (insert == NULL) {
@@ -427,9 +356,8 @@ static struct node *set_equal_match(set me, const void *const key)
  *
  * @return If the set contained the element.
  */
-bool set_contains(set me, void *const key, int line_number)
+bool set_contains(set me, void *const key)
 {
-    set_verify(me, "set_contains", line_number);
     return set_equal_match(me, key) != NULL;
 }
 
@@ -506,17 +434,14 @@ static void set_remove_no_children(set me, const struct node *const traverse)
     struct node *const parent = traverse->parent;
     // If no parent and no children, then the only node is traverse.
     if (parent == NULL) {
-        info = "no 1";
         me->root = NULL;
         return;
     }
     // No re-reference needed since traverse has no children.
     if (parent->left == traverse) {
-        info = "no 2";
         parent->left = NULL;
         set_delete_balance(me, parent, true);
     } else {
-        info = "no 3";
         parent->right = NULL;
         set_delete_balance(me, parent, false);
     }
@@ -531,11 +456,9 @@ static void set_remove_one_child(set me, const struct node *const traverse)
     // If no parent, make the child of traverse the new root.
     if (parent == NULL) {
         if (traverse->left != NULL) {
-            info = "one 1";
             traverse->left->parent = NULL;
             me->root = traverse->left;
         } else {
-            info = "one 2";
             traverse->right->parent = NULL;
             me->root = traverse->right;
         }
@@ -544,22 +467,18 @@ static void set_remove_one_child(set me, const struct node *const traverse)
     // The parent of traverse now references the child of traverse.
     if (parent->left == traverse) {
         if (traverse->left != NULL) {
-            info = "one 3";
             parent->left = traverse->left;
             traverse->left->parent = parent;
         } else {
-            info = "one 4";
             parent->left = traverse->right;
             traverse->right->parent = parent;
         }
         set_delete_balance(me, parent, true);
     } else {
         if (traverse->left != NULL) {
-            info = "one 5";
             parent->right = traverse->left;
             traverse->left->parent = parent;
         } else {
-            info = "one 6";
             parent->right = traverse->right;
             traverse->right->parent = parent;
         }
@@ -575,11 +494,9 @@ static void set_remove_two_children(set me, const struct node *const traverse)
     bool is_left_deleted;
     struct node *item;
     if (traverse->right->left == NULL) {
-        info = "two 1";
         item = traverse->right;
         is_left_deleted = false;
     } else {
-        info = "two 2";
         item = traverse->right->left;
         while (item->left != NULL) {
             item = item->left;
@@ -614,21 +531,17 @@ static void set_remove_two_children(set me, const struct node *const traverse)
  *
  * @return If the set contained the element.
  */
-bool set_remove(set me, void *const key, int line_number)
+bool set_remove(set me, void *const key)
 {
-    set_verify(me, "set_remove", line_number);
     struct node *const traverse = set_equal_match(me, key);
     if (traverse == NULL) {
         return false;
     }
     if (traverse->left == NULL && traverse->right == NULL) {
-        info = "no";
         set_remove_no_children(me, traverse);
     } else if (traverse->left == NULL || traverse->right == NULL) {
-        info = "one";
         set_remove_one_child(me, traverse);
     } else {
-        info = "two";
         set_remove_two_children(me, traverse);
     }
     free(traverse->key);
@@ -659,9 +572,8 @@ static void set_clear_root(struct node *const root)
  *
  * @param me The set to clear.
  */
-void set_clear(set me, int line_number)
+void set_clear(set me)
 {
-    set_verify(me, "set_clear", line_number);
     if (me->root != NULL) {
         set_clear_root(me->root);
         me->root = NULL;
@@ -678,7 +590,7 @@ void set_clear(set me, int line_number)
  */
 set set_destroy(set me)
 {
-    set_clear(me, -1);
+    set_clear(me);
     free(me);
     return NULL;
 }
