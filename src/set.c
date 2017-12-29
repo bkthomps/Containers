@@ -522,7 +522,6 @@ void set_remove_two_children(set me, const struct node *const traverse)
     if (traverse->right->left == NULL) {
         item = traverse->right;
         is_left_deleted = false;
-        printf("one ");
     } else {
         item = traverse->right->left;
         while (item->left != NULL) {
@@ -532,9 +531,11 @@ void set_remove_two_children(set me, const struct node *const traverse)
         item->right = traverse->right;
         item->right->parent = item;
         is_left_deleted = true;
-        printf("two ");
     }
-    struct node *const parent = item->parent;
+    struct node *parent = item->parent;
+    if (parent == traverse) {
+        parent = item;
+    }
     item->balance = traverse->balance;
     item->parent = traverse->parent;
     if (item->parent != NULL) {
@@ -546,8 +547,6 @@ void set_remove_two_children(set me, const struct node *const traverse)
         me->root = item;
     }
     set_delete_balance(me, parent, is_left_deleted);
-    printf("remove %d\n", *(int *) traverse->key);
-    set_dump(me);
 }
 
 /**
