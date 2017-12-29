@@ -73,6 +73,10 @@ static void set_dump(set me)
     printf("\n");
 }
 
+static int line_num;
+static char *old_operation;
+static char *operation;
+
 static int set_verify_recursive(struct node *const item)
 {
     if (item == NULL) {
@@ -87,7 +91,10 @@ static int set_verify_recursive(struct node *const item)
         static int count = 0;
         count++;
         if (count == 1) {
+            printf("failed on %s due to %s\n", operation, old_operation);
+            printf("failed on line %d\n", line_num);
             set_dump_recursive(item, 0);
+            assert(0);
         }
         //printf("%d\n", count);
     }
@@ -95,8 +102,11 @@ static int set_verify_recursive(struct node *const item)
     return max + 1;
 }
 
-static void set_verify(set me)
+static void set_verify(set me, char *const message, int line_number)
 {
+    line_num = line_number;
+    old_operation = operation;
+    operation = message;
     set_verify_recursive(me->root);
 }
 
@@ -332,9 +342,9 @@ static struct node *set_create_node(set me,
  * @return 0       No error.
  *         -ENOMEM Out of memory.
  */
-int set_add(set me, void *const key)
+int set_add(set me, void *const key, int line_number)
 {
-    set_verify(me);
+    set_verify(me, "set_add", line_number);
     if (me->root == NULL) {
         struct node *insert = set_create_node(me, key, NULL);
         if (insert == NULL) {
@@ -415,9 +425,9 @@ static struct node *set_equal_match(set me, const void *const key)
  *
  * @return If the set contained the element.
  */
-bool set_contains(set me, void *const key)
+bool set_contains(set me, void *const key, int line_number)
 {
-    set_verify(me);
+    set_verify(me, "set_contains", line_number);
     return set_equal_match(me, key) != NULL;
 }
 
@@ -586,9 +596,9 @@ static void set_remove_two_children(set me, const struct node *const traverse)
  *
  * @return If the set contained the element.
  */
-bool set_remove(set me, void *const key)
+bool set_remove(set me, void *const key, int line_number)
 {
-    set_verify(me);
+    set_verify(me, "set_remove", line_number);
     struct node *const traverse = set_equal_match(me, key);
     if (traverse == NULL) {
         return false;
@@ -628,9 +638,9 @@ static void set_clear_root(struct node *const root)
  *
  * @param me The set to clear.
  */
-void set_clear(set me)
+void set_clear(set me, int line_number)
 {
-    set_verify(me);
+    set_verify(me, "set_clear", line_number);
     if (me->root != NULL) {
         set_clear_root(me->root);
         me->root = NULL;
@@ -647,7 +657,7 @@ void set_clear(set me)
  */
 set set_destroy(set me)
 {
-    set_clear(me);
+    set_clear(me, -1);
     free(me);
     return NULL;
 }

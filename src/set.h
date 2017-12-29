@@ -36,12 +36,12 @@ int set_size(set me);
 bool set_is_empty(set me);
 
 // Accessing
-int set_add(set me, void *key);
-bool set_contains(set me, void *key);
-bool set_remove(set me, void *key);
+int set_add(set me, void *key, int /* TODO: remove this param */);
+bool set_contains(set me, void *key, int /* TODO: remove this param */);
+bool set_remove(set me, void *key, int /* TODO: remove this param */);
 
 // Ending
-void set_clear(set me);
+void set_clear(set me, int /* TODO: remove this param */);
 set set_destroy(set me);
 
 #endif /* CONTAINERS_SET_H */
