@@ -73,6 +73,33 @@ static void set_dump(set me)
     printf("\n");
 }
 
+static int set_verify_recursive(struct node *const item)
+{
+    if (item == NULL) {
+        return 0;
+    }
+    const int left = set_verify_recursive(item->left);
+    const int right = set_verify_recursive(item->right);
+    const int max = left > right ? left : right;
+    //printf("%d,%d,%d,%d\n", left, right, max, item->balance);
+    if (right - left != item->balance) {
+        //set_dump_recursive(item, 0);
+        static int count = 0;
+        count++;
+        if (count == 1) {
+            set_dump_recursive(item, 0);
+        }
+        //printf("%d\n", count);
+    }
+    //assert(right - left == item->balance);
+    return max + 1;
+}
+
+static void set_verify(set me)
+{
+    set_verify_recursive(me->root);
+}
+
 /**
  * Initializes a set, which is a collection of unique keys, sorted by keys.
  *
@@ -307,6 +334,7 @@ static struct node *set_create_node(set me,
  */
 int set_add(set me, void *const key)
 {
+    set_verify(me);
     if (me->root == NULL) {
         struct node *insert = set_create_node(me, key, NULL);
         if (insert == NULL) {
@@ -389,15 +417,16 @@ static struct node *set_equal_match(set me, const void *const key)
  */
 bool set_contains(set me, void *const key)
 {
+    set_verify(me);
     return set_equal_match(me, key) != NULL;
 }
 
 /*
  * Repairs the AVL tree by pivoting on an item.
  */
-struct node *set_repair_pivot(set me,
-                              struct node *const item,
-                              const bool is_left_pivot)
+static struct node *set_repair_pivot(set me,
+                                     struct node *const item,
+                                     const bool is_left_pivot)
 {
     struct node *const child = is_left_pivot ? item->right : item->left;
     struct node *const grand_child =
@@ -455,7 +484,7 @@ static void set_delete_balance(set me,
 /*
  * Removes traverse when it has no children.
  */
-void set_remove_no_children(set me, const struct node *const traverse)
+static void set_remove_no_children(set me, const struct node *const traverse)
 {
     struct node *const parent = traverse->parent;
     // If no parent and no children, then the only node is traverse.
@@ -476,7 +505,7 @@ void set_remove_no_children(set me, const struct node *const traverse)
 /*
  * Removes traverse when it has one child.
  */
-void set_remove_one_child(set me, const struct node *const traverse)
+static void set_remove_one_child(set me, const struct node *const traverse)
 {
     struct node *const parent = traverse->parent;
     // If no parent, make the child of traverse the new root.
@@ -515,7 +544,7 @@ void set_remove_one_child(set me, const struct node *const traverse)
 /*
  * Removes traverse when it has two children.
  */
-void set_remove_two_children(set me, const struct node *const traverse)
+static void set_remove_two_children(set me, const struct node *const traverse)
 {
     bool is_left_deleted;
     struct node *item;
@@ -559,6 +588,7 @@ void set_remove_two_children(set me, const struct node *const traverse)
  */
 bool set_remove(set me, void *const key)
 {
+    set_verify(me);
     struct node *const traverse = set_equal_match(me, key);
     if (traverse == NULL) {
         return false;
@@ -600,6 +630,7 @@ static void set_clear_root(struct node *const root)
  */
 void set_clear(set me)
 {
+    set_verify(me);
     if (me->root != NULL) {
         set_clear_root(me->root);
         me->root = NULL;
