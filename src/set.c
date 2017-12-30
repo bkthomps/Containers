@@ -526,28 +526,24 @@ static void set_remove_one_child(set me, const struct node *const traverse)
  */
 static void set_remove_two_children(set me, const struct node *const traverse)
 {
-    if (traverse->right->left == NULL) {
+    struct node *item;
+    struct node *parent;
+    const bool is_left_delete = traverse->right->left != NULL;
+    if (!is_left_delete) {
         printf("two 1\n");
-        struct node *const item = traverse->right;
+        item = traverse->right;
+        parent = item;
         item->balance = traverse->balance;
         item->parent = traverse->parent;
         item->left = traverse->left;
         item->left->parent = item;
-        if (traverse->parent == NULL) {
-            me->root = item;
-        } else if (traverse->parent->left == traverse) {
-            item->parent->left = item;
-        } else {
-            item->parent->right = item;
-        }
-        set_delete_balance(me, item, false);
     } else {
         printf("two 2\n");
-        struct node *item = traverse->right->left;
+        item = traverse->right->left;
         while (item->left != NULL) {
             item = item->left;
         }
-        struct node *const parent = item->parent;
+        parent = item->parent;
         item->balance = traverse->balance;
         item->parent->left = item->right;
         if (item->right != NULL) {
@@ -558,16 +554,16 @@ static void set_remove_two_children(set me, const struct node *const traverse)
         item->right = traverse->right;
         item->right->parent = item;
         item->parent = traverse->parent;
-        if (traverse->parent == NULL) {
-            me->root = item;
-        } else if (traverse->parent->left == traverse) {
-            item->parent->left = item;
-        } else {
-            item->parent->right = item;
-        }
-        set_delete_balance(me, parent, true);
         // FIXME: balance is incorrect for edge case
     }
+    if (traverse->parent == NULL) {
+        me->root = item;
+    } else if (traverse->parent->left == traverse) {
+        item->parent->left = item;
+    } else {
+        item->parent->right = item;
+    }
+    set_delete_balance(me, parent, is_left_delete);
 }
 
 /*
