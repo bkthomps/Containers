@@ -514,6 +514,23 @@ static void set_remove_two_children(set me, const struct node *const traverse)
     set_delete_balance(me, parent, is_left_deleted);
 }
 
+/*
+ * Removes the element from the set.
+ */
+static void set_remove_element(set me, struct node *const traverse)
+{
+    if (traverse->left == NULL && traverse->right == NULL) {
+        set_remove_no_children(me, traverse);
+    } else if (traverse->left == NULL || traverse->right == NULL) {
+        set_remove_one_child(me, traverse);
+    } else {
+        set_remove_two_children(me, traverse);
+    }
+    free(traverse->key);
+    free(traverse);
+    me->size--;
+}
+
 /**
  * Removes the element from the set if it contains it.
  *
@@ -528,16 +545,7 @@ bool set_remove(set me, void *const key)
     if (traverse == NULL) {
         return false;
     }
-    if (traverse->left == NULL && traverse->right == NULL) {
-        set_remove_no_children(me, traverse);
-    } else if (traverse->left == NULL || traverse->right == NULL) {
-        set_remove_one_child(me, traverse);
-    } else {
-        set_remove_two_children(me, traverse);
-    }
-    free(traverse->key);
-    free(traverse);
-    me->size--;
+    set_remove_element(me, traverse);
     return true;
 }
 
