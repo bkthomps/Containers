@@ -40,6 +40,9 @@ static int set_verify_recursive(struct node *const item)
     const int left = set_verify_recursive(item->left);
     const int right = set_verify_recursive(item->right);
     const int max = left > right ? left : right;
+    if (right - left != item->balance) {
+        printf("%d,%d,%d\n", item->balance, right, left);
+    }
     assert(right - left == item->balance);
     if (item->left != NULL && item->right != NULL) {
         const int left_val = *(int *) item->left->key;
@@ -65,17 +68,22 @@ static int set_compute_size(struct node *const item)
     return 1 + set_compute_size(item->left) + set_compute_size(item->right);
 }
 
-void set_verify(set me)
+void set_assert(set me)
 {
-#ifdef LONG_TEST
     set_verify_recursive(me->root);
     assert(set_compute_size(me->root) == set_size(me));
+}
+
+static void set_verify(set me)
+{
+#ifdef LONG_TEST
+    set_verify_analyze(me);
 #endif
 }
 
 static int stub_set_add(set me, void *key, const int line)
 {
-    printf("add %d\n", line);
+    //printf("add %d\n", line);
     const int ret = set_add(me, key);
     set_verify(me);
     return ret;
@@ -83,7 +91,7 @@ static int stub_set_add(set me, void *key, const int line)
 
 static bool stub_set_contains(set me, void *key, const int line)
 {
-    printf("contains %d\n", line);
+    //printf("contains %d\n", line);
     const bool ret = set_contains(me, key);
     set_verify(me);
     return ret;
