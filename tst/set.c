@@ -2,7 +2,7 @@
 #include "../src/set.h"
 
 // Used for thorough testing, but takes longer to run.
-#define LONG_TEST
+//#define LONG_TEST
 
 /*
  * Include this struct for the stubs.
@@ -71,9 +71,9 @@ static void set_verify(set me)
 #endif
 }
 
-static int stub_set_add(set me, void *const key)
+static int stub_set_put(set me, void *const key)
 {
-    const int ret = set_add(me, key);
+    const int ret = set_put(me, key);
     set_verify(me);
     return ret;
 }
@@ -118,111 +118,111 @@ void test_set(void)
     int b;
     // left-left
     b = 5;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 3;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 1;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 0xdeadbeef;
     stub_set_contains(a, &b);
     stub_set_clear(a);
     // right-right
     b = 1;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 3;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 5;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 0xdeadbeef;
     stub_set_contains(a, &b);
     stub_set_clear(a);
     // left-right
     b = 5;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 1;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 3;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 0xdeadbeef;
     stub_set_contains(a, &b);
     stub_set_clear(a);
     // right-left
     b = 1;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 5;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 3;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 0xdeadbeef;
     stub_set_contains(a, &b);
     stub_set_clear(a);
     // Two children edge case.
     b = 8;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 5;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 11;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 2;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 6;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 10;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 15;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 1;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 3;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 4;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 7;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 9;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 12;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 13;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 16;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 14;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     stub_set_clear(a);
     // Two children edge case.
     b = 8;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 4;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 12;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 2;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 6;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 10;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 15;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 1;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 3;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 5;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 7;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 9;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 11;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 13;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 16;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 14;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     stub_set_clear(a);
     // Add a lot of items.
     int count = 0;
@@ -230,7 +230,7 @@ void test_set(void)
     for (int i = 1234; i < 82400; i++) {
         int n = i % 765;
         const bool is_already_present = stub_set_contains(a, &n);
-        stub_set_add(a, &n);
+        stub_set_put(a, &n);
         const bool is_now_present = stub_set_contains(a, &n);
         assert(is_now_present);
         if (!is_already_present && is_now_present) {
@@ -248,20 +248,20 @@ void test_set(void)
     assert(set_size(a) == 0);
     assert(set_is_empty(a));
     b = 4;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     assert(set_size(a) == 1);
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     assert(set_size(a) == 1);
     assert(!set_is_empty(a));
     assert(stub_set_contains(a, &b));
     b = 7;
     assert(!stub_set_contains(a, &b));
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     assert(set_size(a) == 2);
     assert(stub_set_contains(a, &b));
     int c[10] = {5, 9, 4, -5, 0, 6, 1, 5, 7, 2};
     for (int i = 0; i < 10; i++) {
-        stub_set_add(a, &c[i]);
+        stub_set_put(a, &c[i]);
         assert(stub_set_contains(a, &c[i]));
     }
     assert(set_size(a) == 9);
@@ -319,7 +319,7 @@ void test_set(void)
     assert(!stub_set_contains(a, &num));
     // Add a lot of items and remove individually.
     for (int i = 5000; i < 6000; i++) {
-        stub_set_add(a, &i);
+        stub_set_put(a, &i);
         assert(stub_set_contains(a, &i));
     }
     assert(set_size(a) == 1000);
@@ -334,7 +334,7 @@ void test_set(void)
     assert(set_is_empty(a));
     // Add a lot of items and clear.
     for (int i = 5000; i < 6000; i++) {
-        stub_set_add(a, &i);
+        stub_set_put(a, &i);
         assert(stub_set_contains(a, &i));
     }
     assert(set_size(a) == 1000);
@@ -348,19 +348,19 @@ void test_set(void)
     // Create odd shape graph.
     a = set_init(sizeof(int), compare_int);
     int tmp = 10;
-    stub_set_add(a, &tmp);
+    stub_set_put(a, &tmp);
     tmp = 5;
-    stub_set_add(a, &tmp);
+    stub_set_put(a, &tmp);
     tmp = 15;
-    stub_set_add(a, &tmp);
+    stub_set_put(a, &tmp);
     tmp = 3;
-    stub_set_add(a, &tmp);
+    stub_set_put(a, &tmp);
     tmp = 8;
-    stub_set_add(a, &tmp);
+    stub_set_put(a, &tmp);
     tmp = 12;
-    stub_set_add(a, &tmp);
+    stub_set_put(a, &tmp);
     tmp = 18;
-    stub_set_add(a, &tmp);
+    stub_set_put(a, &tmp);
     tmp = 12;
     stub_set_remove(a, &tmp);
     tmp = 5;
@@ -372,7 +372,7 @@ void test_set(void)
     stub_set_clear(a);
     // Allocate many nodes.
     for (int i = 8123; i < 12314; i += 3) {
-        stub_set_add(a, &i);
+        stub_set_put(a, &i);
         assert(stub_set_contains(a, &i));
     }
     for (int i = 13000; i > 8000; i--) {
@@ -382,31 +382,31 @@ void test_set(void)
     stub_set_clear(a);
     // Create another odd shape graph.
     tmp = 20;
-    stub_set_add(a, &tmp);
+    stub_set_put(a, &tmp);
     tmp = 10;
-    stub_set_add(a, &tmp);
+    stub_set_put(a, &tmp);
     tmp = 40;
-    stub_set_add(a, &tmp);
+    stub_set_put(a, &tmp);
     tmp = 5;
-    stub_set_add(a, &tmp);
+    stub_set_put(a, &tmp);
     tmp = 15;
-    stub_set_add(a, &tmp);
+    stub_set_put(a, &tmp);
     tmp = 30;
-    stub_set_add(a, &tmp);
+    stub_set_put(a, &tmp);
     tmp = 50;
-    stub_set_add(a, &tmp);
+    stub_set_put(a, &tmp);
     tmp = 25;
-    stub_set_add(a, &tmp);
+    stub_set_put(a, &tmp);
     tmp = 35;
-    stub_set_add(a, &tmp);
+    stub_set_put(a, &tmp);
     tmp = 36;
-    stub_set_add(a, &tmp);
+    stub_set_put(a, &tmp);
     tmp = 34;
-    stub_set_add(a, &tmp);
+    stub_set_put(a, &tmp);
     tmp = 33;
-    stub_set_add(a, &tmp);
+    stub_set_put(a, &tmp);
     tmp = 32;
-    stub_set_add(a, &tmp);
+    stub_set_put(a, &tmp);
     tmp = 30;
     stub_set_remove(a, &tmp);
     tmp = 32;
@@ -414,13 +414,13 @@ void test_set(void)
     stub_set_clear(a);
     // One sided tree.
     tmp = 10;
-    stub_set_add(a, &tmp);
+    stub_set_put(a, &tmp);
     tmp = 9;
-    stub_set_add(a, &tmp);
+    stub_set_put(a, &tmp);
     tmp = 8;
-    stub_set_add(a, &tmp);
+    stub_set_put(a, &tmp);
     tmp = 7;
-    stub_set_add(a, &tmp);
+    stub_set_put(a, &tmp);
     tmp = 8;
     stub_set_remove(a, &tmp);
     tmp = 7;
@@ -429,47 +429,47 @@ void test_set(void)
     // Replace two sided two children.
     a = set_init(sizeof(int), compare_int);
     b = 5;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 1;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 6;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = -1;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 3;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 7;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = -2;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 0;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 2;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 4;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 1;
     stub_set_remove(a, &b);
     assert(!stub_set_contains(a, &b));
     stub_set_clear(a);
     b = 5;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 1;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 6;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = -1;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 3;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 7;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = -2;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 0;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 4;
-    stub_set_add(a, &b);
+    stub_set_put(a, &b);
     b = 1;
     stub_set_remove(a, &b);
     assert(!stub_set_contains(a, &b));

@@ -20,28 +20,31 @@
  * SOFTWARE.
  */
 
-#ifndef CONTAINERS_SET_H
-#define CONTAINERS_SET_H
+#ifndef CONTAINERS_MULTISET_H
+#define CONTAINERS_MULTISET_H
 
 #include <stdbool.h>
 
-typedef struct _set *set;
+typedef struct _multiset *multiset;
 
 // Starting
-set set_init(size_t key_size,
-             int (*comparator)(const void *const one, const void *const two));
+multiset multiset_init(size_t key_size,
+                       int (*comparator)(const void *const one,
+                                         const void *const two));
 
 // Capacity
-int set_size(set me);
-bool set_is_empty(set me);
+int multiset_size(multiset me);
+bool multiset_is_empty(multiset me);
 
 // Accessing
-int set_put(set me, void *key);
-bool set_contains(set me, void *key);
-bool set_remove(set me, void *key);
+int multiset_put(multiset me, void *key);
+int multiset_count(multiset me, void *key);
+bool multiset_contains(multiset me, void *key);
+bool multiset_remove(multiset me, void *key);
+bool multiset_remove_all(multiset me, void *key);
 
 // Ending
-void set_clear(set me);
-set set_destroy(set me);
+void multiset_clear(multiset me);
+multiset multiset_destroy(multiset me);
 
-#endif /* CONTAINERS_SET_H */
+#endif /* CONTAINERS_MULTISET_H */

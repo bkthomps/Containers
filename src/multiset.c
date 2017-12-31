@@ -23,9 +23,9 @@
 #include <stdlib.h>
 #include <memory.h>
 #include <errno.h>
-#include "set.h"
+#include "multiset.h"
 
-struct _set {
+struct _multiset {
     size_t key_size;
     int (*comparator)(const void *const one, const void *const two);
     int size;
@@ -33,6 +33,7 @@ struct _set {
 };
 
 struct node {
+    int count;
     struct node *parent;
     int balance;
     void *key;
@@ -41,17 +42,19 @@ struct node {
 };
 
 /**
- * Initializes a set, which is a collection of unique keys, sorted by keys.
+ * Initializes a multiset, which is a collection of key-value pairs, sorted by
+ * keys, keys are unique
  *
- * @param key_size   The size of each element in the set.
+ * @param key_size   The size of each element in the multiset.
  * @param comparator The comparator function used for key ordering.
  *
- * @return The newly-initialized set, or NULL if memory allocation error.
+ * @return The newly-initialized multiset, or NULL if memory allocation error.
  */
-set set_init(const size_t key_size,
-             int (*const comparator)(const void *const, const void *const))
+multiset multiset_init(const size_t key_size,
+                       int (*const comparator)(const void *const,
+                                               const void *const))
 {
-    struct _set *const init = malloc(sizeof(struct _set));
+    struct _multiset *const init = malloc(sizeof(struct _multiset));
     if (init == NULL) {
         return NULL;
     }
@@ -63,35 +66,35 @@ set set_init(const size_t key_size,
 }
 
 /**
- * Gets the size of the set.
+ * Gets the size of the multiset.
  *
- * @param me The set to check.
+ * @param me The multiset to check.
  *
- * @return The size of the set.
+ * @return The size of the multiset.
  */
-int set_size(set me)
+int multiset_size(multiset me)
 {
     return me->size;
 }
 
 /**
- * Determines whether or not the set is empty.
+ * Determines whether or not the multiset is empty.
  *
- * @param me The set to check.
+ * @param me The multiset to check.
  *
- * @return If the set is empty.
+ * @return If the multiset is empty.
  */
-bool set_is_empty(set me)
+bool multiset_is_empty(multiset me)
 {
-    return set_size(me) == 0;
+    return multiset_size(me) == 0;
 }
 
 /*
  * Resets the parent reference.
  */
-static void set_reference_parent(set me,
-                                 struct node *const parent,
-                                 struct node *const child)
+static void multiset_reference_parent(multiset me,
+                                      struct node *const parent,
+                                      struct node *const child)
 {
     child->parent = parent->parent;
     if (parent->parent == NULL) {
@@ -106,11 +109,11 @@ static void set_reference_parent(set me,
 /*
  * Rotates the AVL tree to the left.
  */
-static void set_rotate_left(set me,
-                            struct node *const parent,
-                            struct node *const child)
+static void multiset_rotate_left(multiset me,
+                                 struct node *const parent,
+                                 struct node *const child)
 {
-    set_reference_parent(me, parent, child);
+    multiset_reference_parent(me, parent, child);
     struct node *const grand_child = child->left;
     if (grand_child != NULL) {
         grand_child->parent = parent;
@@ -123,11 +126,11 @@ static void set_rotate_left(set me,
 /*
  * Rotates the AVL tree to the right.
  */
-static void set_rotate_right(set me,
-                             struct node *const parent,
-                             struct node *const child)
+static void multiset_rotate_right(multiset me,
+                                  struct node *const parent,
+                                  struct node *const child)
 {
-    set_reference_parent(me, parent, child);
+    multiset_reference_parent(me, parent, child);
     struct node *const grand_child = child->right;
     if (grand_child != NULL) {
         grand_child->parent = parent;
@@ -140,13 +143,13 @@ static void set_rotate_right(set me,
 /*
  * Repairs the AVL tree on insert.
  */
-static struct node *set_repair(set me,
-                               struct node *const parent,
-                               struct node *const child,
-                               struct node *const grand_child)
+static struct node *multiset_repair(multiset me,
+                                    struct node *const parent,
+                                    struct node *const child,
+                                    struct node *const grand_child)
 {
     if (parent->balance == 2 && child->balance >= 0) {
-        set_rotate_left(me, parent, child);
+        multiset_rotate_left(me, parent, child);
         if (child->balance == 0) {
             parent->balance = 1;
             child->balance = -1;
@@ -157,7 +160,7 @@ static struct node *set_repair(set me,
         return child;
     }
     if (parent->balance == -2 && child->balance <= 0) {
-        set_rotate_right(me, parent, child);
+        multiset_rotate_right(me, parent, child);
         if (child->balance == 0) {
             parent->balance = -1;
             child->balance = 1;
@@ -168,8 +171,8 @@ static struct node *set_repair(set me,
         return child;
     }
     if (parent->balance == -2 && child->balance == 1) {
-        set_rotate_left(me, child, grand_child);
-        set_rotate_right(me, parent, grand_child);
+        multiset_rotate_left(me, child, grand_child);
+        multiset_rotate_right(me, parent, grand_child);
         if (grand_child->balance == 1) {
             parent->balance = 0;
             child->balance = -1;
@@ -184,8 +187,8 @@ static struct node *set_repair(set me,
         return grand_child;
     }
     if (parent->balance == 2 && child->balance == -1) {
-        set_rotate_right(me, child, grand_child);
-        set_rotate_left(me, parent, grand_child);
+        multiset_rotate_right(me, child, grand_child);
+        multiset_rotate_left(me, parent, grand_child);
         if (grand_child->balance == 1) {
             parent->balance = -1;
             child->balance = 0;
@@ -206,7 +209,7 @@ static struct node *set_repair(set me,
 /*
  * Balances the AVL tree on insert.
  */
-static void set_insert_balance(set me, struct node *const item)
+static void multiset_insert_balance(multiset me, struct node *const item)
 {
     struct node *grand_child = NULL;
     struct node *child = item;
@@ -224,7 +227,7 @@ static void set_insert_balance(set me, struct node *const item)
         // Must re-balance if not in {-1, 0, 1}
         if (parent->balance > 1 || parent->balance < -1) {
             // After one repair, the tree is balanced.
-            set_repair(me, parent, child, grand_child);
+            multiset_repair(me, parent, child, grand_child);
             return;
         }
         grand_child = child;
@@ -236,14 +239,15 @@ static void set_insert_balance(set me, struct node *const item)
 /*
  * Creates and allocates a node.
  */
-static struct node *set_create_node(set me,
-                                    const void *const data,
-                                    struct node *const parent)
+static struct node *multiset_create_node(multiset me,
+                                         const void *const data,
+                                         struct node *const parent)
 {
     struct node *const insert = malloc(sizeof(struct node));
     if (insert == NULL) {
         return NULL;
     }
+    insert->count = 1;
     insert->parent = parent;
     insert->balance = 0;
     insert->key = malloc(me->key_size);
@@ -254,27 +258,27 @@ static struct node *set_create_node(set me,
     memcpy(insert->key, data, me->key_size);
     insert->left = NULL;
     insert->right = NULL;
-    me->size++;
     return insert;
 }
 
 /**
- * Adds an element to the set if the set does not already contain it.
+ * Adds an element to the multiset if the multiset does not already contain it.
  *
- * @param me  The set to add to.
+ * @param me  The multiset to add to.
  * @param key The element to add.
  *
  * @return 0       No error.
  *         -ENOMEM Out of memory.
  */
-int set_put(set me, void *const key)
+int multiset_put(multiset me, void *const key)
 {
     if (me->root == NULL) {
-        struct node *insert = set_create_node(me, key, NULL);
+        struct node *insert = multiset_create_node(me, key, NULL);
         if (insert == NULL) {
             return -ENOMEM;
         }
         me->root = insert;
+        me->size++;
         return 0;
     }
     struct node *traverse = me->root;
@@ -284,27 +288,31 @@ int set_put(set me, void *const key)
             if (traverse->left != NULL) {
                 traverse = traverse->left;
             } else {
-                struct node *insert = set_create_node(me, key, traverse);
+                struct node *insert = multiset_create_node(me, key, traverse);
                 if (insert == NULL) {
                     return -ENOMEM;
                 }
                 traverse->left = insert;
-                set_insert_balance(me, insert);
+                multiset_insert_balance(me, insert);
+                me->size++;
                 return 0;
             }
         } else if (compare > 0) {
             if (traverse->right != NULL) {
                 traverse = traverse->right;
             } else {
-                struct node *insert = set_create_node(me, key, traverse);
+                struct node *insert = multiset_create_node(me, key, traverse);
                 if (insert == NULL) {
                     return -ENOMEM;
                 }
                 traverse->right = insert;
-                set_insert_balance(me, insert);
+                multiset_insert_balance(me, insert);
+                me->size++;
                 return 0;
             }
         } else {
+            traverse->count++;
+            me->size++;
             return 0;
         }
     }
@@ -313,7 +321,7 @@ int set_put(set me, void *const key)
 /*
  * If a match occurs, returns the match. Else, returns NULL.
  */
-static struct node *set_equal_match(set me, const void *const key)
+static struct node *multiset_equal_match(multiset me, const void *const key)
 {
     struct node *traverse = me->root;
     if (traverse == NULL) {
@@ -340,37 +348,54 @@ static struct node *set_equal_match(set me, const void *const key)
 }
 
 /**
- * Determines if the set contains the specified element.
+ * Determines the count of a specific key in the multiset.
  *
- * @param me  The set to check for the element.
+ * @param me  The multiset to check for the count.
  * @param key The element to check.
  *
- * @return If the set contained the element.
+ * @return The count of a specific key in the multiset.
  */
-bool set_contains(set me, void *const key)
+int multiset_count(multiset me, void *const key)
 {
-    return set_equal_match(me, key) != NULL;
+    const struct node *const item = multiset_equal_match(me, key);
+    if (item == NULL) {
+        return 0;
+    }
+    return item->count;
+}
+
+/**
+ * Determines if the multiset contains the specified element.
+ *
+ * @param me  The multiset to check for the element.
+ * @param key The element to check.
+ *
+ * @return If the multiset contained the element.
+ */
+bool multiset_contains(multiset me, void *const key)
+{
+    return multiset_equal_match(me, key) != NULL;
 }
 
 /*
  * Repairs the AVL tree by pivoting on an item.
  */
-static struct node *set_repair_pivot(set me,
-                                     struct node *const item,
-                                     const bool is_left_pivot)
+static struct node *multiset_repair_pivot(multiset me,
+                                          struct node *const item,
+                                          const bool is_left_pivot)
 {
     struct node *const child = is_left_pivot ? item->right : item->left;
     struct node *const grand_child =
             child->balance == 1 ? child->right : child->left;
-    return set_repair(me, item, child, grand_child);
+    return multiset_repair(me, item, child, grand_child);
 }
 
 /*
  * Balances the AVL tree on deletion.
  */
-static void set_delete_balance(set me,
-                               struct node *item,
-                               const bool is_left_deleted)
+static void multiset_delete_balance(multiset me,
+                                    struct node *item,
+                                    const bool is_left_deleted)
 {
     if (is_left_deleted) {
         item->balance++;
@@ -383,7 +408,7 @@ static void set_delete_balance(set me,
     }
     // Must re-balance if not in {-1, 0, 1}
     if (item->balance > 1 || item->balance < -1) {
-        item = set_repair_pivot(me, item, is_left_deleted);
+        item = multiset_repair_pivot(me, item, is_left_deleted);
         if (item->parent == NULL || item->balance == -1 || item->balance == 1) {
             return;
         }
@@ -402,7 +427,7 @@ static void set_delete_balance(set me,
         }
         // Must re-balance if not in {-1, 0, 1}
         if (parent->balance > 1 || parent->balance < -1) {
-            child = set_repair_pivot(me, parent, parent->left == child);
+            child = multiset_repair_pivot(me, parent, parent->left == child);
             parent = child->parent;
             // If balance is -1 or +1 after modification or the parent is NULL,
             // then the tree is balanced.
@@ -419,7 +444,8 @@ static void set_delete_balance(set me,
 /*
  * Removes traverse when it has no children.
  */
-static void set_remove_no_children(set me, const struct node *const traverse)
+static void multiset_remove_no_children(multiset me,
+                                        const struct node *const traverse)
 {
     struct node *const parent = traverse->parent;
     // If no parent and no children, then the only node is traverse.
@@ -430,17 +456,18 @@ static void set_remove_no_children(set me, const struct node *const traverse)
     // No re-reference needed since traverse has no children.
     if (parent->left == traverse) {
         parent->left = NULL;
-        set_delete_balance(me, parent, true);
+        multiset_delete_balance(me, parent, true);
     } else {
         parent->right = NULL;
-        set_delete_balance(me, parent, false);
+        multiset_delete_balance(me, parent, false);
     }
 }
 
 /*
  * Removes traverse when it has one child.
  */
-static void set_remove_one_child(set me, const struct node *const traverse)
+static void multiset_remove_one_child(multiset me,
+                                      const struct node *const traverse)
 {
     struct node *const parent = traverse->parent;
     // If no parent, make the child of traverse the new root.
@@ -463,7 +490,7 @@ static void set_remove_one_child(set me, const struct node *const traverse)
             parent->left = traverse->right;
             traverse->right->parent = parent;
         }
-        set_delete_balance(me, parent, true);
+        multiset_delete_balance(me, parent, true);
     } else {
         if (traverse->left != NULL) {
             parent->right = traverse->left;
@@ -472,14 +499,15 @@ static void set_remove_one_child(set me, const struct node *const traverse)
             parent->right = traverse->right;
             traverse->right->parent = parent;
         }
-        set_delete_balance(me, parent, false);
+        multiset_delete_balance(me, parent, false);
     }
 }
 
 /*
  * Removes traverse when it has two children.
  */
-static void set_remove_two_children(set me, const struct node *const traverse)
+static void multiset_remove_two_children(multiset me,
+                                         const struct node *const traverse)
 {
     struct node *item;
     struct node *parent;
@@ -515,66 +543,90 @@ static void set_remove_two_children(set me, const struct node *const traverse)
     } else {
         item->parent->right = item;
     }
-    set_delete_balance(me, parent, is_left_deleted);
+    multiset_delete_balance(me, parent, is_left_deleted);
 }
 
 /*
  * Removes the element from the set.
  */
-static void set_remove_element(set me, struct node *const traverse)
+static void multiset_remove_element(multiset me, struct node *const traverse)
 {
     if (traverse->left == NULL && traverse->right == NULL) {
-        set_remove_no_children(me, traverse);
+        multiset_remove_no_children(me, traverse);
     } else if (traverse->left == NULL || traverse->right == NULL) {
-        set_remove_one_child(me, traverse);
+        multiset_remove_one_child(me, traverse);
     } else {
-        set_remove_two_children(me, traverse);
+        multiset_remove_two_children(me, traverse);
     }
     free(traverse->key);
     free(traverse);
-    me->size--;
 }
 
 /**
- * Removes the element from the set if it contains it.
+ * Removes an element from the multiset if it contains it.
  *
- * @param me  The set to remove an element from.
+ * @param me  The multiset to remove an element from.
  * @param key The element to remove.
  *
- * @return If the set contained the element.
+ * @return If the multiset contained the element.
  */
-bool set_remove(set me, void *const key)
+bool multiset_remove(multiset me, void *const key)
 {
-    struct node *const traverse = set_equal_match(me, key);
+    struct node *const traverse = multiset_equal_match(me, key);
     if (traverse == NULL) {
         return false;
     }
-    set_remove_element(me, traverse);
+    traverse->count--;
+    if (traverse->count == 0) {
+        multiset_remove_element(me, traverse);
+    }
+    me->size--;
     return true;
 }
 
 /**
- * Clears the elements from the set.
+ * Removes all the elements specified by the key from an multiset if it contains
+ * the key.
  *
- * @param me The set to clear.
+ * @param me  The multiset to remove an element from.
+ * @param key The element to remove.
+ *
+ * @return If the multiset contained the element.
  */
-void set_clear(set me)
+bool multiset_remove_all(multiset me, void *const key)
 {
-    while (me->root != NULL) {
-        set_remove_element(me, me->root);
+    struct node *const traverse = multiset_equal_match(me, key);
+    if (traverse == NULL) {
+        return false;
     }
+    me->size -= traverse->count;
+    multiset_remove_element(me, traverse);
+    return true;
 }
 
 /**
- * Frees the set memory.
+ * Clears the elements from the multiset.
  *
- * @param me The set to free from memory.
+ * @param me The multiset to clear.
+ */
+void multiset_clear(multiset me)
+{
+    while (me->root != NULL) {
+        multiset_remove_element(me, me->root);
+    }
+    me->size = 0;
+}
+
+/**
+ * Frees the multiset memory.
+ *
+ * @param me The multiset to free from memory.
  *
  * @return NULL
  */
-set set_destroy(set me)
+multiset multiset_destroy(multiset me)
 {
-    set_clear(me);
+    multiset_clear(me);
     free(me);
     return NULL;
 }
