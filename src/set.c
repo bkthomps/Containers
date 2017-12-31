@@ -483,8 +483,8 @@ static void set_remove_two_children(set me, const struct node *const traverse)
 {
     struct node *item;
     struct node *parent;
-    const bool is_left_delete = traverse->right->left != NULL;
-    if (!is_left_delete) {
+    const bool is_left_deleted = traverse->right->left != NULL;
+    if (!is_left_deleted) {
         item = traverse->right;
         parent = item;
         item->balance = traverse->balance;
@@ -515,7 +515,7 @@ static void set_remove_two_children(set me, const struct node *const traverse)
     } else {
         item->parent->right = item;
     }
-    set_delete_balance(me, parent, is_left_delete);
+    set_delete_balance(me, parent, is_left_deleted);
 }
 
 /*
