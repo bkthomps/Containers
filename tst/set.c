@@ -32,7 +32,6 @@ struct node {
  */
 static int set_verify_recursive(struct node *const item)
 {
-#ifdef LONG_TEST
     if (item == NULL) {
         return 0;
     }
@@ -54,42 +53,55 @@ static int set_verify_recursive(struct node *const item)
         assert(item->right->parent->key == item->key);
     }
     return max + 1;
-#else
-    return 0;
+}
+
+static int set_compute_size(struct node *const item)
+{
+    if (item == NULL) {
+        return 0;
+    }
+    return 1 + set_compute_size(item->left) + set_compute_size(item->right);
+}
+
+static void set_verify(set me)
+{
+#ifdef LONG_TEST
+    set_verify_recursive(me->root);
+    assert(set_compute_size(me->root) == set_size(me));
 #endif
 }
 
-static int stub_set_add(set me, void *key)
+static int stub_set_add(set me, void *const key)
 {
     const int ret = set_add(me, key);
-    set_verify_recursive(me->root);
+    set_verify(me);
     return ret;
 }
 
-static bool stub_set_contains(set me, void *key)
+static bool stub_set_contains(set me, void *const key)
 {
     const bool ret = set_contains(me, key);
-    set_verify_recursive(me->root);
+    set_verify(me);
     return ret;
 }
 
-static bool stub_set_remove(set me, void *key)
+static bool stub_set_remove(set me, void *const key)
 {
     const bool ret = set_remove(me, key);
-    set_verify_recursive(me->root);
+    set_verify(me);
     return ret;
 }
 
 static void stub_set_clear(set me)
 {
     set_clear(me);
-    set_verify_recursive(me->root);
+    set_verify(me);
 }
 
 static set stub_set_destroy(set me)
 {
     set ret = set_destroy(me);
-    set_verify_recursive(me->root);
+    set_verify(me);
     return ret;
 }
 
@@ -144,6 +156,75 @@ void test_set(void)
     b = 0xdeadbeef;
     stub_set_contains(a, &b);
     stub_set_clear(a);
+    // Two children edge case.
+    b = 8;
+    stub_set_add(a, &b);
+    b = 5;
+    stub_set_add(a, &b);
+    b = 11;
+    stub_set_add(a, &b);
+    b = 2;
+    stub_set_add(a, &b);
+    b = 6;
+    stub_set_add(a, &b);
+    b = 10;
+    stub_set_add(a, &b);
+    b = 15;
+    stub_set_add(a, &b);
+    b = 1;
+    stub_set_add(a, &b);
+    b = 3;
+    stub_set_add(a, &b);
+    b = 4;
+    stub_set_add(a, &b);
+    b = 7;
+    stub_set_add(a, &b);
+    b = 9;
+    stub_set_add(a, &b);
+    b = 12;
+    stub_set_add(a, &b);
+    b = 13;
+    stub_set_add(a, &b);
+    b = 16;
+    stub_set_add(a, &b);
+    b = 14;
+    stub_set_add(a, &b);
+    stub_set_clear(a);
+    // Two children edge case.
+    b = 8;
+    stub_set_add(a, &b);
+    b = 4;
+    stub_set_add(a, &b);
+    b = 12;
+    stub_set_add(a, &b);
+    b = 2;
+    stub_set_add(a, &b);
+    b = 6;
+    stub_set_add(a, &b);
+    b = 10;
+    stub_set_add(a, &b);
+    b = 15;
+    stub_set_add(a, &b);
+    b = 1;
+    stub_set_add(a, &b);
+    b = 3;
+    stub_set_add(a, &b);
+    b = 5;
+    stub_set_add(a, &b);
+    b = 7;
+    stub_set_add(a, &b);
+    b = 9;
+    stub_set_add(a, &b);
+    b = 11;
+    stub_set_add(a, &b);
+    b = 13;
+    stub_set_add(a, &b);
+    b = 16;
+    stub_set_add(a, &b);
+    b = 14;
+    stub_set_add(a, &b);
+    stub_set_clear(a);
+    // Add a lot of items.
     int count = 0;
     bool flip = false;
     for (int i = 1234; i < 82400; i++) {
@@ -345,7 +426,7 @@ void test_set(void)
     tmp = 7;
     assert(stub_set_contains(a, &tmp));
     stub_set_destroy(a);
-    // Replace two sided two children
+    // Replace two sided two children.
     a = set_init(sizeof(int), compare_int);
     b = 5;
     stub_set_add(a, &b);

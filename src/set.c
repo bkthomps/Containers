@@ -369,7 +369,7 @@ static struct node *set_repair_pivot(set me,
  * Balances the AVL tree on deletion.
  */
 static void set_delete_balance(set me,
-                               struct node *const item,
+                               struct node *item,
                                const bool is_left_deleted)
 {
     if (is_left_deleted) {
@@ -383,10 +383,8 @@ static void set_delete_balance(set me,
     }
     // Must re-balance if not in {-1, 0, 1}
     if (item->balance > 1 || item->balance < -1) {
-        const struct node *const child =
-                set_repair_pivot(me, item, is_left_deleted);
-        const struct node *const parent = child->parent;
-        if (parent == NULL || child->balance == -1 || child->balance == 1) {
+        item = set_repair_pivot(me, item, is_left_deleted);
+        if (item->parent == NULL || item->balance == -1 || item->balance == 1) {
             return;
         }
     }
@@ -411,9 +409,10 @@ static void set_delete_balance(set me,
             if (parent == NULL || child->balance == -1 || child->balance == 1) {
                 return;
             }
+        } else {
+            child = parent;
+            parent = parent->parent;
         }
-        child = parent;
-        parent = parent->parent;
     }
 }
 
@@ -482,36 +481,58 @@ static void set_remove_one_child(set me, const struct node *const traverse)
  */
 static void set_remove_two_children(set me, const struct node *const traverse)
 {
-    bool is_left_deleted;
     struct node *item;
-    if (traverse->right->left == NULL) {
+    struct node *parent;
+    const bool is_left_deleted = traverse->right->left != NULL;
+    if (!is_left_deleted) {
         item = traverse->right;
-        is_left_deleted = false;
+        parent = item;
+        item->balance = traverse->balance;
+        item->parent = traverse->parent;
+        item->left = traverse->left;
+        item->left->parent = item;
     } else {
         item = traverse->right->left;
         while (item->left != NULL) {
             item = item->left;
         }
+        parent = item->parent;
+        item->balance = traverse->balance;
         item->parent->left = item->right;
+        if (item->right != NULL) {
+            item->right->parent = item->parent;
+        }
+        item->left = traverse->left;
+        item->left->parent = item;
         item->right = traverse->right;
         item->right->parent = item;
-        is_left_deleted = true;
+        item->parent = traverse->parent;
     }
-    struct node *parent = item->parent;
-    if (parent == traverse) {
-        parent = item;
-    }
-    item->balance = traverse->balance;
-    item->parent = traverse->parent;
-    if (item->parent != NULL) {
-        item->parent->left = item;
-    }
-    item->left = traverse->left;
-    item->left->parent = item;
-    if (item->parent == NULL) {
+    if (traverse->parent == NULL) {
         me->root = item;
+    } else if (traverse->parent->left == traverse) {
+        item->parent->left = item;
+    } else {
+        item->parent->right = item;
     }
     set_delete_balance(me, parent, is_left_deleted);
+}
+
+/*
+ * Removes the element from the set.
+ */
+static void set_remove_element(set me, struct node *const traverse)
+{
+    if (traverse->left == NULL && traverse->right == NULL) {
+        set_remove_no_children(me, traverse);
+    } else if (traverse->left == NULL || traverse->right == NULL) {
+        set_remove_one_child(me, traverse);
+    } else {
+        set_remove_two_children(me, traverse);
+    }
+    free(traverse->key);
+    free(traverse);
+    me->size--;
 }
 
 /**
@@ -528,32 +549,8 @@ bool set_remove(set me, void *const key)
     if (traverse == NULL) {
         return false;
     }
-    if (traverse->left == NULL && traverse->right == NULL) {
-        set_remove_no_children(me, traverse);
-    } else if (traverse->left == NULL || traverse->right == NULL) {
-        set_remove_one_child(me, traverse);
-    } else {
-        set_remove_two_children(me, traverse);
-    }
-    free(traverse->key);
-    free(traverse);
-    me->size--;
+    set_remove_element(me, traverse);
     return true;
-}
-
-/*
- * Recursively frees the node passed in.
- */
-static void set_clear_root(struct node *const root)
-{
-    if (root->left != NULL) {
-        set_clear_root(root->left);
-    }
-    if (root->right != NULL) {
-        set_clear_root(root->right);
-    }
-    free(root->key);
-    free(root);
 }
 
 /**
@@ -563,10 +560,8 @@ static void set_clear_root(struct node *const root)
  */
 void set_clear(set me)
 {
-    if (me->root != NULL) {
-        set_clear_root(me->root);
-        me->root = NULL;
-        me->size = 0;
+    while (me->root != NULL) {
+        set_remove_element(me, me->root);
     }
 }
 
