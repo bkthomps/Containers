@@ -25,9 +25,6 @@
 #include <errno.h>
 #include "set.h"
 
-#include <stdio.h>
-#include <assert.h>
-
 struct _set {
     size_t key_size;
     int (*comparator)(const void *const one, const void *const two);
@@ -42,38 +39,6 @@ struct node {
     struct node *left;
     struct node *right;
 };
-
-void set_assert(set me);
-
-void set_dump_recursive(const struct node *const item, const int depth)
-{
-    printf("\n");
-    for (int i = 0; i < depth; i++) {
-        printf("  ");
-    }
-    if (item == NULL) {
-        printf("NULL");
-        return;
-    }
-    int *key_val = item->key;
-    printf("%d,%d", *key_val, item->balance);
-    set_dump_recursive(item->left, depth + 1);
-    set_dump_recursive(item->right, depth + 1);
-}
-
-void set_dump(set me)
-{
-    struct node *const item = me->root;
-    if (item != NULL) {
-        int *key_val = item->key;
-        printf("root -> %d,%d", *key_val, item->balance);
-        assert(item->parent == NULL);
-    } else {
-        printf("root -> NULL");
-    }
-    set_dump_recursive(me->root, 0);
-    printf("\n");
-}
 
 /**
  * Initializes a set, which is a collection of unique keys, sorted by keys.
@@ -219,14 +184,12 @@ static struct node *set_repair(set me,
         return grand_child;
     }
     if (parent->balance == 2 && child->balance == -1) {
-        printf("ok\n");
         set_rotate_right(me, child, grand_child);
         set_rotate_left(me, parent, grand_child);
         if (grand_child->balance == 1) {
             parent->balance = -1;
             child->balance = 0;
         } else if (grand_child->balance == 0) {
-            printf("pls\n");
             parent->balance = 0;
             child->balance = 0;
         } else {
@@ -427,7 +390,6 @@ static void set_delete_balance(set me,
     }
     struct node *child = item;
     struct node *parent = item->parent;
-    printf("two - %d,%d\n", *(int *) child->key, *(int *) child->parent->key);
     while (parent != NULL) {
         if (parent->left == child) {
             parent->balance++;
@@ -447,9 +409,10 @@ static void set_delete_balance(set me,
             if (parent == NULL || child->balance == -1 || child->balance == 1) {
                 return;
             }
+        } else {
+            child = parent;
+            parent = parent->parent;
         }
-        child = parent;
-        parent = parent->parent;
     }
 }
 
@@ -461,17 +424,14 @@ static void set_remove_no_children(set me, const struct node *const traverse)
     struct node *const parent = traverse->parent;
     // If no parent and no children, then the only node is traverse.
     if (parent == NULL) {
-        //printf("no 1\n");
         me->root = NULL;
         return;
     }
     // No re-reference needed since traverse has no children.
     if (parent->left == traverse) {
-        //printf("no 2\n");
         parent->left = NULL;
         set_delete_balance(me, parent, true);
     } else {
-        //printf("no 3\n");
         parent->right = NULL;
         set_delete_balance(me, parent, false);
     }
@@ -486,11 +446,9 @@ static void set_remove_one_child(set me, const struct node *const traverse)
     // If no parent, make the child of traverse the new root.
     if (parent == NULL) {
         if (traverse->left != NULL) {
-            //printf("one 1\n");
             traverse->left->parent = NULL;
             me->root = traverse->left;
         } else {
-            //printf("one 2\n");
             traverse->right->parent = NULL;
             me->root = traverse->right;
         }
@@ -499,22 +457,18 @@ static void set_remove_one_child(set me, const struct node *const traverse)
     // The parent of traverse now references the child of traverse.
     if (parent->left == traverse) {
         if (traverse->left != NULL) {
-            //printf("one 3\n");
             parent->left = traverse->left;
             traverse->left->parent = parent;
         } else {
-            //printf("one 4\n");
             parent->left = traverse->right;
             traverse->right->parent = parent;
         }
         set_delete_balance(me, parent, true);
     } else {
         if (traverse->left != NULL) {
-            //printf("one 5\n");
             parent->right = traverse->left;
             traverse->left->parent = parent;
         } else {
-            //printf("one 6\n");
             parent->right = traverse->right;
             traverse->right->parent = parent;
         }
@@ -531,7 +485,6 @@ static void set_remove_two_children(set me, const struct node *const traverse)
     struct node *parent;
     const bool is_left_delete = traverse->right->left != NULL;
     if (!is_left_delete) {
-        //printf("two 1\n");
         item = traverse->right;
         parent = item;
         item->balance = traverse->balance;
@@ -539,16 +492,11 @@ static void set_remove_two_children(set me, const struct node *const traverse)
         item->left = traverse->left;
         item->left->parent = item;
     } else {
-        //printf("two 2\n");
         item = traverse->right->left;
         while (item->left != NULL) {
             item = item->left;
         }
         parent = item->parent;
-
-        printf("parent=%d,%d\n", *(int *) parent->key, parent->balance);
-        printf("item=%d,%d\n", *(int *) item->key, item->balance);
-
         item->balance = traverse->balance;
         item->parent->left = item->right;
         if (item->right != NULL) {
@@ -559,7 +507,6 @@ static void set_remove_two_children(set me, const struct node *const traverse)
         item->right = traverse->right;
         item->right->parent = item;
         item->parent = traverse->parent;
-        // FIXME: balance is incorrect for edge case
     }
     if (traverse->parent == NULL) {
         me->root = item;
@@ -568,7 +515,6 @@ static void set_remove_two_children(set me, const struct node *const traverse)
     } else {
         item->parent->right = item;
     }
-    //set_dump(me);
     set_delete_balance(me, parent, is_left_delete);
 }
 
@@ -615,10 +561,7 @@ bool set_remove(set me, void *const key)
 void set_clear(set me)
 {
     while (me->root != NULL) {
-        //set_dump(me);
-        printf("traverse=%d,%d\n", *(int *) me->root->key, me->root->balance);
         set_remove_element(me, me->root);
-        set_assert(me);
     }
 }
 
