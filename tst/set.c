@@ -30,13 +30,13 @@ struct node {
  * must be the right height minus the left height. Also, the left key must be
  * less than the right key.
  */
-static int set_verify_recursive(set me, struct node *const item)
+static int set_verify_recursive(struct node *const item)
 {
     if (item == NULL) {
         return 0;
     }
-    const int left = set_verify_recursive(me, item->left);
-    const int right = set_verify_recursive(me, item->right);
+    const int left = set_verify_recursive(item->left);
+    const int right = set_verify_recursive(item->right);
     const int max = left > right ? left : right;
     assert(right - left == item->balance);
     if (item->left != NULL && item->right != NULL) {
@@ -66,7 +66,7 @@ static int set_compute_size(struct node *const item)
 static void set_verify(set me)
 {
 #ifdef LONG_TEST
-    set_verify_recursive(me, me->root);
+    set_verify_recursive(me->root);
     assert(set_compute_size(me->root) == set_size(me));
 #endif
 }
