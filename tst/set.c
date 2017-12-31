@@ -3,6 +3,8 @@
 
 #include <stdio.h>
 
+void set_dump(set me);
+
 // Used for thorough testing, but takes longer to run.
 //#define LONG_TEST
 
@@ -32,16 +34,18 @@ struct node {
  * must be the right height minus the left height. Also, the left key must be
  * less than the right key.
  */
-static int set_verify_recursive(struct node *const item)
+static int set_verify_recursive(set me, struct node *const item)
 {
     if (item == NULL) {
         return 0;
     }
-    const int left = set_verify_recursive(item->left);
-    const int right = set_verify_recursive(item->right);
+    const int left = set_verify_recursive(me, item->left);
+    const int right = set_verify_recursive(me, item->right);
     const int max = left > right ? left : right;
     if (right - left != item->balance) {
         printf("%d,%d,%d\n", item->balance, right, left);
+        printf("%d\n", *(int *) item->key);
+        //set_dump(me);
     }
     assert(right - left == item->balance);
     if (item->left != NULL && item->right != NULL) {
@@ -70,7 +74,7 @@ static int set_compute_size(struct node *const item)
 
 void set_assert(set me)
 {
-    set_verify_recursive(me->root);
+    set_verify_recursive(me, me->root);
     assert(set_compute_size(me->root) == set_size(me));
 }
 
@@ -171,6 +175,44 @@ void test_set(void)
     b = 0xdeadbeef;
     stub_set_contains(a, &b, __LINE__);
     stub_set_clear(a, __LINE__);
+    // Remove special case for two children and left child has right child
+    printf("-*-*-*-*-*-*-*-\n");
+    b = 8;
+    stub_set_add(a, &b, __LINE__);
+    b = 5;
+    stub_set_add(a, &b, __LINE__);
+    b = 11;
+    stub_set_add(a, &b, __LINE__);
+    b = 2;
+    stub_set_add(a, &b, __LINE__);
+    b = 6;
+    stub_set_add(a, &b, __LINE__);
+    b = 10;
+    stub_set_add(a, &b, __LINE__);
+    b = 15;
+    stub_set_add(a, &b, __LINE__);
+    b = 1;
+    stub_set_add(a, &b, __LINE__);
+    b = 3;
+    stub_set_add(a, &b, __LINE__);
+    b = 4;
+    stub_set_add(a, &b, __LINE__);
+    b = 7;
+    stub_set_add(a, &b, __LINE__);
+    b = 9;
+    stub_set_add(a, &b, __LINE__);
+    b = 12;
+    stub_set_add(a, &b, __LINE__);
+    b = 13;
+    stub_set_add(a, &b, __LINE__);
+    b = 16;
+    stub_set_add(a, &b, __LINE__);
+    b = 14;
+    stub_set_add(a, &b, __LINE__);
+    printf("-*-*-*-*-*-*-*-\n");
+    stub_set_clear(a, __LINE__);
+    printf("-*-*-*-*-*-*-*-\n");
+    // Add a lot of items
     int count = 0;
     bool flip = false;
     for (int i = 1234; i < 82400; i++) {
