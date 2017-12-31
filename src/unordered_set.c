@@ -48,7 +48,7 @@ struct node {
  * Initializes an unordered set, which is a collection of unique keys, hashed by
  * keys.
  *
- * @param key_size   The size of each element in the unordered set.
+ * @param key_size   The size of each key in the unordered set.
  * @param hash       The hash function which computes the hash from the key.
  * @param comparator The comparator function which compares two keys.
  *
@@ -273,12 +273,12 @@ bool unordered_set_contains(unordered_set me, void *const key)
 }
 
 /**
- * Removes the element from the unordered set if it contains it.
+ * Removes the key from the unordered set if it contains it.
  *
- * @param me  The unordered set to remove an element from.
- * @param key The element to remove.
+ * @param me  The unordered set to remove an key from.
+ * @param key The key to remove.
  *
- * @return If the unordered set contained the element.
+ * @return If the unordered set contained the key.
  */
 bool unordered_set_remove(unordered_set me, void *const key)
 {
@@ -310,7 +310,7 @@ bool unordered_set_remove(unordered_set me, void *const key)
 }
 
 /**
- * Clears the elements from the unordered set.
+ * Clears the keys from the unordered set.
  *
  * @param me The unordered set to clear.
  *

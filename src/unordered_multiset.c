@@ -50,7 +50,7 @@ struct node {
  * Initializes an unordered multi-set, which is a collection of keys, hashed by
  * keys.
  *
- * @param key_size   The size of each element in the unordered multi-set.
+ * @param key_size   The size of each key in the unordered multi-set.
  * @param hash       The hash function which computes the hash from the key.
  * @param comparator The comparator function which compares two keys.
  *
@@ -215,8 +215,7 @@ unordered_multiset_create_element(unordered_multiset me,
 }
 
 /**
- * Adds an element to the unordered multi-set if the unordered multi-set does
- * not already contain it.
+ * Adds an element to the unordered multi-set.
  *
  * @param me  The unordered multi-set to add to.
  * @param key The element to add.
@@ -287,10 +286,10 @@ int unordered_multiset_count(unordered_multiset me, void *const key)
 /**
  * Determines if the unordered multi-set contains the specified element.
  *
- * @param me  The unordered multi-set to check for the element.
- * @param key The element to check.
+ * @param me  The unordered multi-set to check for the key.
+ * @param key The key to check.
  *
- * @return If the unordered multi-set contained the element.
+ * @return If the unordered multi-set contained the key.
  */
 bool unordered_multiset_contains(unordered_multiset me, void *const key)
 {
@@ -298,12 +297,12 @@ bool unordered_multiset_contains(unordered_multiset me, void *const key)
 }
 
 /**
- * Removes an element from the unordered multi-set if it contains it.
+ * Removes a key from the unordered multi-set if it contains it.
  *
- * @param me  The unordered multi-set to remove an element from.
- * @param key The element to remove.
+ * @param me  The unordered multi-set to remove a key from.
+ * @param key The key to remove.
  *
- * @return If the unordered multi-set contained the element.
+ * @return If the unordered multi-set contained the key.
  */
 bool unordered_multiset_remove(unordered_multiset me, void *const key)
 {
@@ -343,13 +342,13 @@ bool unordered_multiset_remove(unordered_multiset me, void *const key)
 }
 
 /**
- * Removes all the elements specified by the key from an unordered multi-set if
- * it contains the key.
+ * Removes all the keys specified by the key from an unordered multi-set if it
+ * contains the key.
  *
- * @param me  The unordered multi-set to remove an element from.
- * @param key The element to remove.
+ * @param me  The unordered multi-set to remove a key from.
+ * @param key The key to remove.
  *
- * @return If the unordered multi-set contained the element.
+ * @return If the unordered multi-set contained the key.
  */
 bool unordered_multiset_remove_all(unordered_multiset me, void *const key)
 {
@@ -383,7 +382,7 @@ bool unordered_multiset_remove_all(unordered_multiset me, void *const key)
 }
 
 /**
- * Clears the elements from the unordered multi-set.
+ * Clears the keys from the unordered multi-set.
  *
  * @param me The unordered multi-set to clear.
  *

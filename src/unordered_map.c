@@ -221,8 +221,8 @@ static struct node *const unordered_map_create_element(unordered_map me,
 }
 
 /**
- * Adds a key-value pair to the unordered map if the unordered map does not
- * already contain it.
+ * Adds a key-value pair to the unordered map. If the unordered map already
+ * contains the key, the value is updated to the new value.
  *
  * @param me    The unordered map to add to.
  * @param key   The key to add.

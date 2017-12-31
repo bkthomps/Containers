@@ -241,8 +241,7 @@ unordered_multimap_create_element(unordered_multimap me,
 }
 
 /**
- * Adds a key-value pair to the unordered multi-map if the unordered multi-map
- * does not already contain it.
+ * Adds a key-value pair to the unordered multi-map.
  *
  * @param me    The unordered multi-map to add to.
  * @param key   The key to add.

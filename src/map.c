@@ -23,10 +23,11 @@
 #include <stdlib.h>
 #include <memory.h>
 #include <errno.h>
-#include "set.h"
+#include "map.h"
 
-struct _set {
+struct _map {
     size_t key_size;
+    size_t value_size;
     int (*comparator)(const void *const one, const void *const two);
     int size;
     struct node *root;
@@ -36,26 +37,31 @@ struct node {
     struct node *parent;
     int balance;
     void *key;
+    void *value;
     struct node *left;
     struct node *right;
 };
 
 /**
- * Initializes a set, which is a collection of unique keys, sorted by keys.
+ * Initializes a map, which is a collection of key-value pairs, sorted by keys,
+ * keys are unique
  *
- * @param key_size   The size of each element in the set.
+ * @param key_size   The size of each key in the map.
+ * @param value_size The size of each value in the map.
  * @param comparator The comparator function used for key ordering.
  *
- * @return The newly-initialized set, or NULL if memory allocation error.
+ * @return The newly-initialized map, or NULL if memory allocation error.
  */
-set set_init(const size_t key_size,
+map map_init(const size_t key_size,
+             const size_t value_size,
              int (*const comparator)(const void *const, const void *const))
 {
-    struct _set *const init = malloc(sizeof(struct _set));
+    struct _map *const init = malloc(sizeof(struct _map));
     if (init == NULL) {
         return NULL;
     }
     init->key_size = key_size;
+    init->value_size = value_size;
     init->comparator = comparator;
     init->size = 0;
     init->root = NULL;
@@ -63,33 +69,33 @@ set set_init(const size_t key_size,
 }
 
 /**
- * Gets the size of the set.
+ * Gets the size of the map.
  *
- * @param me The set to check.
+ * @param me The map to check.
  *
- * @return The size of the set.
+ * @return The size of the map.
  */
-int set_size(set me)
+int map_size(map me)
 {
     return me->size;
 }
 
 /**
- * Determines whether or not the set is empty.
+ * Determines whether or not the map is empty.
  *
- * @param me The set to check.
+ * @param me The map to check.
  *
- * @return If the set is empty.
+ * @return If the map is empty.
  */
-bool set_is_empty(set me)
+bool map_is_empty(map me)
 {
-    return set_size(me) == 0;
+    return map_size(me) == 0;
 }
 
 /*
  * Resets the parent reference.
  */
-static void set_reference_parent(set me,
+static void map_reference_parent(map me,
                                  struct node *const parent,
                                  struct node *const child)
 {
@@ -106,11 +112,11 @@ static void set_reference_parent(set me,
 /*
  * Rotates the AVL tree to the left.
  */
-static void set_rotate_left(set me,
+static void map_rotate_left(map me,
                             struct node *const parent,
                             struct node *const child)
 {
-    set_reference_parent(me, parent, child);
+    map_reference_parent(me, parent, child);
     struct node *const grand_child = child->left;
     if (grand_child != NULL) {
         grand_child->parent = parent;
@@ -123,11 +129,11 @@ static void set_rotate_left(set me,
 /*
  * Rotates the AVL tree to the right.
  */
-static void set_rotate_right(set me,
+static void map_rotate_right(map me,
                              struct node *const parent,
                              struct node *const child)
 {
-    set_reference_parent(me, parent, child);
+    map_reference_parent(me, parent, child);
     struct node *const grand_child = child->right;
     if (grand_child != NULL) {
         grand_child->parent = parent;
@@ -140,13 +146,13 @@ static void set_rotate_right(set me,
 /*
  * Repairs the AVL tree on insert.
  */
-static struct node *set_repair(set me,
+static struct node *map_repair(map me,
                                struct node *const parent,
                                struct node *const child,
                                struct node *const grand_child)
 {
     if (parent->balance == 2 && child->balance >= 0) {
-        set_rotate_left(me, parent, child);
+        map_rotate_left(me, parent, child);
         if (child->balance == 0) {
             parent->balance = 1;
             child->balance = -1;
@@ -157,7 +163,7 @@ static struct node *set_repair(set me,
         return child;
     }
     if (parent->balance == -2 && child->balance <= 0) {
-        set_rotate_right(me, parent, child);
+        map_rotate_right(me, parent, child);
         if (child->balance == 0) {
             parent->balance = -1;
             child->balance = 1;
@@ -168,8 +174,8 @@ static struct node *set_repair(set me,
         return child;
     }
     if (parent->balance == -2 && child->balance == 1) {
-        set_rotate_left(me, child, grand_child);
-        set_rotate_right(me, parent, grand_child);
+        map_rotate_left(me, child, grand_child);
+        map_rotate_right(me, parent, grand_child);
         if (grand_child->balance == 1) {
             parent->balance = 0;
             child->balance = -1;
@@ -184,8 +190,8 @@ static struct node *set_repair(set me,
         return grand_child;
     }
     if (parent->balance == 2 && child->balance == -1) {
-        set_rotate_right(me, child, grand_child);
-        set_rotate_left(me, parent, grand_child);
+        map_rotate_right(me, child, grand_child);
+        map_rotate_left(me, parent, grand_child);
         if (grand_child->balance == 1) {
             parent->balance = -1;
             child->balance = 0;
@@ -206,7 +212,7 @@ static struct node *set_repair(set me,
 /*
  * Balances the AVL tree on insert.
  */
-static void set_insert_balance(set me, struct node *const item)
+static void map_insert_balance(map me, struct node *const item)
 {
     struct node *grand_child = NULL;
     struct node *child = item;
@@ -224,7 +230,7 @@ static void set_insert_balance(set me, struct node *const item)
         // Must re-balance if not in {-1, 0, 1}
         if (parent->balance > 1 || parent->balance < -1) {
             // After one repair, the tree is balanced.
-            set_repair(me, parent, child, grand_child);
+            map_repair(me, parent, child, grand_child);
             return;
         }
         grand_child = child;
@@ -236,8 +242,9 @@ static void set_insert_balance(set me, struct node *const item)
 /*
  * Creates and allocates a node.
  */
-static struct node *set_create_node(set me,
-                                    const void *const data,
+static struct node *map_create_node(map me,
+                                    const void *const key,
+                                    const void *const value,
                                     struct node *const parent)
 {
     struct node *const insert = malloc(sizeof(struct node));
@@ -251,7 +258,14 @@ static struct node *set_create_node(set me,
         free(insert);
         return NULL;
     }
-    memcpy(insert->key, data, me->key_size);
+    memcpy(insert->key, key, me->key_size);
+    insert->value = malloc(me->value_size);
+    if (insert->value == NULL) {
+        free(insert->key);
+        free(insert);
+        return NULL;
+    }
+    memcpy(insert->value, value, me->value_size);
     insert->left = NULL;
     insert->right = NULL;
     me->size++;
@@ -259,18 +273,20 @@ static struct node *set_create_node(set me,
 }
 
 /**
- * Adds a key to the set if the set does not already contain it.
+ * Adds a key-value pair to the map. If the map already contains the key, the
+ * value is updated to the new value.
  *
- * @param me  The set to add to.
- * @param key The key to add.
+ * @param me    The map to add to.
+ * @param key   The key to add.
+ * @param value The value to add.
  *
  * @return 0       No error.
  *         -ENOMEM Out of memory.
  */
-int set_put(set me, void *const key)
+int map_put(map me, void *const key, void *const value)
 {
     if (me->root == NULL) {
-        struct node *insert = set_create_node(me, key, NULL);
+        struct node *insert = map_create_node(me, key, value, NULL);
         if (insert == NULL) {
             return -ENOMEM;
         }
@@ -284,27 +300,28 @@ int set_put(set me, void *const key)
             if (traverse->left != NULL) {
                 traverse = traverse->left;
             } else {
-                struct node *insert = set_create_node(me, key, traverse);
+                struct node *insert = map_create_node(me, key, value, traverse);
                 if (insert == NULL) {
                     return -ENOMEM;
                 }
                 traverse->left = insert;
-                set_insert_balance(me, insert);
+                map_insert_balance(me, insert);
                 return 0;
             }
         } else if (compare > 0) {
             if (traverse->right != NULL) {
                 traverse = traverse->right;
             } else {
-                struct node *insert = set_create_node(me, key, traverse);
+                struct node *insert = map_create_node(me, key, value, traverse);
                 if (insert == NULL) {
                     return -ENOMEM;
                 }
                 traverse->right = insert;
-                set_insert_balance(me, insert);
+                map_insert_balance(me, insert);
                 return 0;
             }
         } else {
+            memcpy(traverse->value, value, me->value_size);
             return 0;
         }
     }
@@ -313,7 +330,7 @@ int set_put(set me, void *const key)
 /*
  * If a match occurs, returns the match. Else, returns NULL.
  */
-static struct node *set_equal_match(set me, const void *const key)
+static struct node *map_equal_match(map me, const void *const key)
 {
     struct node *traverse = me->root;
     if (traverse == NULL) {
@@ -340,35 +357,54 @@ static struct node *set_equal_match(set me, const void *const key)
 }
 
 /**
- * Determines if the set contains the specified key.
+ * Gets the value associated with a key in the map.
  *
- * @param me  The set to check for the key.
+ * @param value The value to copy to.
+ * @param me    The map to get from.
+ * @param key   The key to search for.
+ *
+ * @return If the map contained the key-value pair.
+ */
+bool map_get(void *const value, map me, void *const key)
+{
+    struct node *const traverse = map_equal_match(me, key);
+    if (traverse == NULL) {
+        return false;
+    }
+    memcpy(value, traverse->value, me->value_size);
+    return true;
+}
+
+/**
+ * Determines if the map contains the specified key.
+ *
+ * @param me  The map to check for the element.
  * @param key The key to check.
  *
- * @return If the set contained the key.
+ * @return If the map contained the element.
  */
-bool set_contains(set me, void *const key)
+bool map_contains(map me, void *const key)
 {
-    return set_equal_match(me, key) != NULL;
+    return map_equal_match(me, key) != NULL;
 }
 
 /*
  * Repairs the AVL tree by pivoting on an item.
  */
-static struct node *set_repair_pivot(set me,
+static struct node *map_repair_pivot(map me,
                                      struct node *const item,
                                      const bool is_left_pivot)
 {
     struct node *const child = is_left_pivot ? item->right : item->left;
     struct node *const grand_child =
             child->balance == 1 ? child->right : child->left;
-    return set_repair(me, item, child, grand_child);
+    return map_repair(me, item, child, grand_child);
 }
 
 /*
  * Balances the AVL tree on deletion.
  */
-static void set_delete_balance(set me,
+static void map_delete_balance(map me,
                                struct node *item,
                                const bool is_left_deleted)
 {
@@ -383,7 +419,7 @@ static void set_delete_balance(set me,
     }
     // Must re-balance if not in {-1, 0, 1}
     if (item->balance > 1 || item->balance < -1) {
-        item = set_repair_pivot(me, item, is_left_deleted);
+        item = map_repair_pivot(me, item, is_left_deleted);
         if (item->parent == NULL || item->balance == -1 || item->balance == 1) {
             return;
         }
@@ -402,7 +438,7 @@ static void set_delete_balance(set me,
         }
         // Must re-balance if not in {-1, 0, 1}
         if (parent->balance > 1 || parent->balance < -1) {
-            child = set_repair_pivot(me, parent, parent->left == child);
+            child = map_repair_pivot(me, parent, parent->left == child);
             parent = child->parent;
             // If balance is -1 or +1 after modification or the parent is NULL,
             // then the tree is balanced.
@@ -419,7 +455,7 @@ static void set_delete_balance(set me,
 /*
  * Removes traverse when it has no children.
  */
-static void set_remove_no_children(set me, const struct node *const traverse)
+static void map_remove_no_children(map me, const struct node *const traverse)
 {
     struct node *const parent = traverse->parent;
     // If no parent and no children, then the only node is traverse.
@@ -430,17 +466,17 @@ static void set_remove_no_children(set me, const struct node *const traverse)
     // No re-reference needed since traverse has no children.
     if (parent->left == traverse) {
         parent->left = NULL;
-        set_delete_balance(me, parent, true);
+        map_delete_balance(me, parent, true);
     } else {
         parent->right = NULL;
-        set_delete_balance(me, parent, false);
+        map_delete_balance(me, parent, false);
     }
 }
 
 /*
  * Removes traverse when it has one child.
  */
-static void set_remove_one_child(set me, const struct node *const traverse)
+static void map_remove_one_child(map me, const struct node *const traverse)
 {
     struct node *const parent = traverse->parent;
     // If no parent, make the child of traverse the new root.
@@ -463,7 +499,7 @@ static void set_remove_one_child(set me, const struct node *const traverse)
             parent->left = traverse->right;
             traverse->right->parent = parent;
         }
-        set_delete_balance(me, parent, true);
+        map_delete_balance(me, parent, true);
     } else {
         if (traverse->left != NULL) {
             parent->right = traverse->left;
@@ -472,14 +508,14 @@ static void set_remove_one_child(set me, const struct node *const traverse)
             parent->right = traverse->right;
             traverse->right->parent = parent;
         }
-        set_delete_balance(me, parent, false);
+        map_delete_balance(me, parent, false);
     }
 }
 
 /*
  * Removes traverse when it has two children.
  */
-static void set_remove_two_children(set me, const struct node *const traverse)
+static void map_remove_two_children(map me, const struct node *const traverse)
 {
     struct node *item;
     struct node *parent;
@@ -515,66 +551,67 @@ static void set_remove_two_children(set me, const struct node *const traverse)
     } else {
         item->parent->right = item;
     }
-    set_delete_balance(me, parent, is_left_deleted);
+    map_delete_balance(me, parent, is_left_deleted);
 }
 
 /*
- * Removes the element from the set.
+ * Removes the element from the map.
  */
-static void set_remove_element(set me, struct node *const traverse)
+static void map_remove_element(map me, struct node *const traverse)
 {
     if (traverse->left == NULL && traverse->right == NULL) {
-        set_remove_no_children(me, traverse);
+        map_remove_no_children(me, traverse);
     } else if (traverse->left == NULL || traverse->right == NULL) {
-        set_remove_one_child(me, traverse);
+        map_remove_one_child(me, traverse);
     } else {
-        set_remove_two_children(me, traverse);
+        map_remove_two_children(me, traverse);
     }
     free(traverse->key);
+    free(traverse->value);
     free(traverse);
     me->size--;
 }
 
 /**
- * Removes the key from the set if it contains it.
+ * Removes the key-value pair from the map if it contains it.
  *
- * @param me  The set to remove an key from.
+ * @param me  The map to remove an element from.
  * @param key The key to remove.
  *
- * @return If the set contained the key.
+ * @return If the map contained the key-value pair.
  */
-bool set_remove(set me, void *const key)
+bool map_remove(map me, void *const key)
 {
-    struct node *const traverse = set_equal_match(me, key);
+    struct node *const traverse = map_equal_match(me, key);
     if (traverse == NULL) {
         return false;
     }
-    set_remove_element(me, traverse);
+    map_remove_element(me, traverse);
     return true;
 }
 
 /**
- * Clears the keys from the set.
+ * Clears the key-value pairs from the map.
  *
- * @param me The set to clear.
+ * @param me The map to clear.
  */
-void set_clear(set me)
+void map_clear(map me)
 {
     while (me->root != NULL) {
-        set_remove_element(me, me->root);
+        map_remove_element(me, me->root);
     }
 }
 
 /**
- * Frees the set memory.
+ * Frees the map memory.
  *
- * @param me The set to free from memory.
+ * @param me The map to free from memory.
  *
  * @return NULL
  */
-set set_destroy(set me)
+map map_destroy(map me)
 {
-    set_clear(me);
+    map_clear(me);
     free(me);
     return NULL;
 }

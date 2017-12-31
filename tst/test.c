@@ -8,6 +8,7 @@ int main(void)
     test_forward_list();
     test_list();
     test_set();
+    test_map();
     test_multiset();
     test_unordered_set();
     test_unordered_map();
