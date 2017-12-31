@@ -43,7 +43,7 @@ struct node {
 /**
  * Initializes a set, which is a collection of unique keys, sorted by keys.
  *
- * @param data_size  The size of each element in the set.
+ * @param key_size   The size of each element in the set.
  * @param comparator The comparator function used for key ordering.
  *
  * @return The newly-initialized set, or NULL if memory allocation error.
@@ -261,8 +261,8 @@ static struct node *set_create_node(set me,
 /**
  * Adds an element to the set if the set does not already contain it.
  *
- * @param me   The set to add to.
- * @param data The element to add.
+ * @param me  The set to add to.
+ * @param key The element to add.
  *
  * @return 0       No error.
  *         -ENOMEM Out of memory.
@@ -342,8 +342,8 @@ static struct node *set_equal_match(set me, const void *const key)
 /**
  * Determines if the set contains the specified element.
  *
- * @param me   The set to check for the element.
- * @param data The element to check.
+ * @param me  The set to check for the element.
+ * @param key The element to check.
  *
  * @return If the set contained the element.
  */
@@ -538,8 +538,8 @@ static void set_remove_element(set me, struct node *const traverse)
 /**
  * Removes the element from the set if it contains it.
  *
- * @param me   The set to remove an element from.
- * @param data The element to remove.
+ * @param me  The set to remove an element from.
+ * @param key The element to remove.
  *
  * @return If the set contained the element.
  */
