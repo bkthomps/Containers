@@ -40,11 +40,11 @@ void queue_copy_to_array(void *arr, queue me);
 int queue_push(queue me, void *data);
 
 // Removing
-int queue_pop(void *data, queue me);
+bool queue_pop(void *data, queue me);
 
 // Getting
-int queue_front(void *data, queue me);
-int queue_back(void *data, queue me);
+bool queue_front(void *data, queue me);
+bool queue_back(void *data, queue me);
 
 // Ending
 int queue_clear(queue me);

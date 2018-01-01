@@ -123,17 +123,16 @@ int queue_push(queue me, void *const data)
  * @param data The data to have copied from the queue.
  * @param me   The queue to pop the next element from.
  *
- * @return 0       No error.
- *         -EINVAL Invalid argument.
+ * @return If the queue contained elements.
  */
-int queue_pop(void *const data, queue me)
+bool queue_pop(void *const data, queue me)
 {
     me->trim_count++;
     if (me->trim_count >= TRIM_SIZE) {
         deque_trim(me->deque_data);
         me->trim_count = 0;
     }
-    return deque_pop_front(data, me->deque_data);
+    return deque_pop_front(data, me->deque_data) == 0;
 }
 
 /**
@@ -142,12 +141,11 @@ int queue_pop(void *const data, queue me)
  * @param data Copies the front element of the queue.
  * @param me   The queue to copy from.
  *
- * @return 0       No error.
- *         -EINVAL Invalid argument.
+ * @return If the queue contained elements.
  */
-int queue_front(void *const data, queue me)
+bool queue_front(void *const data, queue me)
 {
-    return deque_get_first(data, me->deque_data);
+    return deque_get_first(data, me->deque_data) == 0;
 }
 
 /**
@@ -156,12 +154,11 @@ int queue_front(void *const data, queue me)
  * @param data Copies the back element of the queue.
  * @param me   The queue to copy from.
  *
- * @return 0       No error.
- *         -EINVAL Invalid argument.
+ * @return If the queue contained elements.
  */
-int queue_back(void *const data, queue me)
+bool queue_back(void *const data, queue me)
 {
-    return deque_get_last(data, me->deque_data);
+    return deque_get_last(data, me->deque_data) == 0;
 }
 
 /**

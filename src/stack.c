@@ -119,12 +119,11 @@ int stack_push(stack me, void *const data)
  * @param data The copy of the element being removed.
  * @param me   The stack to remove the top element from.
  *
- * @return 0       No error.
- *         -EINVAL Invalid argument.
+ * @return If the stack contained elements.
  */
-int stack_pop(void *const data, stack me)
+bool stack_pop(void *const data, stack me)
 {
-    return deque_pop_back(data, me->deque_data);
+    return deque_pop_back(data, me->deque_data) == 0;
 }
 
 /**
@@ -133,12 +132,11 @@ int stack_pop(void *const data, stack me)
  * @param data The copy of the top element of the stack.
  * @param me   The stack to copy from.
  *
- * @return 0       No error.
- *         -EINVAL Invalid argument.
+ * @return If the stack contained elements.
  */
-int stack_top(void *const data, stack me)
+bool stack_top(void *const data, stack me)
 {
-    return deque_get_last(data, me->deque_data);
+    return deque_get_last(data, me->deque_data) == 0;
 }
 
 /**

@@ -40,10 +40,10 @@ void stack_copy_to_array(void *arr, stack me);
 int stack_push(stack me, void *data);
 
 // Removing
-int stack_pop(void *data, stack me);
+bool stack_pop(void *data, stack me);
 
 // Getting
-int stack_top(void *data, stack me);
+bool stack_top(void *data, stack me);
 
 // Ending
 int stack_clear(stack me);
