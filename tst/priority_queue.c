@@ -10,5 +10,28 @@ static int compare_int(const void *const one, const void *const two)
 
 void test_priority_queue(void)
 {
-    // TODO
+    priority_queue a = priority_queue_init(sizeof(int), compare_int);
+    assert(a != NULL);
+    assert(priority_queue_size(a) == 0);
+    assert(priority_queue_is_empty(a));
+    int b = 5;
+    priority_queue_push(a, &b);
+    b = 2; priority_queue_push(a, &b);
+    b = 7; priority_queue_push(a, &b);
+    b = 3; priority_queue_push(a, &b);
+    b = 4; priority_queue_push(a, &b);
+    b = 5; priority_queue_push(a, &b);
+    b = 9; priority_queue_push(a, &b);
+    b = 2; priority_queue_push(a, &b);
+    b = 3; priority_queue_push(a, &b);
+    b = -5; priority_queue_push(a, &b);
+    b = 7; priority_queue_push(a, &b);
+    b = 3; priority_queue_push(a, &b);
+    b = 4; priority_queue_push(a, &b);
+    b = 3; priority_queue_push(a, &b);
+    b = 11; priority_queue_push(a, &b);
+    b = 6; priority_queue_push(a, &b);
+
+    a = priority_queue_destroy(a);
+    assert(a == NULL);
 }

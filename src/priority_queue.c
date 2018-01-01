@@ -21,13 +21,50 @@
  */
 
 #include <stdlib.h>
+#include <memory.h>
+#include <errno.h>
 #include "vector.h"
 #include "priority_queue.h"
 
+#include <stdio.h>
+#include <assert.h>
+
+/*
+ * Must exactly match the declaration in vector.c
+ */
+struct _vector {
+    size_t data_size;
+    int offset;
+    int space;
+    void *storage;
+};
+
 struct _priority_queue {
     vector data;
+    size_t data_size;
     int (*comparator)(const void *const one, const void *const two);
 };
+
+static void debug_print(priority_queue me, void *const vector_storage)
+{
+    const int size = vector_size(me->data);
+    for (int i = 0; i < size; i++) {
+        const int val = *(int *) (vector_storage + i * me->data_size);
+        printf("%d, ", val);
+        const int left_child = 2 * i + 1;
+        const int right_child = 2 * i + 1;
+        if (left_child < size && right_child < size) {
+            void *left_data = vector_storage + left_child * me->data_size;
+            void *right_data = vector_storage + right_child * me->data_size;
+            const int left_val = *(int *) left_data;
+            const int right_val = *(int *) right_data;
+            assert(val >= left_val);
+            assert(val >= right_val);
+            assert(left_val <= right_val);
+        }
+    }
+    printf("\n");
+}
 
 /**
  * Initializes a priority queue, which adapts a container to provide priority
@@ -47,6 +84,7 @@ priority_queue priority_queue_init(const size_t data_size,
     if (init == NULL) {
         return NULL;
     }
+    init->data_size = data_size;
     init->data = vector_init(data_size);
     if (init->data == NULL) {
         free(init);
@@ -80,13 +118,53 @@ bool priority_queue_is_empty(priority_queue me)
     return vector_is_empty(me->data);
 }
 
+/**
+ * Adds an element to the priority queue.
+ *
+ * @param me   The priority queue to add an element to.
+ * @param data The data to add to the queue.
+ *
+ * @return 0       No error.
+ *         -ENOMEM Out of memory.
+ */
 int priority_queue_push(priority_queue me, void *const data)
 {
-    vector_add_last(me->data, data);
-    // TODO: added it, now check if needs re-order
+    void *const temp = malloc(me->data_size);
+    if (temp == NULL) {
+        return -ENOMEM;
+    }
+    const int rc = vector_add_last(me->data, data);
+    if (rc != 0) {
+        free(temp);
+        return rc;
+    }
+    void *const vector_storage = me->data->storage;
+    int index = vector_size(me->data) - 1;
+    int parent_index = (index - 1) / 2;
+    void *data_index = vector_storage + index * me->data_size;
+    void *data_parent_index = vector_storage + parent_index * me->data_size;
+    while (index > 0 && me->comparator(data_index, data_parent_index) > 0) {
+        memcpy(temp, data_parent_index, me->data_size);
+        memcpy(data_parent_index, data_index, me->data_size);
+        memcpy(data_index, temp, me->data_size);
+        index = parent_index;
+        parent_index = (index - 1) / 2;
+        data_index = vector_storage + index * me->data_size;
+        data_parent_index = vector_storage + parent_index * me->data_size;
+    }
+    free(temp);
+    debug_print(me, vector_storage);
     return 0;
 }
 
+/**
+ * Removes the highest priority element from the priority queue.
+ *
+ * @param data The data to have copied from the priority queue.
+ * @param me   The priority queue to pop the next element from.
+ *
+ * @return If the priority queue contained elements.
+ */
 bool priority_queue_pop(void *const data, priority_queue me)
 {
     const int rc = vector_get_first(data, me->data);
