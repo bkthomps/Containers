@@ -26,9 +26,6 @@
 #include "vector.h"
 #include "priority_queue.h"
 
-#include <stdio.h>
-#include <assert.h>
-
 /*
  * Must exactly match the declaration in vector.c
  */
@@ -44,28 +41,6 @@ struct _priority_queue {
     size_t data_size;
     int (*comparator)(const void *const one, const void *const two);
 };
-
-static void debug_print(priority_queue me, void *const vector_storage)
-{
-    const int size = vector_size(me->data);
-    for (int i = 0; i < size; i++) {
-        const int val = *(int *) (vector_storage + i * me->data_size);
-        printf("%d, ", val);
-        const int left_child = 2 * i + 1;
-        const int right_child = 2 * i + 2;
-        if (left_child < size) {
-            void *left_data = vector_storage + left_child * me->data_size;
-            const int left_val = *(int *) left_data;
-            assert(val >= left_val);
-        }
-        if (right_child < size) {
-            void *right_data = vector_storage + right_child * me->data_size;
-            const int right_val = *(int *) right_data;
-            assert(val >= right_val);
-        }
-    }
-    printf("\n");
-}
 
 /**
  * Initializes a priority queue, which adapts a container to provide priority
@@ -154,7 +129,6 @@ int priority_queue_push(priority_queue me, void *const data)
         data_parent_index = vector_storage + parent_index * me->data_size;
     }
     free(temp);
-    debug_print(me, vector_storage);
     return 0;
 }
 
@@ -184,8 +158,8 @@ bool priority_queue_pop(void *const data, priority_queue me)
     void *data_right_index = vector_storage + right_index * me->data_size;
     while (true) {
         if (right_index < size &&
-            (me->comparator(data_right_index, data_left_index) > 0 ||
-             me->comparator(data_right_index, data_index) > 0)) {
+            me->comparator(data_right_index, data_left_index) > 0 &&
+            me->comparator(data_right_index, data_index) > 0) {
             // Swap parent and right child then continue down right child.
             memcpy(temp, data_index, me->data_size);
             memcpy(data_index, data_right_index, me->data_size);
@@ -208,7 +182,6 @@ bool priority_queue_pop(void *const data, priority_queue me)
         data_right_index = vector_storage + right_index * me->data_size;
     }
     vector_remove_last(me->data);
-    debug_print(me, vector_storage);
     return true;
 }
 
