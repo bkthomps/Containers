@@ -169,8 +169,47 @@ int priority_queue_push(priority_queue me, void *const data)
 bool priority_queue_pop(void *const data, priority_queue me)
 {
     const int rc = vector_get_first(data, me->data);
-    // TODO: now re-order then remove last element
-    return rc == 0;
+    if (rc != 0) {
+        return false;
+    }
+    void *const vector_storage = me->data->storage;
+    const int size = vector_size(me->data) - 1;
+    void *const temp = vector_storage + size * me->data_size;
+    memcpy(vector_storage, temp, me->data_size);
+    int index = 0;
+    int left_index = 1;
+    int right_index = 2;
+    void *data_index = vector_storage;
+    void *data_left_index = vector_storage + left_index * me->data_size;
+    void *data_right_index = vector_storage + right_index * me->data_size;
+    while (true) {
+        if (right_index < size &&
+            (me->comparator(data_right_index, data_left_index) > 0 ||
+             me->comparator(data_right_index, data_index) > 0)) {
+            // Swap parent and right child then continue down right child.
+            memcpy(temp, data_index, me->data_size);
+            memcpy(data_index, data_right_index, me->data_size);
+            memcpy(data_right_index, temp, me->data_size);
+            index = right_index;
+        } else if (left_index < size &&
+                   me->comparator(data_left_index, data_index) > 0) {
+            // Swap parent and left child then continue down left child.
+            memcpy(temp, data_index, me->data_size);
+            memcpy(data_index, data_left_index, me->data_size);
+            memcpy(data_left_index, temp, me->data_size);
+            index = left_index;
+        } else {
+            break;
+        }
+        left_index = 2 * index + 1;
+        right_index = 2 * index + 2;
+        data_index = vector_storage + index * me->data_size;
+        data_left_index = vector_storage + left_index * me->data_size;
+        data_right_index = vector_storage + right_index * me->data_size;
+    }
+    vector_remove_last(me->data);
+    debug_print(me, vector_storage);
+    return true;
 }
 
 /**

@@ -46,9 +46,18 @@ void test_priority_queue(void)
     priority_queue_push(a, &b);
     b = 6;
     priority_queue_push(a, &b);
+    assert(priority_queue_size(a) == 16);
+    assert(!priority_queue_is_empty(a));
     b = 0xdeadbeef;
     priority_queue_front(&b, a);
     assert(b == 11);
+    b = 0xdeadbeef;
+    priority_queue_pop(&b, a);
+    assert(b == 11);
+    assert(priority_queue_size(a) == 15);
+    b = 0xdeadbeef;
+    priority_queue_front(&b, a);
+    assert(b == 9);
     priority_queue_clear(a);
     assert(priority_queue_is_empty(a));
     b = 0xdeadbeef;
