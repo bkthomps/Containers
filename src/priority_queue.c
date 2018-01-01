@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Bailey Thompson
+ * Copyright (c) 2017-2018 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,59 +21,115 @@
  */
 
 #include <stdlib.h>
-#include <memory.h>
-#include <errno.h>
+#include "vector.h"
 #include "priority_queue.h"
 
-static const int START_SPACE = 8;
-static const double RESIZE_RATIO = 1.5;
-
 struct _priority_queue {
-    size_t data_size;
-    int offset;
-    int space;
-    void *storage;
+    vector data;
     int (*comparator)(const void *const one, const void *const two);
 };
 
+/**
+ * Initializes a priority queue, which adapts a container to provide priority
+ * queue. Adapts the vector container.
+ *
+ * @param data_size  The size of the data in the priority queue.
+ * @param comparator The priority comparator function.
+ *
+ * @return The newly-initialized priority queue, or NULL if memory allocation
+ *         error.
+ */
 priority_queue priority_queue_init(const size_t data_size,
                                    int (*comparator)(const void *const,
                                                      const void *const))
 {
-    return NULL; // TODO
+    struct _priority_queue *const init = malloc(sizeof(struct _priority_queue));
+    if (init == NULL) {
+        return NULL;
+    }
+    init->data = vector_init(data_size);
+    if (init->data == NULL) {
+        free(init);
+        return NULL;
+    }
+    init->comparator = comparator;
+    return init;
 }
 
+/**
+ * Gets the size of the priority queue.
+ *
+ * @param me The priority queue to check.
+ *
+ * @return The size of the priority queue.
+ */
 int priority_queue_size(priority_queue me)
 {
-    return 0; // TODO
+    return vector_size(me->data);
 }
 
+/**
+ * Determines whether or not the priority queue is empty.
+ *
+ * @param me The priority queue to check.
+ *
+ * @return If the priority queue is empty.
+ */
 bool priority_queue_is_empty(priority_queue me)
 {
-    return false; // TODO
+    return vector_is_empty(me->data);
 }
 
 int priority_queue_push(priority_queue me, void *const data)
 {
-    return 0; // TODO
+    vector_add_last(me->data, data);
+    // TODO: added it, now check if needs re-order
+    return 0;
 }
 
 bool priority_queue_pop(void *const data, priority_queue me)
 {
-    return false; // TODO
+    const int rc = vector_get_first(data, me->data);
+    // TODO: now re-order then remove last element
+    return rc == 0;
 }
 
+/**
+ * Gets the highest priority element in the priority queue.
+ *
+ * @param data Out copy of the highest priority element in the priority queue.
+ * @param me   The priority queue to copy from.
+ *
+ * @return If the priority queue contained elements.
+ */
 bool priority_queue_front(void *const data, priority_queue me)
 {
-    return false; // TODO
+    return vector_get_first(data, me->data) == 0;
 }
 
-void priority_queue_clear(priority_queue me)
+/**
+ * Clears the elements from the priority queue.
+ *
+ * @param me The priority queue to clear.
+ *
+ * @return 0       No error.
+ *         -ENOMEM Out of memory.
+ */
+int priority_queue_clear(priority_queue me)
 {
-    // TODO
+    return vector_clear(me->data);
 }
 
+/**
+ * Frees the priority queue memory.
+ *
+ * @param me The priority queue to free from memory.
+ *
+ * @return NULL
+ */
 priority_queue priority_queue_destroy(priority_queue me)
 {
-    return NULL; // TODO
+    vector_destroy(me->data);
+    free(me);
+    return NULL;
 }

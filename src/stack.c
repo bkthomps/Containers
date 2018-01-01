@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Bailey Thompson
+ * Copyright (c) 2017-2018 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,8 +29,8 @@ struct _stack {
 };
 
 /**
- * Initializes a stack which is last-in first-out. Uses a deque as the
- * underlying implementation.
+ * Initializes a stack, which adapts a container to provide stack
+ * (last-in first-out). Adapts the deque container.
  *
  * @param data_size The size of each data element in the stack.
  *

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Bailey Thompson
+ * Copyright (c) 2017-2018 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -46,7 +46,7 @@ bool priority_queue_pop(void *data, priority_queue me);
 bool priority_queue_front(void *data, priority_queue me);
 
 // Ending
-void priority_queue_clear(priority_queue me);
+int priority_queue_clear(priority_queue me);
 priority_queue priority_queue_destroy(priority_queue me);
 
 #endif /* CONTAINERS_PRIORITY_QUEUE_H */
