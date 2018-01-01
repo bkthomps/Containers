@@ -29,4 +29,4 @@ Data structures that can be quickly searched which use hashing.
 Data structures which adapt other containers to enhance functionality.
 <p> stack - adapts a container to provide stack (last-in first-out)
 <p> queue - adapts a container to provide queue (first-in first-out)
-<p> priority_queue (todo) - adapts a container to provide priority queue
+<p> priority_queue - adapts a container to provide priority queue
