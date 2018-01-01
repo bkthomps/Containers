@@ -17,5 +17,6 @@ int main(void)
     test_unordered_multimap();
     test_stack();
     test_queue();
+    test_priority_queue();
     return 0;
 }
