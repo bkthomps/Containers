@@ -52,15 +52,16 @@ static void debug_print(priority_queue me, void *const vector_storage)
         const int val = *(int *) (vector_storage + i * me->data_size);
         printf("%d, ", val);
         const int left_child = 2 * i + 1;
-        const int right_child = 2 * i + 1;
-        if (left_child < size && right_child < size) {
+        const int right_child = 2 * i + 2;
+        if (left_child < size) {
             void *left_data = vector_storage + left_child * me->data_size;
-            void *right_data = vector_storage + right_child * me->data_size;
             const int left_val = *(int *) left_data;
-            const int right_val = *(int *) right_data;
             assert(val >= left_val);
+        }
+        if (right_child < size) {
+            void *right_data = vector_storage + right_child * me->data_size;
+            const int right_val = *(int *) right_data;
             assert(val >= right_val);
-            assert(left_val <= right_val);
         }
     }
     printf("\n");
