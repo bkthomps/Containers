@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Bailey Thompson
+ * Copyright (c) 2017-2018 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -137,9 +137,24 @@ int vector_trim(vector me)
  * @param arr The array to copy to.
  * @param me  The vector to copy from.
  */
-void vector_to_array(void *const arr, vector me)
+void vector_copy_to_array(void *const arr, vector me)
 {
     memcpy(arr, me->storage, me->offset * me->data_size);
+}
+
+/**
+ * Gets the storage element of the vector which is contiguous in memory. If the
+ * data is modified, the data in the vector is modified. Also, any vector
+ * operation may invalidate this data pointer. The vector owns the data pointer,
+ * thus it must not be freed.
+ *
+ * @param me The vector to get the storage element from.
+ *
+ * @return The storage element of the vector.
+ */
+void *vector_get_data(vector me)
+{
+    return me->storage;
 }
 
 /**

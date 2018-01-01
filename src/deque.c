@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Bailey Thompson
+ * Copyright (c) 2017-2018 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -135,7 +135,7 @@ int deque_trim(deque me)
  * @param arr The array to copy the deque to.
  * @param me  The deque to copy from.
  */
-void deque_to_array(void *const arr, deque me)
+void deque_copy_to_array(void *const arr, deque me)
 {
     for (int i = 0; i < deque_size(me); i++) {
         deque_get_at(arr + i * me->data_size, me, i);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Bailey Thompson
+ * Copyright (c) 2017-2018 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,7 +35,8 @@ int vector_size(vector me);
 bool vector_is_empty(vector me);
 int vector_reserve(vector me, int size);
 int vector_trim(vector me);
-void vector_to_array(void *arr, vector me);
+void vector_copy_to_array(void *arr, vector me);
+void *vector_get_data(vector me);
 
 // Adding
 int vector_add_first(vector me, void *data);

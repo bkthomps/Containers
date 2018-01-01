@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Bailey Thompson
+ * Copyright (c) 2017-2018 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -73,9 +73,24 @@ int array_size(array me)
  * @param arr The array to copy to.
  * @param me  The array to copy from.
  */
-void array_to_array(void *const arr, array me)
+void array_copy_to_array(void *const arr, array me)
 {
     memcpy(arr, me->data, me->element_count * me->data_size);
+}
+
+/**
+ * Gets the storage element of the array which is contiguous in memory. If the
+ * data is modified, the data in the array is modified. Also, any array
+ * operation may invalidate this data pointer. The array owns the data pointer,
+ * thus it must not be freed.
+ *
+ * @param me The array to get the storage element from.
+ *
+ * @return The storage element of the array.
+ */
+void *array_get_data(array me)
+{
+    return me->data;
 }
 
 /*

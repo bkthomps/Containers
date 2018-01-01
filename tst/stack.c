@@ -17,7 +17,7 @@ void test_stack(void)
     assert(stack_size(me) == 10);
     assert(!stack_is_empty(me));
     int get_arr[10] = {0};
-    stack_to_array(get_arr, me);
+    stack_copy_to_array(get_arr, me);
     for (int i = 0; i < 10; i++) {
         assert(get_arr[i] == i + 1);
     }

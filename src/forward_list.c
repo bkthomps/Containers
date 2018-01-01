@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Bailey Thompson
+ * Copyright (c) 2017-2018 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -85,7 +85,7 @@ bool forward_list_is_empty(forward_list me)
  * @param arr The array to copy the list to.
  * @param me  The list to copy to the array.
  */
-void forward_list_to_array(void *const arr, forward_list me)
+void forward_list_copy_to_array(void *const arr, forward_list me)
 {
     struct node *traverse = me->head;
     int offset = 0;

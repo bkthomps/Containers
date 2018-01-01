@@ -20,7 +20,7 @@ void test_queue(void)
     assert(queue_size(me) == 10);
     assert(!queue_is_empty(me));
     int get_arr[10] = {0};
-    queue_to_array(get_arr, me);
+    queue_copy_to_array(get_arr, me);
     for (int i = 0; i < 10; i++) {
         assert(get_arr[i] == i + 1);
     }

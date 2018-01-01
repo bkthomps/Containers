@@ -18,7 +18,7 @@ void test_list(void)
     assert(list_size(me) == 10);
     assert(!list_is_empty(me));
     int get_arr[10] = {0};
-    list_to_array(get_arr, me);
+    list_copy_to_array(get_arr, me);
     for (int i = 0; i < 10; i++) {
         int get = 0;
         list_get_at(&get, me, i);
@@ -29,7 +29,7 @@ void test_list(void)
         list_remove_last(me);
     }
     int trimmed[5] = {0};
-    list_to_array(trimmed, me);
+    list_copy_to_array(trimmed, me);
     assert(list_size(me) == 3);
     for (int i = 0; i < 3; i++) {
         assert(10 - i == trimmed[i]);
@@ -83,7 +83,7 @@ void test_list(void)
     set = 14;
     list_set_last(me, &set);
     int arr[3] = {0};
-    list_to_array(arr, me);
+    list_copy_to_array(arr, me);
     assert(arr[0] == 12);
     assert(arr[1] == 13);
     assert(arr[2] == 14);
@@ -93,7 +93,7 @@ void test_list(void)
     list_set_at(me, 1, &set);
     set = -7;
     list_set_at(me, 2, &set);
-    list_to_array(arr, me);
+    list_copy_to_array(arr, me);
     assert(arr[0] == -5);
     assert(arr[1] == -6);
     assert(arr[2] == -7);

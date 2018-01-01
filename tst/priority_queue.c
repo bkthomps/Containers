@@ -5,16 +5,6 @@
 /*
  * Include this for the stubs.
  */
-struct _vector {
-    size_t data_size;
-    int offset;
-    int space;
-    void *storage;
-};
-
-/*
- * Include this for the stubs.
- */
 struct _priority_queue {
     vector data;
     size_t data_size;
@@ -23,7 +13,7 @@ struct _priority_queue {
 
 static void priority_queue_verify(priority_queue me)
 {
-    void *const vector_storage = me->data->storage;
+    void *const vector_storage = vector_get_data(me->data);
     const int size = vector_size(me->data);
     for (int i = 0; i < size; i++) {
         const int val = *(int *) (vector_storage + i * me->data_size);

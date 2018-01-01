@@ -26,16 +26,6 @@
 #include "vector.h"
 #include "priority_queue.h"
 
-/*
- * Must exactly match the declaration in vector.c
- */
-struct _vector {
-    size_t data_size;
-    int offset;
-    int space;
-    void *storage;
-};
-
 struct _priority_queue {
     vector data;
     size_t data_size;
@@ -114,7 +104,7 @@ int priority_queue_push(priority_queue me, void *const data)
         free(temp);
         return rc;
     }
-    void *const vector_storage = me->data->storage;
+    void *const vector_storage = vector_get_data(me->data);
     int index = vector_size(me->data) - 1;
     int parent_index = (index - 1) / 2;
     void *data_index = vector_storage + index * me->data_size;
@@ -146,7 +136,7 @@ bool priority_queue_pop(void *const data, priority_queue me)
     if (rc != 0) {
         return false;
     }
-    void *const vector_storage = me->data->storage;
+    void *const vector_storage = vector_get_data(me->data);
     const int size = vector_size(me->data) - 1;
     void *const temp = vector_storage + size * me->data_size;
     memcpy(vector_storage, temp, me->data_size);

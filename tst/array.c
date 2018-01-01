@@ -23,9 +23,13 @@ void test_array(void)
         assert(g == i);
     }
     int arr[10] = {0};
-    array_to_array(arr, a);
+    array_copy_to_array(arr, a);
     for (int i = 0; i < 10; i++) {
         assert(arr[i] == i);
+    }
+    int *data = array_get_data(a);
+    for (int i = 0; i < 10; i++) {
+        assert(data[i] == i);
     }
     a = array_destroy(a);
     assert(a == NULL);

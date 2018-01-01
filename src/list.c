@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Bailey Thompson
+ * Copyright (c) 2017-2018 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -88,7 +88,7 @@ bool list_is_empty(list me)
  * @param arr The array to copy the list to.
  * @param me  The list to copy to the array.
  */
-void list_to_array(void *const arr, list me)
+void list_copy_to_array(void *const arr, list me)
 {
     struct node *traverse = me->head;
     int offset = 0;

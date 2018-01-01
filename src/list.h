@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Bailey Thompson
+ * Copyright (c) 2017-2018 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,7 +33,7 @@ list list_init(size_t data_size);
 // Utility
 int list_size(list me);
 bool list_is_empty(list me);
-void list_to_array(void *arr, list me);
+void list_copy_to_array(void *arr, list me);
 
 // Adding
 int list_add_first(list me, void *data);

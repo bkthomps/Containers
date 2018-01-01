@@ -45,12 +45,16 @@ void test_vector(void)
     assert(vector_size(me) == 10);
     assert(!vector_is_empty(me));
     int get_arr[10] = {0};
-    vector_to_array(get_arr, me);
+    vector_copy_to_array(get_arr, me);
     for (int i = 0; i < 10; i++) {
         int get = 0;
         vector_get_at(&get, me, i);
         assert(get == val[9 - i]);
         assert(get_arr[i] == val[9 - i]);
+    }
+    int *data = vector_get_data(me);
+    for (int i = 0; i < 10; i++) {
+        assert(data[i] == val[9 - i]);
     }
     int trimmed[5] = {0};
     vector_trim(me);
@@ -58,7 +62,7 @@ void test_vector(void)
     for (int i = 0; i < 7; i++) {
         vector_remove_last(me);
     }
-    vector_to_array(trimmed, me);
+    vector_copy_to_array(trimmed, me);
     assert(vector_size(me) == 3);
     for (int i = 0; i < 3; i++) {
         assert(10 - i == trimmed[i]);
@@ -112,7 +116,7 @@ void test_vector(void)
     set = 14;
     vector_set_last(me, &set);
     int arr[3] = {0};
-    vector_to_array(arr, me);
+    vector_copy_to_array(arr, me);
     assert(arr[0] == 12);
     assert(arr[1] == 13);
     assert(arr[2] == 14);
@@ -122,7 +126,7 @@ void test_vector(void)
     vector_set_at(me, 1, &set);
     set = -7;
     vector_set_at(me, 2, &set);
-    vector_to_array(arr, me);
+    vector_copy_to_array(arr, me);
     assert(arr[0] == -5);
     assert(arr[1] == -6);
     assert(arr[2] == -7);

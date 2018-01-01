@@ -18,7 +18,7 @@ void test_forward_list(void)
     assert(forward_list_size(me) == 10);
     assert(!forward_list_is_empty(me));
     int get_arr[10] = {0};
-    forward_list_to_array(get_arr, me);
+    forward_list_copy_to_array(get_arr, me);
     for (int i = 0; i < 10; i++) {
         int get = 0;
         forward_list_get_at(&get, me, i);
@@ -29,7 +29,7 @@ void test_forward_list(void)
         forward_list_remove_last(me);
     }
     int trimmed[5] = {0};
-    forward_list_to_array(trimmed, me);
+    forward_list_copy_to_array(trimmed, me);
     assert(forward_list_size(me) == 3);
     for (int i = 0; i < 3; i++) {
         assert(10 - i == trimmed[i]);
@@ -83,7 +83,7 @@ void test_forward_list(void)
     set = 14;
     forward_list_set_last(me, &set);
     int arr[3] = {0};
-    forward_list_to_array(arr, me);
+    forward_list_copy_to_array(arr, me);
     assert(arr[0] == 12);
     assert(arr[1] == 13);
     assert(arr[2] == 14);
@@ -93,7 +93,7 @@ void test_forward_list(void)
     forward_list_set_at(me, 1, &set);
     set = -7;
     forward_list_set_at(me, 2, &set);
-    forward_list_to_array(arr, me);
+    forward_list_copy_to_array(arr, me);
     assert(arr[0] == -5);
     assert(arr[1] == -6);
     assert(arr[2] == -7);

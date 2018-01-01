@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Bailey Thompson
+ * Copyright (c) 2017-2018 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,7 +32,8 @@ array array_init(int element_count, size_t data_size);
 
 // Utility
 int array_size(array me);
-void array_to_array(void *arr, array me);
+void array_copy_to_array(void *arr, array me);
+void *array_get_data(array me);
 
 // Accessing
 int array_set(array me, int index, void *data);

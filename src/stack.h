@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Bailey Thompson
+ * Copyright (c) 2017-2018 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,7 +34,7 @@ stack stack_init(size_t data_size);
 int stack_size(stack me);
 bool stack_is_empty(stack me);
 int stack_trim(stack me);
-void stack_to_array(void *arr, stack me);
+void stack_copy_to_array(void *arr, stack me);
 
 // Adding
 int stack_push(stack me, void *data);

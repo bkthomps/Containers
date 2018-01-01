@@ -17,7 +17,7 @@ void test_deque(void)
     assert(deque_size(me) == 10);
     assert(!deque_is_empty(me));
     int get_arr[10] = {0};
-    deque_to_array(get_arr, me);
+    deque_copy_to_array(get_arr, me);
     for (int i = 0; i < 10; i++) {
         int get = 0;
         deque_get_at(&get, me, i);
@@ -31,7 +31,7 @@ void test_deque(void)
         deque_pop_back(&stuff, me);
         assert(stuff == val[i]);
     }
-    deque_to_array(trimmed, me);
+    deque_copy_to_array(trimmed, me);
     assert(deque_size(me) == 3);
     for (int i = 0; i < 3; i++) {
         assert(10 - i == trimmed[i]);
@@ -88,7 +88,7 @@ void test_deque(void)
     set = 14;
     deque_set_last(me, &set);
     int arr[3] = {0};
-    deque_to_array(arr, me);
+    deque_copy_to_array(arr, me);
     assert(arr[0] == 12);
     assert(arr[1] == 13);
     assert(arr[2] == 14);
@@ -98,7 +98,7 @@ void test_deque(void)
     deque_set_at(me, 1, &set);
     set = -7;
     deque_set_at(me, 2, &set);
-    deque_to_array(arr, me);
+    deque_copy_to_array(arr, me);
     assert(arr[0] == -5);
     assert(arr[1] == -6);
     assert(arr[2] == -7);

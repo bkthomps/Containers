@@ -98,9 +98,9 @@ int queue_trim(queue me)
  * @param arr The array to have copied from the queue.
  * @param me  The queue to copy to the array.
  */
-void queue_to_array(void *const arr, queue me)
+void queue_copy_to_array(void *const arr, queue me)
 {
-    deque_to_array(arr, me->deque_data);
+    deque_copy_to_array(arr, me->deque_data);
 }
 
 /**
