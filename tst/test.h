@@ -13,6 +13,7 @@ void test_list(void);
 void test_set(void);
 void test_map(void);
 void test_multiset(void);
+void test_multimap(void);
 void test_unordered_set(void);
 void test_unordered_map(void);
 void test_unordered_multiset(void);

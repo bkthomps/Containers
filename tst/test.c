@@ -10,6 +10,7 @@ int main(void)
     test_set();
     test_map();
     test_multiset();
+    test_multimap();
     test_unordered_set();
     test_unordered_map();
     test_unordered_multiset();

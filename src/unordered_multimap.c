@@ -282,8 +282,8 @@ int unordered_multimap_put(unordered_multimap me,
 
 /**
  * Creates the iterator for the specified key. To iterate over the values, keep
- * getting the next value. Between starting and iterations, the map must not be
- * mutated.
+ * getting the next value. Between starting and iterations, the unordered
+ * multi-map must not be mutated.
  *
  * @param me  The unordered multi-map to start the iterator for.
  * @param key The key to start the iterator for.
@@ -306,7 +306,8 @@ void unordered_multimap_get_start(unordered_multimap me, void *const key)
 
 /**
  * Iterates over the values for the specified key. Must be called after starting
- * the iterator. The map must not be mutated between start and iterations.
+ * the iterator. The unordered multi-map must not be mutated between start and
+ * iterations.
  *
  * @param value The value to be copied to from iteration.
  * @param me    The unordered multi-map to iterate over.
