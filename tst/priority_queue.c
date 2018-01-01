@@ -118,6 +118,7 @@ void test_priority_queue(void)
         stub_priority_queue_pop(&b, a);
         assert(b <= c);
         c = b;
+        assert(priority_queue_size(a) == 15 - i - 1);
     }
     priority_queue_clear(a);
     assert(priority_queue_is_empty(a));
