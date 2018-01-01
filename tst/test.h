@@ -20,5 +20,6 @@ void test_unordered_multiset(void);
 void test_unordered_multimap(void);
 void test_stack(void);
 void test_queue(void);
+void test_priority_queue(void);
 
 #endif /* CONTAINERS_TEST_H */
