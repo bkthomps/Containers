@@ -48,7 +48,7 @@ struct node {
 list list_init(const size_t data_size)
 {
     struct _list *const init = malloc(sizeof(struct _list));
-    if (init == NULL) {
+    if (!init) {
         return NULL;
     }
     init->data_size = data_size;
@@ -92,7 +92,7 @@ void list_copy_to_array(void *const arr, list me)
 {
     struct node *traverse = me->head;
     int offset = 0;
-    while (traverse != NULL) {
+    while (traverse) {
         memcpy(arr + offset, traverse->data, me->data_size);
         offset += me->data_size;
         traverse = traverse->next;
@@ -148,22 +148,22 @@ int list_add_first(list me, void *const data)
 {
     struct node *const traverse = me->head;
     struct node *const add = malloc(sizeof(struct node));
-    if (add == NULL) {
+    if (!add) {
         return -ENOMEM;
     }
     add->data = malloc(me->data_size);
-    if (add->data == NULL) {
+    if (!add->data) {
         free(add);
         return -ENOMEM;
     }
     add->prev = NULL;
     memcpy(add->data, data, me->data_size);
     add->next = traverse;
-    if (traverse != NULL) {
+    if (traverse) {
         traverse->prev = add;
     }
     me->head = add;
-    if (me->tail == NULL) {
+    if (!me->tail) {
         me->tail = traverse;
     }
     me->space++;
@@ -195,11 +195,11 @@ int list_add_at(list me, const int index, void *const data)
     // The new node will go right before this node.
     struct node *const traverse = list_get_node_at(me, index);
     struct node *const add = malloc(sizeof(struct node));
-    if (add == NULL) {
+    if (!add) {
         return -ENOMEM;
     }
     add->data = malloc(me->data_size);
-    if (add->data == NULL) {
+    if (!add->data) {
         free(add);
         return -ENOMEM;
     }
@@ -225,18 +225,18 @@ int list_add_last(list me, void *const data)
 {
     struct node *const traverse = me->tail;
     struct node *const add = malloc(sizeof(struct node));
-    if (add == NULL) {
+    if (!add) {
         return -ENOMEM;
     }
     add->data = malloc(me->data_size);
-    if (add->data == NULL) {
+    if (!add->data) {
         free(add);
         return -ENOMEM;
     }
     add->prev = traverse;
     memcpy(add->data, data, me->data_size);
     add->next = NULL;
-    if (traverse != NULL) {
+    if (traverse) {
         traverse->next = add;
     }
     me->tail = add;
@@ -413,7 +413,7 @@ int list_get_last(void *const data, list me)
 void list_clear(list me)
 {
     struct node *traverse = me->head;
-    while (traverse != NULL) {
+    while (traverse) {
         struct node *const temp = traverse;
         traverse = traverse->next;
         free(temp->data);

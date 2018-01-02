@@ -39,11 +39,11 @@ struct _stack {
 stack stack_init(const size_t data_size)
 {
     struct _stack *const init = malloc(sizeof(struct _stack));
-    if (init == NULL) {
+    if (!init) {
         return NULL;
     }
     init->deque_data = deque_init(data_size);
-    if (init->deque_data == NULL) {
+    if (!init->deque_data) {
         free(init);
         return NULL;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Bailey Thompson
+ * Copyright (c) 2017-2018 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -57,7 +57,7 @@ map map_init(const size_t key_size,
              int (*const comparator)(const void *const, const void *const))
 {
     struct _map *const init = malloc(sizeof(struct _map));
-    if (init == NULL) {
+    if (!init) {
         return NULL;
     }
     init->key_size = key_size;
@@ -100,7 +100,7 @@ static void map_reference_parent(map me,
                                  struct node *const child)
 {
     child->parent = parent->parent;
-    if (parent->parent == NULL) {
+    if (!parent->parent) {
         me->root = child;
     } else if (parent->parent->left == parent) {
         parent->parent->left = child;
@@ -118,7 +118,7 @@ static void map_rotate_left(map me,
 {
     map_reference_parent(me, parent, child);
     struct node *const grand_child = child->left;
-    if (grand_child != NULL) {
+    if (grand_child) {
         grand_child->parent = parent;
     }
     parent->parent = child;
@@ -135,7 +135,7 @@ static void map_rotate_right(map me,
 {
     map_reference_parent(me, parent, child);
     struct node *const grand_child = child->right;
-    if (grand_child != NULL) {
+    if (grand_child) {
         grand_child->parent = parent;
     }
     parent->parent = child;
@@ -217,7 +217,7 @@ static void map_insert_balance(map me, struct node *const item)
     struct node *grand_child = NULL;
     struct node *child = item;
     struct node *parent = item->parent;
-    while (parent != NULL) {
+    while (parent) {
         if (parent->left == child) {
             parent->balance--;
         } else {
@@ -248,19 +248,19 @@ static struct node *map_create_node(map me,
                                     struct node *const parent)
 {
     struct node *const insert = malloc(sizeof(struct node));
-    if (insert == NULL) {
+    if (!insert) {
         return NULL;
     }
     insert->parent = parent;
     insert->balance = 0;
     insert->key = malloc(me->key_size);
-    if (insert->key == NULL) {
+    if (!insert->key) {
         free(insert);
         return NULL;
     }
     memcpy(insert->key, key, me->key_size);
     insert->value = malloc(me->value_size);
-    if (insert->value == NULL) {
+    if (!insert->value) {
         free(insert->key);
         free(insert);
         return NULL;
@@ -285,9 +285,9 @@ static struct node *map_create_node(map me,
  */
 int map_put(map me, void *const key, void *const value)
 {
-    if (me->root == NULL) {
+    if (!me->root) {
         struct node *insert = map_create_node(me, key, value, NULL);
-        if (insert == NULL) {
+        if (!insert) {
             return -ENOMEM;
         }
         me->root = insert;
@@ -297,11 +297,11 @@ int map_put(map me, void *const key, void *const value)
     while (true) {
         const int compare = me->comparator(key, traverse->key);
         if (compare < 0) {
-            if (traverse->left != NULL) {
+            if (traverse->left) {
                 traverse = traverse->left;
             } else {
                 struct node *insert = map_create_node(me, key, value, traverse);
-                if (insert == NULL) {
+                if (!insert) {
                     return -ENOMEM;
                 }
                 traverse->left = insert;
@@ -309,11 +309,11 @@ int map_put(map me, void *const key, void *const value)
                 return 0;
             }
         } else if (compare > 0) {
-            if (traverse->right != NULL) {
+            if (traverse->right) {
                 traverse = traverse->right;
             } else {
                 struct node *insert = map_create_node(me, key, value, traverse);
-                if (insert == NULL) {
+                if (!insert) {
                     return -ENOMEM;
                 }
                 traverse->right = insert;
@@ -333,19 +333,19 @@ int map_put(map me, void *const key, void *const value)
 static struct node *map_equal_match(map me, const void *const key)
 {
     struct node *traverse = me->root;
-    if (traverse == NULL) {
+    if (!traverse) {
         return false;
     }
     while (true) {
         const int compare = me->comparator(key, traverse->key);
         if (compare < 0) {
-            if (traverse->left != NULL) {
+            if (traverse->left) {
                 traverse = traverse->left;
             } else {
                 return NULL;
             }
         } else if (compare > 0) {
-            if (traverse->right != NULL) {
+            if (traverse->right) {
                 traverse = traverse->right;
             } else {
                 return NULL;
@@ -368,7 +368,7 @@ static struct node *map_equal_match(map me, const void *const key)
 bool map_get(void *const value, map me, void *const key)
 {
     struct node *const traverse = map_equal_match(me, key);
-    if (traverse == NULL) {
+    if (!traverse) {
         return false;
     }
     memcpy(value, traverse->value, me->value_size);
@@ -420,13 +420,13 @@ static void map_delete_balance(map me,
     // Must re-balance if not in {-1, 0, 1}
     if (item->balance > 1 || item->balance < -1) {
         item = map_repair_pivot(me, item, is_left_deleted);
-        if (item->parent == NULL || item->balance == -1 || item->balance == 1) {
+        if (!item->parent || item->balance == -1 || item->balance == 1) {
             return;
         }
     }
     struct node *child = item;
     struct node *parent = item->parent;
-    while (parent != NULL) {
+    while (parent) {
         if (parent->left == child) {
             parent->balance++;
         } else {
@@ -442,7 +442,7 @@ static void map_delete_balance(map me,
             parent = child->parent;
             // If balance is -1 or +1 after modification or the parent is NULL,
             // then the tree is balanced.
-            if (parent == NULL || child->balance == -1 || child->balance == 1) {
+            if (!parent || child->balance == -1 || child->balance == 1) {
                 return;
             }
         } else {
@@ -459,7 +459,7 @@ static void map_remove_no_children(map me, const struct node *const traverse)
 {
     struct node *const parent = traverse->parent;
     // If no parent and no children, then the only node is traverse.
-    if (parent == NULL) {
+    if (!parent) {
         me->root = NULL;
         return;
     }
@@ -480,8 +480,8 @@ static void map_remove_one_child(map me, const struct node *const traverse)
 {
     struct node *const parent = traverse->parent;
     // If no parent, make the child of traverse the new root.
-    if (parent == NULL) {
-        if (traverse->left != NULL) {
+    if (!parent) {
+        if (traverse->left) {
             traverse->left->parent = NULL;
             me->root = traverse->left;
         } else {
@@ -492,7 +492,7 @@ static void map_remove_one_child(map me, const struct node *const traverse)
     }
     // The parent of traverse now references the child of traverse.
     if (parent->left == traverse) {
-        if (traverse->left != NULL) {
+        if (traverse->left) {
             parent->left = traverse->left;
             traverse->left->parent = parent;
         } else {
@@ -501,7 +501,7 @@ static void map_remove_one_child(map me, const struct node *const traverse)
         }
         map_delete_balance(me, parent, true);
     } else {
-        if (traverse->left != NULL) {
+        if (traverse->left) {
             parent->right = traverse->left;
             traverse->left->parent = parent;
         } else {
@@ -529,13 +529,13 @@ static void map_remove_two_children(map me, const struct node *const traverse)
         item->left->parent = item;
     } else {
         item = traverse->right->left;
-        while (item->left != NULL) {
+        while (item->left) {
             item = item->left;
         }
         parent = item->parent;
         item->balance = traverse->balance;
         item->parent->left = item->right;
-        if (item->right != NULL) {
+        if (item->right) {
             item->right->parent = item->parent;
         }
         item->left = traverse->left;
@@ -544,7 +544,7 @@ static void map_remove_two_children(map me, const struct node *const traverse)
         item->right->parent = item;
         item->parent = traverse->parent;
     }
-    if (traverse->parent == NULL) {
+    if (!traverse->parent) {
         me->root = item;
     } else if (traverse->parent->left == traverse) {
         item->parent->left = item;
@@ -559,9 +559,9 @@ static void map_remove_two_children(map me, const struct node *const traverse)
  */
 static void map_remove_element(map me, struct node *const traverse)
 {
-    if (traverse->left == NULL && traverse->right == NULL) {
+    if (!traverse->left && !traverse->right) {
         map_remove_no_children(me, traverse);
-    } else if (traverse->left == NULL || traverse->right == NULL) {
+    } else if (!traverse->left || !traverse->right) {
         map_remove_one_child(me, traverse);
     } else {
         map_remove_two_children(me, traverse);
@@ -583,7 +583,7 @@ static void map_remove_element(map me, struct node *const traverse)
 bool map_remove(map me, void *const key)
 {
     struct node *const traverse = map_equal_match(me, key);
-    if (traverse == NULL) {
+    if (!traverse) {
         return false;
     }
     map_remove_element(me, traverse);
@@ -597,7 +597,7 @@ bool map_remove(map me, void *const key)
  */
 void map_clear(map me)
 {
-    while (me->root != NULL) {
+    while (me->root) {
         map_remove_element(me, me->root);
     }
 }

@@ -42,13 +42,13 @@ struct _array {
 array array_init(const int element_count, const size_t data_size)
 {
     struct _array *const init = malloc(sizeof(struct _array));
-    if (init == NULL) {
+    if (!init) {
         return NULL;
     }
     init->data_size = data_size;
     init->element_count = element_count;
     init->data = calloc((size_t) element_count, data_size);
-    if (init->data == NULL) {
+    if (!init->data) {
         free(init);
         return NULL;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Bailey Thompson
+ * Copyright (c) 2017-2018 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -52,7 +52,7 @@ set set_init(const size_t key_size,
              int (*const comparator)(const void *const, const void *const))
 {
     struct _set *const init = malloc(sizeof(struct _set));
-    if (init == NULL) {
+    if (!init) {
         return NULL;
     }
     init->key_size = key_size;
@@ -94,7 +94,7 @@ static void set_reference_parent(set me,
                                  struct node *const child)
 {
     child->parent = parent->parent;
-    if (parent->parent == NULL) {
+    if (!parent->parent) {
         me->root = child;
     } else if (parent->parent->left == parent) {
         parent->parent->left = child;
@@ -112,7 +112,7 @@ static void set_rotate_left(set me,
 {
     set_reference_parent(me, parent, child);
     struct node *const grand_child = child->left;
-    if (grand_child != NULL) {
+    if (grand_child) {
         grand_child->parent = parent;
     }
     parent->parent = child;
@@ -129,7 +129,7 @@ static void set_rotate_right(set me,
 {
     set_reference_parent(me, parent, child);
     struct node *const grand_child = child->right;
-    if (grand_child != NULL) {
+    if (grand_child) {
         grand_child->parent = parent;
     }
     parent->parent = child;
@@ -211,7 +211,7 @@ static void set_insert_balance(set me, struct node *const item)
     struct node *grand_child = NULL;
     struct node *child = item;
     struct node *parent = item->parent;
-    while (parent != NULL) {
+    while (parent) {
         if (parent->left == child) {
             parent->balance--;
         } else {
@@ -241,13 +241,13 @@ static struct node *set_create_node(set me,
                                     struct node *const parent)
 {
     struct node *const insert = malloc(sizeof(struct node));
-    if (insert == NULL) {
+    if (!insert) {
         return NULL;
     }
     insert->parent = parent;
     insert->balance = 0;
     insert->key = malloc(me->key_size);
-    if (insert->key == NULL) {
+    if (!insert->key) {
         free(insert);
         return NULL;
     }
@@ -269,9 +269,9 @@ static struct node *set_create_node(set me,
  */
 int set_put(set me, void *const key)
 {
-    if (me->root == NULL) {
+    if (!me->root) {
         struct node *insert = set_create_node(me, key, NULL);
-        if (insert == NULL) {
+        if (!insert) {
             return -ENOMEM;
         }
         me->root = insert;
@@ -281,11 +281,11 @@ int set_put(set me, void *const key)
     while (true) {
         const int compare = me->comparator(key, traverse->key);
         if (compare < 0) {
-            if (traverse->left != NULL) {
+            if (traverse->left) {
                 traverse = traverse->left;
             } else {
                 struct node *insert = set_create_node(me, key, traverse);
-                if (insert == NULL) {
+                if (!insert) {
                     return -ENOMEM;
                 }
                 traverse->left = insert;
@@ -293,11 +293,11 @@ int set_put(set me, void *const key)
                 return 0;
             }
         } else if (compare > 0) {
-            if (traverse->right != NULL) {
+            if (traverse->right) {
                 traverse = traverse->right;
             } else {
                 struct node *insert = set_create_node(me, key, traverse);
-                if (insert == NULL) {
+                if (!insert) {
                     return -ENOMEM;
                 }
                 traverse->right = insert;
@@ -316,19 +316,19 @@ int set_put(set me, void *const key)
 static struct node *set_equal_match(set me, const void *const key)
 {
     struct node *traverse = me->root;
-    if (traverse == NULL) {
+    if (!traverse) {
         return false;
     }
     while (true) {
         const int compare = me->comparator(key, traverse->key);
         if (compare < 0) {
-            if (traverse->left != NULL) {
+            if (traverse->left) {
                 traverse = traverse->left;
             } else {
                 return NULL;
             }
         } else if (compare > 0) {
-            if (traverse->right != NULL) {
+            if (traverse->right) {
                 traverse = traverse->right;
             } else {
                 return NULL;
@@ -384,13 +384,13 @@ static void set_delete_balance(set me,
     // Must re-balance if not in {-1, 0, 1}
     if (item->balance > 1 || item->balance < -1) {
         item = set_repair_pivot(me, item, is_left_deleted);
-        if (item->parent == NULL || item->balance == -1 || item->balance == 1) {
+        if (!item->parent || item->balance == -1 || item->balance == 1) {
             return;
         }
     }
     struct node *child = item;
     struct node *parent = item->parent;
-    while (parent != NULL) {
+    while (parent) {
         if (parent->left == child) {
             parent->balance++;
         } else {
@@ -406,7 +406,7 @@ static void set_delete_balance(set me,
             parent = child->parent;
             // If balance is -1 or +1 after modification or the parent is NULL,
             // then the tree is balanced.
-            if (parent == NULL || child->balance == -1 || child->balance == 1) {
+            if (!parent || child->balance == -1 || child->balance == 1) {
                 return;
             }
         } else {
@@ -423,7 +423,7 @@ static void set_remove_no_children(set me, const struct node *const traverse)
 {
     struct node *const parent = traverse->parent;
     // If no parent and no children, then the only node is traverse.
-    if (parent == NULL) {
+    if (!parent) {
         me->root = NULL;
         return;
     }
@@ -444,8 +444,8 @@ static void set_remove_one_child(set me, const struct node *const traverse)
 {
     struct node *const parent = traverse->parent;
     // If no parent, make the child of traverse the new root.
-    if (parent == NULL) {
-        if (traverse->left != NULL) {
+    if (!parent) {
+        if (traverse->left) {
             traverse->left->parent = NULL;
             me->root = traverse->left;
         } else {
@@ -456,7 +456,7 @@ static void set_remove_one_child(set me, const struct node *const traverse)
     }
     // The parent of traverse now references the child of traverse.
     if (parent->left == traverse) {
-        if (traverse->left != NULL) {
+        if (traverse->left) {
             parent->left = traverse->left;
             traverse->left->parent = parent;
         } else {
@@ -465,7 +465,7 @@ static void set_remove_one_child(set me, const struct node *const traverse)
         }
         set_delete_balance(me, parent, true);
     } else {
-        if (traverse->left != NULL) {
+        if (traverse->left) {
             parent->right = traverse->left;
             traverse->left->parent = parent;
         } else {
@@ -493,13 +493,13 @@ static void set_remove_two_children(set me, const struct node *const traverse)
         item->left->parent = item;
     } else {
         item = traverse->right->left;
-        while (item->left != NULL) {
+        while (item->left) {
             item = item->left;
         }
         parent = item->parent;
         item->balance = traverse->balance;
         item->parent->left = item->right;
-        if (item->right != NULL) {
+        if (item->right) {
             item->right->parent = item->parent;
         }
         item->left = traverse->left;
@@ -508,7 +508,7 @@ static void set_remove_two_children(set me, const struct node *const traverse)
         item->right->parent = item;
         item->parent = traverse->parent;
     }
-    if (traverse->parent == NULL) {
+    if (!traverse->parent) {
         me->root = item;
     } else if (traverse->parent->left == traverse) {
         item->parent->left = item;
@@ -523,9 +523,9 @@ static void set_remove_two_children(set me, const struct node *const traverse)
  */
 static void set_remove_element(set me, struct node *const traverse)
 {
-    if (traverse->left == NULL && traverse->right == NULL) {
+    if (!traverse->left && !traverse->right) {
         set_remove_no_children(me, traverse);
-    } else if (traverse->left == NULL || traverse->right == NULL) {
+    } else if (!traverse->left || !traverse->right) {
         set_remove_one_child(me, traverse);
     } else {
         set_remove_two_children(me, traverse);
@@ -546,7 +546,7 @@ static void set_remove_element(set me, struct node *const traverse)
 bool set_remove(set me, void *const key)
 {
     struct node *const traverse = set_equal_match(me, key);
-    if (traverse == NULL) {
+    if (!traverse) {
         return false;
     }
     set_remove_element(me, traverse);
@@ -560,7 +560,7 @@ bool set_remove(set me, void *const key)
  */
 void set_clear(set me)
 {
-    while (me->root != NULL) {
+    while (me->root) {
         set_remove_element(me, me->root);
     }
 }

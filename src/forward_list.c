@@ -46,7 +46,7 @@ struct node {
 forward_list forward_list_init(const size_t data_size)
 {
     struct _forward_list *const init = malloc(sizeof(struct _forward_list));
-    if (init == NULL) {
+    if (!init) {
         return NULL;
     }
     init->data_size = data_size;
@@ -89,7 +89,7 @@ void forward_list_copy_to_array(void *const arr, forward_list me)
 {
     struct node *traverse = me->head;
     int offset = 0;
-    while (traverse != NULL) {
+    while (traverse) {
         memcpy(arr + offset, traverse->data, me->data_size);
         offset += me->data_size;
         traverse = traverse->next;
@@ -139,11 +139,11 @@ int forward_list_add_at(forward_list me, const int index, void *const data)
         return -EINVAL;
     }
     struct node *const add = malloc(sizeof(struct node));
-    if (add == NULL) {
+    if (!add) {
         return -ENOMEM;
     }
     add->data = malloc(me->data_size);
-    if (add->data == NULL) {
+    if (!add->data) {
         free(add);
         return -ENOMEM;
     }
@@ -347,7 +347,7 @@ int forward_list_get_last(void *const data, forward_list me)
 void forward_list_clear(forward_list me)
 {
     struct node *traverse = me->head;
-    while (traverse != NULL) {
+    while (traverse) {
         struct node *const temp = traverse;
         traverse = traverse->next;
         free(temp->data);

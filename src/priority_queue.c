@@ -47,12 +47,12 @@ priority_queue priority_queue_init(const size_t data_size,
                                                      const void *const))
 {
     struct _priority_queue *const init = malloc(sizeof(struct _priority_queue));
-    if (init == NULL) {
+    if (!init) {
         return NULL;
     }
     init->data_size = data_size;
     init->data = vector_init(data_size);
-    if (init->data == NULL) {
+    if (!init->data) {
         free(init);
         return NULL;
     }
@@ -96,7 +96,7 @@ bool priority_queue_is_empty(priority_queue me)
 int priority_queue_push(priority_queue me, void *const data)
 {
     void *const temp = malloc(me->data_size);
-    if (temp == NULL) {
+    if (!temp) {
         return -ENOMEM;
     }
     const int rc = vector_add_last(me->data, data);

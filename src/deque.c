@@ -51,7 +51,7 @@ struct node {
 deque deque_init(const size_t data_size)
 {
     struct _deque *const init = malloc(sizeof(struct _deque));
-    if (init == NULL) {
+    if (!init) {
         return NULL;
     }
     init->data_size = data_size;
@@ -59,13 +59,13 @@ deque deque_init(const size_t data_size)
     init->end_index = init->start_index + 1;
     init->block_count = 1;
     init->block = malloc(sizeof(struct node));
-    if (init->block == NULL) {
+    if (!init->block) {
         free(init);
         return NULL;
     }
     struct node *const block = init->block;
     block->data = malloc(BLOCK_SIZE * init->data_size);
-    if (block->data == NULL) {
+    if (!block->data) {
         free(init->block);
         free(init);
         return NULL;
@@ -114,7 +114,7 @@ int deque_trim(deque me)
     const int end_block = me->end_index / BLOCK_SIZE;
     const int new_block_count = end_block - start_block + 1;
     void *const new_block = malloc(new_block_count * sizeof(struct node));
-    if (new_block == NULL) {
+    if (!new_block) {
         return -ENOMEM;
     }
     for (int i = 0; i < start_block; i++) {
@@ -172,7 +172,7 @@ int deque_push_front(deque me, void *const data)
             const int added_blocks = new_block_count - old_block_count;
             void *temp = realloc(me->block,
                                  new_block_count * sizeof(struct node));
-            if (temp == NULL) {
+            if (!temp) {
                 return -ENOMEM;
             }
             me->block = temp;
@@ -189,9 +189,9 @@ int deque_push_front(deque me, void *const data)
             }
         }
         struct node *const block_item = &me->block[block_index];
-        if (block_item->data == NULL) {
+        if (!block_item->data) {
             block_item->data = malloc(BLOCK_SIZE * me->data_size);
-            if (block_item->data == NULL) {
+            if (!block_item->data) {
                 return -ENOMEM;
             }
         }
@@ -221,7 +221,7 @@ int deque_push_back(deque me, void *const data)
                     (int) ceil(RESIZE_RATIO * me->block_count);
             void *temp = realloc(me->block,
                                  new_block_count * sizeof(struct node));
-            if (temp == NULL) {
+            if (!temp) {
                 return -ENOMEM;
             }
             me->block = temp;
@@ -232,9 +232,9 @@ int deque_push_back(deque me, void *const data)
             }
         }
         struct node *const block_item = &me->block[block_index];
-        if (block_item->data == NULL) {
+        if (!block_item->data) {
             block_item->data = malloc(BLOCK_SIZE * me->data_size);
-            if (block_item->data == NULL) {
+            if (!block_item->data) {
                 return -ENOMEM;
             }
         }
@@ -402,11 +402,11 @@ int deque_get_last(void *const data, deque me)
 int deque_clear(deque me)
 {
     struct node *const temp_block = malloc(sizeof(struct node));
-    if (temp_block == NULL) {
+    if (!temp_block) {
         return -ENOMEM;
     }
     void *const temp_block_data = malloc(BLOCK_SIZE * me->data_size);
-    if (temp_block_data == NULL) {
+    if (!temp_block_data) {
         free(temp_block);
         return -ENOMEM;
     }

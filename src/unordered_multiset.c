@@ -64,7 +64,7 @@ unordered_multiset_init(const size_t key_size,
 {
     struct _unordered_multiset *const init =
             malloc(sizeof(struct _unordered_multiset));
-    if (init == NULL) {
+    if (!init) {
         return NULL;
     }
     init->key_size = key_size;
@@ -74,7 +74,7 @@ unordered_multiset_init(const size_t key_size,
     init->used = 0;
     init->capacity = STARTING_BUCKETS;
     init->buckets = calloc(STARTING_BUCKETS, sizeof(struct node *));
-    if (init->buckets == NULL) {
+    if (!init->buckets) {
         free(init);
         return NULL;
     }
@@ -89,12 +89,12 @@ static void unordered_multiset_add_item(unordered_multiset me,
 {
     const int index = (int) (add->hash % me->capacity);
     add->next = NULL;
-    if (me->buckets[index] == NULL) {
+    if (!me->buckets[index]) {
         me->buckets[index] = add;
         return;
     }
     struct node *traverse = me->buckets[index];
-    while (traverse->next != NULL) {
+    while (traverse->next) {
         traverse = traverse->next;
     }
     traverse->next = add;
@@ -113,13 +113,13 @@ int unordered_multiset_rehash(unordered_multiset me)
 {
     struct node **old_buckets = me->buckets;
     me->buckets = calloc((size_t) me->capacity, sizeof(struct node *));
-    if (me->buckets == NULL) {
+    if (!me->buckets) {
         me->buckets = old_buckets;
         return -ENOMEM;
     }
     for (int i = 0; i < me->capacity; i++) {
         struct node *traverse = old_buckets[i];
-        while (traverse != NULL) {
+        while (traverse) {
             struct node *const backup = traverse->next;
             traverse->hash = me->hash(traverse->key);
             unordered_multiset_add_item(me, traverse);
@@ -163,14 +163,14 @@ static int unordered_multiset_resize(unordered_multiset me)
     const int new_capacity = (int) (me->capacity * RESIZE_RATIO);
     struct node **old_buckets = me->buckets;
     me->buckets = calloc((size_t) new_capacity, sizeof(struct node *));
-    if (me->buckets == NULL) {
+    if (!me->buckets) {
         me->buckets = old_buckets;
         return -ENOMEM;
     }
     me->capacity = new_capacity;
     for (int i = 0; i < old_capacity; i++) {
         struct node *traverse = old_buckets[i];
-        while (traverse != NULL) {
+        while (traverse) {
             struct node *const backup = traverse->next;
             unordered_multiset_add_item(me, traverse);
             traverse = backup;
@@ -200,12 +200,12 @@ unordered_multiset_create_element(unordered_multiset me,
                                   const void *const key)
 {
     struct node *const init = malloc(sizeof(struct node));
-    if (init == NULL) {
+    if (!init) {
         return NULL;
     }
     init->count = 1;
     init->key = malloc(me->key_size);
-    if (init->key == NULL) {
+    if (!init->key) {
         free(init);
         return NULL;
     }
@@ -229,9 +229,9 @@ int unordered_multiset_put(unordered_multiset me, void *const key)
 
     const unsigned long hash = me->hash(key);
     const int index = (int) (hash % me->capacity);
-    if (me->buckets[index] == NULL) {
+    if (!me->buckets[index]) {
         me->buckets[index] = unordered_multiset_create_element(me, hash, key);
-        if (me->buckets[index] == NULL) {
+        if (!me->buckets[index]) {
             return -ENOMEM;
         }
     } else {
@@ -241,7 +241,7 @@ int unordered_multiset_put(unordered_multiset me, void *const key)
             me->size++;
             return 0;
         }
-        while (traverse->next != NULL) {
+        while (traverse->next) {
             traverse = traverse->next;
             if (unordered_multiset_is_equal(me, traverse, hash, key)) {
                 traverse->count++;
@@ -250,7 +250,7 @@ int unordered_multiset_put(unordered_multiset me, void *const key)
             }
         }
         traverse->next = unordered_multiset_create_element(me, hash, key);
-        if (traverse->next == NULL) {
+        if (!traverse->next) {
             return -ENOMEM;
         }
     }
@@ -275,7 +275,7 @@ int unordered_multiset_count(unordered_multiset me, void *const key)
     const unsigned long hash = me->hash(key);
     const int index = (int) (hash % me->capacity);
     const struct node *traverse = me->buckets[index];
-    while (traverse != NULL) {
+    while (traverse) {
         if (unordered_multiset_is_equal(me, traverse, hash, key)) {
             return traverse->count;
         }
@@ -309,7 +309,7 @@ bool unordered_multiset_remove(unordered_multiset me, void *const key)
 {
     const unsigned long hash = me->hash(key);
     const int index = (int) (hash % me->capacity);
-    if (me->buckets[index] == NULL) {
+    if (!me->buckets[index]) {
         return false;
     }
     struct node *traverse = me->buckets[index];
@@ -324,7 +324,7 @@ bool unordered_multiset_remove(unordered_multiset me, void *const key)
         me->size--;
         return true;
     }
-    while (traverse->next != NULL) {
+    while (traverse->next) {
         if (unordered_multiset_is_equal(me, traverse->next, hash, key)) {
             struct node *const backup = traverse->next;
             backup->count--;
@@ -355,7 +355,7 @@ bool unordered_multiset_remove_all(unordered_multiset me, void *const key)
 {
     const unsigned long hash = me->hash(key);
     const int index = (int) (hash % me->capacity);
-    if (me->buckets[index] == NULL) {
+    if (!me->buckets[index]) {
         return false;
     }
     struct node *traverse = me->buckets[index];
@@ -367,7 +367,7 @@ bool unordered_multiset_remove_all(unordered_multiset me, void *const key)
         me->used--;
         return true;
     }
-    while (traverse->next != NULL) {
+    while (traverse->next) {
         if (unordered_multiset_is_equal(me, traverse->next, hash, key)) {
             struct node *const backup = traverse->next;
             traverse->next = traverse->next->next;
@@ -394,12 +394,12 @@ int unordered_multiset_clear(unordered_multiset me)
 {
     struct node **temp =
             calloc((size_t) STARTING_BUCKETS, sizeof(struct node *));
-    if (temp == NULL) {
+    if (!temp) {
         return -ENOMEM;
     }
     for (int i = 0; i < me->capacity; i++) {
         struct node *traverse = me->buckets[i];
-        while (traverse != NULL) {
+        while (traverse) {
             struct node *const backup = traverse;
             traverse = traverse->next;
             free(backup->key);

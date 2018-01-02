@@ -74,7 +74,7 @@ unordered_multimap_init(const size_t key_size,
 {
     struct _unordered_multimap *const init =
             malloc(sizeof(struct _unordered_multimap));
-    if (init == NULL) {
+    if (!init) {
         return NULL;
     }
     init->key_size = key_size;
@@ -85,13 +85,13 @@ unordered_multimap_init(const size_t key_size,
     init->size = 0;
     init->capacity = STARTING_BUCKETS;
     init->buckets = calloc(STARTING_BUCKETS, sizeof(struct node *));
-    if (init->buckets == NULL) {
+    if (!init->buckets) {
         free(init);
         return NULL;
     }
     init->iterate_hash = 0;
     init->iterate_key = calloc(1, init->key_size);
-    if (init->iterate_key == NULL) {
+    if (!init->iterate_key) {
         free(init->buckets);
         free(init);
         return NULL;
@@ -108,12 +108,12 @@ static void unordered_multimap_add_item(unordered_multimap me,
 {
     const int index = (int) (add->hash % me->capacity);
     add->next = NULL;
-    if (me->buckets[index] == NULL) {
+    if (!me->buckets[index]) {
         me->buckets[index] = add;
         return;
     }
     struct node *traverse = me->buckets[index];
-    while (traverse->next != NULL) {
+    while (traverse->next) {
         traverse = traverse->next;
     }
     traverse->next = add;
@@ -132,13 +132,13 @@ int unordered_multimap_rehash(unordered_multimap me)
 {
     struct node **old_buckets = me->buckets;
     me->buckets = calloc((size_t) me->capacity, sizeof(struct node *));
-    if (me->buckets == NULL) {
+    if (!me->buckets) {
         me->buckets = old_buckets;
         return -ENOMEM;
     }
     for (int i = 0; i < me->capacity; i++) {
         struct node *traverse = old_buckets[i];
-        while (traverse != NULL) {
+        while (traverse) {
             struct node *const backup = traverse->next;
             traverse->hash = me->hash(traverse->key);
             unordered_multimap_add_item(me, traverse);
@@ -182,14 +182,14 @@ static int unordered_multimap_resize(unordered_multimap me)
     const int new_capacity = (int) (me->capacity * RESIZE_RATIO);
     struct node **old_buckets = me->buckets;
     me->buckets = calloc((size_t) new_capacity, sizeof(struct node *));
-    if (me->buckets == NULL) {
+    if (!me->buckets) {
         me->buckets = old_buckets;
         return -ENOMEM;
     }
     me->capacity = new_capacity;
     for (int i = 0; i < old_capacity; i++) {
         struct node *traverse = old_buckets[i];
-        while (traverse != NULL) {
+        while (traverse) {
             struct node *const backup = traverse->next;
             unordered_multimap_add_item(me, traverse);
             traverse = backup;
@@ -220,17 +220,17 @@ unordered_multimap_create_element(unordered_multimap me,
                                   const void *const value)
 {
     struct node *const init = malloc(sizeof(struct node));
-    if (init == NULL) {
+    if (!init) {
         return NULL;
     }
     init->key = malloc(me->key_size);
-    if (init->key == NULL) {
+    if (!init->key) {
         free(init);
         return NULL;
     }
     memcpy(init->key, key, me->key_size);
     init->value = malloc(me->value_size);
-    if (init->value == NULL) {
+    if (!init->value) {
         free(init->key);
         free(init);
         return NULL;
@@ -257,20 +257,20 @@ int unordered_multimap_put(unordered_multimap me,
 {
     const unsigned long hash = me->hash(key);
     const int index = (int) (hash % me->capacity);
-    if (me->buckets[index] == NULL) {
+    if (!me->buckets[index]) {
         me->buckets[index] =
                 unordered_multimap_create_element(me, hash, key, value);
-        if (me->buckets[index] == NULL) {
+        if (!me->buckets[index]) {
             return -ENOMEM;
         }
     } else {
         struct node *traverse = me->buckets[index];
-        while (traverse->next != NULL) {
+        while (traverse->next) {
             traverse = traverse->next;
         }
         traverse->next =
                 unordered_multimap_create_element(me, hash, key, value);
-        if (traverse->next == NULL) {
+        if (!traverse->next) {
             return -ENOMEM;
         }
     }
@@ -296,7 +296,7 @@ void unordered_multimap_get_start(unordered_multimap me, void *const key)
     me->iterate_element = NULL;
     const int index = (int) (me->iterate_hash % me->capacity);
     struct node *traverse = me->buckets[index];
-    while (traverse != NULL) {
+    while (traverse) {
         if (unordered_multimap_is_equal(me, traverse, me->iterate_hash, key)) {
             me->iterate_element = traverse;
             return;
@@ -318,12 +318,12 @@ void unordered_multimap_get_start(unordered_multimap me, void *const key)
  */
 bool unordered_multimap_get_next(void *const value, unordered_multimap me)
 {
-    if (me->iterate_element == NULL) {
+    if (!me->iterate_element) {
         return false;
     }
     struct node *const item = me->iterate_element;
     struct node *traverse = item->next;
-    while (traverse != NULL) {
+    while (traverse) {
         if (unordered_multimap_is_equal(me, traverse, me->iterate_hash,
                                         me->iterate_key)) {
             me->iterate_element = traverse;
@@ -351,7 +351,7 @@ int unordered_multimap_count(unordered_multimap me, void *const key)
     const unsigned long hash = me->hash(key);
     const int index = (int) (hash % me->capacity);
     const struct node *traverse = me->buckets[index];
-    while (traverse != NULL) {
+    while (traverse) {
         if (unordered_multimap_is_equal(me, traverse, hash, key)) {
             count++;
         }
@@ -373,7 +373,7 @@ bool unordered_multimap_contains(unordered_multimap me, void *const key)
     const unsigned long hash = me->hash(key);
     const int index = (int) (hash % me->capacity);
     const struct node *traverse = me->buckets[index];
-    while (traverse != NULL) {
+    while (traverse) {
         if (unordered_multimap_is_equal(me, traverse, hash, key)) {
             return true;
         }
@@ -397,7 +397,7 @@ bool unordered_multimap_remove(unordered_multimap me,
 {
     const unsigned long hash = me->hash(key);
     const int index = (int) (hash % me->capacity);
-    if (me->buckets[index] == NULL) {
+    if (!me->buckets[index]) {
         return false;
     }
     struct node *traverse = me->buckets[index];
@@ -410,7 +410,7 @@ bool unordered_multimap_remove(unordered_multimap me,
         me->size--;
         return true;
     }
-    while (traverse->next != NULL) {
+    while (traverse->next) {
         is_key_equal =
                 unordered_multimap_is_equal(me, traverse->next, hash, key);
         if (is_key_equal && me->value_comparator(traverse->value, value) == 0) {
@@ -443,7 +443,7 @@ bool unordered_multimap_remove_all(unordered_multimap me, void *const key)
     bool was_modified = false;
     while (true) {
         struct node *traverse = me->buckets[index];
-        if (traverse == NULL) {
+        if (!traverse) {
             break;
         }
         if (unordered_multimap_is_equal(me, traverse, hash, key)) {
@@ -455,7 +455,7 @@ bool unordered_multimap_remove_all(unordered_multimap me, void *const key)
             was_modified = true;
             continue;
         }
-        while (traverse->next != NULL) {
+        while (traverse->next) {
             if (unordered_multimap_is_equal(me, traverse->next, hash, key)) {
                 struct node *const backup = traverse->next;
                 traverse->next = traverse->next->next;
@@ -485,12 +485,12 @@ int unordered_multimap_clear(unordered_multimap me)
 {
     struct node **temp =
             calloc((size_t) STARTING_BUCKETS, sizeof(struct node *));
-    if (temp == NULL) {
+    if (!temp) {
         return -ENOMEM;
     }
     for (int i = 0; i < me->capacity; i++) {
         struct node *traverse = me->buckets[i];
-        while (traverse != NULL) {
+        while (traverse) {
             struct node *const backup = traverse;
             traverse = traverse->next;
             free(backup->key);

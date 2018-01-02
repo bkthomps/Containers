@@ -45,14 +45,14 @@ struct _vector {
 vector vector_init(const size_t data_size)
 {
     struct _vector *const init = malloc(sizeof(struct _vector));
-    if (init == NULL) {
+    if (!init) {
         return NULL;
     }
     init->data_size = data_size;
     init->offset = 0;
     init->space = START_SPACE;
     init->storage = malloc(init->space * init->data_size);
-    if (init->storage == NULL) {
+    if (!init->storage) {
         free(init);
         return NULL;
     }
@@ -89,7 +89,7 @@ bool vector_is_empty(vector me)
 static int vector_set_space(vector me, const int size)
 {
     void *const temp = realloc(me->storage, size * me->data_size);
-    if (temp == NULL) {
+    if (!temp) {
         return -ENOMEM;
     }
     me->storage = temp;
@@ -190,7 +190,7 @@ int vector_add_at(vector me, const int index, void *const data)
     if (me->offset + 1 >= me->space) {
         const int new_space = (int) (me->space * RESIZE_RATIO);
         void *const temp = realloc(me->storage, new_space * me->data_size);
-        if (temp == NULL) {
+        if (!temp) {
             return -ENOMEM;
         }
         me->storage = temp;

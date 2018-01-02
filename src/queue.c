@@ -42,12 +42,12 @@ struct _queue {
 queue queue_init(const size_t data_size)
 {
     struct _queue *const init = malloc(sizeof(struct _queue));
-    if (init == NULL) {
+    if (!init) {
         return NULL;
     }
     init->trim_count = 0;
     init->deque_data = deque_init(data_size);
-    if (init->deque_data == NULL) {
+    if (!init->deque_data) {
         free(init);
         return NULL;
     }
