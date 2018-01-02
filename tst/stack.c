@@ -11,7 +11,7 @@ void test_stack(void)
     for (int i = 0; i < 10; i++) {
         stack_push(me, &val[i]);
         int get = 0;
-        stack_top(&get, me);
+        assert(stack_top(&get, me));
         assert(get == val[i]);
     }
     assert(stack_size(me) == 10);
@@ -23,7 +23,7 @@ void test_stack(void)
     }
     for (int i = 0; i < 9; i++) {
         int get = 0;
-        stack_pop(&get, me);
+        assert(stack_pop(&get, me));
         assert(get == 10 - i);
     }
     stack_trim(me);
@@ -31,8 +31,8 @@ void test_stack(void)
     stack_clear(me);
     assert(stack_size(me) == 0);
     int get = 0;
-    assert(stack_pop(&get, me) == -EINVAL);
-    assert(stack_top(&get, me) == -EINVAL);
+    assert(!stack_pop(&get, me));
+    assert(!stack_top(&get, me));
     me = stack_destroy(me);
     assert(me == NULL);
 }

@@ -11,10 +11,10 @@ void test_queue(void)
     for (int i = 0; i < 10; i++) {
         queue_push(me, &val[i]);
         int get = 0;
-        queue_back(&get, me);
+        assert(queue_back(&get, me));
         assert(get == val[i]);
         int stuff = 0;
-        queue_front(&stuff, me);
+        assert(queue_front(&stuff, me));
         assert(stuff == 1);
     }
     assert(queue_size(me) == 10);
@@ -26,7 +26,7 @@ void test_queue(void)
     }
     for (int i = 0; i < 9; i++) {
         int get = 0;
-        queue_pop(&get, me);
+        assert(queue_pop(&get, me));
         assert(get == i + 1);
     }
     queue_trim(me);
@@ -34,9 +34,9 @@ void test_queue(void)
     queue_clear(me);
     assert(queue_size(me) == 0);
     int get = 0;
-    assert(queue_pop(&get, me) == -EINVAL);
-    assert(queue_front(&get, me) == -EINVAL);
-    assert(queue_back(&get, me) == -EINVAL);
+    assert(!queue_pop(&get, me));
+    assert(!queue_front(&get, me));
+    assert(!queue_back(&get, me));
     me = queue_destroy(me);
     assert(me == NULL);
 }
