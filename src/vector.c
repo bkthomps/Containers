@@ -88,15 +88,15 @@ bool vector_is_empty(vector me)
  */
 static int vector_set_space(vector me, const int size)
 {
-    me->space = size;
-    if (me->space < me->offset) {
-        me->offset = me->space;
-    }
-    void *const temp = realloc(me->storage, me->space * me->data_size);
+    void *const temp = realloc(me->storage, size * me->data_size);
     if (temp == NULL) {
         return -ENOMEM;
     }
     me->storage = temp;
+    me->space = size;
+    if (me->space < me->offset) {
+        me->offset = me->space;
+    }
     return 0;
 }
 
@@ -188,12 +188,13 @@ int vector_add_at(vector me, const int index, void *const data)
         return -EINVAL;
     }
     if (me->offset + 1 >= me->space) {
-        me->space *= RESIZE_RATIO;
-        void *const temp = realloc(me->storage, me->space * me->data_size);
+        const int new_space = (int) (me->space * RESIZE_RATIO);
+        void *const temp = realloc(me->storage, new_space * me->data_size);
         if (temp == NULL) {
             return -ENOMEM;
         }
         me->storage = temp;
+        me->space = new_space;
     }
     if (index != me->offset) {
         memmove(me->storage + (index + 1) * me->data_size,

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Bailey Thompson
+ * Copyright (c) 2017-2018 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -258,6 +258,7 @@ static struct node *multiset_create_node(multiset me,
     memcpy(insert->key, data, me->key_size);
     insert->left = NULL;
     insert->right = NULL;
+    me->size++;
     return insert;
 }
 
@@ -278,7 +279,6 @@ int multiset_put(multiset me, void *const key)
             return -ENOMEM;
         }
         me->root = insert;
-        me->size++;
         return 0;
     }
     struct node *traverse = me->root;
@@ -294,7 +294,6 @@ int multiset_put(multiset me, void *const key)
                 }
                 traverse->left = insert;
                 multiset_insert_balance(me, insert);
-                me->size++;
                 return 0;
             }
         } else if (compare > 0) {
@@ -307,7 +306,6 @@ int multiset_put(multiset me, void *const key)
                 }
                 traverse->right = insert;
                 multiset_insert_balance(me, insert);
-                me->size++;
                 return 0;
             }
         } else {

@@ -63,8 +63,9 @@ deque deque_init(const size_t data_size)
         free(init);
         return NULL;
     }
-    init->block->data = malloc(BLOCK_SIZE * init->data_size);
-    if (init->block->data == NULL) {
+    struct node *const block = init->block;
+    block->data = malloc(BLOCK_SIZE * init->data_size);
+    if (block->data == NULL) {
         free(init->block);
         free(init);
         return NULL;
@@ -111,21 +112,25 @@ int deque_trim(deque me)
 {
     const int start_block = me->start_index / BLOCK_SIZE;
     const int end_block = me->end_index / BLOCK_SIZE;
-    for (int i = 0; i < start_block; i++) {
-        free(me->block[i].data);
-    }
-    for (int i = end_block + 1; i < me->block_count; i++) {
-        free(me->block[i].data);
-    }
-    me->block_count = end_block - start_block + 1;
-    memmove(me->block,
-            &me->block[start_block],
-            me->block_count * sizeof(struct node));
-    void *temp = realloc(me->block, me->block_count * sizeof(struct node));
-    if (temp == NULL) {
+    const int new_block_count = end_block - start_block + 1;
+    void *const new_block = malloc(new_block_count * sizeof(struct node));
+    if (new_block == NULL) {
         return -ENOMEM;
     }
-    me->block = temp;
+    for (int i = 0; i < start_block; i++) {
+        const struct node block_item = me->block[i];
+        free(block_item.data);
+    }
+    for (int i = end_block + 1; i < me->block_count; i++) {
+        const struct node block_item = me->block[i];
+        free(block_item.data);
+    }
+    memmove(new_block,
+            &me->block[start_block],
+            new_block_count * sizeof(struct node));
+    free(me->block);
+    me->block = new_block;
+    me->block_count = new_block_count;
     return 0;
 }
 
@@ -162,14 +167,16 @@ int deque_push_front(deque me, void *const data)
     if (inner_index == BLOCK_SIZE - 1) {
         if (block_index == -1) {
             const int old_block_count = me->block_count;
-            me->block_count = (int) ceil(RESIZE_RATIO * me->block_count);
-            const int added_blocks = me->block_count - old_block_count;
+            const int new_block_count =
+                    (int) ceil(RESIZE_RATIO * me->block_count);
+            const int added_blocks = new_block_count - old_block_count;
             void *temp = realloc(me->block,
-                                 me->block_count * sizeof(struct node));
+                                 new_block_count * sizeof(struct node));
             if (temp == NULL) {
                 return -ENOMEM;
             }
             me->block = temp;
+            me->block_count = new_block_count;
             memmove(&me->block[added_blocks],
                     me->block,
                     old_block_count * sizeof(struct node));
@@ -177,19 +184,20 @@ int deque_push_front(deque me, void *const data)
             me->start_index += added_blocks * BLOCK_SIZE;
             me->end_index += added_blocks * BLOCK_SIZE;
             for (int i = 0; i < added_blocks; i++) {
-                me->block[i].data = NULL;
+                struct node *const block_item = &me->block[i];
+                block_item->data = NULL;
             }
         }
-        if (me->block[block_index].data == NULL) {
-            me->block[block_index].data = malloc(BLOCK_SIZE * me->data_size);
-            if (me->block[block_index].data == NULL) {
+        struct node *const block_item = &me->block[block_index];
+        if (block_item->data == NULL) {
+            block_item->data = malloc(BLOCK_SIZE * me->data_size);
+            if (block_item->data == NULL) {
                 return -ENOMEM;
             }
         }
     }
-    memcpy(me->block[block_index].data + inner_index * me->data_size,
-           data,
-           me->data_size);
+    const struct node block_item = me->block[block_index];
+    memcpy(block_item.data + inner_index * me->data_size, data, me->data_size);
     me->start_index--;
     return 0;
 }
@@ -209,27 +217,30 @@ int deque_push_back(deque me, void *const data)
     const int inner_index = me->end_index % BLOCK_SIZE;
     if (inner_index == 0) {
         if (block_index == me->block_count) {
-            me->block_count = (int) ceil(RESIZE_RATIO * me->block_count);
+            const int new_block_count =
+                    (int) ceil(RESIZE_RATIO * me->block_count);
             void *temp = realloc(me->block,
-                                 me->block_count * sizeof(struct node));
+                                 new_block_count * sizeof(struct node));
             if (temp == NULL) {
                 return -ENOMEM;
             }
             me->block = temp;
+            me->block_count = new_block_count;
             for (int i = block_index; i < me->block_count; i++) {
-                me->block[i].data = NULL;
+                struct node *const block_item = &me->block[i];
+                block_item->data = NULL;
             }
         }
-        if (me->block[block_index].data == NULL) {
-            me->block[block_index].data = malloc(BLOCK_SIZE * me->data_size);
-            if (me->block[block_index].data == NULL) {
+        struct node *const block_item = &me->block[block_index];
+        if (block_item->data == NULL) {
+            block_item->data = malloc(BLOCK_SIZE * me->data_size);
+            if (block_item->data == NULL) {
                 return -ENOMEM;
             }
         }
     }
-    memcpy(me->block[block_index].data + inner_index * me->data_size,
-           data,
-           me->data_size);
+    const struct node block_item = me->block[block_index];
+    memcpy(block_item.data + inner_index * me->data_size, data, me->data_size);
     me->end_index++;
     return 0;
 }
@@ -251,9 +262,8 @@ int deque_pop_front(void *const data, deque me)
     me->start_index++;
     const int block_index = me->start_index / BLOCK_SIZE;
     const int inner_index = me->start_index % BLOCK_SIZE;
-    memcpy(data,
-           me->block[block_index].data + inner_index * me->data_size,
-           me->data_size);
+    const struct node block_item = me->block[block_index];
+    memcpy(data, block_item.data + inner_index * me->data_size, me->data_size);
     return 0;
 }
 
@@ -274,9 +284,8 @@ int deque_pop_back(void *const data, deque me)
     me->end_index--;
     const int block_index = me->end_index / BLOCK_SIZE;
     const int inner_index = me->end_index % BLOCK_SIZE;
-    memcpy(data,
-           me->block[block_index].data + inner_index * me->data_size,
-           me->data_size);
+    const struct node block_item = me->block[block_index];
+    memcpy(data, block_item.data + inner_index * me->data_size, me->data_size);
     return 0;
 }
 
@@ -312,9 +321,8 @@ int deque_set_at(deque me, int index, void *const data)
     index += me->start_index + 1;
     const int block_index = index / BLOCK_SIZE;
     const int inner_index = index % BLOCK_SIZE;
-    memcpy(me->block[block_index].data + inner_index * me->data_size,
-           data,
-           me->data_size);
+    const struct node block_item = me->block[block_index];
+    memcpy(block_item.data + inner_index * me->data_size, data, me->data_size);
     return 0;
 }
 
@@ -364,9 +372,8 @@ int deque_get_at(void *const data, deque me, int index)
     index += me->start_index + 1;
     const int block_index = index / BLOCK_SIZE;
     const int inner_index = index % BLOCK_SIZE;
-    memcpy(data,
-           me->block[block_index].data + inner_index * me->data_size,
-           me->data_size);
+    const struct node block_item = me->block[block_index];
+    memcpy(data, block_item.data + inner_index * me->data_size, me->data_size);
     return 0;
 }
 
@@ -394,21 +401,26 @@ int deque_get_last(void *const data, deque me)
  */
 int deque_clear(deque me)
 {
+    struct node *const temp_block = malloc(sizeof(struct node));
+    if (temp_block == NULL) {
+        return -ENOMEM;
+    }
+    void *const temp_block_data = malloc(BLOCK_SIZE * me->data_size);
+    if (temp_block_data == NULL) {
+        free(temp_block);
+        return -ENOMEM;
+    }
     for (int i = 0; i < me->block_count; i++) {
-        free(me->block[i].data);
+        const struct node block_item = me->block[i];
+        free(block_item.data);
     }
     free(me->block);
     me->start_index = BLOCK_SIZE / 2;
     me->end_index = me->start_index + 1;
     me->block_count = 1;
-    me->block = malloc(sizeof(struct node));
-    if (me->block == NULL) {
-        return -ENOMEM;
-    }
-    me->block->data = malloc(BLOCK_SIZE * me->data_size);
-    if (me->block->data == NULL) {
-        return -ENOMEM;
-    }
+    me->block = temp_block;
+    struct node *const block = me->block;
+    block->data = temp_block_data;
     return 0;
 }
 
@@ -422,7 +434,8 @@ int deque_clear(deque me)
 deque deque_destroy(deque me)
 {
     for (int i = 0; i < me->block_count; i++) {
-        free(me->block[i].data);
+        const struct node block_item = me->block[i];
+        free(block_item.data);
     }
     free(me->block);
     free(me);

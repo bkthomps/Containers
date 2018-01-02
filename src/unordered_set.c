@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Bailey Thompson
+ * Copyright (c) 2017-2018 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -155,13 +155,14 @@ bool unordered_set_is_empty(unordered_set me)
 static int unordered_set_resize(unordered_set me)
 {
     const int old_capacity = me->capacity;
-    me->capacity *= RESIZE_RATIO;
+    const int new_capacity = (int) (me->capacity * RESIZE_RATIO);
     struct node **old_buckets = me->buckets;
-    me->buckets = calloc((size_t) me->capacity, sizeof(struct node *));
+    me->buckets = calloc((size_t) new_capacity, sizeof(struct node *));
     if (me->buckets == NULL) {
         me->buckets = old_buckets;
         return -ENOMEM;
     }
+    me->capacity = new_capacity;
     for (int i = 0; i < old_capacity; i++) {
         struct node *traverse = old_buckets[i];
         while (traverse != NULL) {
@@ -319,6 +320,11 @@ bool unordered_set_remove(unordered_set me, void *const key)
  */
 int unordered_set_clear(unordered_set me)
 {
+    struct node **temp =
+            calloc((size_t) STARTING_BUCKETS, sizeof(struct node *));
+    if (temp == NULL) {
+        return -ENOMEM;
+    }
     for (int i = 0; i < me->capacity; i++) {
         struct node *traverse = me->buckets[i];
         while (traverse != NULL) {
@@ -331,10 +337,6 @@ int unordered_set_clear(unordered_set me)
     }
     me->size = 0;
     me->capacity = STARTING_BUCKETS;
-    struct node **temp = calloc((size_t) me->capacity, sizeof(struct node *));
-    if (temp == NULL) {
-        return -ENOMEM;
-    }
     free(me->buckets);
     me->buckets = temp;
     return 0;
