@@ -64,7 +64,7 @@ void test_forward_list(void)
     forward_list_remove_at(me, 2);
     forward_list_remove_last(me);
     assert(forward_list_size(me) == 3);
-    int get = 345;
+    get = 345;
     forward_list_get_first(&get, me);
     assert(get == -1);
     forward_list_get_at(&get, me, 1);
