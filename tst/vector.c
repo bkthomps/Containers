@@ -13,6 +13,7 @@ static void test_vector_dynamic(void)
         str[i][9] = '\0';
     }
     vector str_vector = vector_init(sizeof(char *));
+    assert(str_vector);
     for (int i = 0; i < 5; i++) {
         vector_add_last(str_vector, &str[i]);
     }
@@ -26,14 +27,15 @@ static void test_vector_dynamic(void)
     }
     free(str);
     assert(vector_size(str_vector) == 0);
-    vector_destroy(str_vector);
+    str_vector = vector_destroy(str_vector);
+    assert(!str_vector);
 }
 
 void test_vector(void)
 {
     int val[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     vector me = vector_init(sizeof(int));
-    assert(me != NULL);
+    assert(me);
     assert(vector_size(me) == 0);
     assert(vector_is_empty(me));
     for (int i = 0; i < 10; i++) {
@@ -74,14 +76,14 @@ void test_vector(void)
     add = -2;
     vector_add_last(me, &add);
     assert(vector_size(me) == 6);
-    int aa = 456;
-    int a = 456;
-    int b = 456;
-    int c = 456;
-    int d = 456;
-    int e = 456;
-    int f = 456;
-    int ff = 456;
+    int aa = 0xdeadbeef;
+    int a = 0xdeadbeef;
+    int b = 0xdeadbeef;
+    int c = 0xdeadbeef;
+    int d = 0xdeadbeef;
+    int e = 0xdeadbeef;
+    int f = 0xdeadbeef;
+    int ff = 0xdeadbeef;
     vector_get_first(&aa, me);
     assert(aa == 10);
     vector_get_at(&a, me, 0);
@@ -144,6 +146,6 @@ void test_vector(void)
     assert(vector_remove_first(me) == -EINVAL);
     assert(vector_remove_last(me) == -EINVAL);
     me = vector_destroy(me);
-    assert(me == NULL);
+    assert(!me);
     test_vector_dynamic();
 }

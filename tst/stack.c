@@ -5,7 +5,7 @@ void test_stack(void)
 {
     int val[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     stack me = stack_init(sizeof(int));
-    assert(me != NULL);
+    assert(me);
     assert(stack_size(me) == 0);
     assert(stack_is_empty(me));
     for (int i = 0; i < 10; i++) {
@@ -34,5 +34,5 @@ void test_stack(void)
     assert(!stack_pop(&get, me));
     assert(!stack_top(&get, me));
     me = stack_destroy(me);
-    assert(me == NULL);
+    assert(!me);
 }

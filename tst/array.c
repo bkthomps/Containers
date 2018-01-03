@@ -3,34 +3,34 @@
 
 void test_array(void)
 {
-    array a = array_init(10, sizeof(int));
-    assert(a != NULL);
-    assert(array_size(a) == 10);
+    array me = array_init(10, sizeof(int));
+    assert(me);
+    assert(array_size(me) == 10);
     for (int i = 0; i < 10; i++) {
-        int g = 0xdeadbeef;
-        array_get(&g, a, i);
-        assert(g == 0);
+        int get = 0xdeadbeef;
+        array_get(&get, me, i);
+        assert(get == 0);
     }
     for (int i = 0; i < 10; i++) {
-        int g = 0xdeadbeef;
-        array_set(a, i, &i);
-        array_get(&g, a, i);
-        assert(g == i);
+        int get = 0xdeadbeef;
+        array_set(me, i, &i);
+        array_get(&get, me, i);
+        assert(get == i);
     }
     for (int i = 0; i < 10; i++) {
-        int g = 0xdeadbeef;
-        array_get(&g, a, i);
-        assert(g == i);
+        int get = 0xdeadbeef;
+        array_get(&get, me, i);
+        assert(get == i);
     }
     int arr[10] = {0};
-    array_copy_to_array(arr, a);
+    array_copy_to_array(arr, me);
     for (int i = 0; i < 10; i++) {
         assert(arr[i] == i);
     }
-    int *data = array_get_data(a);
+    int *const data = array_get_data(me);
     for (int i = 0; i < 10; i++) {
         assert(data[i] == i);
     }
-    a = array_destroy(a);
-    assert(a == NULL);
+    me = array_destroy(me);
+    assert(!me);
 }

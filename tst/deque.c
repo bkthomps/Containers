@@ -5,7 +5,7 @@ void test_deque(void)
 {
     int val[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     deque me = deque_init(sizeof(int));
-    assert(me != NULL);
+    assert(me);
     assert(deque_size(me) == 0);
     assert(deque_is_empty(me));
     for (int i = 0; i < 10; i++) {
@@ -43,14 +43,14 @@ void test_deque(void)
     add = -1;
     deque_push_back(me, &add);
     assert(deque_size(me) == 6);
-    int aa = 456;
-    int a = 456;
-    int b = 456;
-    int c = 456;
-    int d = 456;
-    int e = 456;
-    int f = 456;
-    int ff = 456;
+    int aa = 0xdeadbeef;
+    int a = 0xdeadbeef;
+    int b = 0xdeadbeef;
+    int c = 0xdeadbeef;
+    int d = 0xdeadbeef;
+    int e = 0xdeadbeef;
+    int f = 0xdeadbeef;
+    int ff = 0xdeadbeef;
     deque_get_first(&aa, me);
     assert(aa == 10);
     deque_get_at(&a, me, 0);
@@ -110,5 +110,5 @@ void test_deque(void)
     assert(deque_size(me) == 0);
     assert(deque_is_empty(me));
     me = deque_destroy(me);
-    assert(me == NULL);
+    assert(!me);
 }

@@ -5,7 +5,7 @@ void test_queue(void)
 {
     int val[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     queue me = queue_init(sizeof(int));
-    assert(me != NULL);
+    assert(me);
     assert(queue_size(me) == 0);
     assert(queue_is_empty(me));
     for (int i = 0; i < 10; i++) {
@@ -38,5 +38,5 @@ void test_queue(void)
     assert(!queue_front(&get, me));
     assert(!queue_back(&get, me));
     me = queue_destroy(me);
-    assert(me == NULL);
+    assert(!me);
 }
