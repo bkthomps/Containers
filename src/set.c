@@ -43,14 +43,18 @@ struct node {
 /**
  * Initializes a set, which is a collection of unique keys, sorted by keys.
  *
- * @param key_size   The size of each element in the set.
- * @param comparator The comparator function used for key ordering.
+ * @param key_size   The size of each element in the set. Must be positive.
+ * @param comparator The comparator function used for key ordering. Must not be
+ *                   NULL.
  *
  * @return The newly-initialized set, or NULL if memory allocation error.
  */
 set set_init(const size_t key_size,
              int (*const comparator)(const void *const, const void *const))
 {
+    if (key_size == 0 || !comparator) {
+        return NULL;
+    }
     struct internal_set *const init = malloc(sizeof(struct internal_set));
     if (!init) {
         return NULL;

@@ -44,12 +44,15 @@ struct node {
 /**
  * Initializes a deque, which is a doubly-ended queue.
  *
- * @param data_size The size of each element in the deque.
+ * @param data_size The size of each element in the deque. Must be positive.
  *
- * @return The newly-allocated deque, or NULL if could not allocate memory.
+ * @return The newly-initialized deque, or NULL if memory allocation error.
  */
 deque deque_init(const size_t data_size)
 {
+    if (data_size == 0) {
+        return NULL;
+    }
     struct internal_deque *const init = malloc(sizeof(struct internal_deque));
     if (!init) {
         return NULL;

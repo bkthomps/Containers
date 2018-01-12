@@ -29,30 +29,33 @@ static const int START_SPACE = 8;
 static const double RESIZE_RATIO = 1.5;
 
 struct internal_vector {
-    size_t data_size;
-    int offset;
-    int space;
-    void *storage;
+    size_t bytes_per_item;
+    int item_count;
+    int item_capacity;
+    void *data;
 };
 
 /**
  * Initializes a vector, which is a dynamic contiguous array.
  *
- * @param data_size The size of each element in the vector.
+ * @param data_size The size of each element in the vector. Must be positive.
  *
  * @return The newly-initialized vector, or NULL if memory allocation error.
  */
 vector vector_init(const size_t data_size)
 {
+    if (data_size == 0) {
+        return NULL;
+    }
     struct internal_vector *const init = malloc(sizeof(struct internal_vector));
     if (!init) {
         return NULL;
     }
-    init->data_size = data_size;
-    init->offset = 0;
-    init->space = START_SPACE;
-    init->storage = malloc(init->space * init->data_size);
-    if (!init->storage) {
+    init->bytes_per_item = data_size;
+    init->item_count = 0;
+    init->item_capacity = START_SPACE;
+    init->data = malloc(init->item_capacity * init->bytes_per_item);
+    if (!init->data) {
         free(init);
         return NULL;
     }
@@ -68,7 +71,7 @@ vector vector_init(const size_t data_size)
  */
 int vector_size(vector me)
 {
-    return me->offset;
+    return me->item_count;
 }
 
 /**
@@ -88,14 +91,14 @@ bool vector_is_empty(vector me)
  */
 static int vector_set_space(vector me, const int size)
 {
-    void *const temp = realloc(me->storage, size * me->data_size);
+    void *const temp = realloc(me->data, size * me->bytes_per_item);
     if (!temp) {
         return -ENOMEM;
     }
-    me->storage = temp;
-    me->space = size;
-    if (me->space < me->offset) {
-        me->offset = me->space;
+    me->data = temp;
+    me->item_capacity = size;
+    if (me->item_capacity < me->item_count) {
+        me->item_count = me->item_capacity;
     }
     return 0;
 }
@@ -112,7 +115,7 @@ static int vector_set_space(vector me, const int size)
  */
 int vector_reserve(vector me, int size)
 {
-    if (me->space >= size) {
+    if (me->item_capacity >= size) {
         return 0;
     }
     return vector_set_space(me, size);
@@ -128,7 +131,7 @@ int vector_reserve(vector me, int size)
  */
 int vector_trim(vector me)
 {
-    return vector_set_space(me, me->offset);
+    return vector_set_space(me, me->item_count);
 }
 
 /**
@@ -139,7 +142,7 @@ int vector_trim(vector me)
  */
 void vector_copy_to_array(void *const arr, vector me)
 {
-    memcpy(arr, me->storage, me->offset * me->data_size);
+    memcpy(arr, me->data, me->item_count * me->bytes_per_item);
 }
 
 /**
@@ -154,7 +157,7 @@ void vector_copy_to_array(void *const arr, vector me)
  */
 void *vector_get_data(vector me)
 {
-    return me->storage;
+    return me->data;
 }
 
 /**
@@ -184,25 +187,25 @@ int vector_add_first(vector me, void *const data)
  */
 int vector_add_at(vector me, const int index, void *const data)
 {
-    if (index < 0 || index > me->offset) {
+    if (index < 0 || index > me->item_count) {
         return -EINVAL;
     }
-    if (me->offset + 1 >= me->space) {
-        const int new_space = (int) (me->space * RESIZE_RATIO);
-        void *const temp = realloc(me->storage, new_space * me->data_size);
+    if (me->item_count + 1 >= me->item_capacity) {
+        const int new_space = (int) (me->item_capacity * RESIZE_RATIO);
+        void *const temp = realloc(me->data, new_space * me->bytes_per_item);
         if (!temp) {
             return -ENOMEM;
         }
-        me->storage = temp;
-        me->space = new_space;
+        me->data = temp;
+        me->item_capacity = new_space;
     }
-    if (index != me->offset) {
-        memmove(me->storage + (index + 1) * me->data_size,
-                me->storage + index * me->data_size,
-                (me->offset - index) * me->data_size);
+    if (index != me->item_count) {
+        memmove(me->data + (index + 1) * me->bytes_per_item,
+                me->data + index * me->bytes_per_item,
+                (me->item_count - index) * me->bytes_per_item);
     }
-    memcpy(me->storage + index * me->data_size, data, me->data_size);
-    me->offset++;
+    memcpy(me->data + index * me->bytes_per_item, data, me->bytes_per_item);
+    me->item_count++;
     return 0;
 }
 
@@ -217,7 +220,7 @@ int vector_add_at(vector me, const int index, void *const data)
  */
 int vector_add_last(vector me, void *const data)
 {
-    return vector_add_at(me, me->offset, data);
+    return vector_add_at(me, me->item_count, data);
 }
 
 /*
@@ -225,7 +228,7 @@ int vector_add_last(vector me, void *const data)
  */
 static bool vector_is_illegal_input(vector me, const int index)
 {
-    return index < 0 || index >= me->offset || me->offset == 0;
+    return index < 0 || index >= me->item_count || me->item_count == 0;
 }
 
 /**
@@ -255,10 +258,10 @@ int vector_remove_at(vector me, const int index)
     if (vector_is_illegal_input(me, index)) {
         return -EINVAL;
     }
-    me->offset--;
-    memmove(me->storage + index * me->data_size,
-            me->storage + (index + 1) * me->data_size,
-            (me->offset - index) * me->data_size);
+    me->item_count--;
+    memmove(me->data + index * me->bytes_per_item,
+            me->data + (index + 1) * me->bytes_per_item,
+            (me->item_count - index) * me->bytes_per_item);
     return 0;
 }
 
@@ -272,10 +275,10 @@ int vector_remove_at(vector me, const int index)
  */
 int vector_remove_last(vector me)
 {
-    if (me->offset == 0) {
+    if (me->item_count == 0) {
         return -EINVAL;
     }
-    me->offset--;
+    me->item_count--;
     return 0;
 }
 
@@ -307,7 +310,7 @@ int vector_set_at(vector me, const int index, void *const data)
     if (vector_is_illegal_input(me, index)) {
         return -EINVAL;
     }
-    memcpy(me->storage + index * me->data_size, data, me->data_size);
+    memcpy(me->data + index * me->bytes_per_item, data, me->bytes_per_item);
     return 0;
 }
 
@@ -321,7 +324,7 @@ int vector_set_at(vector me, const int index, void *const data)
  */
 int vector_set_last(vector me, void *const data)
 {
-    return vector_set_at(me, me->offset - 1, data);
+    return vector_set_at(me, me->item_count - 1, data);
 }
 
 /**
@@ -353,7 +356,7 @@ int vector_get_at(void *const data, vector me, const int index)
     if (vector_is_illegal_input(me, index)) {
         return -EINVAL;
     }
-    memcpy(data, me->storage + index * me->data_size, me->data_size);
+    memcpy(data, me->data + index * me->bytes_per_item, me->bytes_per_item);
     return 0;
 }
 
@@ -368,7 +371,7 @@ int vector_get_at(void *const data, vector me, const int index)
  */
 int vector_get_last(void *const data, vector me)
 {
-    return vector_get_at(data, me, me->offset - 1);
+    return vector_get_at(data, me, me->item_count - 1);
 }
 
 /**
@@ -382,7 +385,7 @@ int vector_get_last(void *const data, vector me)
 int vector_clear(vector me)
 {
     const int ret = vector_set_space(me, START_SPACE);
-    me->offset = 0;
+    me->item_count = 0;
     return ret;
 }
 
@@ -395,8 +398,8 @@ int vector_clear(vector me)
  */
 vector vector_destroy(vector me)
 {
-    free(me->storage);
-    me->storage = NULL;
+    free(me->data);
+    me->data = NULL;
     free(me);
     return NULL;
 }

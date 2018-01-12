@@ -54,10 +54,12 @@ struct value_node {
  * Initializes a multi-map, which is a collection of key-value pairs, sorted by
  * keys.
  *
- * @param key_size         The size of each key in the multi-map.
- * @param value_size       The size of each value in the multi-map.
- * @param key_comparator   The key comparator function.
- * @param value_comparator The value comparator function.
+ * @param key_size         The size of each key in the multi-map. Must be
+ *                         positive.
+ * @param value_size       The size of each value in the multi-map. Must be
+ *                         positive.
+ * @param key_comparator   The key comparator function. Must not be NULL.
+ * @param value_comparator The value comparator function. Must not be NULL.
  *
  * @return The newly-initialized multi-map, or NULL if memory allocation error.
  */
@@ -68,6 +70,10 @@ multimap multimap_init(const size_t key_size,
                        int (*const value_comparator)(const void *const,
                                                      const void *const))
 {
+    if (key_size == 0 || value_size == 0
+        || !key_comparator || !value_comparator) {
+        return NULL;
+    }
     struct internal_multimap *const init =
             malloc(sizeof(struct internal_multimap));
     if (!init) {

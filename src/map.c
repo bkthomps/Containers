@@ -46,9 +46,10 @@ struct node {
  * Initializes a map, which is a collection of key-value pairs, sorted by keys,
  * keys are unique
  *
- * @param key_size   The size of each key in the map.
- * @param value_size The size of each value in the map.
- * @param comparator The comparator function used for key ordering.
+ * @param key_size   The size of each key in the map. Must be positive.
+ * @param value_size The size of each value in the map. Must be positive.
+ * @param comparator The comparator function used for key ordering. Must not be
+ *                   NULL.
  *
  * @return The newly-initialized map, or NULL if memory allocation error.
  */
@@ -56,6 +57,9 @@ map map_init(const size_t key_size,
              const size_t value_size,
              int (*const comparator)(const void *const, const void *const))
 {
+    if (key_size == 0 || value_size == 0 || !comparator) {
+        return NULL;
+    }
     struct internal_map *const init = malloc(sizeof(struct internal_map));
     if (!init) {
         return NULL;

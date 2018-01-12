@@ -50,10 +50,14 @@ struct node {
  * Initializes an unordered map, which is a collection of key-value pairs,
  * hashed by keys, keys are unique
  *
- * @param key_size   The size of each key in the unordered map.
- * @param value_size The size of each value in the unordered map.
+ * @param key_size   The size of each key in the unordered map. Must be
+ *                   positive.
+ * @param value_size The size of each value in the unordered map. Must be
+ *                   positive.
  * @param hash       The hash function which computes the hash from the key.
- * @param comparator The comparator function which compares two keys.
+ *                   Must not be NULL.
+ * @param comparator The comparator function which compares two keys. Must not
+ *                   be NULL.
  *
  * @return The newly-initialized unordered map, or NULL if memory allocation
  *         error.
@@ -64,6 +68,9 @@ unordered_map unordered_map_init(const size_t key_size,
                                  int (*comparator)(const void *const,
                                                    const void *const))
 {
+    if (key_size == 0 || value_size == 0 || !hash || !comparator) {
+        return NULL;
+    }
     struct internal_unordered_map *const init =
             malloc(sizeof(struct internal_unordered_map));
     if (!init) {

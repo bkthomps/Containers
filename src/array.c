@@ -26,27 +26,30 @@
 #include "array.h"
 
 struct internal_array {
-    size_t data_size;
-    int element_count;
+    size_t bytes_per_item;
+    int item_count;
     void *data;
 };
 
 /**
  * Initializes an array, which is a static contiguous array.
  *
- * @param element_count The amount of elements in the array.
- * @param data_size     The size of each element in the array.
+ * @param element_count The amount of elements in the array. Must be positive.
+ * @param data_size     The size of each element in the array. Must be positive.
  *
  * @return The newly-initialized array, or NULL if memory allocation error.
  */
 array array_init(const int element_count, const size_t data_size)
 {
+    if (element_count <= 0 || data_size == 0) {
+        return NULL;
+    }
     struct internal_array *const init = malloc(sizeof(struct internal_array));
     if (!init) {
         return NULL;
     }
-    init->data_size = data_size;
-    init->element_count = element_count;
+    init->bytes_per_item = data_size;
+    init->item_count = element_count;
     init->data = calloc((size_t) element_count, data_size);
     if (!init->data) {
         free(init);
@@ -64,7 +67,7 @@ array array_init(const int element_count, const size_t data_size)
  */
 int array_size(array me)
 {
-    return me->element_count;
+    return me->item_count;
 }
 
 /**
@@ -75,7 +78,7 @@ int array_size(array me)
  */
 void array_copy_to_array(void *const arr, array me)
 {
-    memcpy(arr, me->data, me->element_count * me->data_size);
+    memcpy(arr, me->data, me->item_count * me->bytes_per_item);
 }
 
 /**
@@ -98,7 +101,7 @@ void *array_get_data(array me)
  */
 static bool array_is_illegal_input(array me, const int index)
 {
-    return index < 0 || index >= me->element_count;
+    return index < 0 || index >= me->item_count;
 }
 
 /**
@@ -116,7 +119,7 @@ int array_set(array me, const int index, void *const data)
     if (array_is_illegal_input(me, index)) {
         return -EINVAL;
     }
-    memcpy(me->data + index * me->data_size, data, me->data_size);
+    memcpy(me->data + index * me->bytes_per_item, data, me->bytes_per_item);
     return 0;
 }
 
@@ -135,7 +138,7 @@ int array_get(void *const data, array me, const int index)
     if (array_is_illegal_input(me, index)) {
         return -EINVAL;
     }
-    memcpy(data, me->data + index * me->data_size, me->data_size);
+    memcpy(data, me->data + index * me->bytes_per_item, me->bytes_per_item);
     return 0;
 }
 

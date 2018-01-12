@@ -26,8 +26,8 @@
 #include "list.h"
 
 struct internal_list {
-    size_t data_size;
-    int space;
+    size_t bytes_per_item;
+    int item_count;
     struct node *head;
     struct node *tail;
 };
@@ -41,18 +41,22 @@ struct node {
 /**
  * Initializes a doubly-linked list.
  *
- * @param data_size The size of data to store.
+ * @param data_size The size of data to store. Must be positive.
  *
- * @return The doubly-linked list, or NULL if memory could not be allocated.
+ * @return The newly-initialized doubly-linked list, or NULL if memory
+ *         allocation error.
  */
 list list_init(const size_t data_size)
 {
+    if (data_size == 0) {
+        return NULL;
+    }
     struct internal_list *const init = malloc(sizeof(struct internal_list));
     if (!init) {
         return NULL;
     }
-    init->data_size = data_size;
-    init->space = 0;
+    init->bytes_per_item = data_size;
+    init->item_count = 0;
     init->head = NULL;
     init->tail = NULL;
     return init;
@@ -67,7 +71,7 @@ list list_init(const size_t data_size)
  */
 int list_size(list me)
 {
-    return me->space;
+    return me->item_count;
 }
 
 /**
@@ -93,8 +97,8 @@ void list_copy_to_array(void *const arr, list me)
     struct node *traverse = me->head;
     int offset = 0;
     while (traverse) {
-        memcpy(arr + offset, traverse->data, me->data_size);
-        offset += me->data_size;
+        memcpy(arr + offset, traverse->data, me->bytes_per_item);
+        offset += me->bytes_per_item;
         traverse = traverse->next;
     }
 }
@@ -117,7 +121,7 @@ static struct node *list_get_node_from_head(list me, const int index)
 static struct node *list_get_node_from_tail(list me, const int index)
 {
     struct node *traverse = me->tail;
-    for (int i = me->space - 1; i > index; i--) {
+    for (int i = me->item_count - 1; i > index; i--) {
         traverse = traverse->prev;
     }
     return traverse;
@@ -128,7 +132,7 @@ static struct node *list_get_node_from_tail(list me, const int index)
  */
 static struct node *list_get_node_at(list me, const int index)
 {
-    if (index <= me->space / 2) {
+    if (index <= me->item_count / 2) {
         return list_get_node_from_head(me, index);
     } else {
         return list_get_node_from_tail(me, index);
@@ -151,13 +155,13 @@ int list_add_first(list me, void *const data)
     if (!add) {
         return -ENOMEM;
     }
-    add->data = malloc(me->data_size);
+    add->data = malloc(me->bytes_per_item);
     if (!add->data) {
         free(add);
         return -ENOMEM;
     }
     add->prev = NULL;
-    memcpy(add->data, data, me->data_size);
+    memcpy(add->data, data, me->bytes_per_item);
     add->next = traverse;
     if (traverse) {
         traverse->prev = add;
@@ -166,7 +170,7 @@ int list_add_first(list me, void *const data)
     if (!me->tail) {
         me->tail = traverse;
     }
-    me->space++;
+    me->item_count++;
     return 0;
 }
 
@@ -183,13 +187,13 @@ int list_add_first(list me, void *const data)
  */
 int list_add_at(list me, const int index, void *const data)
 {
-    if (index < 0 || index > me->space) {
+    if (index < 0 || index > me->item_count) {
         return -EINVAL;
     }
     if (index == 0) {
         return list_add_first(me, data);
     }
-    if (index == me->space) {
+    if (index == me->item_count) {
         return list_add_last(me, data);
     }
     // The new node will go right before this node.
@@ -198,17 +202,17 @@ int list_add_at(list me, const int index, void *const data)
     if (!add) {
         return -ENOMEM;
     }
-    add->data = malloc(me->data_size);
+    add->data = malloc(me->bytes_per_item);
     if (!add->data) {
         free(add);
         return -ENOMEM;
     }
     add->prev = traverse->prev;
-    memcpy(add->data, data, me->data_size);
+    memcpy(add->data, data, me->bytes_per_item);
     add->next = traverse;
     traverse->prev->next = add;
     traverse->prev = add;
-    me->space++;
+    me->item_count++;
     return 0;
 }
 
@@ -228,19 +232,19 @@ int list_add_last(list me, void *const data)
     if (!add) {
         return -ENOMEM;
     }
-    add->data = malloc(me->data_size);
+    add->data = malloc(me->bytes_per_item);
     if (!add->data) {
         free(add);
         return -ENOMEM;
     }
     add->prev = traverse;
-    memcpy(add->data, data, me->data_size);
+    memcpy(add->data, data, me->bytes_per_item);
     add->next = NULL;
     if (traverse) {
         traverse->next = add;
     }
     me->tail = add;
-    me->space++;
+    me->item_count++;
     return 0;
 }
 
@@ -249,7 +253,7 @@ int list_add_last(list me, void *const data)
  */
 static bool list_is_illegal_input(list me, const int index)
 {
-    return index < 0 || index >= me->space || me->space == 0;
+    return index < 0 || index >= me->item_count || me->item_count == 0;
 }
 
 /**
@@ -283,7 +287,7 @@ int list_remove_at(list me, const int index)
     if (index == 0) {
         traverse->next->prev = NULL;
         me->head = traverse->next;
-    } else if (index == me->space - 1) {
+    } else if (index == me->item_count - 1) {
         traverse->prev->next = NULL;
         me->tail = traverse->prev;
     } else {
@@ -292,7 +296,7 @@ int list_remove_at(list me, const int index)
     }
     free(traverse->data);
     free(traverse);
-    me->space--;
+    me->item_count--;
     return 0;
 }
 
@@ -306,7 +310,7 @@ int list_remove_at(list me, const int index)
  */
 int list_remove_last(list me)
 {
-    return list_remove_at(me, me->space - 1);
+    return list_remove_at(me, me->item_count - 1);
 }
 
 /**
@@ -339,7 +343,7 @@ int list_set_at(list me, const int index, void *const data)
         return -EINVAL;
     }
     struct node *const traverse = list_get_node_at(me, index);
-    memcpy(traverse->data, data, me->data_size);
+    memcpy(traverse->data, data, me->bytes_per_item);
     return 0;
 }
 
@@ -354,7 +358,7 @@ int list_set_at(list me, const int index, void *const data)
  */
 int list_set_last(list me, void *const data)
 {
-    return list_set_at(me, me->space - 1, data);
+    return list_set_at(me, me->item_count - 1, data);
 }
 
 /**
@@ -387,7 +391,7 @@ int list_get_at(void *const data, list me, const int index)
         return -EINVAL;
     }
     struct node *const traverse = list_get_node_at(me, index);
-    memcpy(data, traverse->data, me->data_size);
+    memcpy(data, traverse->data, me->bytes_per_item);
     return 0;
 }
 
@@ -402,7 +406,7 @@ int list_get_at(void *const data, list me, const int index)
  */
 int list_get_last(void *const data, list me)
 {
-    return list_get_at(data, me, me->space - 1);
+    return list_get_at(data, me, me->item_count - 1);
 }
 
 /**
@@ -420,7 +424,7 @@ void list_clear(list me)
         free(temp);
     }
     me->head = NULL;
-    me->space = 0;
+    me->item_count = 0;
     me->tail = NULL;
 }
 

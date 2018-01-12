@@ -36,8 +36,9 @@ struct internal_priority_queue {
  * Initializes a priority queue, which adapts a container to provide priority
  * queue. Adapts the vector container.
  *
- * @param data_size  The size of the data in the priority queue.
- * @param comparator The priority comparator function.
+ * @param data_size  The size of the data in the priority queue. Must be
+ *                   positive.
+ * @param comparator The priority comparator function. Must not be NULL.
  *
  * @return The newly-initialized priority queue, or NULL if memory allocation
  *         error.
@@ -46,6 +47,9 @@ priority_queue priority_queue_init(const size_t data_size,
                                    int (*comparator)(const void *const,
                                                      const void *const))
 {
+    if (data_size == 0 || !comparator) {
+        return NULL;
+    }
     struct internal_priority_queue *const init =
             malloc(sizeof(struct internal_priority_queue));
     if (!init) {

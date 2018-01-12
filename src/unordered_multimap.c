@@ -54,11 +54,16 @@ struct node {
  * Initializes an unordered multi-map, which is a collection of key-value pairs,
  * hashed by keys
  *
- * @param key_size         The size of each key in the unordered multi-map.
+ * @param key_size         The size of each key in the unordered multi-map. Must
+ *                         be positive.
  * @param value_size       The size of each value in the unordered multi-map.
+ *                         Must be positive.
  * @param hash             The hash function which computes the hash from key.
+ *                         Must not be NULL.
  * @param key_comparator   The comparator function which compares two keys.
+ *                         Must not be NULL.
  * @param value_comparator The comparator function which compares two values.
+ *                         Must not be NULL.
  *
  * @return The newly-initialized unordered multi-map, or NULL if memory
  *         allocation error.
@@ -72,6 +77,10 @@ unordered_multimap_init(const size_t key_size,
                         int (*value_comparator)(const void *const,
                                                 const void *const))
 {
+    if (key_size == 0 || value_size == 0
+        || !hash || !key_comparator || !value_comparator) {
+        return NULL;
+    }
     struct internal_unordered_multimap *const init =
             malloc(sizeof(struct internal_unordered_multimap));
     if (!init) {

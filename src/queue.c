@@ -35,12 +35,15 @@ struct internal_queue {
  * Initializes a queue, which adapts a container to provide queue
  * (first-in first-out). Adapts the deque container.
  *
- * @param data_size The size of each element.
+ * @param data_size The size of each element. Must be positive.
  *
- * @return The newly-initialized queue, or NULL if out of memory.
+ * @return The newly-initialized queue, or NULL if memory allocation error.
  */
 queue queue_init(const size_t data_size)
 {
+    if (data_size == 0) {
+        return NULL;
+    }
     struct internal_queue *const init = malloc(sizeof(struct internal_queue));
     if (!init) {
         return NULL;

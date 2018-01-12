@@ -48,9 +48,12 @@ struct node {
  * Initializes an unordered set, which is a collection of unique keys, hashed by
  * keys.
  *
- * @param key_size   The size of each key in the unordered set.
+ * @param key_size   The size of each key in the unordered set. Must be
+ *                   positive.
  * @param hash       The hash function which computes the hash from the key.
- * @param comparator The comparator function which compares two keys.
+ *                   Must not be NULL.
+ * @param comparator The comparator function which compares two keys. Must not
+ *                   be NULL.
  *
  * @return The newly-initialized unordered set, or NULL if memory allocation
  *         error.
@@ -60,6 +63,9 @@ unordered_set unordered_set_init(const size_t key_size,
                                  int (*comparator)(const void *const,
                                                    const void *const))
 {
+    if (key_size == 0 || !hash || !comparator) {
+        return NULL;
+    }
     struct internal_unordered_set *const init =
             malloc(sizeof(struct internal_unordered_set));
     if (!init) {

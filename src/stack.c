@@ -32,12 +32,16 @@ struct internal_stack {
  * Initializes a stack, which adapts a container to provide stack
  * (last-in first-out). Adapts the deque container.
  *
- * @param data_size The size of each data element in the stack.
+ * @param data_size The size of each data element in the stack. Must be
+ *                  positive.
  *
- * @return The newly-initialized stack, or NULL if could not allocate memory.
+ * @return The newly-initialized stack, or NULL if memory allocation error.
  */
 stack stack_init(const size_t data_size)
 {
+    if (data_size == 0) {
+        return NULL;
+    }
     struct internal_stack *const init = malloc(sizeof(struct internal_stack));
     if (!init) {
         return NULL;

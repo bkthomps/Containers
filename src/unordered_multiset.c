@@ -50,9 +50,12 @@ struct node {
  * Initializes an unordered multi-set, which is a collection of keys, hashed by
  * keys.
  *
- * @param key_size   The size of each key in the unordered multi-set.
+ * @param key_size   The size of each key in the unordered multi-set. Must be
+ *                   positive.
  * @param hash       The hash function which computes the hash from the key.
- * @param comparator The comparator function which compares two keys.
+ *                   Must not be NULL.
+ * @param comparator The comparator function which compares two keys. Must not
+ *                   be NULL.
  *
  * @return The newly-initialized unordered multi-set, or NULL if memory
  *         allocation error.
@@ -62,6 +65,9 @@ unordered_multiset_init(const size_t key_size,
                         unsigned long (*hash)(const void *const),
                         int (*comparator)(const void *const, const void *const))
 {
+    if (key_size == 0 || !hash || !comparator) {
+        return NULL;
+    }
     struct internal_unordered_multiset *const init =
             malloc(sizeof(struct internal_unordered_multiset));
     if (!init) {

@@ -45,8 +45,10 @@ struct node {
  * Initializes a multi-set, which is a collection of key-value pairs, sorted by
  * keys, keys are unique
  *
- * @param key_size   The size of each element in the multi-set.
- * @param comparator The comparator function used for key ordering.
+ * @param key_size   The size of each element in the multi-set. Must be
+ *                   positive.
+ * @param comparator The comparator function used for key ordering. Must not be
+ *                   NULL.
  *
  * @return The newly-initialized multi-set, or NULL if memory allocation error.
  */
@@ -54,6 +56,9 @@ multiset multiset_init(const size_t key_size,
                        int (*const comparator)(const void *const,
                                                const void *const))
 {
+    if (key_size == 0 || !comparator) {
+        return NULL;
+    }
     struct internal_multiset *const init =
             malloc(sizeof(struct internal_multiset));
     if (!init) {

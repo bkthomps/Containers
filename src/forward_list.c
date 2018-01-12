@@ -26,8 +26,8 @@
 #include "forward_list.h"
 
 struct internal_forward_list {
-    size_t data_size;
-    int space;
+    size_t bytes_per_item;
+    int item_count;
     struct node *head;
 };
 
@@ -39,19 +39,23 @@ struct node {
 /**
  * Initializes a singly-linked list.
  *
- * @param data_size The size of data to store.
+ * @param data_size The size of data to store. Must be positive.
  *
- * @return The singly-linked list, or NULL if memory could not be allocated.
+ * @return The newly-initialized singly-linked list, or NULL if memory
+ *         allocation error.
  */
 forward_list forward_list_init(const size_t data_size)
 {
+    if (data_size == 0) {
+        return NULL;
+    }
     struct internal_forward_list *const init =
             malloc(sizeof(struct internal_forward_list));
     if (!init) {
         return NULL;
     }
-    init->data_size = data_size;
-    init->space = 0;
+    init->bytes_per_item = data_size;
+    init->item_count = 0;
     init->head = NULL;
     return init;
 }
@@ -65,7 +69,7 @@ forward_list forward_list_init(const size_t data_size)
  */
 int forward_list_size(forward_list me)
 {
-    return me->space;
+    return me->item_count;
 }
 
 /**
@@ -91,8 +95,8 @@ void forward_list_copy_to_array(void *const arr, forward_list me)
     struct node *traverse = me->head;
     int offset = 0;
     while (traverse) {
-        memcpy(arr + offset, traverse->data, me->data_size);
-        offset += me->data_size;
+        memcpy(arr + offset, traverse->data, me->bytes_per_item);
+        offset += me->bytes_per_item;
         traverse = traverse->next;
     }
 }
@@ -136,19 +140,19 @@ int forward_list_add_first(forward_list me, void *const data)
  */
 int forward_list_add_at(forward_list me, const int index, void *const data)
 {
-    if (index < 0 || index > me->space) {
+    if (index < 0 || index > me->item_count) {
         return -EINVAL;
     }
     struct node *const add = malloc(sizeof(struct node));
     if (!add) {
         return -ENOMEM;
     }
-    add->data = malloc(me->data_size);
+    add->data = malloc(me->bytes_per_item);
     if (!add->data) {
         free(add);
         return -ENOMEM;
     }
-    memcpy(add->data, data, me->data_size);
+    memcpy(add->data, data, me->bytes_per_item);
     if (index == 0) {
         add->next = me->head;
         me->head = add;
@@ -157,7 +161,7 @@ int forward_list_add_at(forward_list me, const int index, void *const data)
         add->next = traverse->next;
         traverse->next = add;
     }
-    me->space++;
+    me->item_count++;
     return 0;
 }
 
@@ -172,7 +176,7 @@ int forward_list_add_at(forward_list me, const int index, void *const data)
  */
 int forward_list_add_last(forward_list me, void *const data)
 {
-    return forward_list_add_at(me, me->space, data);
+    return forward_list_add_at(me, me->item_count, data);
 }
 
 /*
@@ -180,7 +184,7 @@ int forward_list_add_last(forward_list me, void *const data)
  */
 static bool forward_list_is_illegal_input(forward_list me, const int index)
 {
-    return index < 0 || index >= me->space || me->space == 0;
+    return index < 0 || index >= me->item_count || me->item_count == 0;
 }
 
 /**
@@ -215,7 +219,7 @@ int forward_list_remove_at(forward_list me, const int index)
         me->head = temp->next;
         free(temp->data);
         free(temp);
-    } else if (index == me->space - 1) {
+    } else if (index == me->item_count - 1) {
         struct node *const traverse = forward_list_get_node_at(me, index - 1);
         free(traverse->next->data);
         free(traverse->next);
@@ -227,7 +231,7 @@ int forward_list_remove_at(forward_list me, const int index)
         free(backup->data);
         free(backup);
     }
-    me->space--;
+    me->item_count--;
     return 0;
 }
 
@@ -241,7 +245,7 @@ int forward_list_remove_at(forward_list me, const int index)
  */
 int forward_list_remove_last(forward_list me)
 {
-    return forward_list_remove_at(me, me->space - 1);
+    return forward_list_remove_at(me, me->item_count - 1);
 }
 
 /**
@@ -274,7 +278,7 @@ int forward_list_set_at(forward_list me, const int index, void *const data)
         return -EINVAL;
     }
     struct node *const traverse = forward_list_get_node_at(me, index);
-    memcpy(traverse->data, data, me->data_size);
+    memcpy(traverse->data, data, me->bytes_per_item);
     return 0;
 }
 
@@ -289,7 +293,7 @@ int forward_list_set_at(forward_list me, const int index, void *const data)
  */
 int forward_list_set_last(forward_list me, void *const data)
 {
-    return forward_list_set_at(me, me->space - 1, data);
+    return forward_list_set_at(me, me->item_count - 1, data);
 }
 
 /**
@@ -322,7 +326,7 @@ int forward_list_get_at(void *const data, forward_list me, const int index)
         return -EINVAL;
     }
     struct node *const traverse = forward_list_get_node_at(me, index);
-    memcpy(data, traverse->data, me->data_size);
+    memcpy(data, traverse->data, me->bytes_per_item);
     return 0;
 }
 
@@ -337,7 +341,7 @@ int forward_list_get_at(void *const data, forward_list me, const int index)
  */
 int forward_list_get_last(void *const data, forward_list me)
 {
-    return forward_list_get_at(data, me, me->space - 1);
+    return forward_list_get_at(data, me, me->item_count - 1);
 }
 
 /**
@@ -355,7 +359,7 @@ void forward_list_clear(forward_list me)
         free(temp);
     }
     me->head = NULL;
-    me->space = 0;
+    me->item_count = 0;
 }
 
 /**
