@@ -29,7 +29,7 @@ static const int STARTING_BUCKETS = 8;
 static const double RESIZE_AT = 0.75;
 static const double RESIZE_RATIO = 1.5;
 
-struct _unordered_map {
+struct internal_unordered_map {
     size_t key_size;
     size_t value_size;
     unsigned long (*hash)(const void *const key);
@@ -64,7 +64,8 @@ unordered_map unordered_map_init(const size_t key_size,
                                  int (*comparator)(const void *const,
                                                    const void *const))
 {
-    struct _unordered_map *const init = malloc(sizeof(struct _unordered_map));
+    struct internal_unordered_map *const init =
+            malloc(sizeof(struct internal_unordered_map));
     if (!init) {
         return NULL;
     }

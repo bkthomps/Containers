@@ -25,7 +25,7 @@
 
 #include <stdbool.h>
 
-typedef struct _queue *queue;
+typedef struct internal_queue *queue;
 
 // Starting
 queue queue_init(size_t data_size);

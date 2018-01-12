@@ -25,7 +25,7 @@
 
 #include <stdbool.h>
 
-typedef struct _array *array;
+typedef struct internal_array *array;
 
 // Starting
 array array_init(int element_count, size_t data_size);

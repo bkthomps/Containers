@@ -25,7 +25,7 @@
 
 #include <stdbool.h>
 
-typedef struct _list *list;
+typedef struct internal_list *list;
 
 // Starting
 list list_init(size_t data_size);

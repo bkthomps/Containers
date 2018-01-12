@@ -25,7 +25,7 @@
 
 #include <stdbool.h>
 
-typedef struct _forward_list *forward_list;
+typedef struct internal_forward_list *forward_list;
 
 // Starting
 forward_list forward_list_init(size_t data_size);

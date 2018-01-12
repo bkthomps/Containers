@@ -25,7 +25,7 @@
 #include <errno.h>
 #include "set.h"
 
-struct _set {
+struct internal_set {
     size_t key_size;
     int (*comparator)(const void *const one, const void *const two);
     int size;
@@ -51,7 +51,7 @@ struct node {
 set set_init(const size_t key_size,
              int (*const comparator)(const void *const, const void *const))
 {
-    struct _set *const init = malloc(sizeof(struct _set));
+    struct internal_set *const init = malloc(sizeof(struct internal_set));
     if (!init) {
         return NULL;
     }

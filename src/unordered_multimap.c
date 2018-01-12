@@ -29,7 +29,7 @@ static const int STARTING_BUCKETS = 8;
 static const double RESIZE_AT = 0.75;
 static const double RESIZE_RATIO = 1.5;
 
-struct _unordered_multimap {
+struct internal_unordered_multimap {
     size_t key_size;
     size_t value_size;
     unsigned long (*hash)(const void *const key);
@@ -72,8 +72,8 @@ unordered_multimap_init(const size_t key_size,
                         int (*value_comparator)(const void *const,
                                                 const void *const))
 {
-    struct _unordered_multimap *const init =
-            malloc(sizeof(struct _unordered_multimap));
+    struct internal_unordered_multimap *const init =
+            malloc(sizeof(struct internal_unordered_multimap));
     if (!init) {
         return NULL;
     }

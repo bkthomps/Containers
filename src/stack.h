@@ -25,7 +25,7 @@
 
 #include <stdbool.h>
 
-typedef struct _stack *stack;
+typedef struct internal_stack *stack;
 
 // Starting
 stack stack_init(size_t data_size);

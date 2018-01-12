@@ -28,7 +28,7 @@
 static const int START_SPACE = 8;
 static const double RESIZE_RATIO = 1.5;
 
-struct _vector {
+struct internal_vector {
     size_t data_size;
     int offset;
     int space;
@@ -44,7 +44,7 @@ struct _vector {
  */
 vector vector_init(const size_t data_size)
 {
-    struct _vector *const init = malloc(sizeof(struct _vector));
+    struct internal_vector *const init = malloc(sizeof(struct internal_vector));
     if (!init) {
         return NULL;
     }

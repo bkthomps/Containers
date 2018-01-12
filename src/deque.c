@@ -29,7 +29,7 @@
 static const int BLOCK_SIZE = 8;
 static const double RESIZE_RATIO = 1.5;
 
-struct _deque {
+struct internal_deque {
     size_t data_size;
     int start_index;
     int end_index;
@@ -50,7 +50,7 @@ struct node {
  */
 deque deque_init(const size_t data_size)
 {
-    struct _deque *const init = malloc(sizeof(struct _deque));
+    struct internal_deque *const init = malloc(sizeof(struct internal_deque));
     if (!init) {
         return NULL;
     }

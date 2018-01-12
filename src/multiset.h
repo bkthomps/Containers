@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Bailey Thompson
+ * Copyright (c) 2017-2018 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,7 @@
 
 #include <stdbool.h>
 
-typedef struct _multiset *multiset;
+typedef struct internal_multiset *multiset;
 
 // Starting
 multiset multiset_init(size_t key_size,

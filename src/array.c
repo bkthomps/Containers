@@ -25,7 +25,7 @@
 #include <errno.h>
 #include "array.h"
 
-struct _array {
+struct internal_array {
     size_t data_size;
     int element_count;
     void *data;
@@ -41,7 +41,7 @@ struct _array {
  */
 array array_init(const int element_count, const size_t data_size)
 {
-    struct _array *const init = malloc(sizeof(struct _array));
+    struct internal_array *const init = malloc(sizeof(struct internal_array));
     if (!init) {
         return NULL;
     }

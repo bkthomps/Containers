@@ -25,7 +25,7 @@
 #include <errno.h>
 #include "map.h"
 
-struct _map {
+struct internal_map {
     size_t key_size;
     size_t value_size;
     int (*comparator)(const void *const one, const void *const two);
@@ -56,7 +56,7 @@ map map_init(const size_t key_size,
              const size_t value_size,
              int (*const comparator)(const void *const, const void *const))
 {
-    struct _map *const init = malloc(sizeof(struct _map));
+    struct internal_map *const init = malloc(sizeof(struct internal_map));
     if (!init) {
         return NULL;
     }

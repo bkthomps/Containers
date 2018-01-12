@@ -25,7 +25,7 @@
 
 #include <stdbool.h>
 
-typedef struct _deque *deque;
+typedef struct internal_deque *deque;
 
 // Starting
 deque deque_init(size_t data_size);

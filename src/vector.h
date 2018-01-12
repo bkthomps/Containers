@@ -25,7 +25,7 @@
 
 #include <stdbool.h>
 
-typedef struct _vector *vector;
+typedef struct internal_vector *vector;
 
 // Starting
 vector vector_init(size_t data_size);

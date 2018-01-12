@@ -25,7 +25,7 @@
 #include <errno.h>
 #include "multiset.h"
 
-struct _multiset {
+struct internal_multiset {
     size_t key_size;
     int (*comparator)(const void *const one, const void *const two);
     int size;
@@ -54,7 +54,8 @@ multiset multiset_init(const size_t key_size,
                        int (*const comparator)(const void *const,
                                                const void *const))
 {
-    struct _multiset *const init = malloc(sizeof(struct _multiset));
+    struct internal_multiset *const init =
+            malloc(sizeof(struct internal_multiset));
     if (!init) {
         return NULL;
     }

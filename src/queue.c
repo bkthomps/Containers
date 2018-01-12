@@ -26,7 +26,7 @@
 
 static const int TRIM_SIZE = 64;
 
-struct _queue {
+struct internal_queue {
     int trim_count;
     deque deque_data;
 };
@@ -41,7 +41,7 @@ struct _queue {
  */
 queue queue_init(const size_t data_size)
 {
-    struct _queue *const init = malloc(sizeof(struct _queue));
+    struct internal_queue *const init = malloc(sizeof(struct internal_queue));
     if (!init) {
         return NULL;
     }

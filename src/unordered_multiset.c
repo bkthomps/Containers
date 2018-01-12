@@ -29,7 +29,7 @@ static const int STARTING_BUCKETS = 8;
 static const double RESIZE_AT = 0.75;
 static const double RESIZE_RATIO = 1.5;
 
-struct _unordered_multiset {
+struct internal_unordered_multiset {
     size_t key_size;
     unsigned long (*hash)(const void *const key);
     int (*comparator)(const void *const one, const void *const two);
@@ -62,8 +62,8 @@ unordered_multiset_init(const size_t key_size,
                         unsigned long (*hash)(const void *const),
                         int (*comparator)(const void *const, const void *const))
 {
-    struct _unordered_multiset *const init =
-            malloc(sizeof(struct _unordered_multiset));
+    struct internal_unordered_multiset *const init =
+            malloc(sizeof(struct internal_unordered_multiset));
     if (!init) {
         return NULL;
     }

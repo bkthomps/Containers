@@ -24,7 +24,7 @@
 #include "deque.h"
 #include "stack.h"
 
-struct _stack {
+struct internal_stack {
     deque deque_data;
 };
 
@@ -38,7 +38,7 @@ struct _stack {
  */
 stack stack_init(const size_t data_size)
 {
-    struct _stack *const init = malloc(sizeof(struct _stack));
+    struct internal_stack *const init = malloc(sizeof(struct internal_stack));
     if (!init) {
         return NULL;
     }

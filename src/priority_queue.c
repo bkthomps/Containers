@@ -26,7 +26,7 @@
 #include "vector.h"
 #include "priority_queue.h"
 
-struct _priority_queue {
+struct internal_priority_queue {
     vector data;
     size_t data_size;
     int (*comparator)(const void *const one, const void *const two);
@@ -46,7 +46,8 @@ priority_queue priority_queue_init(const size_t data_size,
                                    int (*comparator)(const void *const,
                                                      const void *const))
 {
-    struct _priority_queue *const init = malloc(sizeof(struct _priority_queue));
+    struct internal_priority_queue *const init =
+            malloc(sizeof(struct internal_priority_queue));
     if (!init) {
         return NULL;
     }

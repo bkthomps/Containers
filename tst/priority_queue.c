@@ -5,7 +5,7 @@
 /*
  * Include this for the stubs.
  */
-struct _priority_queue {
+struct internal_priority_queue {
     vector data;
     size_t data_size;
     int (*comparator)(const void *const one, const void *const two);

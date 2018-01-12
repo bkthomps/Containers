@@ -25,7 +25,7 @@
 
 #include <stdbool.h>
 
-typedef struct _priority_queue *priority_queue;
+typedef struct internal_priority_queue *priority_queue;
 
 // Starting
 priority_queue priority_queue_init(size_t data_size,

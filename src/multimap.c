@@ -25,7 +25,7 @@
 #include <errno.h>
 #include "multimap.h"
 
-struct _multimap {
+struct internal_multimap {
     size_t key_size;
     size_t value_size;
     int (*key_comparator)(const void *const one, const void *const two);
@@ -68,7 +68,8 @@ multimap multimap_init(const size_t key_size,
                        int (*const value_comparator)(const void *const,
                                                      const void *const))
 {
-    struct _multimap *const init = malloc(sizeof(struct _multimap));
+    struct internal_multimap *const init =
+            malloc(sizeof(struct internal_multimap));
     if (!init) {
         return NULL;
     }

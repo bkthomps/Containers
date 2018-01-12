@@ -25,7 +25,7 @@
 #include <errno.h>
 #include "list.h"
 
-struct _list {
+struct internal_list {
     size_t data_size;
     int space;
     struct node *head;
@@ -47,7 +47,7 @@ struct node {
  */
 list list_init(const size_t data_size)
 {
-    struct _list *const init = malloc(sizeof(struct _list));
+    struct internal_list *const init = malloc(sizeof(struct internal_list));
     if (!init) {
         return NULL;
     }

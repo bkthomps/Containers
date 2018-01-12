@@ -25,7 +25,7 @@
 #include <errno.h>
 #include "forward_list.h"
 
-struct _forward_list {
+struct internal_forward_list {
     size_t data_size;
     int space;
     struct node *head;
@@ -45,7 +45,8 @@ struct node {
  */
 forward_list forward_list_init(const size_t data_size)
 {
-    struct _forward_list *const init = malloc(sizeof(struct _forward_list));
+    struct internal_forward_list *const init =
+            malloc(sizeof(struct internal_forward_list));
     if (!init) {
         return NULL;
     }
