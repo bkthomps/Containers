@@ -2,6 +2,36 @@
 #include "test.h"
 #include "../src/vector.h"
 
+static void test_vector_of_vectors(void)
+{
+    // Test using a vector of vectors of ints
+    vector outer = vector_init(sizeof(vector));
+    // Add vectors to the outer vector
+    for (int i = 0; i < 5; i++) {
+        vector inner = vector_init(sizeof(int));
+        for (int j = 1; j <= 10; j++) {
+            vector_add_last(inner, &j);
+        }
+        assert(vector_size(inner) == 10);
+        vector_add_last(outer, &inner);
+    }
+    assert(vector_size(outer) == 5);
+    // Delete the vectors in the outer vector
+    for (int i = 0; i < 5; i++) {
+        vector inner = NULL;
+        vector_get_first(&inner, outer);
+        for (int j = 0; j < 10; j++) {
+            int num = 0xdeadbeef;
+            vector_get_at(&num, inner, j);
+            assert(num == j + 1);
+        }
+        vector_remove_first(outer);
+        vector_destroy(inner);
+    }
+    assert(vector_is_empty(outer));
+    vector_destroy(outer);
+}
+
 static void test_vector_dynamic(void)
 {
     char **str = malloc(5 * sizeof(char **));
@@ -143,4 +173,5 @@ void test_vector(void)
     me = vector_destroy(me);
     assert(!me);
     test_vector_dynamic();
+    test_vector_of_vectors();
 }
