@@ -46,6 +46,19 @@ struct node {
     struct node *next;
 };
 
+/*
+ * Gets the hash by first calling the user-defined hash, and then using a
+ * second hash to prevent hashing clusters if the user-defined hash is
+ * sub-optimal.
+ */
+static inline unsigned long unordered_multiset_hash(unordered_multiset me,
+                                                    const void *const key)
+{
+    unsigned long hash = me->hash(key);
+    hash ^= (hash >> 20) ^ (hash >> 12);
+    return hash ^ (hash >> 7) ^ (hash >> 4);
+}
+
 /**
  * Initializes an unordered multi-set, which is a collection of keys, hashed by
  * keys.
@@ -127,7 +140,7 @@ int unordered_multiset_rehash(unordered_multiset me)
         struct node *traverse = old_buckets[i];
         while (traverse) {
             struct node *const backup = traverse->next;
-            traverse->hash = me->hash(traverse->key);
+            traverse->hash = unordered_multiset_hash(me, traverse->key);
             unordered_multiset_add_item(me, traverse);
             traverse = backup;
         }
@@ -233,7 +246,7 @@ unordered_multiset_create_element(unordered_multiset me,
 int unordered_multiset_put(unordered_multiset me, void *const key)
 {
 
-    const unsigned long hash = me->hash(key);
+    const unsigned long hash = unordered_multiset_hash(me, key);
     const int index = (int) (hash % me->capacity);
     if (!me->buckets[index]) {
         me->buckets[index] = unordered_multiset_create_element(me, hash, key);
@@ -278,7 +291,7 @@ int unordered_multiset_put(unordered_multiset me, void *const key)
  */
 int unordered_multiset_count(unordered_multiset me, void *const key)
 {
-    const unsigned long hash = me->hash(key);
+    const unsigned long hash = unordered_multiset_hash(me, key);
     const int index = (int) (hash % me->capacity);
     const struct node *traverse = me->buckets[index];
     while (traverse) {
@@ -313,7 +326,7 @@ bool unordered_multiset_contains(unordered_multiset me, void *const key)
  */
 bool unordered_multiset_remove(unordered_multiset me, void *const key)
 {
-    const unsigned long hash = me->hash(key);
+    const unsigned long hash = unordered_multiset_hash(me, key);
     const int index = (int) (hash % me->capacity);
     if (!me->buckets[index]) {
         return false;
@@ -359,7 +372,7 @@ bool unordered_multiset_remove(unordered_multiset me, void *const key)
  */
 bool unordered_multiset_remove_all(unordered_multiset me, void *const key)
 {
-    const unsigned long hash = me->hash(key);
+    const unsigned long hash = unordered_multiset_hash(me, key);
     const int index = (int) (hash % me->capacity);
     if (!me->buckets[index]) {
         return false;

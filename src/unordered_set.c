@@ -44,6 +44,19 @@ struct node {
     struct node *next;
 };
 
+/*
+ * Gets the hash by first calling the user-defined hash, and then using a
+ * second hash to prevent hashing clusters if the user-defined hash is
+ * sub-optimal.
+ */
+static inline unsigned long unordered_set_hash(unordered_set me,
+                                               const void *const key)
+{
+    unsigned long hash = me->hash(key);
+    hash ^= (hash >> 20) ^ (hash >> 12);
+    return hash ^ (hash >> 7) ^ (hash >> 4);
+}
+
 /**
  * Initializes an unordered set, which is a collection of unique keys, hashed by
  * keys.
@@ -123,7 +136,7 @@ int unordered_set_rehash(unordered_set me)
         struct node *traverse = old_buckets[i];
         while (traverse) {
             struct node *const backup = traverse->next;
-            traverse->hash = me->hash(traverse->key);
+            traverse->hash = unordered_set_hash(me, traverse->key);
             unordered_set_add_item(me, traverse);
             traverse = backup;
         }
@@ -228,7 +241,7 @@ static struct node *const unordered_set_create_element(unordered_set me,
 int unordered_set_put(unordered_set me, void *const key)
 {
 
-    const unsigned long hash = me->hash(key);
+    const unsigned long hash = unordered_set_hash(me, key);
     const int index = (int) (hash % me->capacity);
     if (!me->buckets[index]) {
         me->buckets[index] = unordered_set_create_element(me, hash, key);
@@ -268,7 +281,7 @@ int unordered_set_put(unordered_set me, void *const key)
  */
 bool unordered_set_contains(unordered_set me, void *const key)
 {
-    const unsigned long hash = me->hash(key);
+    const unsigned long hash = unordered_set_hash(me, key);
     const int index = (int) (hash % me->capacity);
     const struct node *traverse = me->buckets[index];
     while (traverse) {
@@ -290,7 +303,7 @@ bool unordered_set_contains(unordered_set me, void *const key)
  */
 bool unordered_set_remove(unordered_set me, void *const key)
 {
-    const unsigned long hash = me->hash(key);
+    const unsigned long hash = unordered_set_hash(me, key);
     const int index = (int) (hash % me->capacity);
     if (!me->buckets[index]) {
         return false;

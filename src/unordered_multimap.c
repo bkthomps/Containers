@@ -50,6 +50,19 @@ struct node {
     struct node *next;
 };
 
+/*
+ * Gets the hash by first calling the user-defined hash, and then using a
+ * second hash to prevent hashing clusters if the user-defined hash is
+ * sub-optimal.
+ */
+static inline unsigned long unordered_multimap_hash(unordered_multimap me,
+                                                    const void *const key)
+{
+    unsigned long hash = me->hash(key);
+    hash ^= (hash >> 20) ^ (hash >> 12);
+    return hash ^ (hash >> 7) ^ (hash >> 4);
+}
+
 /**
  * Initializes an unordered multi-map, which is a collection of key-value pairs,
  * hashed by keys
@@ -149,7 +162,7 @@ int unordered_multimap_rehash(unordered_multimap me)
         struct node *traverse = old_buckets[i];
         while (traverse) {
             struct node *const backup = traverse->next;
-            traverse->hash = me->hash(traverse->key);
+            traverse->hash = unordered_multimap_hash(me, traverse->key);
             unordered_multimap_add_item(me, traverse);
             traverse = backup;
         }
@@ -264,7 +277,7 @@ int unordered_multimap_put(unordered_multimap me,
                            void *const key,
                            void *const value)
 {
-    const unsigned long hash = me->hash(key);
+    const unsigned long hash = unordered_multimap_hash(me, key);
     const int index = (int) (hash % me->capacity);
     if (!me->buckets[index]) {
         me->buckets[index] =
@@ -300,7 +313,7 @@ int unordered_multimap_put(unordered_multimap me,
  */
 void unordered_multimap_get_start(unordered_multimap me, void *const key)
 {
-    me->iterate_hash = me->hash(key);
+    me->iterate_hash = unordered_multimap_hash(me, key);
     memcpy(me->iterate_key, key, me->key_size);
     me->iterate_element = NULL;
     const int index = (int) (me->iterate_hash % me->capacity);
@@ -357,7 +370,7 @@ bool unordered_multimap_get_next(void *const value, unordered_multimap me)
 int unordered_multimap_count(unordered_multimap me, void *const key)
 {
     int count = 0;
-    const unsigned long hash = me->hash(key);
+    const unsigned long hash = unordered_multimap_hash(me, key);
     const int index = (int) (hash % me->capacity);
     const struct node *traverse = me->buckets[index];
     while (traverse) {
@@ -379,7 +392,7 @@ int unordered_multimap_count(unordered_multimap me, void *const key)
  */
 bool unordered_multimap_contains(unordered_multimap me, void *const key)
 {
-    const unsigned long hash = me->hash(key);
+    const unsigned long hash = unordered_multimap_hash(me, key);
     const int index = (int) (hash % me->capacity);
     const struct node *traverse = me->buckets[index];
     while (traverse) {
@@ -404,7 +417,7 @@ bool unordered_multimap_remove(unordered_multimap me,
                                void *const key,
                                void *const value)
 {
-    const unsigned long hash = me->hash(key);
+    const unsigned long hash = unordered_multimap_hash(me, key);
     const int index = (int) (hash % me->capacity);
     if (!me->buckets[index]) {
         return false;
@@ -447,7 +460,7 @@ bool unordered_multimap_remove(unordered_multimap me,
  */
 bool unordered_multimap_remove_all(unordered_multimap me, void *const key)
 {
-    const unsigned long hash = me->hash(key);
+    const unsigned long hash = unordered_multimap_hash(me, key);
     const int index = (int) (hash % me->capacity);
     bool was_modified = false;
     while (true) {

@@ -46,6 +46,19 @@ struct node {
     struct node *next;
 };
 
+/*
+ * Gets the hash by first calling the user-defined hash, and then using a
+ * second hash to prevent hashing clusters if the user-defined hash is
+ * sub-optimal.
+ */
+static inline unsigned long unordered_map_hash(unordered_map me,
+                                               const void *const key)
+{
+    unsigned long hash = me->hash(key);
+    hash ^= (hash >> 20) ^ (hash >> 12);
+    return hash ^ (hash >> 7) ^ (hash >> 4);
+}
+
 /**
  * Initializes an unordered map, which is a collection of key-value pairs,
  * hashed by keys, keys are unique
@@ -129,7 +142,7 @@ int unordered_map_rehash(unordered_map me)
         struct node *traverse = old_buckets[i];
         while (traverse) {
             struct node *const backup = traverse->next;
-            traverse->hash = me->hash(traverse->key);
+            traverse->hash = unordered_map_hash(me, traverse->key);
             unordered_map_add_item(me, traverse);
             traverse = backup;
         }
@@ -243,7 +256,7 @@ static struct node *const unordered_map_create_element(unordered_map me,
 int unordered_map_put(unordered_map me, void *const key, void *const value)
 {
 
-    const unsigned long hash = me->hash(key);
+    const unsigned long hash = unordered_map_hash(me, key);
     const int index = (int) (hash % me->capacity);
     if (!me->buckets[index]) {
         me->buckets[index] = unordered_map_create_element(me, hash, key, value);
@@ -286,7 +299,7 @@ int unordered_map_put(unordered_map me, void *const key, void *const value)
  */
 bool unordered_map_get(void *const value, unordered_map me, void *const key)
 {
-    const unsigned long hash = me->hash(key);
+    const unsigned long hash = unordered_map_hash(me, key);
     const int index = (int) (hash % me->capacity);
     struct node *traverse = me->buckets[index];
     while (traverse) {
@@ -309,7 +322,7 @@ bool unordered_map_get(void *const value, unordered_map me, void *const key)
  */
 bool unordered_map_contains(unordered_map me, void *const key)
 {
-    const unsigned long hash = me->hash(key);
+    const unsigned long hash = unordered_map_hash(me, key);
     const int index = (int) (hash % me->capacity);
     const struct node *traverse = me->buckets[index];
     while (traverse) {
@@ -331,7 +344,7 @@ bool unordered_map_contains(unordered_map me, void *const key)
  */
 bool unordered_map_remove(unordered_map me, void *const key)
 {
-    const unsigned long hash = me->hash(key);
+    const unsigned long hash = unordered_map_hash(me, key);
     const int index = (int) (hash % me->capacity);
     if (!me->buckets[index]) {
         return false;
