@@ -22,7 +22,6 @@
 
 #include <stdlib.h>
 #include <memory.h>
-#include <math.h>
 #include <errno.h>
 #include "deque.h"
 
@@ -134,6 +133,8 @@ int deque_trim(deque me)
     free(me->block);
     me->block = new_block;
     me->block_count = new_block_count;
+    me->start_index -= start_block * BLOCK_SIZE;
+    me->end_index -= start_block * BLOCK_SIZE;
     return 0;
 }
 
@@ -171,7 +172,7 @@ int deque_push_front(deque me, void *const data)
         if (block_index == -1) {
             const int old_block_count = me->block_count;
             const int new_block_count =
-                    (int) ceil(RESIZE_RATIO * me->block_count);
+                    (int) (RESIZE_RATIO * me->block_count) + 1;
             const int added_blocks = new_block_count - old_block_count;
             void *temp = realloc(me->block,
                                  new_block_count * sizeof(struct node));
@@ -221,7 +222,7 @@ int deque_push_back(deque me, void *const data)
     if (inner_index == 0) {
         if (block_index == me->block_count) {
             const int new_block_count =
-                    (int) ceil(RESIZE_RATIO * me->block_count);
+                    (int) (RESIZE_RATIO * me->block_count) + 1;
             void *temp = realloc(me->block,
                                  new_block_count * sizeof(struct node));
             if (!temp) {

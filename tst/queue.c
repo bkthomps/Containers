@@ -39,4 +39,17 @@ void test_queue(void)
     assert(!queue_back(&get, me));
     me = queue_destroy(me);
     assert(!me);
+    me = queue_init(sizeof(int));
+    assert(me);
+    for (int i = 123; i < 123456; i++) {
+        queue_push(me, &i);
+    }
+    const int old_size = queue_size(me);
+    int pop_count = 0;
+    while (!queue_is_empty(me)) {
+        queue_pop(&get, me);
+        pop_count++;
+    }
+    assert(pop_count == old_size);
+    queue_destroy(me);
 }

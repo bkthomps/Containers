@@ -24,7 +24,7 @@
 #include "deque.h"
 #include "queue.h"
 
-static const int TRIM_SIZE = 64;
+static const double TRIM_RATIO = 1.5;
 
 struct internal_queue {
     int trim_count;
@@ -131,7 +131,7 @@ int queue_push(queue me, void *const data)
 bool queue_pop(void *const data, queue me)
 {
     me->trim_count++;
-    if (me->trim_count >= TRIM_SIZE) {
+    if (TRIM_RATIO * me->trim_count >= queue_size(me)) {
         deque_trim(me->deque_data);
         me->trim_count = 0;
     }
