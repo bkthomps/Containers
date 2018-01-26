@@ -88,6 +88,7 @@ void test_vector(void)
     for (int i = 0; i < 10; i++) {
         assert(data[i] == val[9 - i]);
     }
+    assert(vector_capacity(me) >= vector_size(me));
     int trimmed[5] = {0};
     vector_trim(me);
     vector_reserve(me, 3);

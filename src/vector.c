@@ -75,6 +75,18 @@ int vector_size(vector me)
 }
 
 /**
+ * Gets the capacity that the internal storage of the vector is using.
+ *
+ * @param me The vector to check.
+ *
+ * @return The capacity that the internal storage of the vector is using
+ */
+int vector_capacity(vector me)
+{
+    return me->item_capacity;
+}
+
+/**
  * Determines whether or not the vector is empty.
  *
  * @param me The vector to check.
