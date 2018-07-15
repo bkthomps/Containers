@@ -106,4 +106,11 @@ void test_deque(void)
     assert(deque_is_empty(me));
     me = deque_destroy(me);
     assert(!me);
+    // Testing automatic trim
+    me = deque_init(sizeof(int));
+    for (int i = 0; i < 100; i++) {
+        deque_push_back(me, &i);
+        deque_pop_front(&get, me);
+    }
+    deque_destroy(me);
 }

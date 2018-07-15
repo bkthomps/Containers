@@ -52,4 +52,11 @@ void test_queue(void)
     }
     assert(pop_count == old_size);
     queue_destroy(me);
+    // Testing automatic trim
+    me = queue_init(sizeof(int));
+    for (int i = 0; i < 100; i++) {
+        queue_push(me, &i);
+        queue_pop(&get, me);
+    }
+    queue_destroy(me);
 }

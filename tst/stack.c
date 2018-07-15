@@ -35,4 +35,11 @@ void test_stack(void)
     assert(!stack_top(&get, me));
     me = stack_destroy(me);
     assert(!me);
+    // Testing automatic trim
+    me = stack_init(sizeof(int));
+    for (int i = 0; i < 100; i++) {
+        stack_push(me, &i);
+        stack_pop(&get, me);
+    }
+    stack_destroy(me);
 }

@@ -113,7 +113,7 @@ bool deque_is_empty(deque me)
 int deque_trim(deque me)
 {
     const int start_block = me->start_index / BLOCK_SIZE;
-    const int end_block = me->end_index / BLOCK_SIZE;
+    const int end_block = (me->end_index - 1) / BLOCK_SIZE;
     const int new_block_count = end_block - start_block + 1;
     void *const new_block = malloc(new_block_count * sizeof(struct node));
     if (!new_block) {
@@ -127,9 +127,9 @@ int deque_trim(deque me)
         const struct node block_item = me->block[i];
         free(block_item.data);
     }
-    memmove(new_block,
-            &me->block[start_block],
-            new_block_count * sizeof(struct node));
+    memcpy(new_block,
+           &me->block[start_block],
+           new_block_count * sizeof(struct node));
     free(me->block);
     me->block = new_block;
     me->block_count = new_block_count;
