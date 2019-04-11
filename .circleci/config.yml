@@ -5,6 +5,7 @@ jobs:
       - image: mickare/cmake-clang
     steps:
       - checkout
+      - run: ls
 workflows:
   version: 2
   build_and_test:
