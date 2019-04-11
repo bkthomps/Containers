@@ -6,9 +6,6 @@ jobs:
     steps:
       - checkout
       - run: cmake
-      - run: cmake --build cmake-build-debug --target Containers -- -j 2
-      - run: cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" .
-      - run: cmake-build-debug/Containers
 workflows:
   version: 2
   build_and_test:
