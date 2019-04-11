@@ -81,6 +81,7 @@ void test_map(void)
     assert(map_remove(me, &num));
     assert(map_size(me) == 2);
     assert(!map_contains(me, &num));
+    assert(0 == 1);
     num = 5;
     assert(map_remove(me, &num));
     assert(map_size(me) == 1);
