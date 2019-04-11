@@ -5,8 +5,9 @@ jobs:
       - image: mickare/cmake-clang
     steps:
       - checkout
-      - run: mkdir cmake-build-debug
+      - run: mkdir cmake-build-debug && cd cmake-build-debug
       - run: cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" .
+      - run: cd ..
       - run: cmake --build cmake-build-debug --target Containers -- -j 2
       - run: cmake-build-debug/Containers
 workflows:
