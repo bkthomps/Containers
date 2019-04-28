@@ -64,8 +64,7 @@ static inline unsigned long unordered_multimap_hash(unordered_multimap me,
 }
 
 /**
- * Initializes an unordered multi-map, which is a collection of key-value pairs,
- * hashed by keys
+ * Initializes an unordered multi-map.
  *
  * @param key_size         the size of each key in the unordered multi-map; must
  *                         be positive

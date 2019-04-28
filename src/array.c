@@ -32,7 +32,7 @@ struct internal_array {
 };
 
 /**
- * Initializes an array, which is a static contiguous array.
+ * Initializes an array.
  *
  * @param element_count the amount of elements in the array; must be positive
  * @param data_size     the size of each element in the array; must be positive

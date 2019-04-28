@@ -60,8 +60,7 @@ static inline unsigned long unordered_map_hash(unordered_map me,
 }
 
 /**
- * Initializes an unordered map, which is a collection of key-value pairs,
- * hashed by keys, keys are unique
+ * Initializes an unordered map.
  *
  * @param key_size   the size of each key in the unordered map; must be
  *                   positive

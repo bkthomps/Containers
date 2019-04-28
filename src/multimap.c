@@ -51,8 +51,7 @@ struct value_node {
 };
 
 /**
- * Initializes a multi-map, which is a collection of key-value pairs, sorted by
- * keys.
+ * Initializes a multi-map.
  *
  * @param key_size         the size of each key in the multi-map; must be
  *                         positive

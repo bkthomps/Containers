@@ -42,8 +42,7 @@ struct node {
 };
 
 /**
- * Initializes a multi-set, which is a collection of key-value pairs, sorted by
- * keys, keys are unique
+ * Initializes a multi-set.
  *
  * @param key_size   the size of each element in the multi-set; must be
  *                   positive

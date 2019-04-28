@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2018 Bailey Thompson
+ * Copyright (c) 2017-2019 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,10 @@
 
 #include <stdbool.h>
 
+/**
+ * The unordered_set data structure, which is a collection of unique keys,
+ * hashed by keys.
+ */
 typedef struct internal_unordered_set *unordered_set;
 
 // Starting

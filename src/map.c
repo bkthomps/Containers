@@ -43,8 +43,7 @@ struct node {
 };
 
 /**
- * Initializes a map, which is a collection of key-value pairs, sorted by keys,
- * keys are unique
+ * Initializes a map.
  *
  * @param key_size   the size of each key in the map; must be positive
  * @param value_size the size of each value in the map; must be positive

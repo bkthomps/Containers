@@ -41,7 +41,7 @@ struct node {
 };
 
 /**
- * Initializes a set, which is a collection of unique keys, sorted by keys.
+ * Initializes a set.
  *
  * @param key_size   the size of each element in the set; must be positive
  * @param comparator the comparator function used for key ordering; must not be

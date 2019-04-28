@@ -29,8 +29,7 @@ struct internal_stack {
 };
 
 /**
- * Initializes a stack, which adapts a container to provide stack
- * (last-in first-out). Adapts the deque container.
+ * Initializes a stack.
  *
  * @param data_size the size of each data element in the stack; must be
  *                  positive

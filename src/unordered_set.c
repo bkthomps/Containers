@@ -58,8 +58,7 @@ static inline unsigned long unordered_set_hash(unordered_set me,
 }
 
 /**
- * Initializes an unordered set, which is a collection of unique keys, hashed by
- * keys.
+ * Initializes an unordered set.
  *
  * @param key_size   the size of each key in the unordered set; must be
  *                   positive

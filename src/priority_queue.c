@@ -33,8 +33,7 @@ struct internal_priority_queue {
 };
 
 /**
- * Initializes a priority queue, which adapts a container to provide priority
- * queue. Adapts the vector container.
+ * Initializes a priority queue.
  *
  * @param data_size  the size of the data in the priority queue; must be
  *                   positive

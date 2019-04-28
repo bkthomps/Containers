@@ -60,8 +60,7 @@ static inline unsigned long unordered_multiset_hash(unordered_multiset me,
 }
 
 /**
- * Initializes an unordered multi-set, which is a collection of keys, hashed by
- * keys.
+ * Initializes an unordered multi-set.
  *
  * @param key_size   the size of each key in the unordered multi-set; must be
  *                   positive

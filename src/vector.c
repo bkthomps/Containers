@@ -36,7 +36,7 @@ struct internal_vector {
 };
 
 /**
- * Initializes a vector, which is a dynamic contiguous array.
+ * Initializes a vector.
  *
  * @param data_size the size of each element in the vector; must be positive
  *

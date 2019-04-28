@@ -32,8 +32,7 @@ struct internal_queue {
 };
 
 /**
- * Initializes a queue, which adapts a container to provide queue
- * (first-in first-out). Adapts the deque container.
+ * Initializes a queue.
  *
  * @param data_size the size of each element; must be positive
  *
