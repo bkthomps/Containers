@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2018 Bailey Thompson
+ * Copyright (c) 2017-2019 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,13 +29,12 @@ struct internal_stack {
 };
 
 /**
- * Initializes a stack, which adapts a container to provide stack
- * (last-in first-out). Adapts the deque container.
+ * Initializes a stack.
  *
- * @param data_size The size of each data element in the stack. Must be
- *                  positive.
+ * @param data_size the size of each data element in the stack; must be
+ *                  positive
  *
- * @return The newly-initialized stack, or NULL if memory allocation error.
+ * @return the newly-initialized stack, or NULL if memory allocation error
  */
 stack stack_init(const size_t data_size)
 {
@@ -57,9 +56,9 @@ stack stack_init(const size_t data_size)
 /**
  * Determines the size of the stack.
  *
- * @param me The stack to check size of.
+ * @param me the stack to check size of
  *
- * @return The size of the stack.
+ * @return the size of the stack
  */
 int stack_size(stack me)
 {
@@ -69,9 +68,9 @@ int stack_size(stack me)
 /**
  * Determines if the stack is empty, meaning it contains no elements.
  *
- * @param me The stack to check if empty.
+ * @param me the stack to check if empty
  *
- * @return If empty.
+ * @return true if the stack is empty
  */
 bool stack_is_empty(stack me)
 {
@@ -81,10 +80,10 @@ bool stack_is_empty(stack me)
 /**
  * Frees unused memory from the stack.
  *
- * @param me The stack to trim.
+ * @param me the stack to trim
  *
- * @return 0       No error.
- *         -ENOMEM Out of memory.
+ * @return 0       if no error
+ * @return -ENOMEM if out of memory
  */
 int stack_trim(stack me)
 {
@@ -92,10 +91,10 @@ int stack_trim(stack me)
 }
 
 /**
- * Copies the stack into an array representation.
+ * Copies the stack to an array.
  *
- * @param arr The array to copy to.
- * @param me  The stack to copy from.
+ * @param arr the initialized array to copy the stack to
+ * @param me  the stack to copy to the array
  */
 void stack_copy_to_array(void *const arr, stack me)
 {
@@ -105,11 +104,11 @@ void stack_copy_to_array(void *const arr, stack me)
 /**
  * Adds an element to the top of the stack.
  *
- * @param me   The stack to add an element to.
- * @param data The data to add to the stack.
+ * @param me   the stack to add an element to
+ * @param data the data to add to the stack
  *
- * @return 0       No error.
- *         -ENOMEM Out of memory.
+ * @return 0       if no error
+ * @return -ENOMEM if out of memory
  */
 int stack_push(stack me, void *const data)
 {
@@ -120,10 +119,10 @@ int stack_push(stack me, void *const data)
  * Removes the top element of the stack, and copies the data which is being
  * removed.
  *
- * @param data The copy of the element being removed.
- * @param me   The stack to remove the top element from.
+ * @param data the copy of the element being removed
+ * @param me   the stack to remove the top element from
  *
- * @return If the stack contained elements.
+ * @return true if the stack contained elements
  */
 bool stack_pop(void *const data, stack me)
 {
@@ -133,10 +132,10 @@ bool stack_pop(void *const data, stack me)
 /**
  * Copies the top element of the stack.
  *
- * @param data The copy of the top element of the stack.
- * @param me   The stack to copy from.
+ * @param data the copy of the top element of the stack
+ * @param me   the stack to copy from
  *
- * @return If the stack contained elements.
+ * @return true if the stack contained elements
  */
 bool stack_top(void *const data, stack me)
 {
@@ -146,10 +145,10 @@ bool stack_top(void *const data, stack me)
 /**
  * Clears the stack and sets it to the state from original initialization.
  *
- * @param me The stack to clear.
+ * @param me the stack to clear
  *
- * @return 0       No error.
- *         -ENOMEM Out of memory.
+ * @return 0       if no error
+ * @return -ENOMEM if out of memory
  */
 int stack_clear(stack me)
 {
@@ -159,7 +158,7 @@ int stack_clear(stack me)
 /**
  * Destroys the stack and frees the memory associated with it.
  *
- * @param me The stack to destroy.
+ * @param me the stack to destroy
  *
  * @return NULL
  */

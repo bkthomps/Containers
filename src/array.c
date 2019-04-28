@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2018 Bailey Thompson
+ * Copyright (c) 2017-2019 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,12 +32,12 @@ struct internal_array {
 };
 
 /**
- * Initializes an array, which is a static contiguous array.
+ * Initializes an array.
  *
- * @param element_count The amount of elements in the array. Must be positive.
- * @param data_size     The size of each element in the array. Must be positive.
+ * @param element_count the amount of elements in the array; must be positive
+ * @param data_size     the size of each element in the array; must be positive
  *
- * @return The newly-initialized array, or NULL if memory allocation error.
+ * @return the newly-initialized array, or NULL if memory allocation error
  */
 array array_init(const int element_count, const size_t data_size)
 {
@@ -61,9 +61,9 @@ array array_init(const int element_count, const size_t data_size)
 /**
  * Gets the size of the array.
  *
- * @param me The array to check.
+ * @param me the array to check
  *
- * @return The size of the array.
+ * @return the size of the array
  */
 int array_size(array me)
 {
@@ -71,10 +71,10 @@ int array_size(array me)
 }
 
 /**
- * Copies the storage element of array to an array.
+ * Copies the array to a raw array.
  *
- * @param arr The array to copy to.
- * @param me  The array to copy from.
+ * @param arr the initialized raw array to copy the array to
+ * @param me  the array to copy to the raw array
  */
 void array_copy_to_array(void *const arr, array me)
 {
@@ -87,9 +87,9 @@ void array_copy_to_array(void *const arr, array me)
  * operation may invalidate this data pointer. The array owns the data pointer,
  * thus it must not be freed.
  *
- * @param me The array to get the storage element from.
+ * @param me the array to get the storage element from
  *
- * @return The storage element of the array.
+ * @return the storage element of the array
  */
 void *array_get_data(array me)
 {
@@ -107,12 +107,12 @@ static bool array_is_illegal_input(array me, const int index)
 /**
  * Sets the data for a specified element in the array.
  *
- * @param me    The array to set data for.
- * @param index The location to set data at in the array.
- * @param data  The data to set at the location in the array.
+ * @param me    the array to set data for
+ * @param index the location to set data at in the array
+ * @param data  the data to set at the location in the array
  *
- * @return 0       No error.
- *         -EINVAL Invalid argument.
+ * @return 0       if no error
+ * @return -EINVAL if invalid argument
  */
 int array_set(array me, const int index, void *const data)
 {
@@ -126,12 +126,12 @@ int array_set(array me, const int index, void *const data)
 /**
  * Copies the element at index of the array to data.
  *
- * @param data  The data to copy to.
- * @param me    The array to copy from.
- * @param index The index to copy from in the array.
+ * @param data  the data to copy to
+ * @param me    the array to copy from
+ * @param index the index to copy from in the array
  *
- * @return 0       No error.
- *         -EINVAL Invalid argument.
+ * @return 0       if no error
+ * @return -EINVAL if invalid argument
  */
 int array_get(void *const data, array me, const int index)
 {
@@ -145,7 +145,7 @@ int array_get(void *const data, array me, const int index)
 /**
  * Frees the array memory.
  *
- * @param me The array to free from memory.
+ * @param me the array to free from memory
  *
  * @return NULL
  */

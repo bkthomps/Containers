@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2018 Bailey Thompson
+ * Copyright (c) 2017-2019 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -51,17 +51,16 @@ struct value_node {
 };
 
 /**
- * Initializes a multi-map, which is a collection of key-value pairs, sorted by
- * keys.
+ * Initializes a multi-map.
  *
- * @param key_size         The size of each key in the multi-map. Must be
- *                         positive.
- * @param value_size       The size of each value in the multi-map. Must be
- *                         positive.
- * @param key_comparator   The key comparator function. Must not be NULL.
- * @param value_comparator The value comparator function. Must not be NULL.
+ * @param key_size         the size of each key in the multi-map; must be
+ *                         positive
+ * @param value_size       the size of each value in the multi-map; must be
+ *                         positive
+ * @param key_comparator   the key comparator function; must not be NULL
+ * @param value_comparator the value comparator function; must not be NULL
  *
- * @return The newly-initialized multi-map, or NULL if memory allocation error.
+ * @return the newly-initialized multi-map, or NULL if memory allocation error
  */
 multimap multimap_init(const size_t key_size,
                        const size_t value_size,
@@ -92,9 +91,9 @@ multimap multimap_init(const size_t key_size,
 /**
  * Gets the size of the multi-map.
  *
- * @param me The multi-map to check.
+ * @param me the multi-map to check
  *
- * @return The size of the multi-map.
+ * @return the size of the multi-map
  */
 int multimap_size(multimap me)
 {
@@ -104,9 +103,9 @@ int multimap_size(multimap me)
 /**
  * Determines whether or not the multi-map is empty.
  *
- * @param me The multi-map to check.
+ * @param me the multi-map to check
  *
- * @return If the multi-map is empty.
+ * @return true if the multi-map is empty
  */
 bool multimap_is_empty(multimap me)
 {
@@ -316,12 +315,12 @@ static struct node *multimap_create_node(multimap me,
 /**
  * Adds a key-value pair to the multi-map.
  *
- * @param me    The multi-map to add to.
- * @param key   The key to add.
- * @param value The value to add.
+ * @param me    the multi-map to add to
+ * @param key   the key to add
+ * @param value the value to add
  *
- * @return 0       No error.
- *         -ENOMEM Out of memory.
+ * @return 0       if no error
+ * @return -ENOMEM if out of memory
  */
 int multimap_put(multimap me, void *const key, void *const value)
 {
@@ -409,8 +408,8 @@ static struct node *multimap_equal_match(multimap me, const void *const key)
  * getting the next value. Between starting and iterations, the multi-map must
  * not be mutated.
  *
- * @param me  The multi-map to start the iterator for.
- * @param key The key to start the iterator for.
+ * @param me  the multi-map to start the iterator for
+ * @param key the key to start the iterator for
  */
 void multimap_get_start(multimap me, void *const key)
 {
@@ -424,11 +423,11 @@ void multimap_get_start(multimap me, void *const key)
  * Iterates over the values for the specified key. Must be called after starting
  * the iterator. The multi-map must not be mutated between start and iterations.
  *
- * @param value The value to be copied to from iteration.
- * @param me    The multi-map to iterate over.
+ * @param value the value to be copied to from iteration
+ * @param me    the multi-map to iterate over
  *
- * @return If there exist no more values for the key which is being iterated
- *         over.
+ * @return true if there exist no more values for the key which is being
+ *         iterated over
  */
 bool multimap_get_next(void *const value, multimap me)
 {
@@ -444,10 +443,10 @@ bool multimap_get_next(void *const value, multimap me)
 /**
  * Determines the amount of times the key appears in the multi-map.
  *
- * @param me  The multi-map to check for the key.
- * @param key The key to check.
+ * @param me  the multi-map to check for the key
+ * @param key the key to check
  *
- * @return The amount of times the key appears in the multi-map.
+ * @return the amount of times the key appears in the multi-map
  */
 int multimap_count(multimap me, void *const key)
 {
@@ -461,10 +460,10 @@ int multimap_count(multimap me, void *const key)
 /**
  * Determines if the multi-map contains the specified key.
  *
- * @param me  The multi-map to check for the key.
- * @param key The key to check.
+ * @param me  the multi-map to check for the key
+ * @param key the key to check
  *
- * @return If the multi-map contained the key.
+ * @return true if the multi-map contained the key
  */
 bool multimap_contains(multimap me, void *const key)
 {
@@ -659,11 +658,11 @@ static void multimap_remove_element(multimap me, struct node *const traverse)
 /**
  * Removes the key-value pair from the multi-map if it contains it.
  *
- * @param me    The multi-map to remove an key from.
- * @param key   The key to remove.
- * @param value The value to remove.
+ * @param me    the multi-map to remove an key from
+ * @param key   the key to remove
+ * @param value the value to remove
  *
- * @return If the multi-map contained the key.
+ * @return true if the multi-map contained the key
  */
 bool multimap_remove(multimap me, void *const key, void *const value)
 {
@@ -716,10 +715,10 @@ static void multimap_remove_all_element(multimap me,
 /**
  * Removes all the key-value pairs from the multi-map specified by the key.
  *
- * @param me  The multi-map to remove a key-value pair from.
- * @param key The key to remove.
+ * @param me  the multi-map to remove a key-value pair from
+ * @param key the key to remove
  *
- * @return If the multi-map contained the key.
+ * @return true if the multi-map contained the key
  */
 bool multimap_remove_all(multimap me, void *const key)
 {
@@ -734,7 +733,7 @@ bool multimap_remove_all(multimap me, void *const key)
 /**
  * Clears the key-value pairs from the multi-map.
  *
- * @param me The multi-map to clear.
+ * @param me the multi-map to clear
  */
 void multimap_clear(multimap me)
 {
@@ -746,7 +745,7 @@ void multimap_clear(multimap me)
 /**
  * Frees the multi-map memory.
  *
- * @param me The multi-map to free from memory.
+ * @param me the multi-map to free from memory
  *
  * @return NULL
  */

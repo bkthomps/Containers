@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2018 Bailey Thompson
+ * Copyright (c) 2017-2019 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -42,15 +42,14 @@ struct node {
 };
 
 /**
- * Initializes a multi-set, which is a collection of key-value pairs, sorted by
- * keys, keys are unique
+ * Initializes a multi-set.
  *
- * @param key_size   The size of each element in the multi-set. Must be
- *                   positive.
- * @param comparator The comparator function used for key ordering. Must not be
- *                   NULL.
+ * @param key_size   the size of each element in the multi-set; must be
+ *                   positive
+ * @param comparator the comparator function used for key ordering; must not be
+ *                   NULL
  *
- * @return The newly-initialized multi-set, or NULL if memory allocation error.
+ * @return the newly-initialized multi-set, or NULL if memory allocation error
  */
 multiset multiset_init(const size_t key_size,
                        int (*const comparator)(const void *const,
@@ -74,9 +73,9 @@ multiset multiset_init(const size_t key_size,
 /**
  * Gets the size of the multi-set.
  *
- * @param me The multi-set to check.
+ * @param me the multi-set to check
  *
- * @return The size of the multi-set.
+ * @return the size of the multi-set
  */
 int multiset_size(multiset me)
 {
@@ -86,9 +85,9 @@ int multiset_size(multiset me)
 /**
  * Determines whether or not the multi-set is empty.
  *
- * @param me The multi-set to check.
+ * @param me the multi-set to check
  *
- * @return If the multi-set is empty.
+ * @return true if the multi-set is empty
  */
 bool multiset_is_empty(multiset me)
 {
@@ -271,11 +270,11 @@ static struct node *multiset_create_node(multiset me,
 /**
  * Adds a key to the multi-set.
  *
- * @param me  The multi-set to add to.
- * @param key The key to add.
+ * @param me  the multi-set to add to
+ * @param key the key to add
  *
- * @return 0       No error.
- *         -ENOMEM Out of memory.
+ * @return 0       if no error
+ * @return -ENOMEM if out of memory
  */
 int multiset_put(multiset me, void *const key)
 {
@@ -354,10 +353,10 @@ static struct node *multiset_equal_match(multiset me, const void *const key)
 /**
  * Determines the count of a specific key in the multi-set.
  *
- * @param me  The multi-set to check for the count.
- * @param key The key to check.
+ * @param me  the multi-set to check for the count
+ * @param key the key to check
  *
- * @return The count of a specific key in the multi-set.
+ * @return the count of a specific key in the multi-set
  */
 int multiset_count(multiset me, void *const key)
 {
@@ -371,10 +370,10 @@ int multiset_count(multiset me, void *const key)
 /**
  * Determines if the multi-set contains the specified key.
  *
- * @param me  The multi-set to check for the key.
- * @param key The key to check.
+ * @param me  the multi-set to check for the key
+ * @param key the key to check
  *
- * @return If the multiset contained the key.
+ * @return true if the multiset contained the key
  */
 bool multiset_contains(multiset me, void *const key)
 {
@@ -569,10 +568,10 @@ static void multiset_remove_element(multiset me, struct node *const traverse)
 /**
  * Removes a key from the multi-set if it contains it.
  *
- * @param me  The multi-set to remove a key from.
- * @param key The key to remove.
+ * @param me  the multi-set to remove a key from
+ * @param key the key to remove
  *
- * @return If the multi-set contained the key.
+ * @return true if the multi-set contained the key
  */
 bool multiset_remove(multiset me, void *const key)
 {
@@ -591,10 +590,10 @@ bool multiset_remove(multiset me, void *const key)
 /**
  * Removes all the occurrences of a specified key in the multi-set.
  *
- * @param me  The multi-set to remove a key from.
- * @param key The key to remove.
+ * @param me  the multi-set to remove a key from
+ * @param key the key to remove
  *
- * @return If the multi-set contained the key.
+ * @return true if the multi-set contained the key
  */
 bool multiset_remove_all(multiset me, void *const key)
 {
@@ -610,7 +609,7 @@ bool multiset_remove_all(multiset me, void *const key)
 /**
  * Clears the keys from the multiset.
  *
- * @param me The multi-set to clear.
+ * @param me the multi-set to clear
  */
 void multiset_clear(multiset me)
 {
@@ -623,7 +622,7 @@ void multiset_clear(multiset me)
 /**
  * Frees the multi-set memory.
  *
- * @param me The multi-set to free from memory.
+ * @param me the multi-set to free from memory
  *
  * @return NULL
  */

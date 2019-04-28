@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2018 Bailey Thompson
+ * Copyright (c) 2017-2019 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -53,23 +53,22 @@ static inline unsigned long unordered_set_hash(unordered_set me,
                                                const void *const key)
 {
     unsigned long hash = me->hash(key);
-    hash ^= (hash >> 20) ^ (hash >> 12);
-    return hash ^ (hash >> 7) ^ (hash >> 4);
+    hash ^= (hash >> 20UL) ^ (hash >> 12UL);
+    return hash ^ (hash >> 7UL) ^ (hash >> 4UL);
 }
 
 /**
- * Initializes an unordered set, which is a collection of unique keys, hashed by
- * keys.
+ * Initializes an unordered set.
  *
- * @param key_size   The size of each key in the unordered set. Must be
- *                   positive.
- * @param hash       The hash function which computes the hash from the key.
- *                   Must not be NULL.
- * @param comparator The comparator function which compares two keys. Must not
- *                   be NULL.
+ * @param key_size   the size of each key in the unordered set; must be
+ *                   positive
+ * @param hash       the hash function which computes the hash from the key;
+ *                   must not be NULL
+ * @param comparator the comparator function which compares two keys; must not
+ *                   be NULL
  *
- * @return The newly-initialized unordered set, or NULL if memory allocation
- *         error.
+ * @return the newly-initialized unordered set, or NULL if memory allocation
+ *         error
  */
 unordered_set unordered_set_init(const size_t key_size,
                                  unsigned long (*hash)(const void *const),
@@ -119,10 +118,10 @@ static void unordered_set_add_item(unordered_set me, struct node *const add)
  * Rehashes all the keys in the unordered set. Used when storing references and
  * changing the keys. This should rarely be used.
  *
- * @param me The unordered set to rehash.
+ * @param me the unordered set to rehash
  *
- * @return 0       No error.
- *         -ENOMEM Out of memory.
+ * @return 0       if no error
+ * @return -ENOMEM if out of memory
  */
 int unordered_set_rehash(unordered_set me)
 {
@@ -148,9 +147,9 @@ int unordered_set_rehash(unordered_set me)
 /**
  * Gets the size of the unordered set.
  *
- * @param me The unordered set to check.
+ * @param me the unordered set to check
  *
- * @return The size of the unordered set.
+ * @return the size of the unordered set
  */
 int unordered_set_size(unordered_set me)
 {
@@ -160,9 +159,9 @@ int unordered_set_size(unordered_set me)
 /**
  * Determines whether or not the unordered set is empty.
  *
- * @param me The unordered set to check.
+ * @param me the unordered set to check
  *
- * @return If the unordered set is empty.
+ * @return true if the unordered set is empty
  */
 bool unordered_set_is_empty(unordered_set me)
 {
@@ -232,11 +231,11 @@ static struct node *const unordered_set_create_element(unordered_set me,
  * Adds an element to the unordered set if the unordered set does not already
  * contain it.
  *
- * @param me  The unordered set to add to.
- * @param key The element to add.
+ * @param me  the unordered set to add to
+ * @param key the element to add
  *
- * @return 0       No error.
- *         -ENOMEM Out of memory.
+ * @return 0       if no error
+ * @return -ENOMEM if out of memory
  */
 int unordered_set_put(unordered_set me, void *const key)
 {
@@ -274,10 +273,10 @@ int unordered_set_put(unordered_set me, void *const key)
 /**
  * Determines if the unordered set contains the specified element.
  *
- * @param me  The unordered set to check for the element.
- * @param key The element to check.
+ * @param me  the unordered set to check for the element
+ * @param key the element to check
  *
- * @return If the unordered set contained the element.
+ * @return true if the unordered set contained the element
  */
 bool unordered_set_contains(unordered_set me, void *const key)
 {
@@ -296,10 +295,10 @@ bool unordered_set_contains(unordered_set me, void *const key)
 /**
  * Removes the key from the unordered set if it contains it.
  *
- * @param me  The unordered set to remove an key from.
- * @param key The key to remove.
+ * @param me  the unordered set to remove an key from
+ * @param key the key to remove
  *
- * @return If the unordered set contained the key.
+ * @return true if the unordered set contained the key
  */
 bool unordered_set_remove(unordered_set me, void *const key)
 {
@@ -333,10 +332,10 @@ bool unordered_set_remove(unordered_set me, void *const key)
 /**
  * Clears the keys from the unordered set.
  *
- * @param me The unordered set to clear.
+ * @param me the unordered set to clear
  *
- * @return 0       No error.
- *         -ENOMEM Out of memory.
+ * @return 0       if no error
+ * @return -ENOMEM if out of memory
  */
 int unordered_set_clear(unordered_set me)
 {
@@ -365,7 +364,7 @@ int unordered_set_clear(unordered_set me)
 /**
  * Frees the unordered set memory.
  *
- * @param me The unordered set to free from memory.
+ * @param me the unordered set to free from memory
  *
  * @return NULL
  */

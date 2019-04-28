@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2018 Bailey Thompson
+ * Copyright (c) 2017-2019 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -41,10 +41,10 @@ struct node {
 /**
  * Initializes a doubly-linked list.
  *
- * @param data_size The size of data to store. Must be positive.
+ * @param data_size the size of data to store; must be positive
  *
- * @return The newly-initialized doubly-linked list, or NULL if memory
- *         allocation error.
+ * @return the newly-initialized doubly-linked list, or NULL if memory
+ *         allocation error
  */
 list list_init(const size_t data_size)
 {
@@ -65,9 +65,9 @@ list list_init(const size_t data_size)
 /**
  * Gets the amount of elements in the doubly-linked list.
  *
- * @param me The doubly-linked list to check.
+ * @param me the doubly-linked list to check
  *
- * @return The amount of elements.
+ * @return the amount of elements
  */
 int list_size(list me)
 {
@@ -77,9 +77,9 @@ int list_size(list me)
 /**
  * Determines if the doubly-linked list is empty.
  *
- * @param me The doubly-linked list to check.
+ * @param me the doubly-linked list to check
  *
- * @return If the list is empty.
+ * @return true if the list is empty
  */
 bool list_is_empty(list me)
 {
@@ -89,8 +89,8 @@ bool list_is_empty(list me)
 /**
  * Copies the nodes of the doubly-linked list to an array.
  *
- * @param arr The array to copy the list to.
- * @param me  The list to copy to the array.
+ * @param arr the initialized array to copy the doubly-linked list to
+ * @param me  the doubly-linked list to copy to the array
  */
 void list_copy_to_array(void *const arr, list me)
 {
@@ -142,11 +142,11 @@ static struct node *list_get_node_at(list me, const int index)
 /**
  * Adds data at the first index in the doubly-linked list.
  *
- * @param me   The list to add data to.
- * @param data The data to add to the list.
+ * @param me   the doubly-linked list to add data to
+ * @param data the data to add to the doubly-linked list
  *
- * @return 0       No error.
- *         -ENOMEM Out of memory.
+ * @return 0       if no error
+ * @return -ENOMEM if out of memory
  */
 int list_add_first(list me, void *const data)
 {
@@ -177,13 +177,13 @@ int list_add_first(list me, void *const data)
 /**
  * Adds data at a specified index in the doubly-linked list.
  *
- * @param me    The list to add data to.
- * @param index The index to add the data at.
- * @param data  The data to add to the list.
+ * @param me    the doubly-linked list to add data to
+ * @param index the index to add the data at
+ * @param data  the data to add to the doubly-linked list
  *
- * @return 0       No error.
- *         -ENOMEM Out of memory.
- *         -EINVAL Invalid argument.
+ * @return 0       if no error
+ * @return -ENOMEM if out of memory
+ * @return -EINVAL if invalid argument
  */
 int list_add_at(list me, const int index, void *const data)
 {
@@ -219,11 +219,11 @@ int list_add_at(list me, const int index, void *const data)
 /**
  * Adds data at the last index in the doubly-linked list.
  *
- * @param me   The list to add data to.
- * @param data The data to add to the list.
+ * @param me   the doubly-linked list to add data to
+ * @param data the data to add to the doubly-linked list
  *
- * @return 0       No error.
- *         -ENOMEM Out of memory.
+ * @return 0       if no error
+ * @return -ENOMEM if out of memory
  */
 int list_add_last(list me, void *const data)
 {
@@ -259,10 +259,10 @@ static bool list_is_illegal_input(list me, const int index)
 /**
  * Removes the first piece of data from the doubly-linked list.
  *
- * @param me The list to remove data from.
+ * @param me the doubly-linked list to remove data from
  *
- * @return 0       No error.
- *         -EINVAL Invalid argument.
+ * @return 0       if no error
+ * @return -EINVAL if invalid argument
  */
 int list_remove_first(list me)
 {
@@ -272,11 +272,11 @@ int list_remove_first(list me)
 /**
  * Removes data from the doubly-linked list at the specified index.
  *
- * @param me    The list to remove data from.
- * @param index The index to remove from.
+ * @param me    the doubly-linked list to remove data from
+ * @param index the index to remove from
  *
- * @return 0       No error.
- *         -EINVAL Invalid argument.
+ * @return 0       if no error
+ * @return -EINVAL if invalid argument
  */
 int list_remove_at(list me, const int index)
 {
@@ -303,10 +303,10 @@ int list_remove_at(list me, const int index)
 /**
  * Removes the last piece of data from the doubly-linked list.
  *
- * @param me The list to remove data from.
+ * @param me the doubly-linked list to remove data from
  *
- * @return 0       No error.
- *         -EINVAL Invalid argument.
+ * @return 0       if no error
+ * @return -EINVAL if invalid argument
  */
 int list_remove_last(list me)
 {
@@ -316,11 +316,11 @@ int list_remove_last(list me)
 /**
  * Sets the data at the first index in the doubly-linked list.
  *
- * @param me   The list to set data for.
- * @param data The data to set in the list.
+ * @param me   the doubly-linked list to set data for
+ * @param data the data to set in the doubly-linked list
  *
- * @return 0       No error.
- *         -EINVAL Invalid argument.
+ * @return 0       if no error
+ * @return -EINVAL if invalid argument
  */
 int list_set_first(list me, void *const data)
 {
@@ -330,12 +330,12 @@ int list_set_first(list me, void *const data)
 /**
  * Sets the data at the specified index in the doubly-linked list.
  *
- * @param me    The list to set data for.
- * @param index The index to set data in the list.
- * @param data  The data to set in the list.
+ * @param me    the doubly-linked list to set data for
+ * @param index the index to set data in the doubly-linked list
+ * @param data  the data to set in the doubly-linked list
  *
- * @return 0       No error.
- *         -EINVAL Invalid argument.
+ * @return 0       if no error
+ * @return -EINVAL if invalid argument
  */
 int list_set_at(list me, const int index, void *const data)
 {
@@ -350,11 +350,11 @@ int list_set_at(list me, const int index, void *const data)
 /**
  * Sets the data at the last index in the doubly-linked list.
  *
- * @param me   The list to set data for.
- * @param data The data to set in the list.
+ * @param me   the doubly-linked list to set data for
+ * @param data the data to set in the doubly-linked list
  *
- * @return 0       No error.
- *         -EINVAL Invalid argument.
+ * @return 0       if no error
+ * @return -EINVAL if invalid argument
  */
 int list_set_last(list me, void *const data)
 {
@@ -364,11 +364,11 @@ int list_set_last(list me, void *const data)
 /**
  * Gets the data at the first index in the doubly-linked list.
  *
- * @param data The data to get.
- * @param me   The list to get data from.
+ * @param data the data to get
+ * @param me   the doubly-linked list to get data from
  *
- * @return 0       No error.
- *         -EINVAL Invalid argument.
+ * @return 0       if no error
+ * @return -EINVAL if invalid argument
  */
 int list_get_first(void *const data, list me)
 {
@@ -378,12 +378,12 @@ int list_get_first(void *const data, list me)
 /**
  * Gets the data at the specified index in the doubly-linked list.
  *
- * @param data  The data to get.
- * @param me    The list to get data from.
- * @param index The index to get data from.
+ * @param data  the data to get
+ * @param me    the doubly-linked list to get data from
+ * @param index the index to get data from
  *
- * @return 0       No error.
- *         -EINVAL Invalid argument.
+ * @return 0       if no error
+ * @return -EINVAL if invalid argument
  */
 int list_get_at(void *const data, list me, const int index)
 {
@@ -398,11 +398,11 @@ int list_get_at(void *const data, list me, const int index)
 /**
  * Gets the data at the last index in the doubly-linked list.
  *
- * @param data The data to get.
- * @param me   The list to get data from.
+ * @param data the data to get
+ * @param me   the doubly-linked list to get data from
  *
- * @return 0       No error.
- *         -EINVAL Invalid argument.
+ * @return 0       if no error
+ * @return -EINVAL if invalid argument
  */
 int list_get_last(void *const data, list me)
 {
@@ -412,7 +412,7 @@ int list_get_last(void *const data, list me)
 /**
  * Clears all elements from the doubly-linked list.
  *
- * @param me The list to clear.
+ * @param me the doubly-linked list to clear
  */
 void list_clear(list me)
 {
@@ -431,7 +431,7 @@ void list_clear(list me)
 /**
  * Destroys the doubly-linked list.
  *
- * @param me The list to destroy.
+ * @param me the doubly-linked list to destroy
  *
  * @return NULL
  */

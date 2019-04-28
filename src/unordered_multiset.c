@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2018 Bailey Thompson
+ * Copyright (c) 2017-2019 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -55,23 +55,22 @@ static inline unsigned long unordered_multiset_hash(unordered_multiset me,
                                                     const void *const key)
 {
     unsigned long hash = me->hash(key);
-    hash ^= (hash >> 20) ^ (hash >> 12);
-    return hash ^ (hash >> 7) ^ (hash >> 4);
+    hash ^= (hash >> 20UL) ^ (hash >> 12UL);
+    return hash ^ (hash >> 7UL) ^ (hash >> 4UL);
 }
 
 /**
- * Initializes an unordered multi-set, which is a collection of keys, hashed by
- * keys.
+ * Initializes an unordered multi-set.
  *
- * @param key_size   The size of each key in the unordered multi-set. Must be
- *                   positive.
- * @param hash       The hash function which computes the hash from the key.
- *                   Must not be NULL.
- * @param comparator The comparator function which compares two keys. Must not
- *                   be NULL.
+ * @param key_size   the size of each key in the unordered multi-set; must be
+ *                   positive
+ * @param hash       the hash function which computes the hash from the key;
+ *                   must not be NULL
+ * @param comparator the comparator function which compares two keys; must not
+ *                   be NULL
  *
- * @return The newly-initialized unordered multi-set, or NULL if memory
- *         allocation error.
+ * @return the newly-initialized unordered multi-set, or NULL if memory
+ *         allocation error
  */
 unordered_multiset
 unordered_multiset_init(const size_t key_size,
@@ -123,10 +122,10 @@ static void unordered_multiset_add_item(unordered_multiset me,
  * Rehashes all the keys in the unordered multi-set. Used when storing
  * references and changing the keys. This should rarely be used.
  *
- * @param me The unordered multi-set to rehash.
+ * @param me the unordered multi-set to rehash
  *
- * @return 0       No error.
- *         -ENOMEM Out of memory.
+ * @return 0       if no error
+ * @return -ENOMEM if out of memory
  */
 int unordered_multiset_rehash(unordered_multiset me)
 {
@@ -152,9 +151,9 @@ int unordered_multiset_rehash(unordered_multiset me)
 /**
  * Gets the size of the unordered multi-set.
  *
- * @param me The unordered multi-set to check.
+ * @param me the unordered multi-set to check
  *
- * @return The size of the unordered multi-set.
+ * @return the size of the unordered multi-set
  */
 int unordered_multiset_size(unordered_multiset me)
 {
@@ -164,9 +163,9 @@ int unordered_multiset_size(unordered_multiset me)
 /**
  * Determines whether or not the unordered multi-set is empty.
  *
- * @param me The unordered multi-set to check.
+ * @param me the unordered multi-set to check
  *
- * @return If the unordered multi-set is empty.
+ * @return true if the unordered multi-set is empty
  */
 bool unordered_multiset_is_empty(unordered_multiset me)
 {
@@ -237,11 +236,11 @@ unordered_multiset_create_element(unordered_multiset me,
 /**
  * Adds an element to the unordered multi-set.
  *
- * @param me  The unordered multi-set to add to.
- * @param key The element to add.
+ * @param me  the unordered multi-set to add to
+ * @param key the element to add
  *
- * @return 0       No error.
- *         -ENOMEM Out of memory.
+ * @return 0       if no error
+ * @return -ENOMEM if out of memory
  */
 int unordered_multiset_put(unordered_multiset me, void *const key)
 {
@@ -284,10 +283,10 @@ int unordered_multiset_put(unordered_multiset me, void *const key)
 /**
  * Determines the count of a specific key in the unordered multi-set.
  *
- * @param me  The unordered multi-set to check for the count.
- * @param key The element to check.
+ * @param me  the unordered multi-set to check for the count
+ * @param key the element to check
  *
- * @return The count of a specific key in the unordered multi-set.
+ * @return the count of a specific key in the unordered multi-set
  */
 int unordered_multiset_count(unordered_multiset me, void *const key)
 {
@@ -306,10 +305,10 @@ int unordered_multiset_count(unordered_multiset me, void *const key)
 /**
  * Determines if the unordered multi-set contains the specified element.
  *
- * @param me  The unordered multi-set to check for the key.
- * @param key The key to check.
+ * @param me  the unordered multi-set to check for the key
+ * @param key the key to check
  *
- * @return If the unordered multi-set contained the key.
+ * @return true if the unordered multi-set contained the key
  */
 bool unordered_multiset_contains(unordered_multiset me, void *const key)
 {
@@ -319,10 +318,10 @@ bool unordered_multiset_contains(unordered_multiset me, void *const key)
 /**
  * Removes a key from the unordered multi-set if it contains it.
  *
- * @param me  The unordered multi-set to remove a key from.
- * @param key The key to remove.
+ * @param me  the unordered multi-set to remove a key from
+ * @param key the key to remove
  *
- * @return If the unordered multi-set contained the key.
+ * @return true if the unordered multi-set contained the key
  */
 bool unordered_multiset_remove(unordered_multiset me, void *const key)
 {
@@ -365,10 +364,10 @@ bool unordered_multiset_remove(unordered_multiset me, void *const key)
  * Removes all the keys specified by the key from an unordered multi-set if it
  * contains the key.
  *
- * @param me  The unordered multi-set to remove a key from.
- * @param key The key to remove.
+ * @param me  the unordered multi-set to remove a key from
+ * @param key the key to remove
  *
- * @return If the unordered multi-set contained the key.
+ * @return true if the unordered multi-set contained the key
  */
 bool unordered_multiset_remove_all(unordered_multiset me, void *const key)
 {
@@ -404,10 +403,10 @@ bool unordered_multiset_remove_all(unordered_multiset me, void *const key)
 /**
  * Clears the keys from the unordered multi-set.
  *
- * @param me The unordered multi-set to clear.
+ * @param me the unordered multi-set to clear
  *
- * @return 0       No error.
- *         -ENOMEM Out of memory.
+ * @return 0       if no error
+ * @return -ENOMEM if out of memory
  */
 int unordered_multiset_clear(unordered_multiset me)
 {
@@ -437,7 +436,7 @@ int unordered_multiset_clear(unordered_multiset me)
 /**
  * Frees the unordered multi-set memory.
  *
- * @param me The unordered multi-set to free from memory.
+ * @param me the unordered multi-set to free from memory
  *
  * @return NULL
  */

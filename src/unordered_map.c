@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2018 Bailey Thompson
+ * Copyright (c) 2017-2019 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -55,25 +55,24 @@ static inline unsigned long unordered_map_hash(unordered_map me,
                                                const void *const key)
 {
     unsigned long hash = me->hash(key);
-    hash ^= (hash >> 20) ^ (hash >> 12);
-    return hash ^ (hash >> 7) ^ (hash >> 4);
+    hash ^= (hash >> 20UL) ^ (hash >> 12UL);
+    return hash ^ (hash >> 7UL) ^ (hash >> 4UL);
 }
 
 /**
- * Initializes an unordered map, which is a collection of key-value pairs,
- * hashed by keys, keys are unique
+ * Initializes an unordered map.
  *
- * @param key_size   The size of each key in the unordered map. Must be
- *                   positive.
- * @param value_size The size of each value in the unordered map. Must be
- *                   positive.
- * @param hash       The hash function which computes the hash from the key.
- *                   Must not be NULL.
- * @param comparator The comparator function which compares two keys. Must not
- *                   be NULL.
+ * @param key_size   the size of each key in the unordered map; must be
+ *                   positive
+ * @param value_size the size of each value in the unordered map; must be
+ *                   positive
+ * @param hash       the hash function which computes the hash from the key;
+ *                   must not be NULL
+ * @param comparator the comparator function which compares two keys; must not
+ *                   be NULL
  *
- * @return The newly-initialized unordered map, or NULL if memory allocation
- *         error.
+ * @return the newly-initialized unordered map, or NULL if memory allocation
+ *         error
  */
 unordered_map unordered_map_init(const size_t key_size,
                                  const size_t value_size,
@@ -125,10 +124,10 @@ static void unordered_map_add_item(unordered_map me, struct node *const add)
  * Rehashes all the keys in the unordered map. Used when storing references and
  * changing the keys. This should rarely be used.
  *
- * @param me The unordered map to rehash.
+ * @param me the unordered map to rehash
  *
- * @return 0       No error.
- *         -ENOMEM Out of memory.
+ * @return 0       if no error
+ * @return -ENOMEM if out of memory
  */
 int unordered_map_rehash(unordered_map me)
 {
@@ -154,9 +153,9 @@ int unordered_map_rehash(unordered_map me)
 /**
  * Gets the size of the unordered map.
  *
- * @param me The unordered map to check.
+ * @param me the unordered map to check
  *
- * @return The size of the unordered map.
+ * @return the size of the unordered map
  */
 int unordered_map_size(unordered_map me)
 {
@@ -166,9 +165,9 @@ int unordered_map_size(unordered_map me)
 /**
  * Determines whether or not the unordered map is empty.
  *
- * @param me The unordered map to check.
+ * @param me the unordered map to check
  *
- * @return If the unordered map is empty.
+ * @return true if the unordered map is empty
  */
 bool unordered_map_is_empty(unordered_map me)
 {
@@ -246,12 +245,12 @@ static struct node *const unordered_map_create_element(unordered_map me,
  * Adds a key-value pair to the unordered map. If the unordered map already
  * contains the key, the value is updated to the new value.
  *
- * @param me    The unordered map to add to.
- * @param key   The key to add.
- * @param value The value to add.
+ * @param me    the unordered map to add to
+ * @param key   the key to add
+ * @param value the value to add
  *
- * @return 0       No error.
- *         -ENOMEM Out of memory.
+ * @return 0       if no error
+ * @return -ENOMEM if out of memory
  */
 int unordered_map_put(unordered_map me, void *const key, void *const value)
 {
@@ -291,11 +290,11 @@ int unordered_map_put(unordered_map me, void *const key, void *const value)
 /**
  * Gets the value associated with a key in the unordered map.
  *
- * @param value The value to copy to.
- * @param me    The unordered map to get from.
- * @param key   The key to search for.
+ * @param value the value to copy to
+ * @param me    the unordered map to get from
+ * @param key   the key to search for
  *
- * @return If the unordered map contained the key-value pair.
+ * @return true if the unordered map contained the key-value pair
  */
 bool unordered_map_get(void *const value, unordered_map me, void *const key)
 {
@@ -315,10 +314,10 @@ bool unordered_map_get(void *const value, unordered_map me, void *const key)
 /**
  * Determines if the unordered map contains the specified key.
  *
- * @param me  The unordered map to check for the key.
- * @param key The key to check.
+ * @param me  the unordered map to check for the key
+ * @param key the key to check
  *
- * @return If the unordered map contained the key.
+ * @return true if the unordered map contained the key
  */
 bool unordered_map_contains(unordered_map me, void *const key)
 {
@@ -337,10 +336,10 @@ bool unordered_map_contains(unordered_map me, void *const key)
 /**
  * Removes the key-value pair from the unordered map if it contains it.
  *
- * @param me  The unordered map to remove an key from.
- * @param key The key to remove.
+ * @param me  the unordered map to remove an key from
+ * @param key the key to remove
  *
- * @return If the unordered map contained the key.
+ * @return true if the unordered map contained the key
  */
 bool unordered_map_remove(unordered_map me, void *const key)
 {
@@ -376,10 +375,10 @@ bool unordered_map_remove(unordered_map me, void *const key)
 /**
  * Clears the key-value pairs from the unordered map.
  *
- * @param me The unordered map to clear.
+ * @param me the unordered map to clear
  *
- * @return 0       No error.
- *         -ENOMEM Out of memory.
+ * @return 0       if no error
+ * @return -ENOMEM if out of memory
  */
 int unordered_map_clear(unordered_map me)
 {
@@ -409,7 +408,7 @@ int unordered_map_clear(unordered_map me)
 /**
  * Frees the unordered map memory.
  *
- * @param me The unordered map to free from memory.
+ * @param me the unordered map to free from memory
  *
  * @return NULL
  */

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2018 Bailey Thompson
+ * Copyright (c) 2017-2019 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -43,15 +43,14 @@ struct node {
 };
 
 /**
- * Initializes a map, which is a collection of key-value pairs, sorted by keys,
- * keys are unique
+ * Initializes a map.
  *
- * @param key_size   The size of each key in the map. Must be positive.
- * @param value_size The size of each value in the map. Must be positive.
- * @param comparator The comparator function used for key ordering. Must not be
- *                   NULL.
+ * @param key_size   the size of each key in the map; must be positive
+ * @param value_size the size of each value in the map; must be positive
+ * @param comparator the comparator function used for key ordering; must not be
+ *                   NULL
  *
- * @return The newly-initialized map, or NULL if memory allocation error.
+ * @return the newly-initialized map, or NULL if memory allocation error
  */
 map map_init(const size_t key_size,
              const size_t value_size,
@@ -75,9 +74,9 @@ map map_init(const size_t key_size,
 /**
  * Gets the size of the map.
  *
- * @param me The map to check.
+ * @param me the map to check
  *
- * @return The size of the map.
+ * @return the size of the map
  */
 int map_size(map me)
 {
@@ -87,9 +86,9 @@ int map_size(map me)
 /**
  * Determines whether or not the map is empty.
  *
- * @param me The map to check.
+ * @param me the map to check
  *
- * @return If the map is empty.
+ * @return true if the map is empty
  */
 bool map_is_empty(map me)
 {
@@ -280,12 +279,12 @@ static struct node *map_create_node(map me,
  * Adds a key-value pair to the map. If the map already contains the key, the
  * value is updated to the new value.
  *
- * @param me    The map to add to.
- * @param key   The key to add.
- * @param value The value to add.
+ * @param me    the map to add to
+ * @param key   the key to add
+ * @param value the value to add
  *
- * @return 0       No error.
- *         -ENOMEM Out of memory.
+ * @return 0       if no error
+ * @return -ENOMEM if out of memory
  */
 int map_put(map me, void *const key, void *const value)
 {
@@ -363,11 +362,11 @@ static struct node *map_equal_match(map me, const void *const key)
 /**
  * Gets the value associated with a key in the map.
  *
- * @param value The value to copy to.
- * @param me    The map to get from.
- * @param key   The key to search for.
+ * @param value the value to copy to
+ * @param me    the map to get from
+ * @param key   the key to search for
  *
- * @return If the map contained the key-value pair.
+ * @return true if the map contained the key-value pair
  */
 bool map_get(void *const value, map me, void *const key)
 {
@@ -382,10 +381,10 @@ bool map_get(void *const value, map me, void *const key)
 /**
  * Determines if the map contains the specified key.
  *
- * @param me  The map to check for the element.
- * @param key The key to check.
+ * @param me  the map to check for the element
+ * @param key the key to check
  *
- * @return If the map contained the element.
+ * @return true if the map contained the element
  */
 bool map_contains(map me, void *const key)
 {
@@ -579,10 +578,10 @@ static void map_remove_element(map me, struct node *const traverse)
 /**
  * Removes the key-value pair from the map if it contains it.
  *
- * @param me  The map to remove an element from.
- * @param key The key to remove.
+ * @param me  the map to remove an element from
+ * @param key the key to remove
  *
- * @return If the map contained the key-value pair.
+ * @return true if the map contained the key-value pair
  */
 bool map_remove(map me, void *const key)
 {
@@ -597,7 +596,7 @@ bool map_remove(map me, void *const key)
 /**
  * Clears the key-value pairs from the map.
  *
- * @param me The map to clear.
+ * @param me the map to clear
  */
 void map_clear(map me)
 {
@@ -609,7 +608,7 @@ void map_clear(map me)
 /**
  * Frees the map memory.
  *
- * @param me The map to free from memory.
+ * @param me the map to free from memory
  *
  * @return NULL
  */
