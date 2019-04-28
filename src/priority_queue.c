@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2018 Bailey Thompson
+ * Copyright (c) 2017-2019 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -36,12 +36,12 @@ struct internal_priority_queue {
  * Initializes a priority queue, which adapts a container to provide priority
  * queue. Adapts the vector container.
  *
- * @param data_size  The size of the data in the priority queue. Must be
- *                   positive.
- * @param comparator The priority comparator function. Must not be NULL.
+ * @param data_size  the size of the data in the priority queue; must be
+ *                   positive
+ * @param comparator the priority comparator function; must not be NULL
  *
- * @return The newly-initialized priority queue, or NULL if memory allocation
- *         error.
+ * @return the newly-initialized priority queue, or NULL if memory allocation
+ *         error
  */
 priority_queue priority_queue_init(const size_t data_size,
                                    int (*comparator)(const void *const,
@@ -68,9 +68,9 @@ priority_queue priority_queue_init(const size_t data_size,
 /**
  * Gets the size of the priority queue.
  *
- * @param me The priority queue to check.
+ * @param me the priority queue to check
  *
- * @return The size of the priority queue.
+ * @return the size of the priority queue
  */
 int priority_queue_size(priority_queue me)
 {
@@ -80,9 +80,9 @@ int priority_queue_size(priority_queue me)
 /**
  * Determines whether or not the priority queue is empty.
  *
- * @param me The priority queue to check.
+ * @param me the priority queue to check
  *
- * @return If the priority queue is empty.
+ * @return true if the priority queue is empty
  */
 bool priority_queue_is_empty(priority_queue me)
 {
@@ -92,11 +92,11 @@ bool priority_queue_is_empty(priority_queue me)
 /**
  * Adds an element to the priority queue.
  *
- * @param me   The priority queue to add an element to.
- * @param data The data to add to the queue.
+ * @param me   the priority queue to add an element to
+ * @param data the data to add to the queue
  *
- * @return 0       No error.
- *         -ENOMEM Out of memory.
+ * @return 0       if no error
+ * @return -ENOMEM if out of memory
  */
 int priority_queue_push(priority_queue me, void *const data)
 {
@@ -130,10 +130,10 @@ int priority_queue_push(priority_queue me, void *const data)
 /**
  * Removes the highest priority element from the priority queue.
  *
- * @param data The data to have copied from the priority queue.
- * @param me   The priority queue to pop the next element from.
+ * @param data the data to have copied from the priority queue
+ * @param me   the priority queue to pop the next element from
  *
- * @return If the priority queue contained elements.
+ * @return true if the priority queue contained elements
  */
 bool priority_queue_pop(void *const data, priority_queue me)
 {
@@ -183,10 +183,11 @@ bool priority_queue_pop(void *const data, priority_queue me)
 /**
  * Gets the highest priority element in the priority queue.
  *
- * @param data Out copy of the highest priority element in the priority queue.
- * @param me   The priority queue to copy from.
+ * @param data the out copy of the highest priority element in the priority
+ *             queue
+ * @param me   the priority queue to copy from
  *
- * @return If the priority queue contained elements.
+ * @return true if the priority queue contained elements
  */
 bool priority_queue_front(void *const data, priority_queue me)
 {
@@ -196,10 +197,10 @@ bool priority_queue_front(void *const data, priority_queue me)
 /**
  * Clears the elements from the priority queue.
  *
- * @param me The priority queue to clear.
+ * @param me the priority queue to clear
  *
- * @return 0       No error.
- *         -ENOMEM Out of memory.
+ * @return 0       if no error
+ * @return -ENOMEM if out of memory
  */
 int priority_queue_clear(priority_queue me)
 {
@@ -209,7 +210,7 @@ int priority_queue_clear(priority_queue me)
 /**
  * Frees the priority queue memory.
  *
- * @param me The priority queue to free from memory.
+ * @param me the priority queue to free from memory
  *
  * @return NULL
  */

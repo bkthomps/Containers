@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2018 Bailey Thompson
+ * Copyright (c) 2017-2019 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -38,9 +38,9 @@ struct internal_vector {
 /**
  * Initializes a vector, which is a dynamic contiguous array.
  *
- * @param data_size The size of each element in the vector. Must be positive.
+ * @param data_size the size of each element in the vector; must be positive
  *
- * @return The newly-initialized vector, or NULL if memory allocation error.
+ * @return the newly-initialized vector, or NULL if memory allocation error
  */
 vector vector_init(const size_t data_size)
 {
@@ -65,9 +65,9 @@ vector vector_init(const size_t data_size)
 /**
  * Gets the size being used by the vector.
  *
- * @param me The vector to check.
+ * @param me the vector to check
  *
- * @return The size being used by the vector.
+ * @return the size being used by the vector
  */
 int vector_size(vector me)
 {
@@ -77,9 +77,9 @@ int vector_size(vector me)
 /**
  * Gets the capacity that the internal storage of the vector is using.
  *
- * @param me The vector to check.
+ * @param me the vector to check
  *
- * @return The capacity that the internal storage of the vector is using
+ * @return the capacity that the internal storage of the vector is using
  */
 int vector_capacity(vector me)
 {
@@ -89,9 +89,9 @@ int vector_capacity(vector me)
 /**
  * Determines whether or not the vector is empty.
  *
- * @param me The vector to check.
+ * @param me the vector to check
  *
- * @return If the vector is empty.
+ * @return true if the vector is empty
  */
 bool vector_is_empty(vector me)
 {
@@ -119,11 +119,11 @@ static int vector_set_space(vector me, const int size)
  * Reserves space specified. If more space than specified is already reserved,
  * then the previous space will be kept.
  *
- * @param me   The deque to reserve space for.
- * @param size The space to reserve.
+ * @param me   the vector to reserve space for
+ * @param size the space to reserve
  *
- * @return 0       No error.
- *         -ENOMEM Out of memory.
+ * @return 0       if no error
+ * @return -ENOMEM if out of memory
  */
 int vector_reserve(vector me, int size)
 {
@@ -136,10 +136,10 @@ int vector_reserve(vector me, int size)
 /**
  * Sets the size of the vector buffer to the current size being used.
  *
- * @param me   The vector to trim.
+ * @param me the vector to trim
  *
- * @return 0       No error.
- *         -ENOMEM Out of memory.
+ * @return 0       if no error
+ * @return -ENOMEM if out of memory
  */
 int vector_trim(vector me)
 {
@@ -147,10 +147,10 @@ int vector_trim(vector me)
 }
 
 /**
- * Copies the storage element of vector to an array.
+ * Copies the vector to an array.
  *
- * @param arr The array to copy to.
- * @param me  The vector to copy from.
+ * @param arr the initialized array to copy the vector to
+ * @param me  the vector to copy to the array
  */
 void vector_copy_to_array(void *const arr, vector me)
 {
@@ -163,9 +163,9 @@ void vector_copy_to_array(void *const arr, vector me)
  * operation may invalidate this data pointer. The vector owns the data pointer,
  * thus it must not be freed.
  *
- * @param me The vector to get the storage element from.
+ * @param me the vector to get the storage element from
  *
- * @return The storage element of the vector.
+ * @return the storage element of the vector
  */
 void *vector_get_data(vector me)
 {
@@ -175,11 +175,11 @@ void *vector_get_data(vector me)
 /**
  * Adds an element to the start of the vector.
  *
- * @param me   The vector to add to.
- * @param data The data to add to the vector.
+ * @param me   the vector to add to
+ * @param data the data to add to the vector
  *
- * @return 0       No error.
- *         -ENOMEM Out of memory.
+ * @return 0       if no error
+ * @return -ENOMEM if out of memory
  */
 int vector_add_first(vector me, void *const data)
 {
@@ -189,13 +189,13 @@ int vector_add_first(vector me, void *const data)
 /**
  * Adds an element to the location specified.
  *
- * @param me    The vector to add to.
- * @param index The location in the vector to add the data to.
- * @param data  The data to add to the vector.
+ * @param me    the vector to add to
+ * @param index the location in the vector to add the data to
+ * @param data  the data to add to the vector
  *
- * @return 0       No error.
- *         -ENOMEM Out of memory.
- *         -EINVAL Invalid argument.
+ * @return 0       if no error
+ * @return -ENOMEM if out of memory
+ * @return -EINVAL if invalid argument
  */
 int vector_add_at(vector me, const int index, void *const data)
 {
@@ -224,11 +224,11 @@ int vector_add_at(vector me, const int index, void *const data)
 /**
  * Adds an element to the end of the vector.
  *
- * @param me   The vector to add to.
- * @param data The data to add to the vector.
+ * @param me   the vector to add to
+ * @param data the data to add to the vector
  *
- * @return 0       No error.
- *         -ENOMEM Out of memory.
+ * @return 0       if no error
+ * @return -ENOMEM if out of memory
  */
 int vector_add_last(vector me, void *const data)
 {
@@ -246,10 +246,10 @@ static bool vector_is_illegal_input(vector me, const int index)
 /**
  * Removes the first element from the vector.
  *
- * @param me The vector to remove from.
+ * @param me the vector to remove from
  *
- * @return 0       No error.
- *         -EINVAL Invalid argument.
+ * @return 0       if no error
+ * @return -EINVAL if invalid argument
  */
 int vector_remove_first(vector me)
 {
@@ -259,11 +259,11 @@ int vector_remove_first(vector me)
 /**
  * Removes element based on its index.
  *
- * @param me    The vector to remove from.
- * @param index The location in the vector to remove the data from.
+ * @param me    the vector to remove from
+ * @param index the location in the vector to remove the data from
  *
- * @return 0       No error.
- *         -EINVAL Invalid argument.
+ * @return 0       if no error
+ * @return -EINVAL if invalid argument
  */
 int vector_remove_at(vector me, const int index)
 {
@@ -280,10 +280,10 @@ int vector_remove_at(vector me, const int index)
 /**
  * Removes the last element from the vector.
  *
- * @param me The vector to remove from.
+ * @param me the vector to remove from
  *
- * @return 0       No error.
- *         -EINVAL Invalid argument.
+ * @return 0       if no error
+ * @return -EINVAL if invalid argument
  */
 int vector_remove_last(vector me)
 {
@@ -297,10 +297,11 @@ int vector_remove_last(vector me)
 /**
  * Sets the data for the first element in the vector.
  *
- * @param me The vector to set data for.
+ * @param me   the vector to set data for
+ * @param data the data to set at the start of the vector
  *
- * @return 0       No error.
- *         -EINVAL Invalid argument.
+ * @return 0       if no error
+ * @return -EINVAL if invalid argument
  */
 int vector_set_first(vector me, void *const data)
 {
@@ -310,12 +311,12 @@ int vector_set_first(vector me, void *const data)
 /**
  * Sets the data for a specified element in the vector.
  *
- * @param me    The vector to set data for.
- * @param index The location to set data at in the vector.
- * @param data  The data to set at the location in the vector.
+ * @param me    the vector to set data for
+ * @param index the location to set data at in the vector
+ * @param data  the data to set at the location in the vector
  *
- * @return 0       No error.
- *         -EINVAL Invalid argument.
+ * @return 0       if no error
+ * @return -EINVAL if invalid argument
  */
 int vector_set_at(vector me, const int index, void *const data)
 {
@@ -329,10 +330,11 @@ int vector_set_at(vector me, const int index, void *const data)
 /**
  * Sets the data for the last element in the vector.
  *
- * @param me The vector to set data for.
+ * @param me   the vector to set data for
+ * @param data the data to set at the end of the vector
  *
- * @return 0       No error.
- *         -EINVAL Invalid argument.
+ * @return 0       if no error
+ * @return -EINVAL if invalid argument
  */
 int vector_set_last(vector me, void *const data)
 {
@@ -342,11 +344,11 @@ int vector_set_last(vector me, void *const data)
 /**
  * Copies the first element of the vector to data.
  *
- * @param data The data to copy to.
- * @param me   The vector to copy from.
+ * @param data the data to copy to
+ * @param me   the vector to copy from
  *
- * @return 0       No error.
- *         -EINVAL Invalid argument.
+ * @return 0       if no error
+ * @return -EINVAL if invalid argument
  */
 int vector_get_first(void *const data, vector me)
 {
@@ -356,12 +358,12 @@ int vector_get_first(void *const data, vector me)
 /**
  * Copies the element at index of the vector to data.
  *
- * @param data  The data to copy to.
- * @param me    The vector to copy from.
- * @param index The index to copy from in the vector.
+ * @param data  the data to copy to
+ * @param me    the vector to copy from
+ * @param index the index to copy from in the vector
  *
- * @return 0       No error.
- *         -EINVAL Invalid argument.
+ * @return 0       if no error
+ * @return -EINVAL if invalid argument
  */
 int vector_get_at(void *const data, vector me, const int index)
 {
@@ -375,11 +377,11 @@ int vector_get_at(void *const data, vector me, const int index)
 /**
  * Copies the last element of the vector to data.
  *
- * @param data The data to copy to.
- * @param me   The vector to copy from.
+ * @param data the data to copy to
+ * @param me   the vector to copy from
  *
- * @return 0       No error.
- *         -EINVAL Invalid argument.
+ * @return 0       if no error
+ * @return -EINVAL if invalid argument
  */
 int vector_get_last(void *const data, vector me)
 {
@@ -389,10 +391,10 @@ int vector_get_last(void *const data, vector me)
 /**
  * Clears the elements from the vector.
  *
- * @param me The vector to clear.
+ * @param me the vector to clear
  *
- * @return 0       No error.
- *         -ENOMEM Out of memory.
+ * @return 0       if no error
+ * @return -ENOMEM if out of memory
  */
 int vector_clear(vector me)
 {
@@ -404,7 +406,7 @@ int vector_clear(vector me)
 /**
  * Frees the vector memory.
  *
- * @param me The vector to free from memory.
+ * @param me the vector to free from memory
  *
  * @return NULL
  */

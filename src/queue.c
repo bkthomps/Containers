@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2018 Bailey Thompson
+ * Copyright (c) 2017-2019 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,9 +35,9 @@ struct internal_queue {
  * Initializes a queue, which adapts a container to provide queue
  * (first-in first-out). Adapts the deque container.
  *
- * @param data_size The size of each element. Must be positive.
+ * @param data_size the size of each element; must be positive
  *
- * @return The newly-initialized queue, or NULL if memory allocation error.
+ * @return the newly-initialized queue, or NULL if memory allocation error
  */
 queue queue_init(const size_t data_size)
 {
@@ -60,9 +60,9 @@ queue queue_init(const size_t data_size)
 /**
  * Determines the size of the queue.
  *
- * @param me The queue to get size of.
+ * @param me the queue to get size of
  *
- * @return The queue size.
+ * @return the queue size
  */
 int queue_size(queue me)
 {
@@ -73,9 +73,9 @@ int queue_size(queue me)
  * Determines if the queue is empty. The queue is empty if it contains no
  * elements.
  *
- * @param me The queue to check if empty.
+ * @param me the queue to check if empty
  *
- * @return If the queue is empty.
+ * @return true if the queue is empty
  */
 bool queue_is_empty(queue me)
 {
@@ -85,10 +85,10 @@ bool queue_is_empty(queue me)
 /**
  * Frees the unused memory in the queue.
  *
- * @param me The queue to trim.
+ * @param me the queue to trim
  *
- * @return 0       No error.
- *         -ENOMEM Out of memory.
+ * @return 0       if no error
+ * @return -ENOMEM if out of memory
  */
 int queue_trim(queue me)
 {
@@ -96,10 +96,10 @@ int queue_trim(queue me)
 }
 
 /**
- * Copies the queue to an array representation.
+ * Copies the queue to an array.
  *
- * @param arr The array to have copied from the queue.
- * @param me  The queue to copy to the array.
+ * @param arr the initialized array to copy the queue to
+ * @param me  the queue to copy to the array
  */
 void queue_copy_to_array(void *const arr, queue me)
 {
@@ -109,11 +109,11 @@ void queue_copy_to_array(void *const arr, queue me)
 /**
  * Adds an element to the queue.
  *
- * @param me   The queue to add an element to.
- * @param data The data to add to the queue.
+ * @param me   the queue to add an element to
+ * @param data the data to add to the queue
  *
- * @return 0       No error.
- *         -ENOMEM Out of memory.
+ * @return 0       if no error
+ * @return -ENOMEM if out of memory
  */
 int queue_push(queue me, void *const data)
 {
@@ -123,10 +123,10 @@ int queue_push(queue me, void *const data)
 /**
  * Removes the next element in the queue and copies the data.
  *
- * @param data The data to have copied from the queue.
- * @param me   The queue to pop the next element from.
+ * @param data the data to have copied from the queue
+ * @param me   the queue to pop the next element from
  *
- * @return If the queue contained elements.
+ * @return true if the queue contained elements
  */
 bool queue_pop(void *const data, queue me)
 {
@@ -141,10 +141,10 @@ bool queue_pop(void *const data, queue me)
 /**
  * Gets the front element of the queue.
  *
- * @param data Copies the front element of the queue.
- * @param me   The queue to copy from.
+ * @param data the copy of the front element of the queue
+ * @param me   the queue to copy from
  *
- * @return If the queue contained elements.
+ * @return true if the queue contained elements
  */
 bool queue_front(void *const data, queue me)
 {
@@ -154,10 +154,10 @@ bool queue_front(void *const data, queue me)
 /**
  * Gets the back element of the queue.
  *
- * @param data Copies the back element of the queue.
- * @param me   The queue to copy from.
+ * @param data the copy of the back element of the queue
+ * @param me   the queue to copy from
  *
- * @return If the queue contained elements.
+ * @return true if the queue contained elements
  */
 bool queue_back(void *const data, queue me)
 {
@@ -167,10 +167,10 @@ bool queue_back(void *const data, queue me)
 /**
  * Clears the queue and sets it to the original state from initialization.
  *
- * @param me The queue to clear.
+ * @param me the queue to clear
  *
- * @return 0       No error.
- *         -ENOMEM Out of memory.
+ * @return 0       if no error
+ * @return -ENOMEM if out of memory
  */
 int queue_clear(queue me)
 {
@@ -180,7 +180,7 @@ int queue_clear(queue me)
 /**
  * Destroys the queue.
  *
- * @param me The queue to destroy.
+ * @param me the queue to destroy
  *
  * @return NULL
  */

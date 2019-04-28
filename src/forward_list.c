@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2018 Bailey Thompson
+ * Copyright (c) 2017-2019 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,10 +39,10 @@ struct node {
 /**
  * Initializes a singly-linked list.
  *
- * @param data_size The size of data to store. Must be positive.
+ * @param data_size the size of data to store; must be positive
  *
- * @return The newly-initialized singly-linked list, or NULL if memory
- *         allocation error.
+ * @return the newly-initialized singly-linked list, or NULL if memory
+ *         allocation error
  */
 forward_list forward_list_init(const size_t data_size)
 {
@@ -63,9 +63,9 @@ forward_list forward_list_init(const size_t data_size)
 /**
  * Gets the amount of elements in the singly-linked list.
  *
- * @param me The singly-linked list to check.
+ * @param me the singly-linked list to check
  *
- * @return The amount of elements.
+ * @return the amount of elements
  */
 int forward_list_size(forward_list me)
 {
@@ -75,9 +75,9 @@ int forward_list_size(forward_list me)
 /**
  * Determines if the singly-linked list is empty.
  *
- * @param me The singly-linked list to check.
+ * @param me the singly-linked list to check
  *
- * @return If the list is empty.
+ * @return true if the singly-linked list is empty
  */
 bool forward_list_is_empty(forward_list me)
 {
@@ -87,8 +87,8 @@ bool forward_list_is_empty(forward_list me)
 /**
  * Copies the nodes of the singly-linked list to an array.
  *
- * @param arr The array to copy the list to.
- * @param me  The list to copy to the array.
+ * @param arr the initialized array to copy the singly-linked list to
+ * @param me  the singly-linked list to copy to the array
  */
 void forward_list_copy_to_array(void *const arr, forward_list me)
 {
@@ -116,11 +116,11 @@ static struct node *forward_list_get_node_at(forward_list me, const int index)
 /**
  * Adds data at the first index in the singly-linked list.
  *
- * @param me   The list to add data to.
- * @param data The data to add to the list.
+ * @param me   the singly-linked list to add data to
+ * @param data the data to add to the singly-linked list
  *
- * @return 0       No error.
- *         -ENOMEM Out of memory.
+ * @return 0       if no error
+ * @return -ENOMEM if out of memory
  */
 int forward_list_add_first(forward_list me, void *const data)
 {
@@ -130,13 +130,13 @@ int forward_list_add_first(forward_list me, void *const data)
 /**
  * Adds data at a specified index in the singly-linked list.
  *
- * @param me    The list to add data to.
- * @param index The index to add the data at.
- * @param data  The data to add to the list.
+ * @param me    the singly-linked list to add data to
+ * @param index the index to add the data at
+ * @param data  the data to add to the singly-linked list
  *
- * @return 0       No error.
- *         -ENOMEM Out of memory.
- *         -EINVAL Invalid argument.
+ * @return 0       if no error
+ * @return -ENOMEM if out of memory
+ * @return -EINVAL if invalid argument
  */
 int forward_list_add_at(forward_list me, const int index, void *const data)
 {
@@ -168,11 +168,11 @@ int forward_list_add_at(forward_list me, const int index, void *const data)
 /**
  * Adds data at the last index in the singly-linked list.
  *
- * @param me   The list to add data to.
- * @param data The data to add to the list.
+ * @param me   the singly-linked list to add data to
+ * @param data the data to add to the singly-linked list
  *
- * @return 0       No error.
- *         -ENOMEM Out of memory.
+ * @return 0       if no error
+ * @return -ENOMEM if out of memory
  */
 int forward_list_add_last(forward_list me, void *const data)
 {
@@ -190,10 +190,10 @@ static bool forward_list_is_illegal_input(forward_list me, const int index)
 /**
  * Removes the first piece of data from the singly-linked list.
  *
- * @param me The list to remove data from.
+ * @param me the singly-linked list to remove data from
  *
- * @return 0       No error.
- *         -EINVAL Invalid argument.
+ * @return 0       if no error
+ * @return -EINVAL if invalid argument
  */
 int forward_list_remove_first(forward_list me)
 {
@@ -203,11 +203,11 @@ int forward_list_remove_first(forward_list me)
 /**
  * Removes data from the singly-linked list at the specified index.
  *
- * @param me    The list to remove data from.
- * @param index The index to remove from.
+ * @param me    the singly-linked list to remove data from
+ * @param index the index to remove from
  *
- * @return 0       No error.
- *         -EINVAL Invalid argument.
+ * @return 0       if no error
+ * @return -EINVAL if invalid argument
  */
 int forward_list_remove_at(forward_list me, const int index)
 {
@@ -238,10 +238,10 @@ int forward_list_remove_at(forward_list me, const int index)
 /**
  * Removes the last piece of data from the singly-linked list.
  *
- * @param me The list to remove data from.
+ * @param me the singly-linked list to remove data from
  *
- * @return 0       No error.
- *         -EINVAL Invalid argument.
+ * @return 0       if no error
+ * @return -EINVAL if invalid argument
  */
 int forward_list_remove_last(forward_list me)
 {
@@ -251,11 +251,11 @@ int forward_list_remove_last(forward_list me)
 /**
  * Sets the data at the first index in the singly-linked list.
  *
- * @param me   The list to set data for.
- * @param data The data to set in the list.
+ * @param me   the singly-linked list to set data for
+ * @param data the data to set in the singly-linked list
  *
- * @return 0       No error.
- *         -EINVAL Invalid argument.
+ * @return 0       if no error
+ * @return -EINVAL if invalid argument
  */
 int forward_list_set_first(forward_list me, void *const data)
 {
@@ -265,12 +265,12 @@ int forward_list_set_first(forward_list me, void *const data)
 /**
  * Sets the data at the specified index in the singly-linked list.
  *
- * @param me    The list to set data for.
- * @param index The index to set data in the list.
- * @param data  The data to set in the list.
+ * @param me    the singly-linked list to set data for
+ * @param index the index to set data in the singly-linked list
+ * @param data  the data to set in the singly-linked list
  *
- * @return 0       No error.
- *         -EINVAL Invalid argument.
+ * @return 0       if no error
+ * @return -EINVAL if invalid argument
  */
 int forward_list_set_at(forward_list me, const int index, void *const data)
 {
@@ -285,11 +285,11 @@ int forward_list_set_at(forward_list me, const int index, void *const data)
 /**
  * Sets the data at the last index in the singly-linked list.
  *
- * @param me   The list to set data for.
- * @param data The data to set in the list.
+ * @param me   the singly-linked list to set data for
+ * @param data the data to set in the singly-linked list
  *
- * @return 0       No error.
- *         -EINVAL Invalid argument.
+ * @return 0       if no error
+ * @return -EINVAL if invalid argument
  */
 int forward_list_set_last(forward_list me, void *const data)
 {
@@ -299,11 +299,11 @@ int forward_list_set_last(forward_list me, void *const data)
 /**
  * Gets the data at the first index in the singly-linked list.
  *
- * @param data The data to get.
- * @param me   The list to get data from.
+ * @param data the data to get
+ * @param me   the singly-linked list to get data from
  *
- * @return 0       No error.
- *         -EINVAL Invalid argument.
+ * @return 0       if no error
+ * @return -EINVAL if invalid argument
  */
 int forward_list_get_first(void *const data, forward_list me)
 {
@@ -313,12 +313,12 @@ int forward_list_get_first(void *const data, forward_list me)
 /**
  * Gets the data at the specified index in the singly-linked list.
  *
- * @param data  The data to get.
- * @param me    The list to get data from.
- * @param index The index to get data from.
+ * @param data  the data to get
+ * @param me    the singly-linked list to get data from
+ * @param index the index to get data from
  *
- * @return 0       No error.
- *         -EINVAL Invalid argument.
+ * @return 0       if no error
+ * @return -EINVAL if invalid argument
  */
 int forward_list_get_at(void *const data, forward_list me, const int index)
 {
@@ -333,11 +333,11 @@ int forward_list_get_at(void *const data, forward_list me, const int index)
 /**
  * Gets the data at the last index in the singly-linked list.
  *
- * @param data The data to get.
- * @param me   The list to get data from.
+ * @param data the data to get
+ * @param me   the singly-linked list to get data from
  *
- * @return 0       No error.
- *         -EINVAL Invalid argument.
+ * @return 0       if no error
+ * @return -EINVAL if invalid argument
  */
 int forward_list_get_last(void *const data, forward_list me)
 {
@@ -347,7 +347,7 @@ int forward_list_get_last(void *const data, forward_list me)
 /**
  * Clears all elements from the singly-linked list.
  *
- * @param me The list to clear.
+ * @param me the singly-linked list to clear
  */
 void forward_list_clear(forward_list me)
 {
@@ -365,7 +365,7 @@ void forward_list_clear(forward_list me)
 /**
  * Destroys the singly-linked list.
  *
- * @param me The list to destroy.
+ * @param me the singly-linked list to destroy
  *
  * @return NULL
  */

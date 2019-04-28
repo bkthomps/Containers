@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2018 Bailey Thompson
+ * Copyright (c) 2017-2019 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -43,11 +43,11 @@ struct node {
 /**
  * Initializes a set, which is a collection of unique keys, sorted by keys.
  *
- * @param key_size   The size of each element in the set. Must be positive.
- * @param comparator The comparator function used for key ordering. Must not be
- *                   NULL.
+ * @param key_size   the size of each element in the set; must be positive
+ * @param comparator the comparator function used for key ordering; must not be
+ *                   NULL
  *
- * @return The newly-initialized set, or NULL if memory allocation error.
+ * @return the newly-initialized set, or NULL if memory allocation error
  */
 set set_init(const size_t key_size,
              int (*const comparator)(const void *const, const void *const))
@@ -69,9 +69,9 @@ set set_init(const size_t key_size,
 /**
  * Gets the size of the set.
  *
- * @param me The set to check.
+ * @param me the set to check
  *
- * @return The size of the set.
+ * @return the size of the set
  */
 int set_size(set me)
 {
@@ -81,9 +81,9 @@ int set_size(set me)
 /**
  * Determines whether or not the set is empty.
  *
- * @param me The set to check.
+ * @param me the set to check
  *
- * @return If the set is empty.
+ * @return true if the set is empty
  */
 bool set_is_empty(set me)
 {
@@ -265,11 +265,11 @@ static struct node *set_create_node(set me,
 /**
  * Adds a key to the set if the set does not already contain it.
  *
- * @param me  The set to add to.
- * @param key The key to add.
+ * @param me  the set to add to
+ * @param key the key to add
  *
- * @return 0       No error.
- *         -ENOMEM Out of memory.
+ * @return 0       if no error
+ * @return -ENOMEM if out of memory
  */
 int set_put(set me, void *const key)
 {
@@ -346,10 +346,10 @@ static struct node *set_equal_match(set me, const void *const key)
 /**
  * Determines if the set contains the specified key.
  *
- * @param me  The set to check for the key.
- * @param key The key to check.
+ * @param me  the set to check for the key
+ * @param key the key to check
  *
- * @return If the set contained the key.
+ * @return true if the set contained the key
  */
 bool set_contains(set me, void *const key)
 {
@@ -542,10 +542,10 @@ static void set_remove_element(set me, struct node *const traverse)
 /**
  * Removes the key from the set if it contains it.
  *
- * @param me  The set to remove an key from.
- * @param key The key to remove.
+ * @param me  the set to remove an key from
+ * @param key the key to remove
  *
- * @return If the set contained the key.
+ * @return true if the set contained the key
  */
 bool set_remove(set me, void *const key)
 {
@@ -560,7 +560,7 @@ bool set_remove(set me, void *const key)
 /**
  * Clears the keys from the set.
  *
- * @param me The set to clear.
+ * @param me the set to clear
  */
 void set_clear(set me)
 {
@@ -572,7 +572,7 @@ void set_clear(set me)
 /**
  * Frees the set memory.
  *
- * @param me The set to free from memory.
+ * @param me the set to free from memory
  *
  * @return NULL
  */

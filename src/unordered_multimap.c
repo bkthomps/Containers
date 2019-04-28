@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2018 Bailey Thompson
+ * Copyright (c) 2017-2019 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -59,27 +59,27 @@ static inline unsigned long unordered_multimap_hash(unordered_multimap me,
                                                     const void *const key)
 {
     unsigned long hash = me->hash(key);
-    hash ^= (hash >> 20) ^ (hash >> 12);
-    return hash ^ (hash >> 7) ^ (hash >> 4);
+    hash ^= (hash >> 20UL) ^ (hash >> 12UL);
+    return hash ^ (hash >> 7UL) ^ (hash >> 4UL);
 }
 
 /**
  * Initializes an unordered multi-map, which is a collection of key-value pairs,
  * hashed by keys
  *
- * @param key_size         The size of each key in the unordered multi-map. Must
- *                         be positive.
- * @param value_size       The size of each value in the unordered multi-map.
- *                         Must be positive.
- * @param hash             The hash function which computes the hash from key.
- *                         Must not be NULL.
- * @param key_comparator   The comparator function which compares two keys.
- *                         Must not be NULL.
- * @param value_comparator The comparator function which compares two values.
- *                         Must not be NULL.
+ * @param key_size         the size of each key in the unordered multi-map; must
+ *                         be positive
+ * @param value_size       the size of each value in the unordered multi-map;
+ *                         must be positive
+ * @param hash             the hash function which computes the hash from key;
+ *                         must not be NULL
+ * @param key_comparator   the comparator function which compares two keys; must
+ *                         not be NULL
+ * @param value_comparator the comparator function which compares two values;
+ *                         must not be NULL
  *
- * @return The newly-initialized unordered multi-map, or NULL if memory
- *         allocation error.
+ * @return the newly-initialized unordered multi-map, or NULL if memory
+ *         allocation error
  */
 unordered_multimap
 unordered_multimap_init(const size_t key_size,
@@ -145,10 +145,10 @@ static void unordered_multimap_add_item(unordered_multimap me,
  * Rehashes all the keys in the unordered multi-map. Used when storing
  * references and changing the keys. This should rarely be used.
  *
- * @param me The unordered multi-map to rehash.
+ * @param me the unordered multi-map to rehash
  *
- * @return 0       No error.
- *         -ENOMEM Out of memory.
+ * @return 0       if no error
+ * @return -ENOMEM if out of memory
  */
 int unordered_multimap_rehash(unordered_multimap me)
 {
@@ -174,9 +174,9 @@ int unordered_multimap_rehash(unordered_multimap me)
 /**
  * Gets the size of the unordered multi-map.
  *
- * @param me The unordered multi-map to check.
+ * @param me the unordered multi-map to check
  *
- * @return The size of the unordered multi-map.
+ * @return the size of the unordered multi-map
  */
 int unordered_multimap_size(unordered_multimap me)
 {
@@ -186,9 +186,9 @@ int unordered_multimap_size(unordered_multimap me)
 /**
  * Determines whether or not the unordered multi-map is empty.
  *
- * @param me The unordered multi-map to check.
+ * @param me the unordered multi-map to check
  *
- * @return If the unordered multi-map is empty.
+ * @return true if the unordered multi-map is empty
  */
 bool unordered_multimap_is_empty(unordered_multimap me)
 {
@@ -266,12 +266,12 @@ unordered_multimap_create_element(unordered_multimap me,
 /**
  * Adds a key-value pair to the unordered multi-map.
  *
- * @param me    The unordered multi-map to add to.
- * @param key   The key to add.
- * @param value The value to add.
+ * @param me    the unordered multi-map to add to
+ * @param key   the key to add
+ * @param value the value to add
  *
- * @return 0       No error.
- *         -ENOMEM Out of memory.
+ * @return 0       if no error
+ * @return -ENOMEM if out of memory
  */
 int unordered_multimap_put(unordered_multimap me,
                            void *const key,
@@ -308,8 +308,8 @@ int unordered_multimap_put(unordered_multimap me,
  * getting the next value. Between starting and iterations, the unordered
  * multi-map must not be mutated.
  *
- * @param me  The unordered multi-map to start the iterator for.
- * @param key The key to start the iterator for.
+ * @param me  the unordered multi-map to start the iterator for
+ * @param key the key to start the iterator for
  */
 void unordered_multimap_get_start(unordered_multimap me, void *const key)
 {
@@ -332,11 +332,11 @@ void unordered_multimap_get_start(unordered_multimap me, void *const key)
  * the iterator. The unordered multi-map must not be mutated between start and
  * iterations.
  *
- * @param value The value to be copied to from iteration.
- * @param me    The unordered multi-map to iterate over.
+ * @param value the value to be copied to from iteration
+ * @param me    the unordered multi-map to iterate over
  *
- * @return If there exist no more values for the key which is being iterated
- *         over.
+ * @return true if there exist no more values for the key which is being
+ *         iterated over
  */
 bool unordered_multimap_get_next(void *const value, unordered_multimap me)
 {
@@ -362,10 +362,10 @@ bool unordered_multimap_get_next(void *const value, unordered_multimap me)
 /**
  * Determines the amount of times the key appears in the unordered multi-map.
  *
- * @param me  The unordered multi-map to check for the key.
- * @param key The key to check.
+ * @param me  the unordered multi-map to check for the key
+ * @param key the key to check
  *
- * @return The amount of times the key appears in the unordered multi-map.
+ * @return the amount of times the key appears in the unordered multi-map
  */
 int unordered_multimap_count(unordered_multimap me, void *const key)
 {
@@ -385,10 +385,10 @@ int unordered_multimap_count(unordered_multimap me, void *const key)
 /**
  * Determines if the unordered multi-map contains the specified key.
  *
- * @param me  The unordered multi-map to check for the key.
- * @param key The key to check.
+ * @param me  the unordered multi-map to check for the key
+ * @param key the key to check
  *
- * @return If the unordered multi-map contained the key.
+ * @return true if the unordered multi-map contained the key
  */
 bool unordered_multimap_contains(unordered_multimap me, void *const key)
 {
@@ -407,11 +407,11 @@ bool unordered_multimap_contains(unordered_multimap me, void *const key)
 /**
  * Removes the key-value pair from the unordered multi-map if it contains it.
  *
- * @param me    The unordered multi-map to remove an key from.
- * @param key   The key to remove.
- * @param value The value to remove.
+ * @param me    the unordered multi-map to remove an key from
+ * @param key   the key to remove
+ * @param value the value to remove
  *
- * @return If the unordered multi-map contained the key.
+ * @return true if the unordered multi-map contained the key
  */
 bool unordered_multimap_remove(unordered_multimap me,
                                void *const key,
@@ -453,10 +453,10 @@ bool unordered_multimap_remove(unordered_multimap me,
  * Removes all the key-value pairs from the unordered multi-map specified by the
  * key.
  *
- * @param me  The unordered multi-map to remove a key-value pair from.
- * @param key The key to remove.
+ * @param me  the unordered multi-map to remove a key-value pair from
+ * @param key the key to remove
  *
- * @return If the unordered multi-map contained the key.
+ * @return true if the unordered multi-map contained the key
  */
 bool unordered_multimap_remove_all(unordered_multimap me, void *const key)
 {
@@ -498,10 +498,10 @@ bool unordered_multimap_remove_all(unordered_multimap me, void *const key)
 /**
  * Clears the key-value pairs from the unordered multi-map.
  *
- * @param me The unordered multi-map to clear.
+ * @param me the unordered multi-map to clear
  *
- * @return 0       No error.
- *         -ENOMEM Out of memory.
+ * @return 0       if no error
+ * @return -ENOMEM if out of memory
  */
 int unordered_multimap_clear(unordered_multimap me)
 {
@@ -531,7 +531,7 @@ int unordered_multimap_clear(unordered_multimap me)
 /**
  * Frees the unordered multi-map memory.
  *
- * @param me The unordered multi-map to free from memory.
+ * @param me the unordered multi-map to free from memory
  *
  * @return NULL
  */

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2018 Bailey Thompson
+ * Copyright (c) 2017-2019 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -43,9 +43,9 @@ struct node {
 /**
  * Initializes a deque, which is a doubly-ended queue.
  *
- * @param data_size The size of each element in the deque. Must be positive.
+ * @param data_size the size of each element in the deque; must be positive
  *
- * @return The newly-initialized deque, or NULL if memory allocation error.
+ * @return the newly-initialized deque, or NULL if memory allocation error
  */
 deque deque_init(const size_t data_size)
 {
@@ -80,9 +80,9 @@ deque deque_init(const size_t data_size)
  * used. The size starts at zero, and every time an element is added, it
  * increases by one.
  *
- * @param me The deque to check size of.
+ * @param me the deque to check size of
  *
- * @return The size of the deque.
+ * @return the size of the deque
  */
 int deque_size(deque me)
 {
@@ -92,9 +92,9 @@ int deque_size(deque me)
 /**
  * Determines if the deque is empty. It is empty if it has no elements.
  *
- * @param me The deque to check if empty.
+ * @param me the deque to check if empty
  *
- * @return If empty.
+ * @return true if empty
  */
 bool deque_is_empty(deque me)
 {
@@ -105,10 +105,10 @@ bool deque_is_empty(deque me)
  * Trims the deque so that it does not use memory which does not need to be
  * used.
  *
- * @param me The deque to trim.
+ * @param me the deque to trim
  *
- * @return 0       No error.
- *         -ENOMEM Out of memory.
+ * @return 0       if no error
+ * @return -ENOMEM if out of memory
  */
 int deque_trim(deque me)
 {
@@ -139,10 +139,10 @@ int deque_trim(deque me)
 }
 
 /**
- * Copies the deque to an array representation.
+ * Copies the deque to an array.
  *
- * @param arr The array to copy the deque to.
- * @param me  The deque to copy from.
+ * @param arr the initialized array to copy the deque to
+ * @param me  the deque to copy to the array
  */
 void deque_copy_to_array(void *const arr, deque me)
 {
@@ -154,11 +154,11 @@ void deque_copy_to_array(void *const arr, deque me)
 /**
  * Adds an element to the front of the deque.
  *
- * @param me   The deque to add an element to.
- * @param data The element to add.
+ * @param me   the deque to add an element to
+ * @param data the element to add
  *
- * @return 0       No error.
- *         -ENOMEM Out of memory.
+ * @return 0       if no error
+ * @return -ENOMEM if out of memory
  */
 int deque_push_front(deque me, void *const data)
 {
@@ -209,11 +209,11 @@ int deque_push_front(deque me, void *const data)
 /**
  * Adds an element to the back of the deque.
  *
- * @param me   The deque to add an element to.
- * @param data The element to add.
+ * @param me   the deque to add an element to
+ * @param data the element to add
  *
- * @return 0       No error.
- *         -ENOMEM Out of memory.
+ * @return 0       if no error
+ * @return -ENOMEM if out of memory
  */
 int deque_push_back(deque me, void *const data)
 {
@@ -252,11 +252,11 @@ int deque_push_back(deque me, void *const data)
 /**
  * Removes the front element from the deque and copies it to a data value.
  *
- * @param data The value to copy to.
- * @param me   The deque to remove from.
+ * @param data the value to copy to
+ * @param me   the deque to remove from
  *
- * @return 0       No error.
- *         -EINVAL Invalid argument.
+ * @return 0       if no error
+ * @return -EINVAL if invalid argument
  */
 int deque_pop_front(void *const data, deque me)
 {
@@ -274,11 +274,11 @@ int deque_pop_front(void *const data, deque me)
 /**
  * Removes the back element from the deque and copies it to a data value.
  *
- * @param data The value to copy to.
- * @param me   The deque to remove from.
+ * @param data the value to copy to
+ * @param me   the deque to remove from
  *
- * @return 0       No error.
- *         -EINVAL Invalid argument.
+ * @return 0       if no error
+ * @return -EINVAL if invalid argument
  */
 int deque_pop_back(void *const data, deque me)
 {
@@ -296,11 +296,11 @@ int deque_pop_back(void *const data, deque me)
 /**
  * Sets the first value of the deque.
  *
- * @param me   The deque to set value of.
- * @param data The data to set.
+ * @param me   the deque to set value of
+ * @param data the data to set
  *
- * @return 0       No error.
- *         -EINVAL Invalid argument.
+ * @return 0       if no error
+ * @return -EINVAL if invalid argument
  */
 int deque_set_first(deque me, void *const data)
 {
@@ -310,12 +310,12 @@ int deque_set_first(deque me, void *const data)
 /**
  * Sets the value of the deque at the specified index.
  *
- * @param me    The deque to set value of.
- * @param index The index to set at.
- * @param data  The data to set.
+ * @param me    the deque to set value of
+ * @param index the index to set at
+ * @param data  the data to set
  *
- * @return 0       No error.
- *         -EINVAL Invalid argument.
+ * @return 0       if no error
+ * @return -EINVAL if invalid argument
  */
 int deque_set_at(deque me, int index, void *const data)
 {
@@ -333,11 +333,11 @@ int deque_set_at(deque me, int index, void *const data)
 /**
  * Sets the last value of the deque.
  *
- * @param me   The deque to set value of.
- * @param data The data to set.
+ * @param me   the deque to set value of
+ * @param data the data to set
  *
- * @return 0       No error.
- *         -EINVAL Invalid argument.
+ * @return 0       if no error
+ * @return -EINVAL if invalid argument
  */
 int deque_set_last(deque me, void *const data)
 {
@@ -347,11 +347,11 @@ int deque_set_last(deque me, void *const data)
 /**
  * Gets the first value of the deque.
  *
- * @param data The data to set.
- * @param me   The deque to set value of.
+ * @param data the data to set
+ * @param me   the deque to set value of
  *
- * @return 0       No error.
- *         -EINVAL Invalid argument.
+ * @return 0       if no error
+ * @return -EINVAL if invalid argument
  */
 int deque_get_first(void *const data, deque me)
 {
@@ -361,12 +361,12 @@ int deque_get_first(void *const data, deque me)
 /**
  * Gets the value of the deque at the specified index.
  *
- * @param data  The data to set.
- * @param me    The deque to set value of.
- * @param index The index to set at.
+ * @param data  the data to set
+ * @param me    the deque to set value of
+ * @param index the index to set at
  *
- * @return 0       No error.
- *         -EINVAL Invalid argument.
+ * @return 0       if no error
+ * @return -EINVAL if invalid argument
  */
 int deque_get_at(void *const data, deque me, int index)
 {
@@ -384,11 +384,11 @@ int deque_get_at(void *const data, deque me, int index)
 /**
  * Gets the last value of the deque.
  *
- * @param data The data to set.
- * @param me   The deque to set value of.
+ * @param data the data to set
+ * @param me   the deque to set value of
  *
- * @return 0       No error.
- *         -EINVAL Invalid argument.
+ * @return 0       if no error
+ * @return -EINVAL if invalid argument
  */
 int deque_get_last(void *const data, deque me)
 {
@@ -398,10 +398,10 @@ int deque_get_last(void *const data, deque me)
 /**
  * Clears the deque and sets it to the original state from initialization.
  *
- * @param me The deque to clear.
+ * @param me the deque to clear
  *
- * @return 0       No error.
- *         -ENOMEM Out of memory.
+ * @return 0       if no error
+ * @return -ENOMEM if out of memory
  */
 int deque_clear(deque me)
 {
@@ -431,7 +431,7 @@ int deque_clear(deque me)
 /**
  * Destroys the deque.
  *
- * @param me The deque to destroy.
+ * @param me the deque to destroy
  *
  * @return NULL
  */
