@@ -14,7 +14,7 @@
 # paths will be considered relative to the root of the repository, not the
 # location of the DOXYFILE.
 
-DOXYFILE = ./
+DOXYFILE = Doxyfile
 
 # Specify external repository to link documentation with.
 # This is similar to Doxygen's TAGFILES option, but will automatically link to
@@ -24,7 +24,7 @@ DOXYFILE = ./
 #   TAGLINKS = doxygen/doxygen CodeDocs/osg
 # Note: these repositories must already be built on CodeDocs.
 
-TAGLINKS = bkthomps/Containers
+TAGLINKS =
 
 #---------------------------------------------------------------------------
 # Doxygen Configuration
