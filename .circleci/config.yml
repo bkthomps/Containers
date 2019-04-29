@@ -8,7 +8,7 @@ jobs:
       - run: cmake -DCMAKE_BUILD_TYPE=coverage -G "CodeBlocks - Unix Makefiles" .
       - run: cmake --build . --target Containers -- -j 2
       - run: ./Containers
-      - bash <(curl -s https://codecov.io/bash)
+      - run: bash <(curl -s https://codecov.io/bash)
 workflows:
   version: 2
   build_and_test:
