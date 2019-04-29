@@ -20,7 +20,6 @@
  * SOFTWARE.
  */
 
-#include <stdlib.h>
 #include <memory.h>
 #include <errno.h>
 #include "vector.h"

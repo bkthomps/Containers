@@ -24,6 +24,7 @@
 #define CONTAINERS_FORWARD_LIST_H
 
 #include <stdbool.h>
+#include <stdlib.h>
 
 /**
  * The forward_list data structure, which is a singly-linked list.

@@ -24,6 +24,7 @@
 #define CONTAINERS_UNORDERED_MULTIMAP_H
 
 #include <stdbool.h>
+#include <stdlib.h>
 
 /**
  * The unordered_multimap data structure, which is a collection of key-value

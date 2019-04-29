@@ -24,6 +24,7 @@
 #define CONTAINERS_STACK_H
 
 #include <stdbool.h>
+#include <stdlib.h>
 
 /**
  * The stack data structure, which adapts a container to provide a stack

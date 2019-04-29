@@ -24,6 +24,7 @@
 #define CONTAINERS_QUEUE_H
 
 #include <stdbool.h>
+#include <stdlib.h>
 
 /**
  * The queue data structure, which adapts a container to provide a queue

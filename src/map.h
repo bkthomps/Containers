@@ -24,6 +24,7 @@
 #define CONTAINERS_MAP_H
 
 #include <stdbool.h>
+#include <stdlib.h>
 
 /**
  * The map data structure, which is a collection of key-value pairs, sorted by

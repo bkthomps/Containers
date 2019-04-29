@@ -24,6 +24,7 @@
 #define CONTAINERS_MULTISET_H
 
 #include <stdbool.h>
+#include <stdlib.h>
 
 /**
  * The multiset data structure, which is a collection of key-value pairs, sorted
