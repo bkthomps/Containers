@@ -55,6 +55,8 @@ bool stub_priority_queue_pop(void *const data, priority_queue me)
 
 void test_priority_queue(void)
 {
+    assert(!priority_queue_init(0, compare_int));
+    assert(!priority_queue_init(sizeof(int), NULL));
     priority_queue me = priority_queue_init(sizeof(int), compare_int);
     assert(me);
     assert(priority_queue_size(me) == 0);

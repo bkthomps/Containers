@@ -10,6 +10,9 @@ static int compare_int(const void *const one, const void *const two)
 
 void test_map(void)
 {
+    assert(!map_init(0, sizeof(int), compare_int));
+    assert(!map_init(sizeof(int), 0, compare_int));
+    assert(!map_init(sizeof(int), sizeof(int), NULL));
     map me = map_init(sizeof(int), sizeof(int), compare_int);
     assert(me);
     assert(map_size(me) == 0);

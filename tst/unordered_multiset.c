@@ -20,6 +20,9 @@ static unsigned long hash_int(const void *const key)
 
 void test_unordered_multiset(void)
 {
+    assert(!unordered_multiset_init(0, hash_int, compare_int));
+    assert(!unordered_multiset_init(sizeof(int), NULL, compare_int));
+    assert(!unordered_multiset_init(sizeof(int), hash_int, NULL));
     unordered_multiset me =
             unordered_multiset_init(sizeof(int), hash_int, compare_int);
     assert(me);

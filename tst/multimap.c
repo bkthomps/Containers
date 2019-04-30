@@ -10,6 +10,10 @@ static int compare_int(const void *const one, const void *const two)
 
 void test_multimap(void)
 {
+    assert(!multimap_init(0, sizeof(int), compare_int, compare_int));
+    assert(!multimap_init(sizeof(int), 0, compare_int, compare_int));
+    assert(!multimap_init(sizeof(int), sizeof(int), NULL, compare_int));
+    assert(!multimap_init(sizeof(int), sizeof(int), compare_int, NULL));
     multimap me = multimap_init(sizeof(int), sizeof(int),
                                 compare_int, compare_int);
     assert(me);

@@ -10,6 +10,8 @@ static int compare_int(const void *const one, const void *const two)
 
 void test_multiset(void)
 {
+    assert(!multiset_init(0, compare_int));
+    assert(!multiset_init(sizeof(int), NULL));
     multiset me = multiset_init(sizeof(int), compare_int);
     assert(me);
     assert(multiset_size(me) == 0);

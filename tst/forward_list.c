@@ -3,6 +3,7 @@
 
 void test_forward_list(void)
 {
+    assert(!forward_list_init(0));
     int val[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     forward_list me = forward_list_init(sizeof(int));
     assert(me);

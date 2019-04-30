@@ -20,6 +20,9 @@ static unsigned long hash_int(const void *const key)
 
 void test_unordered_set(void)
 {
+    assert(!unordered_set_init(0, hash_int, compare_int));
+    assert(!unordered_set_init(sizeof(int), NULL, compare_int));
+    assert(!unordered_set_init(sizeof(int), hash_int, NULL));
     unordered_set me = unordered_set_init(sizeof(int), hash_int, compare_int);
     assert(me);
     assert(unordered_set_size(me) == 0);

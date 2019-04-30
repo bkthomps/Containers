@@ -20,6 +20,16 @@ static unsigned long hash_int(const void *const key)
 
 void test_unordered_multimap(void)
 {
+    assert(!unordered_multimap_init(0, sizeof(int), hash_int, compare_int,
+                                    compare_int));
+    assert(!unordered_multimap_init(sizeof(int), 0, hash_int, compare_int,
+                                    compare_int));
+    assert(!unordered_multimap_init(sizeof(int), sizeof(int), NULL, compare_int,
+                                    compare_int));
+    assert(!unordered_multimap_init(sizeof(int), sizeof(int), hash_int, NULL,
+                                    compare_int));
+    assert(!unordered_multimap_init(sizeof(int), sizeof(int), hash_int,
+                                    compare_int, NULL));
     unordered_multimap me =
             unordered_multimap_init(sizeof(int), sizeof(int), hash_int,
                                     compare_int, compare_int);

@@ -63,6 +63,7 @@ static void test_vector_dynamic(void)
 
 void test_vector(void)
 {
+    assert(!vector_init(0));
     int val[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     vector me = vector_init(sizeof(int));
     assert(me);

@@ -114,6 +114,8 @@ static int compare_int(const void *const one, const void *const two)
 
 void test_set(void)
 {
+    assert(!set_init(0, compare_int));
+    assert(!set_init(sizeof(int), NULL));
     set me = set_init(sizeof(int), compare_int);
     assert(me);
     int key;

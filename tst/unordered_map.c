@@ -20,8 +20,12 @@ static unsigned long hash_int(const void *const key)
 
 void test_unordered_map(void)
 {
+    assert(!unordered_map_init(0, sizeof(int), hash_int, compare_int));
+    assert(!unordered_map_init(sizeof(int), 0, hash_int, compare_int));
+    assert(!unordered_map_init(sizeof(int), sizeof(int), NULL, compare_int));
+    assert(!unordered_map_init(sizeof(int), sizeof(int), hash_int, NULL));
     unordered_map me = unordered_map_init(sizeof(int), sizeof(int),
-                                         hash_int, compare_int);
+                                          hash_int, compare_int);
     assert(unordered_map_size(me) == 0);
     assert(unordered_map_is_empty(me));
     int key = 4;

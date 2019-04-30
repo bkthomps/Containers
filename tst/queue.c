@@ -3,6 +3,7 @@
 
 void test_queue(void)
 {
+    assert(!queue_init(0));
     int val[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     queue me = queue_init(sizeof(int));
     assert(me);

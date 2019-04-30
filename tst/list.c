@@ -3,6 +3,7 @@
 
 void test_list(void)
 {
+    assert(!list_init(0));
     int val[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     list me = list_init(sizeof(int));
     assert(me);
@@ -34,8 +35,9 @@ void test_list(void)
     for (int i = 0; i < 3; i++) {
         assert(10 - i == trimmed[i]);
     }
+    int index = list_size(me);
     int add = 3;
-    list_add_last(me, &add);
+    list_add_at(me, index, &add);
     add = -1;
     list_add_at(me, 1, &add);
     add = -2;
@@ -63,6 +65,12 @@ void test_list(void)
     list_remove_first(me);
     list_remove_at(me, 2);
     list_remove_last(me);
+    get = 34;
+    list_add_at(me, 0, &get);
+    int first = 0xdeadbeef;
+    list_get_first(&first, me);
+    assert(first == get);
+    list_remove_first(me);
     assert(list_size(me) == 3);
     get = 345;
     list_get_first(&get, me);
