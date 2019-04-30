@@ -3,9 +3,6 @@ project(Containers C)
 
 set(CMAKE_C_STANDARD 11)
 
-set(CMAKE_C_FLAGS "-g -O0 -Wall -fprofile-arcs -ftest-coverage")
-set(CMAKE_C_OUTPUT_EXTENSION_REPLACE 1)
-
 add_executable(Containers tst/test.c tst/test.h
         src/array.c src/array.h tst/array.c
         src/vector.c src/vector.h tst/vector.c
