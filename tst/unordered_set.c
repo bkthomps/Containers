@@ -18,6 +18,12 @@ static unsigned long hash_int(const void *const key)
     return hash;
 }
 
+// The hash of 5 and 6 are both 5 with this algorithm plus the secondary one
+static unsigned long bad_hash_int(const void *const key)
+{
+    return *(int *) key;
+}
+
 void test_unordered_set(void)
 {
     assert(!unordered_set_init(0, hash_int, compare_int));
@@ -128,4 +134,10 @@ void test_unordered_set(void)
     assert(unordered_set_is_empty(me));
     me = unordered_set_destroy(me);
     assert(!me);
+    me = unordered_set_init(sizeof(int), bad_hash_int, compare_int);
+    num = 5;
+    unordered_set_put(me, &num);
+    num = 6;
+    unordered_set_put(me, &num);
+    unordered_set_remove(me, &num);
 }
