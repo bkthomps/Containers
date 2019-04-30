@@ -228,6 +228,10 @@ void test_unordered_multimap(void)
     key = 3;
     value = 12;
     unordered_multimap_put(me, &key, &value);
+    key = 4;
+    value = 14;
+    unordered_multimap_put(me, &key, &value);
+    key = 3;
     value = 13;
     unordered_multimap_put(me, &key, &value);
     unordered_multimap_get_start(me, &key);
