@@ -238,7 +238,7 @@ int vector_add_last(vector me, void *const data)
  */
 static bool vector_is_illegal_input(vector me, const int index)
 {
-    return index < 0 || index >= me->item_count || me->item_count == 0;
+    return index < 0 || index >= me->item_count;
 }
 
 /**
