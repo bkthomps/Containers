@@ -532,4 +532,5 @@ void test_map(void)
     key = 13;
     map_put(me, &key, &num);
     map_clear(me);
+    assert(!map_get(&value, me, &key));
 }
