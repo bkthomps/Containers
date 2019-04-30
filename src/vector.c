@@ -99,7 +99,8 @@ bool vector_is_empty(vector me)
 }
 
 /*
- * Sets the space of the buffer.
+ * Sets the space of the buffer. Assumes that size is at least the same as the
+ * amount of items currently in the vector.
  */
 static int vector_set_space(vector me, const int size)
 {
@@ -109,9 +110,6 @@ static int vector_set_space(vector me, const int size)
     }
     me->data = temp;
     me->item_capacity = size;
-    if (me->item_capacity < me->item_count) {
-        me->item_count = me->item_capacity;
-    }
     return 0;
 }
 
