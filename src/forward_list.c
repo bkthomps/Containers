@@ -184,7 +184,7 @@ int forward_list_add_last(forward_list me, void *const data)
  */
 static bool forward_list_is_illegal_input(forward_list me, const int index)
 {
-    return index < 0 || index >= me->item_count || me->item_count == 0;
+    return index < 0 || index >= me->item_count;
 }
 
 /**
