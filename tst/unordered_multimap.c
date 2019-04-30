@@ -18,6 +18,11 @@ static unsigned long hash_int(const void *const key)
     return hash;
 }
 
+static unsigned long bad_hash_int(const void *const key)
+{
+    return 5;
+}
+
 void test_unordered_multimap(void)
 {
     assert(!unordered_multimap_init(0, sizeof(int), hash_int, compare_int,
@@ -170,4 +175,46 @@ void test_unordered_multimap(void)
     assert(unordered_multimap_size(me) == 1);
     me = unordered_multimap_destroy(me);
     assert(!me);
+    me = unordered_multimap_init(sizeof(int), sizeof(int), bad_hash_int,
+                                 compare_int, compare_int);
+    key = 1;
+    unordered_multimap_put(me, &key, &value);
+    key = 2;
+    unordered_multimap_put(me, &key, &value);
+    key = 3;
+    unordered_multimap_put(me, &key, &value);
+    assert(unordered_multimap_size(me) == 3);
+    unordered_multimap_put(me, &key, &value);
+    assert(unordered_multimap_size(me) == 4);
+    key = 4;
+    unordered_multimap_put(me, &key, &value);
+    assert(unordered_multimap_size(me) == 5);
+    assert(unordered_multimap_remove(me, &key, &value));
+    assert(!unordered_multimap_remove(me, &key, &value));
+    assert(unordered_multimap_size(me) == 4);
+    unordered_multimap_rehash(me);
+    assert(unordered_multimap_size(me) == 4);
+    me = unordered_multimap_init(sizeof(int), sizeof(int), bad_hash_int,
+                                 compare_int, compare_int);
+    key = 1;
+    unordered_multimap_put(me, &key, &value);
+    key = 2;
+    unordered_multimap_put(me, &key, &value);
+    key = 3;
+    unordered_multimap_put(me, &key, &value);
+    assert(unordered_multimap_size(me) == 3);
+    unordered_multimap_put(me, &key, &value);
+    assert(unordered_multimap_size(me) == 4);
+    key = 4;
+    unordered_multimap_put(me, &key, &value);
+    assert(unordered_multimap_size(me) == 5);
+    assert(unordered_multimap_remove_all(me, &key));
+    assert(!unordered_multimap_remove_all(me, &key));
+    assert(unordered_multimap_size(me) == 4);
+    unordered_multimap_rehash(me);
+    assert(unordered_multimap_size(me) == 4);
+    unordered_multimap_clear(me);
+    assert(unordered_multimap_size(me) == 0);
+    assert(!unordered_multimap_remove_all(me, &key));
+    assert(unordered_multimap_size(me) == 0);
 }
