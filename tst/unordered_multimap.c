@@ -217,4 +217,26 @@ void test_unordered_multimap(void)
     assert(unordered_multimap_size(me) == 0);
     assert(!unordered_multimap_remove_all(me, &key));
     assert(unordered_multimap_size(me) == 0);
+    me = unordered_multimap_init(sizeof(int), sizeof(int), bad_hash_int,
+                                 compare_int, compare_int);
+    key = 1;
+    value = 10;
+    unordered_multimap_put(me, &key, &value);
+    key = 2;
+    value = 11;
+    unordered_multimap_put(me, &key, &value);
+    key = 3;
+    value = 12;
+    unordered_multimap_put(me, &key, &value);
+    value = 13;
+    unordered_multimap_put(me, &key, &value);
+    unordered_multimap_get_start(me, &key);
+    value = 20;
+    unordered_multimap_get_next(&value, me);
+    assert(value == 12);
+    unordered_multimap_get_next(&value, me);
+    assert(value == 13);
+    value = 30;
+    assert(!unordered_multimap_get_next(&value, me));
+    assert(value == 30);
 }
