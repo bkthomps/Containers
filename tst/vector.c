@@ -169,6 +169,11 @@ void test_vector(void)
     assert(vector_remove_at(me, -1) == -EINVAL);
     assert(vector_add_at(me, -1, &set) == -EINVAL);
     vector_clear(me);
+    for (int i = 0; i < 32; i++) {
+        vector_add_last(me, &i);
+    }
+    vector_clear(me);
+    assert(vector_capacity(me) == 8);
     assert(vector_size(me) == 0);
     assert(vector_is_empty(me));
     assert(vector_remove_first(me) == -EINVAL);
