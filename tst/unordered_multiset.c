@@ -192,4 +192,8 @@ void test_unordered_multiset(void)
     assert(unordered_multiset_size(me) == 4);
     unordered_multiset_rehash(me);
     assert(unordered_multiset_size(me) == 4);
+    unordered_multiset_clear(me);
+    assert(unordered_multiset_size(me) == 0);
+    assert(!unordered_multiset_remove_all(me, &num));
+    assert(unordered_multiset_size(me) == 0);
 }
