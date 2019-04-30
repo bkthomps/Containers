@@ -20,6 +20,7 @@
  * SOFTWARE.
  */
 
+#include <stdlib.h>
 #include <memory.h>
 #include <errno.h>
 #include "unordered_map.h"

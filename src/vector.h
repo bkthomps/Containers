@@ -24,7 +24,6 @@
 #define CONTAINERS_VECTOR_H
 
 #include <stdbool.h>
-#include <stdlib.h>
 
 /**
  * The vector data structure, which is a dynamic contiguous array.

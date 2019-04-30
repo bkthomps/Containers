@@ -24,7 +24,6 @@
 #define CONTAINERS_UNORDERED_SET_H
 
 #include <stdbool.h>
-#include <stdlib.h>
 
 /**
  * The unordered_set data structure, which is a collection of unique keys,

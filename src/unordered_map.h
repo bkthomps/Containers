@@ -24,7 +24,6 @@
 #define CONTAINERS_UNORDERED_MAP_H
 
 #include <stdbool.h>
-#include <stdlib.h>
 
 /**
  * The unordered_map data structure, which is a collection of key-value pairs,

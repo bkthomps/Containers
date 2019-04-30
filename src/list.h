@@ -24,7 +24,6 @@
 #define CONTAINERS_LIST_H
 
 #include <stdbool.h>
-#include <stdlib.h>
 
 /**
  * The list data structure, which is a doubly-linked list.

@@ -24,7 +24,6 @@
 #define CONTAINERS_ARRAY_H
 
 #include <stdbool.h>
-#include <stdlib.h>
 
 /**
  * The array data structure, which is a static contiguous array.

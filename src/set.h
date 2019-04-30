@@ -24,7 +24,6 @@
 #define CONTAINERS_SET_H
 
 #include <stdbool.h>
-#include <stdlib.h>
 
 /**
  * The set data structure, which is a collection of unique keys, sorted by keys.

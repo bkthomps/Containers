@@ -24,7 +24,6 @@
 #define CONTAINERS_MULTIMAP_H
 
 #include <stdbool.h>
-#include <stdlib.h>
 
 /**
  * The multimap data structure, which is a collection of key-value pairs, sorted

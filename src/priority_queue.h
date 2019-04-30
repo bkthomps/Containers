@@ -24,7 +24,6 @@
 #define CONTAINERS_PRIORITY_QUEUE_H
 
 #include <stdbool.h>
-#include <stdlib.h>
 
 /**
  * The priority_queue data structure, which adapts a container to provide a

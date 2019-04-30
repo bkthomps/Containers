@@ -24,7 +24,6 @@
 #define CONTAINERS_UNORDERED_MULTISET_H
 
 #include <stdbool.h>
-#include <stdlib.h>
 
 /**
  * The unordered_multiset data structure, which is a collection of keys, hashed
