@@ -487,4 +487,11 @@ void test_set(void)
         stub_set_remove(me, &i);
         assert(!stub_set_contains(me, &i));
     }
+    stub_set_clear(me);
+    key = 5;
+    stub_set_put(me, &key);
+    key = 7;
+    stub_set_put(me, &key);
+    key = 5;
+    stub_set_remove(me, &key);
 }
