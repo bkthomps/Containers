@@ -18,10 +18,9 @@ static unsigned long hash_int(const void *const key)
     return hash;
 }
 
-// The hash of 5 and 6 are both 5 with this algorithm plus the secondary one
 static unsigned long bad_hash_int(const void *const key)
 {
-    return *(int *) key;
+    return 5;
 }
 
 void test_unordered_set(void)
