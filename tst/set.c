@@ -478,4 +478,13 @@ void test_set(void)
     assert(!stub_set_contains(me, &key));
     me = stub_set_destroy(me);
     assert(!me);
+    me = set_init(sizeof(int), compare_int);
+    for (int i = 4817; i > -2983; i -= 11) {
+        stub_set_put(me, &i);
+        assert(stub_set_contains(me, &i));
+    }
+    for (int i = -432; i < 3849; i += 7) {
+        stub_set_remove(me, &i);
+        assert(!stub_set_contains(me, &i));
+    }
 }
