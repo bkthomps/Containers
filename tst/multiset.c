@@ -549,4 +549,6 @@ void test_multiset(void)
     key = 13;
     multiset_put(me, &key);
     multiset_clear(me);
+    assert(multiset_count(me, &key) == 0);
+    assert(!multiset_remove_all(me, &key));
 }
