@@ -142,5 +142,10 @@ void test_unordered_set(void)
     unordered_set_put(me, &num);
     num = 4;
     unordered_set_put(me, &num);
-    unordered_set_remove(me, &num);
+    assert(unordered_set_size(me) == 4);
+    assert(unordered_set_remove(me, &num));
+    assert(!unordered_set_remove(me, &num));
+    assert(unordered_set_size(me) == 3);
+    unordered_set_rehash(me);
+    assert(unordered_set_size(me) == 3);
 }
