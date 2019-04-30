@@ -2,7 +2,7 @@ version: 2
 jobs:
   build_and_test:
     docker:
-      - image: mickare/cmake-clang
+      - image: rikorose/gcc-cmake:gcc-8
     steps:
       - checkout
       - run: cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" .
