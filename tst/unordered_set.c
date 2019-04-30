@@ -134,9 +134,13 @@ void test_unordered_set(void)
     me = unordered_set_destroy(me);
     assert(!me);
     me = unordered_set_init(sizeof(int), bad_hash_int, compare_int);
-    num = 5;
+    num = 1;
     unordered_set_put(me, &num);
-    num = 6;
+    num = 2;
+    unordered_set_put(me, &num);
+    num = 3;
+    unordered_set_put(me, &num);
+    num = 4;
     unordered_set_put(me, &num);
     unordered_set_remove(me, &num);
 }
