@@ -5,10 +5,9 @@ jobs:
       - image: mickare/cmake-clang
     steps:
       - checkout
-      - run: cmake -DCMAKE_BUILD_TYPE=coverage -G "CodeBlocks - Unix Makefiles" .
+      - run: cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" .
       - run: cmake --build . --target Containers -- -j 2
       - run: ./Containers
-      - run: gcov set.c
       - run: bash <(curl -s https://codecov.io/bash)
 workflows:
   version: 2
