@@ -1,4 +1,5 @@
 [![CircleCI](https://circleci.com/gh/bkthomps/Containers/tree/master.svg?style=shield)](https://circleci.com/gh/bkthomps/Containers/tree/master)
+[![codecov](https://codecov.io/gh/bkthomps/Containers/branch/master/graph/badge.svg)](https://codecov.io/gh/bkthomps/Containers)
 [![Documentation](https://codedocs.xyz/bkthomps/Containers.svg)](https://codedocs.xyz/bkthomps/Containers/)
 
 # Containers
