@@ -157,4 +157,8 @@ void test_unordered_map(void)
     assert(unordered_map_size(me) == 3);
     unordered_map_rehash(me);
     assert(unordered_map_size(me) == 3);
+    key = 5;
+    value = 0xdeadbeef;
+    assert(!unordered_map_get(&value, me, &key));
+    assert(value == 0xdeadbeef);
 }
