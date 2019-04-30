@@ -159,6 +159,7 @@ void test_vector(void)
     assert(arr[0] == -5);
     assert(arr[1] == -6);
     assert(arr[2] == -7);
+    assert(vector_reserve(me, 100) == 0);
     assert(vector_set_at(me, 4, &set) == -EINVAL);
     assert(vector_get_at(&set, me, 4) == -EINVAL);
     assert(vector_remove_at(me, 4) == -EINVAL);
