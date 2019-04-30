@@ -18,6 +18,11 @@ static unsigned long hash_int(const void *const key)
     return hash;
 }
 
+static unsigned long bad_hash_int(const void *const key)
+{
+    return 5;
+}
+
 void test_unordered_map(void)
 {
     assert(!unordered_map_init(0, sizeof(int), hash_int, compare_int));
@@ -133,5 +138,23 @@ void test_unordered_map(void)
     assert(unordered_map_size(me) == 0);
     assert(unordered_map_is_empty(me));
     me = unordered_map_destroy(me);
-    assert(me == NULL);
+    assert(!me);
+    me = unordered_map_init(sizeof(int), sizeof(int), bad_hash_int,
+                            compare_int);
+    num = 1;
+    unordered_map_put(me, &num, &num);
+    num = 2;
+    unordered_map_put(me, &num, &num);
+    num = 3;
+    unordered_map_put(me, &num, &num);
+    num = 4;
+    unordered_map_put(me, &num, &num);
+    assert(unordered_map_size(me) == 4);
+    unordered_map_put(me, &num, &num);
+    assert(unordered_map_size(me) == 4);
+    assert(unordered_map_remove(me, &num));
+    assert(!unordered_map_remove(me, &num));
+    assert(unordered_map_size(me) == 3);
+    unordered_map_rehash(me);
+    assert(unordered_map_size(me) == 3);
 }

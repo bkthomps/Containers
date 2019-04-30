@@ -18,6 +18,11 @@ static unsigned long hash_int(const void *const key)
     return hash;
 }
 
+static unsigned long bad_hash_int(const void *const key)
+{
+    return 5;
+}
+
 void test_unordered_multiset(void)
 {
     assert(!unordered_multiset_init(0, hash_int, compare_int));
@@ -151,4 +156,22 @@ void test_unordered_multiset(void)
     assert(unordered_multiset_size(me) == 1);
     me = unordered_multiset_destroy(me);
     assert(!me);
+    me = unordered_multiset_init(sizeof(int), bad_hash_int, compare_int);
+    num = 1;
+    unordered_multiset_put(me, &num);
+    num = 2;
+    unordered_multiset_put(me, &num);
+    num = 3;
+    unordered_multiset_put(me, &num);
+    assert(unordered_multiset_size(me) == 3);
+    unordered_multiset_put(me, &num);
+    assert(unordered_multiset_size(me) == 4);
+    num = 4;
+    unordered_multiset_put(me, &num);
+    assert(unordered_multiset_size(me) == 5);
+    assert(unordered_multiset_remove(me, &num));
+    assert(!unordered_multiset_remove(me, &num));
+    assert(unordered_multiset_size(me) == 4);
+    unordered_multiset_rehash(me);
+    assert(unordered_multiset_size(me) == 4);
 }
