@@ -61,7 +61,10 @@ void test_priority_queue(void)
     assert(me);
     assert(priority_queue_size(me) == 0);
     assert(priority_queue_is_empty(me));
-    int item = 5;
+    int item = 0xdeadbeef;
+    assert(!priority_queue_pop(&item, me));
+    assert(item == 0xdeadbeef);
+    item = 5;
     stub_priority_queue_push(me, &item);
     item = 2;
     stub_priority_queue_push(me, &item);
