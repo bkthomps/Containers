@@ -398,9 +398,8 @@ int vector_get_last(void *const data, vector me)
  */
 int vector_clear(vector me)
 {
-    const int ret = vector_set_space(me, START_SPACE);
     me->item_count = 0;
-    return ret;
+    return vector_set_space(me, START_SPACE);
 }
 
 /**
