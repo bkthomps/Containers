@@ -562,4 +562,23 @@ void test_multimap(void)
     key = 13;
     multimap_put(me, &key, &num);
     multimap_clear(me);
+    assert(multimap_count(me, &key) == 0);
+    assert(!multimap_remove_all(me, &key));
+    // Edge case.
+    me = multimap_init(sizeof(int), sizeof(int), compare_int, compare_int);
+    value = 17;
+    key = 5;
+    multimap_put(me, &key, &value);
+    key = 3;
+    multimap_put(me, &key, &value);
+    key = 7;
+    multimap_put(me, &key, &value);
+    key = 2;
+    multimap_put(me, &key, &value);
+    key = 6;
+    multimap_put(me, &key, &value);
+    key = 9;
+    multimap_put(me, &key, &value);
+    key = 3;
+    multimap_remove(me, &key, &value);
 }
