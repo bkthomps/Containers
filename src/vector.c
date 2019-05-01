@@ -99,7 +99,8 @@ bool vector_is_empty(vector me)
 }
 
 /*
- * Sets the space of the buffer.
+ * Sets the space of the buffer. Assumes that size is at least the same as the
+ * amount of items currently in the vector.
  */
 static int vector_set_space(vector me, const int size)
 {
@@ -109,9 +110,6 @@ static int vector_set_space(vector me, const int size)
     }
     me->data = temp;
     me->item_capacity = size;
-    if (me->item_capacity < me->item_count) {
-        me->item_count = me->item_capacity;
-    }
     return 0;
 }
 
@@ -240,7 +238,7 @@ int vector_add_last(vector me, void *const data)
  */
 static bool vector_is_illegal_input(vector me, const int index)
 {
-    return index < 0 || index >= me->item_count || me->item_count == 0;
+    return index < 0 || index >= me->item_count;
 }
 
 /**
@@ -398,9 +396,8 @@ int vector_get_last(void *const data, vector me)
  */
 int vector_clear(vector me)
 {
-    const int ret = vector_set_space(me, START_SPACE);
     me->item_count = 0;
-    return ret;
+    return vector_set_space(me, START_SPACE);
 }
 
 /**

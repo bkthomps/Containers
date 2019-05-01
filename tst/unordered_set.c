@@ -18,8 +18,16 @@ static unsigned long hash_int(const void *const key)
     return hash;
 }
 
+static unsigned long bad_hash_int(const void *const key)
+{
+    return 5;
+}
+
 void test_unordered_set(void)
 {
+    assert(!unordered_set_init(0, hash_int, compare_int));
+    assert(!unordered_set_init(sizeof(int), NULL, compare_int));
+    assert(!unordered_set_init(sizeof(int), hash_int, NULL));
     unordered_set me = unordered_set_init(sizeof(int), hash_int, compare_int);
     assert(me);
     assert(unordered_set_size(me) == 0);
@@ -125,4 +133,21 @@ void test_unordered_set(void)
     assert(unordered_set_is_empty(me));
     me = unordered_set_destroy(me);
     assert(!me);
+    me = unordered_set_init(sizeof(int), bad_hash_int, compare_int);
+    num = 1;
+    unordered_set_put(me, &num);
+    num = 2;
+    unordered_set_put(me, &num);
+    num = 3;
+    unordered_set_put(me, &num);
+    num = 4;
+    unordered_set_put(me, &num);
+    assert(unordered_set_size(me) == 4);
+    unordered_set_put(me, &num);
+    assert(unordered_set_size(me) == 4);
+    assert(unordered_set_remove(me, &num));
+    assert(!unordered_set_remove(me, &num));
+    assert(unordered_set_size(me) == 3);
+    unordered_set_rehash(me);
+    assert(unordered_set_size(me) == 3);
 }

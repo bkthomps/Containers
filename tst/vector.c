@@ -63,6 +63,7 @@ static void test_vector_dynamic(void)
 
 void test_vector(void)
 {
+    assert(!vector_init(0));
     int val[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     vector me = vector_init(sizeof(int));
     assert(me);
@@ -158,6 +159,7 @@ void test_vector(void)
     assert(arr[0] == -5);
     assert(arr[1] == -6);
     assert(arr[2] == -7);
+    assert(vector_reserve(me, 100) == 0);
     assert(vector_set_at(me, 4, &set) == -EINVAL);
     assert(vector_get_at(&set, me, 4) == -EINVAL);
     assert(vector_remove_at(me, 4) == -EINVAL);
@@ -167,6 +169,11 @@ void test_vector(void)
     assert(vector_remove_at(me, -1) == -EINVAL);
     assert(vector_add_at(me, -1, &set) == -EINVAL);
     vector_clear(me);
+    for (int i = 0; i < 32; i++) {
+        vector_add_last(me, &i);
+    }
+    vector_clear(me);
+    assert(vector_capacity(me) == 8);
     assert(vector_size(me) == 0);
     assert(vector_is_empty(me));
     assert(vector_remove_first(me) == -EINVAL);

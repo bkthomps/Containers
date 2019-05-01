@@ -3,6 +3,8 @@
 
 void test_array(void)
 {
+    assert(!array_init(-1, sizeof(int)));
+    assert(!array_init(1, 0));
     array me = array_init(10, sizeof(int));
     assert(me);
     assert(array_size(me) == 10);
@@ -31,6 +33,9 @@ void test_array(void)
     for (int i = 0; i < 10; i++) {
         assert(data[i] == i);
     }
+    int get = 0xdeadbeef;
+    assert(array_set(me, -1, &get) == -EINVAL);
+    assert(array_get(&get, me, -1) == -EINVAL);
     me = array_destroy(me);
     assert(!me);
 }

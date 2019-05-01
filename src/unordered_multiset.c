@@ -389,7 +389,7 @@ bool unordered_multiset_remove_all(unordered_multiset me, void *const key)
         if (unordered_multiset_is_equal(me, traverse->next, hash, key)) {
             struct node *const backup = traverse->next;
             traverse->next = traverse->next->next;
-            me->size -= traverse->count;
+            me->size -= backup->count;
             free(backup->key);
             free(backup);
             me->used--;
