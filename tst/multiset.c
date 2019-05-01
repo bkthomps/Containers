@@ -252,18 +252,15 @@ void test_multiset(void)
     bool flip = false;
     for (int i = 1234; i < 82400; i++) {
         key = i % 765;
-        const bool is_already_present = multiset_contains(me, &key);
         multiset_put(me, &key);
-        const bool is_now_present = multiset_contains(me, &key);
-        assert(is_now_present);
-        if (!is_already_present && is_now_present) {
-            count++;
-        }
+        assert(multiset_contains(me, &key));
+        count++;
         if (i == 1857 && !flip) {
             i *= -1;
             flip = true;
         }
     }
+    assert(count == multiset_size(me));
     multiset_contains(me, &key);
     multiset_destroy(me);
     me = multiset_init(sizeof(int), compare_int);
