@@ -63,19 +63,17 @@ void test_unordered_multimap(void)
     unordered_multimap_remove(me, &key, &value);
     assert(unordered_multimap_size(me) == 0);
     int c[10] = {5, 9, 4, -5, 0, 6, 1, 5, 7, 2};
-    int i;
-    for (i = 0; i < 10; i++) {
+    for (int i = 0; i < 10; i++) {
         unordered_multimap_put(me, &c[i], &value);
         assert(unordered_multimap_contains(me, &c[i]));
     }
     assert(unordered_multimap_size(me) == 10);
-    for (i = 0; i < 10; i++) {
+    for (int i = 0; i < 10; i++) {
         assert(unordered_multimap_contains(me, &c[i]));
     }
-    int j;
-    for (i = -100; i < 100; i++) {
+    for (int i = -100; i < 100; i++) {
         bool contains = false;
-        for (j = 0; j < 10; j++) {
+        for (int j = 0; j < 10; j++) {
             if (c[j] == i) {
                 contains = true;
             }
@@ -137,12 +135,12 @@ void test_unordered_multimap(void)
     assert(unordered_multimap_size(me) == 0);
     assert(!unordered_multimap_contains(me, &num));
     // Add a lot of items and remove individually.
-    for (i = 5000; i < 6000; i++) {
+    for (int i = 5000; i < 6000; i++) {
         unordered_multimap_put(me, &i, &value);
         assert(unordered_multimap_contains(me, &i));
     }
     assert(unordered_multimap_size(me) == 1000);
-    for (i = 5000; i < 6000; i++) {
+    for (int i = 5000; i < 6000; i++) {
         unordered_multimap_remove(me, &i, &value);
         assert(!unordered_multimap_contains(me, &i));
     }
@@ -152,7 +150,7 @@ void test_unordered_multimap(void)
     assert(unordered_multimap_size(me) == 0);
     assert(unordered_multimap_is_empty(me));
     // Add a lot of items and clear.
-    for (i = 5000; i < 6000; i++) {
+    for (int i = 5000; i < 6000; i++) {
         unordered_multimap_put(me, &i, &value);
         assert(unordered_multimap_contains(me, &i));
     }
@@ -169,7 +167,7 @@ void test_unordered_multimap(void)
     unordered_multimap_put(me, &key, &value);
     assert(unordered_multimap_size(me) == 1);
     key = 7;
-    for (i = 0; i < 10; i++) {
+    for (int i = 0; i < 10; i++) {
         unordered_multimap_put(me, &key, &value);
     }
     assert(unordered_multimap_size(me) == 11);

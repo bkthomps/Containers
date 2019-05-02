@@ -9,8 +9,7 @@ void test_stack(void)
     assert(me);
     assert(stack_size(me) == 0);
     assert(stack_is_empty(me));
-    int i;
-    for (i = 0; i < 10; i++) {
+    for (int i = 0; i < 10; i++) {
         stack_push(me, &val[i]);
         int get = 0;
         assert(stack_top(&get, me));
@@ -20,10 +19,10 @@ void test_stack(void)
     assert(!stack_is_empty(me));
     int get_arr[10] = {0};
     stack_copy_to_array(get_arr, me);
-    for (i = 0; i < 10; i++) {
+    for (int i = 0; i < 10; i++) {
         assert(get_arr[i] == i + 1);
     }
-    for (i = 0; i < 9; i++) {
+    for (int i = 0; i < 9; i++) {
         int get = 0;
         assert(stack_pop(&get, me));
         assert(get == 10 - i);
@@ -39,7 +38,7 @@ void test_stack(void)
     assert(!me);
     // Testing automatic trim
     me = stack_init(sizeof(int));
-    for (i = 0; i < 100; i++) {
+    for (int i = 0; i < 100; i++) {
         stack_push(me, &i);
         stack_pop(&get, me);
     }

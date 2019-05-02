@@ -41,19 +41,17 @@ void test_multimap(void)
     multimap_remove(me, &key, &value);
     assert(multimap_size(me) == 0);
     int val_arr[10] = {5, 9, 4, -5, 0, 6, 1, 5, 7, 2};
-    int i;
-    for (i = 0; i < 10; i++) {
+    for (int i = 0; i < 10; i++) {
         multimap_put(me, &val_arr[i], &value);
         assert(multimap_contains(me, &val_arr[i]));
     }
     assert(multimap_size(me) == 10);
-    for (i = 0; i < 10; i++) {
+    for (int i = 0; i < 10; i++) {
         assert(multimap_contains(me, &val_arr[i]));
     }
-    int j;
-    for (i = -100; i < 100; i++) {
+    for (int i = -100; i < 100; i++) {
         bool contains = false;
-        for (j = 0; j < 10; j++) {
+        for (int j = 0; j < 10; j++) {
             if (val_arr[j] == i) {
                 contains = true;
             }
@@ -115,12 +113,12 @@ void test_multimap(void)
     assert(multimap_size(me) == 0);
     assert(!multimap_contains(me, &num));
     // Add a lot of items and remove individually.
-    for (i = 5000; i < 6000; i++) {
+    for (int i = 5000; i < 6000; i++) {
         multimap_put(me, &i, &value);
         assert(multimap_contains(me, &i));
     }
     assert(multimap_size(me) == 1000);
-    for (i = 5000; i < 6000; i++) {
+    for (int i = 5000; i < 6000; i++) {
         multimap_remove(me, &i, &value);
         assert(!multimap_contains(me, &i));
     }
@@ -130,7 +128,7 @@ void test_multimap(void)
     assert(multimap_size(me) == 0);
     assert(multimap_is_empty(me));
     // Add a lot of items and clear.
-    for (i = 5000; i < 6000; i++) {
+    for (int i = 5000; i < 6000; i++) {
         multimap_put(me, &i, &value);
         assert(multimap_contains(me, &i));
     }
@@ -144,7 +142,7 @@ void test_multimap(void)
     multimap_put(me, &key, &value);
     assert(multimap_size(me) == 1);
     key = 7;
-    for (i = 0; i < 10; i++) {
+    for (int i = 0; i < 10; i++) {
         multimap_put(me, &key, &value);
     }
     assert(multimap_size(me) == 11);
@@ -265,7 +263,7 @@ void test_multimap(void)
     // Add a lot of items.
     count = 0;
     bool flip = false;
-    for (i = 1234; i < 82400; i++) {
+    for (int i = 1234; i < 82400; i++) {
         key = i % 765;
         multimap_put(me, &key, &num);
         assert(multimap_contains(me, &key));
@@ -294,17 +292,17 @@ void test_multimap(void)
     assert(multimap_size(me) == 3);
     assert(multimap_contains(me, &key));
     int c[10] = {5, 9, 4, -5, 0, 6, 1, 5, 7, 2};
-    for (i = 0; i < 10; i++) {
+    for (int i = 0; i < 10; i++) {
         multimap_put(me, &c[i], &value);
         assert(multimap_contains(me, &c[i]));
     }
     assert(multimap_size(me) == 13);
-    for (i = 0; i < 10; i++) {
+    for (int i = 0; i < 10; i++) {
         assert(multimap_contains(me, &c[i]));
     }
-    for (i = -100; i < 100; i++) {
+    for (int i = -100; i < 100; i++) {
         bool contains = false;
-        for (j = 0; j < 10; j++) {
+        for (int j = 0; j < 10; j++) {
             if (c[j] == i) {
                 contains = true;
             }
@@ -354,12 +352,12 @@ void test_multimap(void)
     multimap_clear(me);
     // Add a lot of items and remove individually.
     value = 37;
-    for (i = 5000; i < 6000; i++) {
+    for (int i = 5000; i < 6000; i++) {
         multimap_put(me, &i, &value);
         assert(multimap_contains(me, &i));
     }
     assert(multimap_size(me) == 1000);
-    for (i = 5000; i < 5500; i++) {
+    for (int i = 5000; i < 5500; i++) {
         multimap_remove(me, &i, &value);
         assert(!multimap_contains(me, &i));
     }
@@ -369,7 +367,7 @@ void test_multimap(void)
     assert(multimap_size(me) == 0);
     assert(multimap_is_empty(me));
     // Add a lot of items and clear.
-    for (i = 5000; i < 6000; i++) {
+    for (int i = 5000; i < 6000; i++) {
         multimap_put(me, &i, &num);
         assert(multimap_contains(me, &i));
     }
@@ -408,11 +406,11 @@ void test_multimap(void)
     multimap_clear(me);
     // Allocate many nodes.
     value = 54;
-    for (i = 8123; i < 12314; i += 3) {
+    for (int i = 8123; i < 12314; i += 3) {
         multimap_put(me, &i, &value);
         assert(multimap_contains(me, &i));
     }
-    for (i = 13000; i > 8000; i--) {
+    for (int i = 13000; i > 8000; i--) {
         multimap_remove(me, &i, &value);
         assert(!multimap_contains(me, &i));
     }
@@ -514,11 +512,11 @@ void test_multimap(void)
     assert(!me);
     me = multimap_init(sizeof(int), sizeof(int), compare_int, compare_int);
     value = 97;
-    for (i = 4817; i > -2983; i -= 11) {
+    for (int i = 4817; i > -2983; i -= 11) {
         multimap_put(me, &i, &value);
         assert(multimap_contains(me, &i));
     }
-    for (i = -432; i < 3849; i += 7) {
+    for (int i = -432; i < 3849; i += 7) {
         multimap_remove(me, &i, &value);
         assert(!multimap_contains(me, &i));
     }

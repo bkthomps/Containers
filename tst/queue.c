@@ -9,8 +9,7 @@ void test_queue(void)
     assert(me);
     assert(queue_size(me) == 0);
     assert(queue_is_empty(me));
-    int i;
-    for (i = 0; i < 10; i++) {
+    for (int i = 0; i < 10; i++) {
         queue_push(me, &val[i]);
         int get = 0;
         assert(queue_back(&get, me));
@@ -23,10 +22,10 @@ void test_queue(void)
     assert(!queue_is_empty(me));
     int get_arr[10] = {0};
     queue_copy_to_array(get_arr, me);
-    for (i = 0; i < 10; i++) {
+    for (int i = 0; i < 10; i++) {
         assert(get_arr[i] == i + 1);
     }
-    for (i = 0; i < 9; i++) {
+    for (int i = 0; i < 9; i++) {
         int get = 0;
         assert(queue_pop(&get, me));
         assert(get == i + 1);
@@ -43,7 +42,7 @@ void test_queue(void)
     assert(!me);
     me = queue_init(sizeof(int));
     assert(me);
-    for (i = 123; i < 123456; i++) {
+    for (int i = 123; i < 123456; i++) {
         queue_push(me, &i);
     }
     const int old_size = queue_size(me);
@@ -56,7 +55,7 @@ void test_queue(void)
     queue_destroy(me);
     // Testing automatic trim
     me = queue_init(sizeof(int));
-    for (i = 0; i < 100; i++) {
+    for (int i = 0; i < 100; i++) {
         queue_push(me, &i);
         queue_pop(&get, me);
     }
