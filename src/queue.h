@@ -23,34 +23,32 @@
 #ifndef CONTAINERS_QUEUE_H
 #define CONTAINERS_QUEUE_H
 
-#include <stdbool.h>
-
 /**
  * The queue data structure, which adapts a container to provide a queue
  * (first-in first-out). Adapts the deque container.
  */
 typedef struct internal_queue *queue;
 
-// Starting
+/* Starting */
 queue queue_init(size_t data_size);
 
-// Utility
+/* Utility */
 int queue_size(queue me);
-bool queue_is_empty(queue me);
+int queue_is_empty(queue me);
 int queue_trim(queue me);
 void queue_copy_to_array(void *arr, queue me);
 
-// Adding
+/* Adding */
 int queue_push(queue me, void *data);
 
-// Removing
-bool queue_pop(void *data, queue me);
+/* Removing */
+int queue_pop(void *data, queue me);
 
-// Getting
-bool queue_front(void *data, queue me);
-bool queue_back(void *data, queue me);
+/* Getting */
+int queue_front(void *data, queue me);
+int queue_back(void *data, queue me);
 
-// Ending
+/* Ending */
 int queue_clear(queue me);
 queue queue_destroy(queue me);
 

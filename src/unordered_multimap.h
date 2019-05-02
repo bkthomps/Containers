@@ -23,15 +23,13 @@
 #ifndef CONTAINERS_UNORDERED_MULTIMAP_H
 #define CONTAINERS_UNORDERED_MULTIMAP_H
 
-#include <stdbool.h>
-
 /**
  * The unordered_multimap data structure, which is a collection of key-value
  * pairs, hashed by keys.
  */
 typedef struct internal_unordered_multimap *unordered_multimap;
 
-// Starting
+/* Starting */
 unordered_multimap
 unordered_multimap_init(size_t key_size,
                         size_t value_size,
@@ -41,21 +39,21 @@ unordered_multimap_init(size_t key_size,
                         int (*value_comparator)(const void *const one,
                                                 const void *const two));
 
-// Utility
+/* Utility */
 int unordered_multimap_rehash(unordered_multimap me);
 int unordered_multimap_size(unordered_multimap me);
-bool unordered_multimap_is_empty(unordered_multimap me);
+int unordered_multimap_is_empty(unordered_multimap me);
 
-// Accessing
+/* Accessing */
 int unordered_multimap_put(unordered_multimap me, void *key, void *value);
 void unordered_multimap_get_start(unordered_multimap me, void *key);
-bool unordered_multimap_get_next(void *value, unordered_multimap me);
+int unordered_multimap_get_next(void *value, unordered_multimap me);
 int unordered_multimap_count(unordered_multimap me, void *key);
-bool unordered_multimap_contains(unordered_multimap me, void *key);
-bool unordered_multimap_remove(unordered_multimap me, void *key, void *value);
-bool unordered_multimap_remove_all(unordered_multimap me, void *key);
+int unordered_multimap_contains(unordered_multimap me, void *key);
+int unordered_multimap_remove(unordered_multimap me, void *key, void *value);
+int unordered_multimap_remove_all(unordered_multimap me, void *key);
 
-// Ending
+/* Ending */
 int unordered_multimap_clear(unordered_multimap me);
 unordered_multimap unordered_multimap_destroy(unordered_multimap me);
 

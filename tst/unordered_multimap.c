@@ -12,8 +12,8 @@ static int hash_count;
 
 static unsigned long hash_int(const void *const key)
 {
-    hash_count++;
     unsigned long hash = 17;
+    hash_count++;
     hash = 31 * hash + *(int *) key;
     return hash;
 }
@@ -25,6 +25,15 @@ static unsigned long bad_hash_int(const void *const key)
 
 void test_unordered_multimap(void)
 {
+    int c[10] = {5, 9, 4, -5, 0, 6, 1, 5, 7, 2};
+    unordered_multimap me;
+    int key;
+    int value;
+    int num;
+    int count;
+    int val;
+    int i;
+    int j;
     assert(!unordered_multimap_init(0, sizeof(int), hash_int, compare_int,
                                     compare_int));
     assert(!unordered_multimap_init(sizeof(int), 0, hash_int, compare_int,
@@ -35,14 +44,13 @@ void test_unordered_multimap(void)
                                     compare_int));
     assert(!unordered_multimap_init(sizeof(int), sizeof(int), hash_int,
                                     compare_int, NULL));
-    unordered_multimap me =
-            unordered_multimap_init(sizeof(int), sizeof(int), hash_int,
-                                    compare_int, compare_int);
+    me = unordered_multimap_init(sizeof(int), sizeof(int), hash_int,
+                                 compare_int, compare_int);
     assert(me);
     assert(unordered_multimap_size(me) == 0);
     assert(unordered_multimap_is_empty(me));
-    int key = 4;
-    int value = 123;
+    key = 4;
+    value = 123;
     unordered_multimap_put(me, &key, &value);
     assert(unordered_multimap_size(me) == 1);
     unordered_multimap_put(me, &key, &value);
@@ -62,8 +70,6 @@ void test_unordered_multimap(void)
     assert(unordered_multimap_size(me) == 1);
     unordered_multimap_remove(me, &key, &value);
     assert(unordered_multimap_size(me) == 0);
-    int c[10] = {5, 9, 4, -5, 0, 6, 1, 5, 7, 2};
-    int i;
     for (i = 0; i < 10; i++) {
         unordered_multimap_put(me, &c[i], &value);
         assert(unordered_multimap_contains(me, &c[i]));
@@ -72,17 +78,16 @@ void test_unordered_multimap(void)
     for (i = 0; i < 10; i++) {
         assert(unordered_multimap_contains(me, &c[i]));
     }
-    int j;
     for (i = -100; i < 100; i++) {
-        bool contains = false;
+        int contains = 0;
         for (j = 0; j < 10; j++) {
             if (c[j] == i) {
-                contains = true;
+                contains = 1;
             }
         }
         assert(unordered_multimap_contains(me, &i) == contains);
     }
-    int num = -3;
+    num = -3;
     assert(!unordered_multimap_remove(me, &num, &value));
     assert(unordered_multimap_size(me) == 10);
     assert(!unordered_multimap_contains(me, &num));
@@ -117,8 +122,8 @@ void test_unordered_multimap(void)
     num = 5;
     assert(unordered_multimap_count(me, &num) == 2);
     unordered_multimap_get_start(me, &num);
-    int count = 0;
-    int val = 0xdeadbeef;
+    count = 0;
+    val = 0xdeadbeef;
     while (unordered_multimap_get_next(&val, me)) {
         count++;
         assert(val == 123);
@@ -136,7 +141,7 @@ void test_unordered_multimap(void)
     assert(unordered_multimap_remove(me, &num, &value));
     assert(unordered_multimap_size(me) == 0);
     assert(!unordered_multimap_contains(me, &num));
-    // Add a lot of items and remove individually.
+    /* Add a lot of items and remove individually. */
     for (i = 5000; i < 6000; i++) {
         unordered_multimap_put(me, &i, &value);
         assert(unordered_multimap_contains(me, &i));
@@ -151,7 +156,7 @@ void test_unordered_multimap(void)
     unordered_multimap_clear(me);
     assert(unordered_multimap_size(me) == 0);
     assert(unordered_multimap_is_empty(me));
-    // Add a lot of items and clear.
+    /* Add a lot of items and clear. */
     for (i = 5000; i < 6000; i++) {
         unordered_multimap_put(me, &i, &value);
         assert(unordered_multimap_contains(me, &i));

@@ -21,7 +21,7 @@
  */
 
 #include <stdlib.h>
-#include <memory.h>
+#include <string.h>
 #include <errno.h>
 #include "vector.h"
 
@@ -44,10 +44,11 @@ struct internal_vector {
  */
 vector vector_init(const size_t data_size)
 {
+    struct internal_vector *init;
     if (data_size == 0) {
         return NULL;
     }
-    struct internal_vector *const init = malloc(sizeof(struct internal_vector));
+    init = malloc(sizeof(struct internal_vector));
     if (!init) {
         return NULL;
     }
@@ -91,9 +92,9 @@ int vector_capacity(vector me)
  *
  * @param me the vector to check
  *
- * @return true if the vector is empty
+ * @return 1 if the vector is empty, otherwise 0
  */
-bool vector_is_empty(vector me)
+int vector_is_empty(vector me)
 {
     return vector_size(me) == 0;
 }
@@ -210,11 +211,12 @@ int vector_add_at(vector me, const int index, void *const data)
         me->item_capacity = new_space;
     }
     if (index != me->item_count) {
-        memmove(me->data + (index + 1) * me->bytes_per_item,
-                me->data + index * me->bytes_per_item,
+        memmove((char *) me->data + (index + 1) * me->bytes_per_item,
+                (char *) me->data + index * me->bytes_per_item,
                 (me->item_count - index) * me->bytes_per_item);
     }
-    memcpy(me->data + index * me->bytes_per_item, data, me->bytes_per_item);
+    memcpy((char *) me->data + index * me->bytes_per_item, data,
+           me->bytes_per_item);
     me->item_count++;
     return 0;
 }
@@ -236,7 +238,7 @@ int vector_add_last(vector me, void *const data)
 /*
  * Determines if the input is illegal.
  */
-static bool vector_is_illegal_input(vector me, const int index)
+static int vector_is_illegal_input(vector me, const int index)
 {
     return index < 0 || index >= me->item_count;
 }
@@ -269,8 +271,8 @@ int vector_remove_at(vector me, const int index)
         return -EINVAL;
     }
     me->item_count--;
-    memmove(me->data + index * me->bytes_per_item,
-            me->data + (index + 1) * me->bytes_per_item,
+    memmove((char *) me->data + index * me->bytes_per_item,
+            (char *) me->data + (index + 1) * me->bytes_per_item,
             (me->item_count - index) * me->bytes_per_item);
     return 0;
 }
@@ -321,7 +323,8 @@ int vector_set_at(vector me, const int index, void *const data)
     if (vector_is_illegal_input(me, index)) {
         return -EINVAL;
     }
-    memcpy(me->data + index * me->bytes_per_item, data, me->bytes_per_item);
+    memcpy((char *) me->data + index * me->bytes_per_item, data,
+           me->bytes_per_item);
     return 0;
 }
 
@@ -368,7 +371,8 @@ int vector_get_at(void *const data, vector me, const int index)
     if (vector_is_illegal_input(me, index)) {
         return -EINVAL;
     }
-    memcpy(data, me->data + index * me->bytes_per_item, me->bytes_per_item);
+    memcpy(data, (char *) me->data + index * me->bytes_per_item,
+           me->bytes_per_item);
     return 0;
 }
 

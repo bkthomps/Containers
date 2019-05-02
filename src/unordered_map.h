@@ -23,33 +23,31 @@
 #ifndef CONTAINERS_UNORDERED_MAP_H
 #define CONTAINERS_UNORDERED_MAP_H
 
-#include <stdbool.h>
-
 /**
  * The unordered_map data structure, which is a collection of key-value pairs,
  * hashed by keys, keys are unique
  */
 typedef struct internal_unordered_map *unordered_map;
 
-// Starting
+/* Starting */
 unordered_map unordered_map_init(size_t key_size,
                                  size_t value_size,
                                  unsigned long (*hash)(const void *const key),
                                  int (*comparator)(const void *const one,
                                                    const void *const two));
 
-// Utility
+/* Utility */
 int unordered_map_rehash(unordered_map me);
 int unordered_map_size(unordered_map me);
-bool unordered_map_is_empty(unordered_map me);
+int unordered_map_is_empty(unordered_map me);
 
-// Accessing
+/* Accessing */
 int unordered_map_put(unordered_map me, void *key, void *value);
-bool unordered_map_get(void *value, unordered_map me, void *key);
-bool unordered_map_contains(unordered_map me, void *key);
-bool unordered_map_remove(unordered_map me, void *key);
+int unordered_map_get(void *value, unordered_map me, void *key);
+int unordered_map_contains(unordered_map me, void *key);
+int unordered_map_remove(unordered_map me, void *key);
 
-// Ending
+/* Ending */
 int unordered_map_clear(unordered_map me);
 unordered_map unordered_map_destroy(unordered_map me);
 

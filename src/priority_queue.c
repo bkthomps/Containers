@@ -21,7 +21,7 @@
  */
 
 #include <stdlib.h>
-#include <memory.h>
+#include <string.h>
 #include <errno.h>
 #include "vector.h"
 #include "priority_queue.h"
@@ -46,11 +46,11 @@ priority_queue priority_queue_init(const size_t data_size,
                                    int (*comparator)(const void *const,
                                                      const void *const))
 {
+    struct internal_priority_queue *init;
     if (data_size == 0 || !comparator) {
         return NULL;
     }
-    struct internal_priority_queue *const init =
-            malloc(sizeof(struct internal_priority_queue));
+    init = malloc(sizeof(struct internal_priority_queue));
     if (!init) {
         return NULL;
     }
@@ -81,9 +81,9 @@ int priority_queue_size(priority_queue me)
  *
  * @param me the priority queue to check
  *
- * @return true if the priority queue is empty
+ * @return 1 if the priority queue is empty, otherwise 0
  */
-bool priority_queue_is_empty(priority_queue me)
+int priority_queue_is_empty(priority_queue me)
 {
     return vector_is_empty(me->data);
 }
@@ -99,28 +99,35 @@ bool priority_queue_is_empty(priority_queue me)
  */
 int priority_queue_push(priority_queue me, void *const data)
 {
+    int rc;
+    void *vector_storage;
+    int index;
+    int parent_index;
+    void *data_index;
+    void *data_parent_index;
     void *const temp = malloc(me->data_size);
     if (!temp) {
         return -ENOMEM;
     }
-    const int rc = vector_add_last(me->data, data);
+    rc = vector_add_last(me->data, data);
     if (rc != 0) {
         free(temp);
         return rc;
     }
-    void *const vector_storage = vector_get_data(me->data);
-    int index = vector_size(me->data) - 1;
-    int parent_index = (index - 1) / 2;
-    void *data_index = vector_storage + index * me->data_size;
-    void *data_parent_index = vector_storage + parent_index * me->data_size;
+    vector_storage = vector_get_data(me->data);
+    index = vector_size(me->data) - 1;
+    parent_index = (index - 1) / 2;
+    data_index = (char *) vector_storage + index * me->data_size;
+    data_parent_index = (char *) vector_storage + parent_index * me->data_size;
     while (index > 0 && me->comparator(data_index, data_parent_index) > 0) {
         memcpy(temp, data_parent_index, me->data_size);
         memcpy(data_parent_index, data_index, me->data_size);
         memcpy(data_index, temp, me->data_size);
         index = parent_index;
         parent_index = (index - 1) / 2;
-        data_index = vector_storage + index * me->data_size;
-        data_parent_index = vector_storage + parent_index * me->data_size;
+        data_index = (char *) vector_storage + index * me->data_size;
+        data_parent_index =
+                (char *) vector_storage + parent_index * me->data_size;
     }
     free(temp);
     return 0;
@@ -132,36 +139,44 @@ int priority_queue_push(priority_queue me, void *const data)
  * @param data the data to have copied from the priority queue
  * @param me   the priority queue to pop the next element from
  *
- * @return true if the priority queue contained elements
+ * @return 1 if the priority queue contained elements, otherwise 0
  */
-bool priority_queue_pop(void *const data, priority_queue me)
+int priority_queue_pop(void *const data, priority_queue me)
 {
+    void *vector_storage;
+    int size;
+    void *temp;
+    int index;
+    int left_index;
+    int right_index;
+    void *data_index;
+    void *data_left_index;
+    void *data_right_index;
     const int rc = vector_get_first(data, me->data);
     if (rc != 0) {
-        return false;
+        return 0;
     }
-    void *const vector_storage = vector_get_data(me->data);
-    const int size = vector_size(me->data) - 1;
-    void *const temp = vector_storage + size * me->data_size;
+    vector_storage = vector_get_data(me->data);
+    size = vector_size(me->data) - 1;
+    temp = (char *) vector_storage + size * me->data_size;
     memcpy(vector_storage, temp, me->data_size);
-    int index = 0;
-    int left_index = 1;
-    int right_index = 2;
-    void *data_index = vector_storage;
-    void *data_left_index = vector_storage + left_index * me->data_size;
-    void *data_right_index = vector_storage + right_index * me->data_size;
-    while (true) {
+    left_index = 1;
+    right_index = 2;
+    data_index = vector_storage;
+    data_left_index = (char *) vector_storage + left_index * me->data_size;
+    data_right_index = (char *) vector_storage + right_index * me->data_size;
+    for (;;) {
         if (right_index < size &&
             me->comparator(data_right_index, data_left_index) > 0 &&
             me->comparator(data_right_index, data_index) > 0) {
-            // Swap parent and right child then continue down right child.
+            /* Swap parent and right child then continue down right child. */
             memcpy(temp, data_index, me->data_size);
             memcpy(data_index, data_right_index, me->data_size);
             memcpy(data_right_index, temp, me->data_size);
             index = right_index;
         } else if (left_index < size &&
                    me->comparator(data_left_index, data_index) > 0) {
-            // Swap parent and left child then continue down left child.
+            /* Swap parent and left child then continue down left child. */
             memcpy(temp, data_index, me->data_size);
             memcpy(data_index, data_left_index, me->data_size);
             memcpy(data_left_index, temp, me->data_size);
@@ -171,12 +186,13 @@ bool priority_queue_pop(void *const data, priority_queue me)
         }
         left_index = 2 * index + 1;
         right_index = 2 * index + 2;
-        data_index = vector_storage + index * me->data_size;
-        data_left_index = vector_storage + left_index * me->data_size;
-        data_right_index = vector_storage + right_index * me->data_size;
+        data_index = (char *) vector_storage + index * me->data_size;
+        data_left_index = (char *) vector_storage + left_index * me->data_size;
+        data_right_index =
+                (char *) vector_storage + right_index * me->data_size;
     }
     vector_remove_last(me->data);
-    return true;
+    return 1;
 }
 
 /**
@@ -186,9 +202,9 @@ bool priority_queue_pop(void *const data, priority_queue me)
  *             queue
  * @param me   the priority queue to copy from
  *
- * @return true if the priority queue contained elements
+ * @return 1 if the priority queue contained elements, otherwise 0
  */
-bool priority_queue_front(void *const data, priority_queue me)
+int priority_queue_front(void *const data, priority_queue me)
 {
     return vector_get_first(data, me->data) == 0;
 }

@@ -40,10 +40,11 @@ struct internal_queue {
  */
 queue queue_init(const size_t data_size)
 {
+    struct internal_queue *init;
     if (data_size == 0) {
         return NULL;
     }
-    struct internal_queue *const init = malloc(sizeof(struct internal_queue));
+    init = malloc(sizeof(struct internal_queue));
     if (!init) {
         return NULL;
     }
@@ -74,9 +75,9 @@ int queue_size(queue me)
  *
  * @param me the queue to check if empty
  *
- * @return true if the queue is empty
+ * @return 1 if the queue is empty, otherwise 0
  */
-bool queue_is_empty(queue me)
+int queue_is_empty(queue me)
 {
     return deque_is_empty(me->deque_data);
 }
@@ -125,9 +126,9 @@ int queue_push(queue me, void *const data)
  * @param data the data to have copied from the queue
  * @param me   the queue to pop the next element from
  *
- * @return true if the queue contained elements
+ * @return 1 if the queue contained elements, otherwise 0
  */
-bool queue_pop(void *const data, queue me)
+int queue_pop(void *const data, queue me)
 {
     me->trim_count++;
     if (TRIM_RATIO * me->trim_count >= queue_size(me)) {
@@ -143,9 +144,9 @@ bool queue_pop(void *const data, queue me)
  * @param data the copy of the front element of the queue
  * @param me   the queue to copy from
  *
- * @return true if the queue contained elements
+ * @return 1 if the queue contained elements, otherwise 0
  */
-bool queue_front(void *const data, queue me)
+int queue_front(void *const data, queue me)
 {
     return deque_get_first(data, me->deque_data) == 0;
 }
@@ -156,9 +157,9 @@ bool queue_front(void *const data, queue me)
  * @param data the copy of the back element of the queue
  * @param me   the queue to copy from
  *
- * @return true if the queue contained elements
+ * @return 1 if the queue contained elements, otherwise 0
  */
-bool queue_back(void *const data, queue me)
+int queue_back(void *const data, queue me)
 {
     return deque_get_last(data, me->deque_data) == 0;
 }

@@ -23,46 +23,44 @@
 #ifndef CONTAINERS_VECTOR_H
 #define CONTAINERS_VECTOR_H
 
-#include <stdbool.h>
-
 /**
  * The vector data structure, which is a dynamic contiguous array.
  */
 typedef struct internal_vector *vector;
 
-// Starting
+/* Starting */
 vector vector_init(size_t data_size);
 
-// Utility
+/* Utility */
 int vector_size(vector me);
 int vector_capacity(vector me);
-bool vector_is_empty(vector me);
+int vector_is_empty(vector me);
 int vector_reserve(vector me, int size);
 int vector_trim(vector me);
 void vector_copy_to_array(void *arr, vector me);
 void *vector_get_data(vector me);
 
-// Adding
+/* Adding */
 int vector_add_first(vector me, void *data);
 int vector_add_at(vector me, int index, void *data);
 int vector_add_last(vector me, void *data);
 
-// Removing
+/* Removing */
 int vector_remove_first(vector me);
 int vector_remove_at(vector me, int index);
 int vector_remove_last(vector me);
 
-// Setting
+/* Setting */
 int vector_set_first(vector me, void *data);
 int vector_set_at(vector me, int index, void *data);
 int vector_set_last(vector me, void *data);
 
-// Getting
+/* Getting */
 int vector_get_first(void *data, vector me);
 int vector_get_at(void *data, vector me, int index);
 int vector_get_last(void *data, vector me);
 
-// Ending
+/* Ending */
 int vector_clear(vector me);
 vector vector_destroy(vector me);
 

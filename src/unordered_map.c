@@ -21,7 +21,7 @@
  */
 
 #include <stdlib.h>
-#include <memory.h>
+#include <string.h>
 #include <errno.h>
 #include "unordered_map.h"
 
@@ -51,8 +51,8 @@ struct node {
  * second hash to prevent hashing clusters if the user-defined hash is
  * sub-optimal.
  */
-static inline unsigned long unordered_map_hash(unordered_map me,
-                                               const void *const key)
+static unsigned long unordered_map_hash(unordered_map me,
+                                        const void *const key)
 {
     unsigned long hash = me->hash(key);
     hash ^= (hash >> 20UL) ^ (hash >> 12UL);
@@ -80,11 +80,11 @@ unordered_map unordered_map_init(const size_t key_size,
                                  int (*comparator)(const void *const,
                                                    const void *const))
 {
+    struct internal_unordered_map *init;
     if (key_size == 0 || value_size == 0 || !hash || !comparator) {
         return NULL;
     }
-    struct internal_unordered_map *const init =
-            malloc(sizeof(struct internal_unordered_map));
+    init = malloc(sizeof(struct internal_unordered_map));
     if (!init) {
         return NULL;
     }
@@ -107,13 +107,14 @@ unordered_map unordered_map_init(const size_t key_size,
  */
 static void unordered_map_add_item(unordered_map me, struct node *const add)
 {
+    struct node *traverse;
     const int index = (int) (add->hash % me->capacity);
     add->next = NULL;
     if (!me->buckets[index]) {
         me->buckets[index] = add;
         return;
     }
-    struct node *traverse = me->buckets[index];
+    traverse = me->buckets[index];
     while (traverse->next) {
         traverse = traverse->next;
     }
@@ -131,13 +132,13 @@ static void unordered_map_add_item(unordered_map me, struct node *const add)
  */
 int unordered_map_rehash(unordered_map me)
 {
+    int i;
     struct node **old_buckets = me->buckets;
     me->buckets = calloc((size_t) me->capacity, sizeof(struct node *));
     if (!me->buckets) {
         me->buckets = old_buckets;
         return -ENOMEM;
     }
-    int i;
     for (i = 0; i < me->capacity; i++) {
         struct node *traverse = old_buckets[i];
         while (traverse) {
@@ -168,9 +169,9 @@ int unordered_map_size(unordered_map me)
  *
  * @param me the unordered map to check
  *
- * @return true if the unordered map is empty
+ * @return 1 if the unordered map is empty, otherwise 0
  */
-bool unordered_map_is_empty(unordered_map me)
+int unordered_map_is_empty(unordered_map me)
 {
     return unordered_map_size(me) == 0;
 }
@@ -180,6 +181,7 @@ bool unordered_map_is_empty(unordered_map me)
  */
 static int unordered_map_resize(unordered_map me)
 {
+    int i;
     const int old_capacity = me->capacity;
     const int new_capacity = (int) (me->capacity * RESIZE_RATIO);
     struct node **old_buckets = me->buckets;
@@ -189,7 +191,6 @@ static int unordered_map_resize(unordered_map me)
         return -ENOMEM;
     }
     me->capacity = new_capacity;
-    int i;
     for (i = 0; i < old_capacity; i++) {
         struct node *traverse = old_buckets[i];
         while (traverse) {
@@ -205,10 +206,10 @@ static int unordered_map_resize(unordered_map me)
 /*
  * Determines if an element is equal to the key.
  */
-inline static bool unordered_map_is_equal(unordered_map me,
-                                          const struct node *const item,
-                                          const unsigned long hash,
-                                          const void *const key)
+static int unordered_map_is_equal(unordered_map me,
+                                  const struct node *const item,
+                                  const unsigned long hash,
+                                  const void *const key)
 {
     return item->hash == hash && me->comparator(item->key, key) == 0;
 }
@@ -296,9 +297,9 @@ int unordered_map_put(unordered_map me, void *const key, void *const value)
  * @param me    the unordered map to get from
  * @param key   the key to search for
  *
- * @return true if the unordered map contained the key-value pair
+ * @return 1 if the unordered map contained the key-value pair, otherwise 0
  */
-bool unordered_map_get(void *const value, unordered_map me, void *const key)
+int unordered_map_get(void *const value, unordered_map me, void *const key)
 {
     const unsigned long hash = unordered_map_hash(me, key);
     const int index = (int) (hash % me->capacity);
@@ -306,11 +307,11 @@ bool unordered_map_get(void *const value, unordered_map me, void *const key)
     while (traverse) {
         if (unordered_map_is_equal(me, traverse, hash, key)) {
             memcpy(value, traverse->value, me->value_size);
-            return true;
+            return 1;
         }
         traverse = traverse->next;
     }
-    return false;
+    return 0;
 }
 
 /**
@@ -319,20 +320,20 @@ bool unordered_map_get(void *const value, unordered_map me, void *const key)
  * @param me  the unordered map to check for the key
  * @param key the key to check
  *
- * @return true if the unordered map contained the key
+ * @return 1 if the unordered map contained the key, otherwise 0
  */
-bool unordered_map_contains(unordered_map me, void *const key)
+int unordered_map_contains(unordered_map me, void *const key)
 {
     const unsigned long hash = unordered_map_hash(me, key);
     const int index = (int) (hash % me->capacity);
     const struct node *traverse = me->buckets[index];
     while (traverse) {
         if (unordered_map_is_equal(me, traverse, hash, key)) {
-            return true;
+            return 1;
         }
         traverse = traverse->next;
     }
-    return false;
+    return 0;
 }
 
 /**
@@ -341,23 +342,24 @@ bool unordered_map_contains(unordered_map me, void *const key)
  * @param me  the unordered map to remove an key from
  * @param key the key to remove
  *
- * @return true if the unordered map contained the key
+ * @return 1 if the unordered map contained the key, otherwise 0
  */
-bool unordered_map_remove(unordered_map me, void *const key)
+int unordered_map_remove(unordered_map me, void *const key)
 {
+    struct node *traverse;
     const unsigned long hash = unordered_map_hash(me, key);
     const int index = (int) (hash % me->capacity);
     if (!me->buckets[index]) {
-        return false;
+        return 0;
     }
-    struct node *traverse = me->buckets[index];
+    traverse = me->buckets[index];
     if (unordered_map_is_equal(me, traverse, hash, key)) {
         me->buckets[index] = traverse->next;
         free(traverse->key);
         free(traverse->value);
         free(traverse);
         me->size--;
-        return true;
+        return 1;
     }
     while (traverse->next) {
         if (unordered_map_is_equal(me, traverse->next, hash, key)) {
@@ -367,11 +369,11 @@ bool unordered_map_remove(unordered_map me, void *const key)
             free(backup->value);
             free(backup);
             me->size--;
-            return true;
+            return 1;
         }
         traverse = traverse->next;
     }
-    return false;
+    return 0;
 }
 
 /**
@@ -384,12 +386,12 @@ bool unordered_map_remove(unordered_map me, void *const key)
  */
 int unordered_map_clear(unordered_map me)
 {
+    int i;
     struct node **temp =
             calloc((size_t) STARTING_BUCKETS, sizeof(struct node *));
     if (!temp) {
         return -ENOMEM;
     }
-    int i;
     for (i = 0; i < me->capacity; i++) {
         struct node *traverse = me->buckets[i];
         while (traverse) {

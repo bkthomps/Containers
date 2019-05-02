@@ -38,10 +38,11 @@ struct internal_stack {
  */
 stack stack_init(const size_t data_size)
 {
+    struct internal_stack *init;
     if (data_size == 0) {
         return NULL;
     }
-    struct internal_stack *const init = malloc(sizeof(struct internal_stack));
+    init = malloc(sizeof(struct internal_stack));
     if (!init) {
         return NULL;
     }
@@ -70,9 +71,9 @@ int stack_size(stack me)
  *
  * @param me the stack to check if empty
  *
- * @return true if the stack is empty
+ * @return 1 if the stack is empty, otherwise 0
  */
-bool stack_is_empty(stack me)
+int stack_is_empty(stack me)
 {
     return deque_is_empty(me->deque_data);
 }
@@ -122,9 +123,9 @@ int stack_push(stack me, void *const data)
  * @param data the copy of the element being removed
  * @param me   the stack to remove the top element from
  *
- * @return true if the stack contained elements
+ * @return 1 if the stack contained elements, otherwise 0
  */
-bool stack_pop(void *const data, stack me)
+int stack_pop(void *const data, stack me)
 {
     return deque_pop_back(data, me->deque_data) == 0;
 }
@@ -135,9 +136,9 @@ bool stack_pop(void *const data, stack me)
  * @param data the copy of the top element of the stack
  * @param me   the stack to copy from
  *
- * @return true if the stack contained elements
+ * @return 1 if the stack contained elements, otherwise 0
  */
-bool stack_top(void *const data, stack me)
+int stack_top(void *const data, stack me)
 {
     return deque_get_last(data, me->deque_data) == 0;
 }

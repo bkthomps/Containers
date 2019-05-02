@@ -21,7 +21,7 @@
  */
 
 #include <stdlib.h>
-#include <memory.h>
+#include <string.h>
 #include <errno.h>
 #include "forward_list.h"
 
@@ -46,11 +46,11 @@ struct node {
  */
 forward_list forward_list_init(const size_t data_size)
 {
+    struct internal_forward_list *init;
     if (data_size == 0) {
         return NULL;
     }
-    struct internal_forward_list *const init =
-            malloc(sizeof(struct internal_forward_list));
+    init = malloc(sizeof(struct internal_forward_list));
     if (!init) {
         return NULL;
     }
@@ -77,9 +77,9 @@ int forward_list_size(forward_list me)
  *
  * @param me the singly-linked list to check
  *
- * @return true if the singly-linked list is empty
+ * @return 1 if the singly-linked list is empty, otherwise 0
  */
-bool forward_list_is_empty(forward_list me)
+int forward_list_is_empty(forward_list me)
 {
     return forward_list_size(me) == 0;
 }
@@ -95,7 +95,7 @@ void forward_list_copy_to_array(void *const arr, forward_list me)
     struct node *traverse = me->head;
     int offset = 0;
     while (traverse) {
-        memcpy(arr + offset, traverse->data, me->bytes_per_item);
+        memcpy((char *) arr + offset, traverse->data, me->bytes_per_item);
         offset += me->bytes_per_item;
         traverse = traverse->next;
     }
@@ -141,10 +141,11 @@ int forward_list_add_first(forward_list me, void *const data)
  */
 int forward_list_add_at(forward_list me, const int index, void *const data)
 {
+    struct node *add;
     if (index < 0 || index > me->item_count) {
         return -EINVAL;
     }
-    struct node *const add = malloc(sizeof(struct node));
+    add = malloc(sizeof(struct node));
     if (!add) {
         return -ENOMEM;
     }
@@ -183,7 +184,7 @@ int forward_list_add_last(forward_list me, void *const data)
 /*
  * Determines if the input is illegal.
  */
-static bool forward_list_is_illegal_input(forward_list me, const int index)
+static int forward_list_is_illegal_input(forward_list me, const int index)
 {
     return index < 0 || index >= me->item_count;
 }
@@ -275,10 +276,11 @@ int forward_list_set_first(forward_list me, void *const data)
  */
 int forward_list_set_at(forward_list me, const int index, void *const data)
 {
+    struct node *traverse;
     if (forward_list_is_illegal_input(me, index)) {
         return -EINVAL;
     }
-    struct node *const traverse = forward_list_get_node_at(me, index);
+    traverse = forward_list_get_node_at(me, index);
     memcpy(traverse->data, data, me->bytes_per_item);
     return 0;
 }
@@ -323,10 +325,11 @@ int forward_list_get_first(void *const data, forward_list me)
  */
 int forward_list_get_at(void *const data, forward_list me, const int index)
 {
+    struct node *traverse;
     if (forward_list_is_illegal_input(me, index)) {
         return -EINVAL;
     }
-    struct node *const traverse = forward_list_get_node_at(me, index);
+    traverse = forward_list_get_node_at(me, index);
     memcpy(data, traverse->data, me->bytes_per_item);
     return 0;
 }

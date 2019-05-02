@@ -23,31 +23,29 @@
 #ifndef CONTAINERS_UNORDERED_SET_H
 #define CONTAINERS_UNORDERED_SET_H
 
-#include <stdbool.h>
-
 /**
  * The unordered_set data structure, which is a collection of unique keys,
  * hashed by keys.
  */
 typedef struct internal_unordered_set *unordered_set;
 
-// Starting
+/* Starting */
 unordered_set unordered_set_init(size_t key_size,
                                  unsigned long (*hash)(const void *const key),
                                  int (*comparator)(const void *const one,
                                                    const void *const two));
 
-// Utility
+/* Utility */
 int unordered_set_rehash(unordered_set me);
 int unordered_set_size(unordered_set me);
-bool unordered_set_is_empty(unordered_set me);
+int unordered_set_is_empty(unordered_set me);
 
-// Accessing
+/* Accessing */
 int unordered_set_put(unordered_set me, void *key);
-bool unordered_set_contains(unordered_set me, void *key);
-bool unordered_set_remove(unordered_set me, void *key);
+int unordered_set_contains(unordered_set me, void *key);
+int unordered_set_remove(unordered_set me, void *key);
 
-// Ending
+/* Ending */
 int unordered_set_clear(unordered_set me);
 unordered_set unordered_set_destroy(unordered_set me);
 

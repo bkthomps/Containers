@@ -23,42 +23,40 @@
 #ifndef CONTAINERS_FORWARD_LIST_H
 #define CONTAINERS_FORWARD_LIST_H
 
-#include <stdbool.h>
-
 /**
  * The forward_list data structure, which is a singly-linked list.
  */
 typedef struct internal_forward_list *forward_list;
 
-// Starting
+/* Starting */
 forward_list forward_list_init(size_t data_size);
 
-// Utility
+/* Utility */
 int forward_list_size(forward_list me);
-bool forward_list_is_empty(forward_list me);
+int forward_list_is_empty(forward_list me);
 void forward_list_copy_to_array(void *arr, forward_list me);
 
-// Adding
+/* Adding */
 int forward_list_add_first(forward_list me, void *data);
 int forward_list_add_at(forward_list me, int index, void *data);
 int forward_list_add_last(forward_list me, void *data);
 
-// Removing
+/* Removing */
 int forward_list_remove_first(forward_list me);
 int forward_list_remove_at(forward_list me, int index);
 int forward_list_remove_last(forward_list me);
 
-// Setting
+/* Setting */
 int forward_list_set_first(forward_list me, void *data);
 int forward_list_set_at(forward_list me, int index, void *data);
 int forward_list_set_last(forward_list me, void *data);
 
-// Getting
+/* Getting */
 int forward_list_get_first(void *data, forward_list me);
 int forward_list_get_at(void *data, forward_list me, int index);
 int forward_list_get_last(void *data, forward_list me);
 
-// Ending
+/* Ending */
 void forward_list_clear(forward_list me);
 forward_list forward_list_destroy(forward_list me);
 

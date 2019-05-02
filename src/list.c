@@ -21,7 +21,7 @@
  */
 
 #include <stdlib.h>
-#include <memory.h>
+#include <string.h>
 #include <errno.h>
 #include "list.h"
 
@@ -48,10 +48,11 @@ struct node {
  */
 list list_init(const size_t data_size)
 {
+    struct internal_list *init;
     if (data_size == 0) {
         return NULL;
     }
-    struct internal_list *const init = malloc(sizeof(struct internal_list));
+    init = malloc(sizeof(struct internal_list));
     if (!init) {
         return NULL;
     }
@@ -79,9 +80,9 @@ int list_size(list me)
  *
  * @param me the doubly-linked list to check
  *
- * @return true if the list is empty
+ * @return 1 if the list is empty, otherwise 0
  */
-bool list_is_empty(list me)
+int list_is_empty(list me)
 {
     return list_size(me) == 0;
 }
@@ -97,7 +98,7 @@ void list_copy_to_array(void *const arr, list me)
     struct node *traverse = me->head;
     int offset = 0;
     while (traverse) {
-        memcpy(arr + offset, traverse->data, me->bytes_per_item);
+        memcpy((char *) arr + offset, traverse->data, me->bytes_per_item);
         offset += me->bytes_per_item;
         traverse = traverse->next;
     }
@@ -189,6 +190,8 @@ int list_add_first(list me, void *const data)
  */
 int list_add_at(list me, const int index, void *const data)
 {
+    struct node *traverse;
+    struct node *add;
     if (index < 0 || index > me->item_count) {
         return -EINVAL;
     }
@@ -198,9 +201,9 @@ int list_add_at(list me, const int index, void *const data)
     if (index == me->item_count) {
         return list_add_last(me, data);
     }
-    // The new node will go right before this node.
-    struct node *const traverse = list_get_node_at(me, index);
-    struct node *const add = malloc(sizeof(struct node));
+    /* The new node will go right before this node. */
+    traverse = list_get_node_at(me, index);
+    add = malloc(sizeof(struct node));
     if (!add) {
         return -ENOMEM;
     }
@@ -253,7 +256,7 @@ int list_add_last(list me, void *const data)
 /*
  * Determines if the input is illegal.
  */
-static bool list_is_illegal_input(list me, const int index)
+static int list_is_illegal_input(list me, const int index)
 {
     return index < 0 || index >= me->item_count;
 }
@@ -282,10 +285,11 @@ int list_remove_first(list me)
  */
 int list_remove_at(list me, const int index)
 {
+    struct node *traverse;
     if (list_is_illegal_input(me, index)) {
         return -EINVAL;
     }
-    struct node *const traverse = list_get_node_at(me, index);
+    traverse = list_get_node_at(me, index);
     if (index == 0) {
         traverse->next->prev = NULL;
         me->head = traverse->next;
@@ -341,10 +345,11 @@ int list_set_first(list me, void *const data)
  */
 int list_set_at(list me, const int index, void *const data)
 {
+    struct node *traverse;
     if (list_is_illegal_input(me, index)) {
         return -EINVAL;
     }
-    struct node *const traverse = list_get_node_at(me, index);
+    traverse = list_get_node_at(me, index);
     memcpy(traverse->data, data, me->bytes_per_item);
     return 0;
 }
@@ -389,10 +394,11 @@ int list_get_first(void *const data, list me)
  */
 int list_get_at(void *const data, list me, const int index)
 {
+    struct node *traverse;
     if (list_is_illegal_input(me, index)) {
         return -EINVAL;
     }
-    struct node *const traverse = list_get_node_at(me, index);
+    traverse = list_get_node_at(me, index);
     memcpy(data, traverse->data, me->bytes_per_item);
     return 0;
 }

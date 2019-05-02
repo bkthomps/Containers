@@ -21,7 +21,7 @@
  */
 
 #include <stdlib.h>
-#include <memory.h>
+#include <string.h>
 #include <errno.h>
 #include "multimap.h"
 
@@ -69,12 +69,12 @@ multimap multimap_init(const size_t key_size,
                        int (*const value_comparator)(const void *const,
                                                      const void *const))
 {
+    struct internal_multimap *init;
     if (key_size == 0 || value_size == 0
         || !key_comparator || !value_comparator) {
         return NULL;
     }
-    struct internal_multimap *const init =
-            malloc(sizeof(struct internal_multimap));
+    init = malloc(sizeof(struct internal_multimap));
     if (!init) {
         return NULL;
     }
@@ -105,9 +105,9 @@ int multimap_size(multimap me)
  *
  * @param me the multi-map to check
  *
- * @return true if the multi-map is empty
+ * @return 1 if the multi-map is empty, otherwise 0
  */
-bool multimap_is_empty(multimap me)
+int multimap_is_empty(multimap me)
 {
     return multimap_size(me) == 0;
 }
@@ -136,8 +136,9 @@ static void multimap_rotate_left(multimap me,
                                  struct node *const parent,
                                  struct node *const child)
 {
+    struct node *grand_child;
     multimap_reference_parent(me, parent, child);
-    struct node *const grand_child = child->left;
+    grand_child = child->left;
     if (grand_child) {
         grand_child->parent = parent;
     }
@@ -153,8 +154,9 @@ static void multimap_rotate_right(multimap me,
                                   struct node *const parent,
                                   struct node *const child)
 {
+    struct node *grand_child;
     multimap_reference_parent(me, parent, child);
-    struct node *const grand_child = child->right;
+    grand_child = child->right;
     if (grand_child) {
         grand_child->parent = parent;
     }
@@ -225,7 +227,7 @@ static struct node *multimap_repair(multimap me,
         grand_child->balance = 0;
         return grand_child;
     }
-    // Impossible to get here.
+    /* Impossible to get here. */
     return NULL;
 }
 
@@ -243,13 +245,13 @@ static void multimap_insert_balance(multimap me, struct node *const item)
         } else {
             parent->balance++;
         }
-        // If balance is zero after modification, then the tree is balanced.
+        /* If balance is zero after modification, then the tree is balanced. */
         if (parent->balance == 0) {
             return;
         }
-        // Must re-balance if not in {-1, 0, 1}
+        /* Must re-balance if not in {-1, 0, 1} */
         if (parent->balance > 1 || parent->balance < -1) {
-            // After one repair, the tree is balanced.
+            /* After one repair, the tree is balanced. */
             multimap_repair(me, parent, child, grand_child);
             return;
         }
@@ -324,6 +326,7 @@ static struct node *multimap_create_node(multimap me,
  */
 int multimap_put(multimap me, void *const key, void *const value)
 {
+    struct node *traverse;
     if (!me->root) {
         struct node *insert = multimap_create_node(me, key, value, NULL);
         if (!insert) {
@@ -332,8 +335,8 @@ int multimap_put(multimap me, void *const key, void *const value)
         me->root = insert;
         return 0;
     }
-    struct node *traverse = me->root;
-    while (true) {
+    traverse = me->root;
+    for (;;) {
         const int compare = me->key_comparator(key, traverse->key);
         if (compare < 0) {
             if (traverse->left) {
@@ -381,9 +384,9 @@ static struct node *multimap_equal_match(multimap me, const void *const key)
 {
     struct node *traverse = me->root;
     if (!traverse) {
-        return false;
+        return 0;
     }
-    while (true) {
+    for (;;) {
         const int compare = me->key_comparator(key, traverse->key);
         if (compare < 0) {
             if (traverse->left) {
@@ -426,18 +429,19 @@ void multimap_get_start(multimap me, void *const key)
  * @param value the value to be copied to from iteration
  * @param me    the multi-map to iterate over
  *
- * @return true if there exist no more values for the key which is being
- *         iterated over
+ * @return 1 if there exist no more values for the key which is being iterated
+ *         over, otherwise 0
  */
-bool multimap_get_next(void *const value, multimap me)
+int multimap_get_next(void *const value, multimap me)
 {
+    const struct value_node *item;
     if (!me->iterate_get) {
-        return false;
+        return 0;
     }
-    const struct value_node *const item = me->iterate_get;
+    item = me->iterate_get;
     memcpy(value, item->value, me->value_size);
     me->iterate_get = item->next;
-    return true;
+    return 1;
 }
 
 /**
@@ -463,9 +467,9 @@ int multimap_count(multimap me, void *const key)
  * @param me  the multi-map to check for the key
  * @param key the key to check
  *
- * @return true if the multi-map contained the key
+ * @return 1 if the multi-map contained the key, otherwise 0
  */
-bool multimap_contains(multimap me, void *const key)
+int multimap_contains(multimap me, void *const key)
 {
     return multimap_equal_match(me, key) != NULL;
 }
@@ -475,7 +479,7 @@ bool multimap_contains(multimap me, void *const key)
  */
 static struct node *multimap_repair_pivot(multimap me,
                                           struct node *const item,
-                                          const bool is_left_pivot)
+                                          const int is_left_pivot)
 {
     struct node *const child = is_left_pivot ? item->right : item->left;
     struct node *const grand_child =
@@ -488,42 +492,44 @@ static struct node *multimap_repair_pivot(multimap me,
  */
 static void multimap_delete_balance(multimap me,
                                     struct node *item,
-                                    const bool is_left_deleted)
+                                    const int is_left_deleted)
 {
+    struct node *child;
+    struct node *parent;
     if (is_left_deleted) {
         item->balance++;
     } else {
         item->balance--;
     }
-    // If balance is -1 or +1 after modification, then the tree is balanced.
+    /* If balance is -1 or +1 after modification, then the tree is balanced. */
     if (item->balance == -1 || item->balance == 1) {
         return;
     }
-    // Must re-balance if not in {-1, 0, 1}
+    /* Must re-balance if not in {-1, 0, 1} */
     if (item->balance > 1 || item->balance < -1) {
         item = multimap_repair_pivot(me, item, is_left_deleted);
         if (!item->parent || item->balance == -1 || item->balance == 1) {
             return;
         }
     }
-    struct node *child = item;
-    struct node *parent = item->parent;
+    child = item;
+    parent = item->parent;
     while (parent) {
         if (parent->left == child) {
             parent->balance++;
         } else {
             parent->balance--;
         }
-        // If balance is -1 or +1 after modification, then the tree is balanced.
+        /* The tree is balanced if balance is -1 or +1 after modification. */
         if (parent->balance == -1 || parent->balance == 1) {
             return;
         }
-        // Must re-balance if not in {-1, 0, 1}
+        /* Must re-balance if not in {-1, 0, 1} */
         if (parent->balance > 1 || parent->balance < -1) {
             child = multimap_repair_pivot(me, parent, parent->left == child);
             parent = child->parent;
-            // If balance is -1 or +1 after modification or the parent is NULL,
-            // then the tree is balanced.
+            /* If balance is -1 or +1 after modification or the parent is */
+            /* NULL, then the tree is balanced. */
             if (!parent || child->balance == -1 || child->balance == 1) {
                 return;
             }
@@ -541,18 +547,18 @@ static void multimap_remove_no_children(multimap me,
                                         const struct node *const traverse)
 {
     struct node *const parent = traverse->parent;
-    // If no parent and no children, then the only node is traverse.
+    /* If no parent and no children, then the only node is traverse. */
     if (!parent) {
         me->root = NULL;
         return;
     }
-    // No re-reference needed since traverse has no children.
+    /* No re-reference needed since traverse has no children. */
     if (parent->left == traverse) {
         parent->left = NULL;
-        multimap_delete_balance(me, parent, true);
+        multimap_delete_balance(me, parent, 1);
     } else {
         parent->right = NULL;
-        multimap_delete_balance(me, parent, false);
+        multimap_delete_balance(me, parent, 0);
     }
 }
 
@@ -563,7 +569,7 @@ static void multimap_remove_one_child(multimap me,
                                       const struct node *const traverse)
 {
     struct node *const parent = traverse->parent;
-    // If no parent, make the child of traverse the new root.
+    /* If no parent, make the child of traverse the new root. */
     if (!parent) {
         if (traverse->left) {
             traverse->left->parent = NULL;
@@ -574,7 +580,7 @@ static void multimap_remove_one_child(multimap me,
         }
         return;
     }
-    // The parent of traverse now references the child of traverse.
+    /* The parent of traverse now references the child of traverse. */
     if (parent->left == traverse) {
         if (traverse->left) {
             parent->left = traverse->left;
@@ -583,7 +589,7 @@ static void multimap_remove_one_child(multimap me,
             parent->left = traverse->right;
             traverse->right->parent = parent;
         }
-        multimap_delete_balance(me, parent, true);
+        multimap_delete_balance(me, parent, 1);
     } else {
         if (traverse->left) {
             parent->right = traverse->left;
@@ -592,7 +598,7 @@ static void multimap_remove_one_child(multimap me,
             parent->right = traverse->right;
             traverse->right->parent = parent;
         }
-        multimap_delete_balance(me, parent, false);
+        multimap_delete_balance(me, parent, 0);
     }
 }
 
@@ -604,7 +610,7 @@ static void multimap_remove_two_children(multimap me,
 {
     struct node *item;
     struct node *parent;
-    const bool is_left_deleted = traverse->right->left != NULL;
+    const int is_left_deleted = traverse->right->left != NULL;
     if (!is_left_deleted) {
         item = traverse->right;
         parent = item;
@@ -662,15 +668,16 @@ static void multimap_remove_element(multimap me, struct node *const traverse)
  * @param key   the key to remove
  * @param value the value to remove
  *
- * @return true if the multi-map contained the key
+ * @return 1 if the multi-map contained the key, otherwise 0
  */
-bool multimap_remove(multimap me, void *const key, void *const value)
+int multimap_remove(multimap me, void *const key, void *const value)
 {
+    struct value_node *current;
     struct node *const traverse = multimap_equal_match(me, key);
     if (!traverse) {
-        return false;
+        return 0;
     }
-    struct value_node *current = traverse->head;
+    current = traverse->head;
     if (me->value_comparator(current->value, value) == 0) {
         traverse->head = current->next;
     } else {
@@ -681,7 +688,7 @@ bool multimap_remove(multimap me, void *const key, void *const value)
             current = current->next;
         }
         if (!current) {
-            return false;
+            return 0;
         }
         previous->next = current->next;
     }
@@ -692,7 +699,7 @@ bool multimap_remove(multimap me, void *const key, void *const value)
         multimap_remove_element(me, traverse);
     }
     me->size--;
-    return true;
+    return 1;
 }
 
 /*
@@ -718,16 +725,16 @@ static void multimap_remove_all_element(multimap me,
  * @param me  the multi-map to remove a key-value pair from
  * @param key the key to remove
  *
- * @return true if the multi-map contained the key
+ * @return 1 if the multi-map contained the key, otherwise 0
  */
-bool multimap_remove_all(multimap me, void *const key)
+int multimap_remove_all(multimap me, void *const key)
 {
     struct node *const traverse = multimap_equal_match(me, key);
     if (!traverse) {
-        return false;
+        return 0;
     }
     multimap_remove_all_element(me, traverse);
-    return true;
+    return 1;
 }
 
 /**

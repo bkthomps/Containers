@@ -23,26 +23,24 @@
 #ifndef CONTAINERS_ARRAY_H
 #define CONTAINERS_ARRAY_H
 
-#include <stdbool.h>
-
 /**
  * The array data structure, which is a static contiguous array.
  */
 typedef struct internal_array *array;
 
-// Starting
+/* Starting */
 array array_init(int element_count, size_t data_size);
 
-// Utility
+/* Utility */
 int array_size(array me);
 void array_copy_to_array(void *arr, array me);
 void *array_get_data(array me);
 
-// Accessing
+/* Accessing */
 int array_set(array me, int index, void *data);
 int array_get(void *data, array me, int index);
 
-// Ending
+/* Ending */
 array array_destroy(array me);
 
 #endif /* CONTAINERS_ARRAY_H */

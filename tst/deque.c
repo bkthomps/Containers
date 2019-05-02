@@ -3,31 +3,36 @@
 
 void test_deque(void)
 {
-    assert(!deque_init(0));
     int val[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-    deque me = deque_init(sizeof(int));
+    int get_arr[10] = {0};
+    int trimmed[5] = {0};
+    int arr[3] = {0};
+    deque me;
+    int get;
+    int add;
+    int set;
+    int i;
+    assert(!deque_init(0));
+    me = deque_init(sizeof(int));
     assert(me);
     assert(deque_size(me) == 0);
     assert(deque_is_empty(me));
-    int i;
     for (i = 0; i < 10; i++) {
         deque_push_front(me, &val[i]);
-        int get = 0;
+        get = 0;
         deque_get_first(&get, me);
         assert(get == val[i]);
     }
     assert(deque_size(me) == 10);
     assert(!deque_is_empty(me));
-    int get_arr[10] = {0};
     deque_copy_to_array(get_arr, me);
     for (i = 0; i < 10; i++) {
-        int get = 0;
+        get = 0;
         deque_get_at(&get, me, i);
         assert(get == val[9 - i]);
         assert(get_arr[i] == val[9 - i]);
     }
-    int trimmed[5] = {0};
-    int get = 5;
+    get = 5;
     deque_trim(me);
     for (i = 0; i < 7; i++) {
         deque_pop_back(&get, me);
@@ -38,7 +43,7 @@ void test_deque(void)
     for (i = 0; i < 3; i++) {
         assert(10 - i == trimmed[i]);
     }
-    int add = 3;
+    add = 3;
     deque_push_back(me, &add);
     add = -2;
     deque_push_back(me, &add);
@@ -78,13 +83,12 @@ void test_deque(void)
     assert(get == 8);
     deque_get_last(&get, me);
     assert(get == 3);
-    int set = 12;
+    set = 12;
     deque_set_first(me, &set);
     set = 13;
     deque_set_at(me, 1, &set);
     set = 14;
     deque_set_last(me, &set);
-    int arr[3] = {0};
     deque_copy_to_array(arr, me);
     assert(arr[0] == 12);
     assert(arr[1] == 13);
@@ -108,7 +112,7 @@ void test_deque(void)
     assert(deque_is_empty(me));
     me = deque_destroy(me);
     assert(!me);
-    // Testing automatic trim
+    /* Testing automatic trim */
     me = deque_init(sizeof(int));
     for (i = 0; i < 100; i++) {
         deque_push_back(me, &i);

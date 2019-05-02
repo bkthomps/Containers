@@ -21,7 +21,7 @@
  */
 
 #include <stdlib.h>
-#include <memory.h>
+#include <string.h>
 #include <errno.h>
 #include "array.h"
 
@@ -41,10 +41,11 @@ struct internal_array {
  */
 array array_init(const int element_count, const size_t data_size)
 {
+    struct internal_array *init;
     if (element_count <= 0 || data_size == 0) {
         return NULL;
     }
-    struct internal_array *const init = malloc(sizeof(struct internal_array));
+    init = malloc(sizeof(struct internal_array));
     if (!init) {
         return NULL;
     }
@@ -99,7 +100,7 @@ void *array_get_data(array me)
 /*
  * Determines if the input is illegal.
  */
-static bool array_is_illegal_input(array me, const int index)
+static int array_is_illegal_input(array me, const int index)
 {
     return index < 0 || index >= me->item_count;
 }
@@ -119,7 +120,8 @@ int array_set(array me, const int index, void *const data)
     if (array_is_illegal_input(me, index)) {
         return -EINVAL;
     }
-    memcpy(me->data + index * me->bytes_per_item, data, me->bytes_per_item);
+    memcpy((char *) me->data + index * me->bytes_per_item, data,
+           me->bytes_per_item);
     return 0;
 }
 
@@ -138,7 +140,8 @@ int array_get(void *const data, array me, const int index)
     if (array_is_illegal_input(me, index)) {
         return -EINVAL;
     }
-    memcpy(data, me->data + index * me->bytes_per_item, me->bytes_per_item);
+    memcpy(data, (char *) me->data + index * me->bytes_per_item,
+           me->bytes_per_item);
     return 0;
 }
 

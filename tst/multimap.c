@@ -10,17 +10,28 @@ static int compare_int(const void *const one, const void *const two)
 
 void test_multimap(void)
 {
+    int val_arr[10] = {5, 9, 4, -5, 0, 6, 1, 5, 7, 2};
+    int c[10] = {5, 9, 4, -5, 0, 6, 1, 5, 7, 2};
+    multimap me;
+    int key;
+    int value;
+    int num;
+    int count;
+    int val;
+    int flip;
+    int p;
+    int i;
+    int j;
     assert(!multimap_init(0, sizeof(int), compare_int, compare_int));
     assert(!multimap_init(sizeof(int), 0, compare_int, compare_int));
     assert(!multimap_init(sizeof(int), sizeof(int), NULL, compare_int));
     assert(!multimap_init(sizeof(int), sizeof(int), compare_int, NULL));
-    multimap me = multimap_init(sizeof(int), sizeof(int),
-                                compare_int, compare_int);
+    me = multimap_init(sizeof(int), sizeof(int), compare_int, compare_int);
     assert(me);
     assert(multimap_size(me) == 0);
     assert(multimap_is_empty(me));
-    int key = 4;
-    int value = 123;
+    key = 4;
+    value = 123;
     multimap_put(me, &key, &value);
     assert(multimap_size(me) == 1);
     multimap_put(me, &key, &value);
@@ -40,8 +51,7 @@ void test_multimap(void)
     assert(multimap_size(me) == 1);
     multimap_remove(me, &key, &value);
     assert(multimap_size(me) == 0);
-    int val_arr[10] = {5, 9, 4, -5, 0, 6, 1, 5, 7, 2};
-    int i;
+
     for (i = 0; i < 10; i++) {
         multimap_put(me, &val_arr[i], &value);
         assert(multimap_contains(me, &val_arr[i]));
@@ -50,17 +60,16 @@ void test_multimap(void)
     for (i = 0; i < 10; i++) {
         assert(multimap_contains(me, &val_arr[i]));
     }
-    int j;
     for (i = -100; i < 100; i++) {
-        bool contains = false;
+        int contains = 0;
         for (j = 0; j < 10; j++) {
             if (val_arr[j] == i) {
-                contains = true;
+                contains = 1;
             }
         }
         assert(multimap_contains(me, &i) == contains);
     }
-    int num = -3;
+    num = -3;
     assert(!multimap_remove(me, &num, &value));
     assert(multimap_size(me) == 10);
     assert(!multimap_contains(me, &num));
@@ -95,8 +104,8 @@ void test_multimap(void)
     num = 5;
     assert(multimap_count(me, &num) == 2);
     multimap_get_start(me, &num);
-    int count = 0;
-    int val = 0xdeadbeef;
+    count = 0;
+    val = 0xdeadbeef;
     while (multimap_get_next(&val, me)) {
         count++;
         assert(val == 123);
@@ -114,7 +123,7 @@ void test_multimap(void)
     assert(multimap_remove(me, &num, &value));
     assert(multimap_size(me) == 0);
     assert(!multimap_contains(me, &num));
-    // Add a lot of items and remove individually.
+    /* Add a lot of items and remove individually. */
     for (i = 5000; i < 6000; i++) {
         multimap_put(me, &i, &value);
         assert(multimap_contains(me, &i));
@@ -129,7 +138,7 @@ void test_multimap(void)
     multimap_clear(me);
     assert(multimap_size(me) == 0);
     assert(multimap_is_empty(me));
-    // Add a lot of items and clear.
+    /* Add a lot of items and clear. */
     for (i = 5000; i < 6000; i++) {
         multimap_put(me, &i, &value);
         assert(multimap_contains(me, &i));
@@ -154,7 +163,7 @@ void test_multimap(void)
     assert(!me);
     me = multimap_init(sizeof(int), sizeof(int), compare_int, compare_int);
     assert(me);
-    // left-left
+    /* left-left */
     key = 5;
     multimap_put(me, &key, &num);
     key = 3;
@@ -164,7 +173,7 @@ void test_multimap(void)
     key = 0xdeadbeef;
     multimap_contains(me, &key);
     multimap_clear(me);
-    // right-right
+    /* right-right */
     key = 1;
     multimap_put(me, &key, &num);
     key = 3;
@@ -174,7 +183,7 @@ void test_multimap(void)
     key = 0xdeadbeef;
     multimap_contains(me, &key);
     multimap_clear(me);
-    // left-right
+    /* left-right */
     key = 5;
     multimap_put(me, &key, &num);
     key = 1;
@@ -184,7 +193,7 @@ void test_multimap(void)
     key = 0xdeadbeef;
     multimap_contains(me, &key);
     multimap_clear(me);
-    // right-left
+    /* right-left */
     key = 1;
     multimap_put(me, &key, &num);
     key = 5;
@@ -194,7 +203,7 @@ void test_multimap(void)
     key = 0xdeadbeef;
     multimap_contains(me, &key);
     multimap_clear(me);
-    // Two children edge case.
+    /* Two children edge case. */
     key = 8;
     multimap_put(me, &key, &num);
     key = 5;
@@ -228,7 +237,7 @@ void test_multimap(void)
     key = 14;
     multimap_put(me, &key, &num);
     multimap_clear(me);
-    // Two children edge case.
+    /* Two children edge case. */
     key = 8;
     multimap_put(me, &key, &num);
     key = 4;
@@ -262,9 +271,9 @@ void test_multimap(void)
     key = 14;
     multimap_put(me, &key, &num);
     multimap_clear(me);
-    // Add a lot of items.
+    /* Add a lot of items. */
     count = 0;
-    bool flip = false;
+    flip = 0;
     for (i = 1234; i < 82400; i++) {
         key = i % 765;
         multimap_put(me, &key, &num);
@@ -272,7 +281,7 @@ void test_multimap(void)
         count++;
         if (i == 1857 && !flip) {
             i *= -1;
-            flip = true;
+            flip = 1;
         }
     }
     assert(count == multimap_size(me));
@@ -293,7 +302,6 @@ void test_multimap(void)
     multimap_put(me, &key, &num);
     assert(multimap_size(me) == 3);
     assert(multimap_contains(me, &key));
-    int c[10] = {5, 9, 4, -5, 0, 6, 1, 5, 7, 2};
     for (i = 0; i < 10; i++) {
         multimap_put(me, &c[i], &value);
         assert(multimap_contains(me, &c[i]));
@@ -303,10 +311,10 @@ void test_multimap(void)
         assert(multimap_contains(me, &c[i]));
     }
     for (i = -100; i < 100; i++) {
-        bool contains = false;
+        int contains = 0;
         for (j = 0; j < 10; j++) {
             if (c[j] == i) {
-                contains = true;
+                contains = 1;
             }
         }
         assert(multimap_contains(me, &i) == contains);
@@ -352,7 +360,7 @@ void test_multimap(void)
     assert(multimap_size(me) == 4);
     assert(!multimap_contains(me, &num));
     multimap_clear(me);
-    // Add a lot of items and remove individually.
+    /* Add a lot of items and remove individually. */
     value = 37;
     for (i = 5000; i < 6000; i++) {
         multimap_put(me, &i, &value);
@@ -368,20 +376,20 @@ void test_multimap(void)
     multimap_clear(me);
     assert(multimap_size(me) == 0);
     assert(multimap_is_empty(me));
-    // Add a lot of items and clear.
+    /* Add a lot of items and clear. */
     for (i = 5000; i < 6000; i++) {
         multimap_put(me, &i, &num);
         assert(multimap_contains(me, &i));
     }
     assert(multimap_size(me) == 1000);
     multimap_clear(me);
-    int p = 0xdeadbeef;
+    p = 0xdeadbeef;
     assert(!multimap_remove(me, &p, &value));
     assert(multimap_size(me) == 0);
     assert(multimap_is_empty(me));
     me = multimap_destroy(me);
     assert(!me);
-    // Create odd shape graph.
+    /* Create odd shape graph. */
     me = multimap_init(sizeof(int), sizeof(int), compare_int, compare_int);
     key = 10;
     multimap_put(me, &key, &num);
@@ -406,7 +414,7 @@ void test_multimap(void)
     key = 8;
     multimap_remove(me, &key, &value);
     multimap_clear(me);
-    // Allocate many nodes.
+    /* Allocate many nodes. */
     value = 54;
     for (i = 8123; i < 12314; i += 3) {
         multimap_put(me, &i, &value);
@@ -417,7 +425,7 @@ void test_multimap(void)
         assert(!multimap_contains(me, &i));
     }
     multimap_clear(me);
-    // Create another odd shape graph.
+    /* Create another odd shape graph. */
     key = 20;
     multimap_put(me, &key, &num);
     key = 10;
@@ -449,7 +457,7 @@ void test_multimap(void)
     key = 32;
     assert(multimap_contains(me, &key));
     multimap_clear(me);
-    // One sided tree.
+    /* One sided tree. */
     key = 10;
     multimap_put(me, &key, &num);
     key = 9;
@@ -463,7 +471,7 @@ void test_multimap(void)
     key = 7;
     assert(multimap_contains(me, &key));
     multimap_destroy(me);
-    // Replace two sided two children.
+    /* Replace two sided two children. */
     me = multimap_init(sizeof(int), sizeof(int), compare_int, compare_int);
     key = 5;
     multimap_put(me, &key, &num);
@@ -530,7 +538,7 @@ void test_multimap(void)
     key = 5;
     multimap_remove(me, &key, &value);
     multimap_clear(me);
-    // Two children edge case other side.
+    /* Two children edge case other side. */
     key = 8;
     multimap_put(me, &key, &num);
     key = 4;
@@ -566,7 +574,7 @@ void test_multimap(void)
     multimap_clear(me);
     assert(multimap_count(me, &key) == 0);
     assert(!multimap_remove_all(me, &key));
-    // Edge case.
+    /* Edge case. */
     me = multimap_init(sizeof(int), sizeof(int), compare_int, compare_int);
     value = 17;
     key = 5;

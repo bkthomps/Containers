@@ -21,7 +21,7 @@
  */
 
 #include <stdlib.h>
-#include <memory.h>
+#include <string.h>
 #include <errno.h>
 #include "unordered_multiset.h"
 
@@ -51,8 +51,8 @@ struct node {
  * second hash to prevent hashing clusters if the user-defined hash is
  * sub-optimal.
  */
-static inline unsigned long unordered_multiset_hash(unordered_multiset me,
-                                                    const void *const key)
+static unsigned long unordered_multiset_hash(unordered_multiset me,
+                                             const void *const key)
 {
     unsigned long hash = me->hash(key);
     hash ^= (hash >> 20UL) ^ (hash >> 12UL);
@@ -77,11 +77,11 @@ unordered_multiset_init(const size_t key_size,
                         unsigned long (*hash)(const void *const),
                         int (*comparator)(const void *const, const void *const))
 {
+    struct internal_unordered_multiset *init;
     if (key_size == 0 || !hash || !comparator) {
         return NULL;
     }
-    struct internal_unordered_multiset *const init =
-            malloc(sizeof(struct internal_unordered_multiset));
+    init = malloc(sizeof(struct internal_unordered_multiset));
     if (!init) {
         return NULL;
     }
@@ -105,13 +105,14 @@ unordered_multiset_init(const size_t key_size,
 static void unordered_multiset_add_item(unordered_multiset me,
                                         struct node *const add)
 {
+    struct node *traverse;
     const int index = (int) (add->hash % me->capacity);
     add->next = NULL;
     if (!me->buckets[index]) {
         me->buckets[index] = add;
         return;
     }
-    struct node *traverse = me->buckets[index];
+    traverse = me->buckets[index];
     while (traverse->next) {
         traverse = traverse->next;
     }
@@ -129,13 +130,13 @@ static void unordered_multiset_add_item(unordered_multiset me,
  */
 int unordered_multiset_rehash(unordered_multiset me)
 {
+    int i;
     struct node **old_buckets = me->buckets;
     me->buckets = calloc((size_t) me->capacity, sizeof(struct node *));
     if (!me->buckets) {
         me->buckets = old_buckets;
         return -ENOMEM;
     }
-    int i;
     for (i = 0; i < me->capacity; i++) {
         struct node *traverse = old_buckets[i];
         while (traverse) {
@@ -166,9 +167,9 @@ int unordered_multiset_size(unordered_multiset me)
  *
  * @param me the unordered multi-set to check
  *
- * @return true if the unordered multi-set is empty
+ * @return 1 if the unordered multi-set is empty, otherwise 0
  */
-bool unordered_multiset_is_empty(unordered_multiset me)
+int unordered_multiset_is_empty(unordered_multiset me)
 {
     return unordered_multiset_size(me) == 0;
 }
@@ -178,6 +179,7 @@ bool unordered_multiset_is_empty(unordered_multiset me)
  */
 static int unordered_multiset_resize(unordered_multiset me)
 {
+    int i;
     const int old_capacity = me->capacity;
     const int new_capacity = (int) (me->capacity * RESIZE_RATIO);
     struct node **old_buckets = me->buckets;
@@ -187,7 +189,6 @@ static int unordered_multiset_resize(unordered_multiset me)
         return -ENOMEM;
     }
     me->capacity = new_capacity;
-    int i;
     for (i = 0; i < old_capacity; i++) {
         struct node *traverse = old_buckets[i];
         while (traverse) {
@@ -203,10 +204,10 @@ static int unordered_multiset_resize(unordered_multiset me)
 /*
  * Determines if an element is equal to the key.
  */
-inline static bool unordered_multiset_is_equal(unordered_multiset me,
-                                               const struct node *const item,
-                                               const unsigned long hash,
-                                               const void *const key)
+static int unordered_multiset_is_equal(unordered_multiset me,
+                                       const struct node *const item,
+                                       const unsigned long hash,
+                                       const void *const key)
 {
     return item->hash == hash && me->comparator(item->key, key) == 0;
 }
@@ -310,9 +311,9 @@ int unordered_multiset_count(unordered_multiset me, void *const key)
  * @param me  the unordered multi-set to check for the key
  * @param key the key to check
  *
- * @return true if the unordered multi-set contained the key
+ * @return 1 if the unordered multi-set contained the key, otherwise 0
  */
-bool unordered_multiset_contains(unordered_multiset me, void *const key)
+int unordered_multiset_contains(unordered_multiset me, void *const key)
 {
     return unordered_multiset_count(me, key) > 0;
 }
@@ -323,16 +324,17 @@ bool unordered_multiset_contains(unordered_multiset me, void *const key)
  * @param me  the unordered multi-set to remove a key from
  * @param key the key to remove
  *
- * @return true if the unordered multi-set contained the key
+ * @return 1 if the unordered multi-set contained the key, otherwise 0
  */
-bool unordered_multiset_remove(unordered_multiset me, void *const key)
+int unordered_multiset_remove(unordered_multiset me, void *const key)
 {
+    struct node *traverse;
     const unsigned long hash = unordered_multiset_hash(me, key);
     const int index = (int) (hash % me->capacity);
     if (!me->buckets[index]) {
-        return false;
+        return 0;
     }
-    struct node *traverse = me->buckets[index];
+    traverse = me->buckets[index];
     if (unordered_multiset_is_equal(me, traverse, hash, key)) {
         traverse->count--;
         if (traverse->count == 0) {
@@ -342,7 +344,7 @@ bool unordered_multiset_remove(unordered_multiset me, void *const key)
             me->used--;
         }
         me->size--;
-        return true;
+        return 1;
     }
     while (traverse->next) {
         if (unordered_multiset_is_equal(me, traverse->next, hash, key)) {
@@ -355,11 +357,11 @@ bool unordered_multiset_remove(unordered_multiset me, void *const key)
                 me->used--;
             }
             me->size--;
-            return true;
+            return 1;
         }
         traverse = traverse->next;
     }
-    return false;
+    return 0;
 }
 
 /**
@@ -369,23 +371,24 @@ bool unordered_multiset_remove(unordered_multiset me, void *const key)
  * @param me  the unordered multi-set to remove a key from
  * @param key the key to remove
  *
- * @return true if the unordered multi-set contained the key
+ * @return 1 if the unordered multi-set contained the key, otherwise 0
  */
-bool unordered_multiset_remove_all(unordered_multiset me, void *const key)
+int unordered_multiset_remove_all(unordered_multiset me, void *const key)
 {
+    struct node *traverse;
     const unsigned long hash = unordered_multiset_hash(me, key);
     const int index = (int) (hash % me->capacity);
     if (!me->buckets[index]) {
-        return false;
+        return 0;
     }
-    struct node *traverse = me->buckets[index];
+    traverse = me->buckets[index];
     if (unordered_multiset_is_equal(me, traverse, hash, key)) {
         me->buckets[index] = traverse->next;
         me->size -= traverse->count;
         free(traverse->key);
         free(traverse);
         me->used--;
-        return true;
+        return 1;
     }
     while (traverse->next) {
         if (unordered_multiset_is_equal(me, traverse->next, hash, key)) {
@@ -395,11 +398,11 @@ bool unordered_multiset_remove_all(unordered_multiset me, void *const key)
             free(backup->key);
             free(backup);
             me->used--;
-            return true;
+            return 1;
         }
         traverse = traverse->next;
     }
-    return false;
+    return 0;
 }
 
 /**
@@ -412,12 +415,12 @@ bool unordered_multiset_remove_all(unordered_multiset me, void *const key)
  */
 int unordered_multiset_clear(unordered_multiset me)
 {
+    int i;
     struct node **temp =
             calloc((size_t) STARTING_BUCKETS, sizeof(struct node *));
     if (!temp) {
         return -ENOMEM;
     }
-    int i;
     for (i = 0; i < me->capacity; i++) {
         struct node *traverse = me->buckets[i];
         while (traverse) {

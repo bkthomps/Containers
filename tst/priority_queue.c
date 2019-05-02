@@ -13,20 +13,22 @@ struct internal_priority_queue {
 
 static void priority_queue_verify(priority_queue me)
 {
+    int i;
     void *const vector_storage = vector_get_data(me->data);
     const int size = vector_size(me->data);
-    int i;
     for (i = 0; i < size; i++) {
-        const int val = *(int *) (vector_storage + i * me->data_size);
+        const int val = *(int *) ((char *) vector_storage + i * me->data_size);
         const int left_child = 2 * i + 1;
         const int right_child = 2 * i + 2;
         if (left_child < size) {
-            void *left_data = vector_storage + left_child * me->data_size;
+            void *left_data =
+                    (char *) vector_storage + left_child * me->data_size;
             const int left_val = *(int *) left_data;
             assert(val >= left_val);
         }
         if (right_child < size) {
-            void *right_data = vector_storage + right_child * me->data_size;
+            void *right_data =
+                    (char *) vector_storage + right_child * me->data_size;
             const int right_val = *(int *) right_data;
             assert(val >= right_val);
         }
@@ -47,22 +49,26 @@ int stub_priority_queue_push(priority_queue me, void *const data)
     return ret;
 }
 
-bool stub_priority_queue_pop(void *const data, priority_queue me)
+int stub_priority_queue_pop(void *const data, priority_queue me)
 {
-    const bool ret = priority_queue_pop(data, me);
+    const int ret = priority_queue_pop(data, me);
     priority_queue_verify(me);
     return ret;
 }
 
 void test_priority_queue(void)
 {
+    priority_queue me;
+    int item;
+    int latest;
+    int i;
     assert(!priority_queue_init(0, compare_int));
     assert(!priority_queue_init(sizeof(int), NULL));
-    priority_queue me = priority_queue_init(sizeof(int), compare_int);
+    me = priority_queue_init(sizeof(int), compare_int);
     assert(me);
     assert(priority_queue_size(me) == 0);
     assert(priority_queue_is_empty(me));
-    int item = 0xdeadbeef;
+    item = 0xdeadbeef;
     assert(!priority_queue_pop(&item, me));
     assert(item == 0xdeadbeef);
     item = 5;
@@ -109,8 +115,7 @@ void test_priority_queue(void)
     item = 0xdeadbeef;
     priority_queue_front(&item, me);
     assert(item == 9);
-    int latest = item;
-    int i;
+    latest = item;
     for (i = 0; i < 15; i++) {
         stub_priority_queue_pop(&item, me);
         assert(item <= latest);
