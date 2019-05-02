@@ -109,7 +109,8 @@ void list_copy_to_array(void *const arr, list me)
 static struct node *list_get_node_from_head(list me, const int index)
 {
     struct node *traverse = me->head;
-    for (int i = 0; i < index; i++) {
+    int i;
+    for (i = 0; i < index; i++) {
         traverse = traverse->next;
     }
     return traverse;
@@ -121,7 +122,8 @@ static struct node *list_get_node_from_head(list me, const int index)
 static struct node *list_get_node_from_tail(list me, const int index)
 {
     struct node *traverse = me->tail;
-    for (int i = me->item_count - 1; i > index; i--) {
+    int i;
+    for (i = me->item_count - 1; i > index; i--) {
         traverse = traverse->prev;
     }
     return traverse;

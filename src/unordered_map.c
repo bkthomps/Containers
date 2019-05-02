@@ -137,7 +137,8 @@ int unordered_map_rehash(unordered_map me)
         me->buckets = old_buckets;
         return -ENOMEM;
     }
-    for (int i = 0; i < me->capacity; i++) {
+    int i;
+    for (i = 0; i < me->capacity; i++) {
         struct node *traverse = old_buckets[i];
         while (traverse) {
             struct node *const backup = traverse->next;
@@ -188,7 +189,8 @@ static int unordered_map_resize(unordered_map me)
         return -ENOMEM;
     }
     me->capacity = new_capacity;
-    for (int i = 0; i < old_capacity; i++) {
+    int i;
+    for (i = 0; i < old_capacity; i++) {
         struct node *traverse = old_buckets[i];
         while (traverse) {
             struct node *const backup = traverse->next;
@@ -387,7 +389,8 @@ int unordered_map_clear(unordered_map me)
     if (!temp) {
         return -ENOMEM;
     }
-    for (int i = 0; i < me->capacity; i++) {
+    int i;
+    for (i = 0; i < me->capacity; i++) {
         struct node *traverse = me->buckets[i];
         while (traverse) {
             struct node *const backup = traverse;
