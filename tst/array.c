@@ -7,6 +7,7 @@ void test_array(void)
     int i;
     int *data;
     int arr[10] = {0};
+    int array[2] = {0xdeadbeef, 0xdeadbeef};
     int get;
     assert(!array_init(-1, sizeof(int)));
     assert(!array_init(1, 0));
@@ -42,4 +43,13 @@ void test_array(void)
     assert(array_get(&get, me, -1) == -EINVAL);
     me = array_destroy(me);
     assert(!me);
+    me = array_init(0, sizeof(int));
+    assert(array_size(me) == 0);
+    array_copy_to_array(array, me);
+    assert(array[0] == 0xdeadbeef);
+    assert(array[1] == 0xdeadbeef);
+    assert(!array_get_data(me));
+    assert(array_set(me, 0, &get) == -EINVAL);
+    assert(array_get(&get, me, 0) == -EINVAL);
+    assert(!array_destroy(me));
 }

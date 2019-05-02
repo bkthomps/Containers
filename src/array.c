@@ -34,7 +34,8 @@ struct internal_array {
 /**
  * Initializes an array.
  *
- * @param element_count the amount of elements in the array; must be positive
+ * @param element_count the amount of elements in the array; must not be
+ *                      negative
  * @param data_size     the size of each element in the array; must be positive
  *
  * @return the newly-initialized array, or NULL if memory allocation error
@@ -42,7 +43,7 @@ struct internal_array {
 array array_init(const int element_count, const size_t data_size)
 {
     struct internal_array *init;
-    if (element_count <= 0 || data_size == 0) {
+    if (element_count < 0 || data_size == 0) {
         return NULL;
     }
     init = malloc(sizeof(struct internal_array));
@@ -51,6 +52,10 @@ array array_init(const int element_count, const size_t data_size)
     }
     init->bytes_per_item = data_size;
     init->item_count = element_count;
+    if (init->item_count == 0) {
+        init->data = NULL;
+        return init;
+    }
     init->data = calloc((size_t) element_count, data_size);
     if (!init->data) {
         free(init);
@@ -79,6 +84,9 @@ int array_size(array me)
  */
 void array_copy_to_array(void *const arr, array me)
 {
+    if (me->item_count == 0) {
+        return;
+    }
     memcpy(arr, me->data, me->item_count * me->bytes_per_item);
 }
 
