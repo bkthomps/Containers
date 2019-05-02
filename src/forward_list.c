@@ -107,7 +107,8 @@ void forward_list_copy_to_array(void *const arr, forward_list me)
 static struct node *forward_list_get_node_at(forward_list me, const int index)
 {
     struct node *traverse = me->head;
-    for (int i = 0; i < index; i++) {
+    int i;
+    for (i = 0; i < index; i++) {
         traverse = traverse->next;
     }
     return traverse;

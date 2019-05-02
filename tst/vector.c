@@ -7,9 +7,11 @@ static void test_vector_of_vectors(void)
     // Test using a vector of vectors of ints
     vector outer = vector_init(sizeof(vector));
     // Add vectors to the outer vector
-    for (int i = 0; i < 5; i++) {
+    int i;
+    int j;
+    for (i = 0; i < 5; i++) {
         vector inner = vector_init(sizeof(int));
-        for (int j = 1; j <= 10; j++) {
+        for (j = 1; j <= 10; j++) {
             vector_add_last(inner, &j);
         }
         assert(vector_size(inner) == 10);
@@ -17,10 +19,10 @@ static void test_vector_of_vectors(void)
     }
     assert(vector_size(outer) == 5);
     // Delete the vectors in the outer vector
-    for (int i = 0; i < 5; i++) {
+    for (i = 0; i < 5; i++) {
         vector inner = NULL;
         vector_get_first(&inner, outer);
-        for (int j = 0; j < 10; j++) {
+        for (j = 0; j < 10; j++) {
             int num = 0xdeadbeef;
             vector_get_at(&num, inner, j);
             assert(num == j + 1);
@@ -35,20 +37,22 @@ static void test_vector_of_vectors(void)
 static void test_vector_dynamic(void)
 {
     char **str = malloc(5 * sizeof(char **));
-    for (int i = 0; i < 5; i++) {
+    int i;
+    int j;
+    for (i = 0; i < 5; i++) {
         str[i] = malloc(10 * sizeof(char *));
-        for (int j = 0; j < 9; j++) {
+        for (j = 0; j < 9; j++) {
             str[i][j] = (char) ('a' + i);
         }
         str[i][9] = '\0';
     }
     vector str_vector = vector_init(sizeof(char *));
     assert(str_vector);
-    for (int i = 0; i < 5; i++) {
+    for (i = 0; i < 5; i++) {
         vector_add_last(str_vector, &str[i]);
     }
     assert(vector_size(str_vector) == 5);
-    for (int i = 0; i < 5; i++) {
+    for (i = 0; i < 5; i++) {
         char *retrieve = NULL;
         vector_get_first(&retrieve, str_vector);
         vector_remove_first(str_vector);
@@ -69,7 +73,8 @@ void test_vector(void)
     assert(me);
     assert(vector_size(me) == 0);
     assert(vector_is_empty(me));
-    for (int i = 0; i < 10; i++) {
+    int i;
+    for (i = 0; i < 10; i++) {
         vector_add_first(me, &val[i]);
         int get = 0;
         vector_get_first(&get, me);
@@ -79,26 +84,26 @@ void test_vector(void)
     assert(!vector_is_empty(me));
     int get_arr[10] = {0};
     vector_copy_to_array(get_arr, me);
-    for (int i = 0; i < 10; i++) {
+    for (i = 0; i < 10; i++) {
         int get = 0;
         vector_get_at(&get, me, i);
         assert(get == val[9 - i]);
         assert(get_arr[i] == val[9 - i]);
     }
     int *const data = vector_get_data(me);
-    for (int i = 0; i < 10; i++) {
+    for (i = 0; i < 10; i++) {
         assert(data[i] == val[9 - i]);
     }
     assert(vector_capacity(me) >= vector_size(me));
     int trimmed[5] = {0};
     vector_trim(me);
     vector_reserve(me, 3);
-    for (int i = 0; i < 7; i++) {
+    for (i = 0; i < 7; i++) {
         vector_remove_last(me);
     }
     vector_copy_to_array(trimmed, me);
     assert(vector_size(me) == 3);
-    for (int i = 0; i < 3; i++) {
+    for (i = 0; i < 3; i++) {
         assert(10 - i == trimmed[i]);
     }
     int add = 3;
@@ -169,7 +174,7 @@ void test_vector(void)
     assert(vector_remove_at(me, -1) == -EINVAL);
     assert(vector_add_at(me, -1, &set) == -EINVAL);
     vector_clear(me);
-    for (int i = 0; i < 32; i++) {
+    for (i = 0; i < 32; i++) {
         vector_add_last(me, &i);
     }
     vector_clear(me);

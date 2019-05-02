@@ -38,17 +38,19 @@ void test_multiset(void)
     multiset_remove(me, &key);
     assert(multiset_size(me) == 0);
     int val_arr[10] = {5, 9, 4, -5, 0, 6, 1, 5, 7, 2};
-    for (int i = 0; i < 10; i++) {
+    int i;
+    for (i = 0; i < 10; i++) {
         multiset_put(me, &val_arr[i]);
         assert(multiset_contains(me, &val_arr[i]));
     }
     assert(multiset_size(me) == 10);
-    for (int i = 0; i < 10; i++) {
+    for (i = 0; i < 10; i++) {
         assert(multiset_contains(me, &val_arr[i]));
     }
-    for (int i = -100; i < 100; i++) {
+    int j;
+    for (i = -100; i < 100; i++) {
         bool contains = false;
-        for (int j = 0; j < 10; j++) {
+        for (j = 0; j < 10; j++) {
             if (val_arr[j] == i) {
                 contains = true;
             }
@@ -100,12 +102,12 @@ void test_multiset(void)
     assert(multiset_size(me) == 0);
     assert(!multiset_contains(me, &num));
     // Add a lot of items and remove individually.
-    for (int i = 5000; i < 6000; i++) {
+    for (i = 5000; i < 6000; i++) {
         multiset_put(me, &i);
         assert(multiset_contains(me, &i));
     }
     assert(multiset_size(me) == 1000);
-    for (int i = 5000; i < 6000; i++) {
+    for (i = 5000; i < 6000; i++) {
         multiset_remove(me, &i);
         assert(!multiset_contains(me, &i));
     }
@@ -115,7 +117,7 @@ void test_multiset(void)
     assert(multiset_size(me) == 0);
     assert(multiset_is_empty(me));
     // Add a lot of items and clear.
-    for (int i = 5000; i < 6000; i++) {
+    for (i = 5000; i < 6000; i++) {
         multiset_put(me, &i);
         assert(multiset_contains(me, &i));
     }
@@ -129,7 +131,7 @@ void test_multiset(void)
     multiset_put(me, &key);
     assert(multiset_size(me) == 1);
     key = 7;
-    for (int i = 0; i < 10; i++) {
+    for (i = 0; i < 10; i++) {
         multiset_put(me, &key);
     }
     assert(multiset_size(me) == 11);
@@ -250,7 +252,7 @@ void test_multiset(void)
     // Add a lot of items.
     int count = 0;
     bool flip = false;
-    for (int i = 1234; i < 82400; i++) {
+    for (i = 1234; i < 82400; i++) {
         key = i % 765;
         multiset_put(me, &key);
         assert(multiset_contains(me, &key));
@@ -279,17 +281,17 @@ void test_multiset(void)
     assert(multiset_size(me) == 3);
     assert(multiset_contains(me, &key));
     int c[10] = {5, 9, 4, -5, 0, 6, 1, 5, 7, 2};
-    for (int i = 0; i < 10; i++) {
+    for (i = 0; i < 10; i++) {
         multiset_put(me, &c[i]);
         assert(multiset_contains(me, &c[i]));
     }
     assert(multiset_size(me) == 13);
-    for (int i = 0; i < 10; i++) {
+    for (i = 0; i < 10; i++) {
         assert(multiset_contains(me, &c[i]));
     }
-    for (int i = -100; i < 100; i++) {
+    for (i = -100; i < 100; i++) {
         bool contains = false;
-        for (int j = 0; j < 10; j++) {
+        for (j = 0; j < 10; j++) {
             if (c[j] == i) {
                 contains = true;
             }
@@ -338,12 +340,12 @@ void test_multiset(void)
     assert(!multiset_contains(me, &num));
     multiset_clear(me);
     // Add a lot of items and remove individually.
-    for (int i = 5000; i < 6000; i++) {
+    for (i = 5000; i < 6000; i++) {
         multiset_put(me, &i);
         assert(multiset_contains(me, &i));
     }
     assert(multiset_size(me) == 1000);
-    for (int i = 5000; i < 5500; i++) {
+    for (i = 5000; i < 5500; i++) {
         multiset_remove(me, &i);
         assert(!multiset_contains(me, &i));
     }
@@ -353,7 +355,7 @@ void test_multiset(void)
     assert(multiset_size(me) == 0);
     assert(multiset_is_empty(me));
     // Add a lot of items and clear.
-    for (int i = 5000; i < 6000; i++) {
+    for (i = 5000; i < 6000; i++) {
         multiset_put(me, &i);
         assert(multiset_contains(me, &i));
     }
@@ -391,11 +393,11 @@ void test_multiset(void)
     multiset_remove(me, &key);
     multiset_clear(me);
     // Allocate many nodes.
-    for (int i = 8123; i < 12314; i += 3) {
+    for (i = 8123; i < 12314; i += 3) {
         multiset_put(me, &i);
         assert(multiset_contains(me, &i));
     }
-    for (int i = 13000; i > 8000; i--) {
+    for (i = 13000; i > 8000; i--) {
         multiset_remove(me, &i);
         assert(!multiset_contains(me, &i));
     }
@@ -496,11 +498,11 @@ void test_multiset(void)
     me = multiset_destroy(me);
     assert(!me);
     me = multiset_init(sizeof(int), compare_int);
-    for (int i = 4817; i > -2983; i -= 11) {
+    for (i = 4817; i > -2983; i -= 11) {
         multiset_put(me, &i);
         assert(multiset_contains(me, &i));
     }
-    for (int i = -432; i < 3849; i += 7) {
+    for (i = -432; i < 3849; i += 7) {
         multiset_remove(me, &i);
         assert(!multiset_contains(me, &i));
     }

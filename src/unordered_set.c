@@ -131,7 +131,8 @@ int unordered_set_rehash(unordered_set me)
         me->buckets = old_buckets;
         return -ENOMEM;
     }
-    for (int i = 0; i < me->capacity; i++) {
+    int i;
+    for (i = 0; i < me->capacity; i++) {
         struct node *traverse = old_buckets[i];
         while (traverse) {
             struct node *const backup = traverse->next;
@@ -182,7 +183,8 @@ static int unordered_set_resize(unordered_set me)
         return -ENOMEM;
     }
     me->capacity = new_capacity;
-    for (int i = 0; i < old_capacity; i++) {
+    int i;
+    for (i = 0; i < old_capacity; i++) {
         struct node *traverse = old_buckets[i];
         while (traverse) {
             struct node *const backup = traverse->next;
@@ -344,7 +346,8 @@ int unordered_set_clear(unordered_set me)
     if (!temp) {
         return -ENOMEM;
     }
-    for (int i = 0; i < me->capacity; i++) {
+    int i;
+    for (i = 0; i < me->capacity; i++) {
         struct node *traverse = me->buckets[i];
         while (traverse) {
             struct node *const backup = traverse;

@@ -51,17 +51,19 @@ void test_unordered_map(void)
     assert(unordered_map_size(me) == 2);
     assert(unordered_map_contains(me, &key));
     int val_arr[10] = {5, 9, 4, -5, 0, 6, 1, 5, 7, 2};
-    for (int i = 0; i < 10; i++) {
+    int i;
+    for (i = 0; i < 10; i++) {
         unordered_map_put(me, &val_arr[i], &value);
         assert(unordered_map_contains(me, &val_arr[i]));
     }
     assert(unordered_map_size(me) == 9);
-    for (int i = 0; i < 10; i++) {
+    for (i = 0; i < 10; i++) {
         assert(unordered_map_contains(me, &val_arr[i]));
     }
-    for (int i = -100; i < 100; i++) {
+    int j;
+    for (i = -100; i < 100; i++) {
         bool contains = false;
-        for (int j = 0; j < 10; j++) {
+        for (j = 0; j < 10; j++) {
             if (val_arr[j] == i) {
                 contains = true;
             }
@@ -109,12 +111,12 @@ void test_unordered_map(void)
     assert(unordered_map_size(me) == 0);
     assert(!unordered_map_contains(me, &num));
     // Add a lot of items and remove individually.
-    for (int i = 5000; i < 6000; i++) {
+    for (i = 5000; i < 6000; i++) {
         unordered_map_put(me, &i, &value);
         assert(unordered_map_contains(me, &i));
     }
     assert(unordered_map_size(me) == 1000);
-    for (int i = 5000; i < 6000; i++) {
+    for (i = 5000; i < 6000; i++) {
         unordered_map_remove(me, &i);
         assert(!unordered_map_contains(me, &i));
     }
@@ -124,7 +126,7 @@ void test_unordered_map(void)
     assert(unordered_map_size(me) == 0);
     assert(unordered_map_is_empty(me));
     // Add a lot of items and clear.
-    for (int i = 5000; i < 6000; i++) {
+    for (i = 5000; i < 6000; i++) {
         unordered_map_put(me, &i, &value);
         assert(unordered_map_contains(me, &i));
     }

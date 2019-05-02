@@ -54,17 +54,19 @@ void test_unordered_multiset(void)
     unordered_multiset_remove(me, &key);
     assert(unordered_multiset_size(me) == 0);
     int c[10] = {5, 9, 4, -5, 0, 6, 1, 5, 7, 2};
-    for (int i = 0; i < 10; i++) {
+    int i;
+    for (i = 0; i < 10; i++) {
         unordered_multiset_put(me, &c[i]);
         assert(unordered_multiset_contains(me, &c[i]));
     }
     assert(unordered_multiset_size(me) == 10);
-    for (int i = 0; i < 10; i++) {
+    for (i = 0; i < 10; i++) {
         assert(unordered_multiset_contains(me, &c[i]));
     }
-    for (int i = -100; i < 100; i++) {
+    int j;
+    for (i = -100; i < 100; i++) {
         bool contains = false;
-        for (int j = 0; j < 10; j++) {
+        for (j = 0; j < 10; j++) {
             if (c[j] == i) {
                 contains = true;
             }
@@ -116,12 +118,12 @@ void test_unordered_multiset(void)
     assert(unordered_multiset_size(me) == 0);
     assert(!unordered_multiset_contains(me, &num));
     // Add a lot of items and remove individually.
-    for (int i = 5000; i < 6000; i++) {
+    for (i = 5000; i < 6000; i++) {
         unordered_multiset_put(me, &i);
         assert(unordered_multiset_contains(me, &i));
     }
     assert(unordered_multiset_size(me) == 1000);
-    for (int i = 5000; i < 6000; i++) {
+    for (i = 5000; i < 6000; i++) {
         unordered_multiset_remove(me, &i);
         assert(!unordered_multiset_contains(me, &i));
     }
@@ -131,7 +133,7 @@ void test_unordered_multiset(void)
     assert(unordered_multiset_size(me) == 0);
     assert(unordered_multiset_is_empty(me));
     // Add a lot of items and clear.
-    for (int i = 5000; i < 6000; i++) {
+    for (i = 5000; i < 6000; i++) {
         unordered_multiset_put(me, &i);
         assert(unordered_multiset_contains(me, &i));
     }
@@ -148,7 +150,7 @@ void test_unordered_multiset(void)
     unordered_multiset_put(me, &key);
     assert(unordered_multiset_size(me) == 1);
     key = 7;
-    for (int i = 0; i < 10; i++) {
+    for (i = 0; i < 10; i++) {
         unordered_multiset_put(me, &key);
     }
     assert(unordered_multiset_size(me) == 11);

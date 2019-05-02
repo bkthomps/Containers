@@ -230,7 +230,8 @@ void test_set(void)
     // Add a lot of items.
     int count = 0;
     bool flip = false;
-    for (int i = 1234; i < 82400; i++) {
+    int i;
+    for (i = 1234; i < 82400; i++) {
         int num = i % 765;
         const bool is_already_present = stub_set_contains(me, &num);
         stub_set_put(me, &num);
@@ -263,17 +264,18 @@ void test_set(void)
     assert(set_size(me) == 2);
     assert(stub_set_contains(me, &key));
     int c[10] = {5, 9, 4, -5, 0, 6, 1, 5, 7, 2};
-    for (int i = 0; i < 10; i++) {
+    for (i = 0; i < 10; i++) {
         stub_set_put(me, &c[i]);
         assert(stub_set_contains(me, &c[i]));
     }
     assert(set_size(me) == 9);
-    for (int i = 0; i < 10; i++) {
+    for (i = 0; i < 10; i++) {
         assert(stub_set_contains(me, &c[i]));
     }
-    for (int i = -100; i < 100; i++) {
+    int j;
+    for (i = -100; i < 100; i++) {
         bool contains = false;
-        for (int j = 0; j < 10; j++) {
+        for (j = 0; j < 10; j++) {
             if (c[j] == i) {
                 contains = true;
             }
@@ -321,12 +323,12 @@ void test_set(void)
     assert(set_size(me) == 0);
     assert(!stub_set_contains(me, &num));
     // Add a lot of items and remove individually.
-    for (int i = 5000; i < 6000; i++) {
+    for (i = 5000; i < 6000; i++) {
         stub_set_put(me, &i);
         assert(stub_set_contains(me, &i));
     }
     assert(set_size(me) == 1000);
-    for (int i = 5000; i < 5500; i++) {
+    for (i = 5000; i < 5500; i++) {
         stub_set_remove(me, &i);
         assert(!stub_set_contains(me, &i));
     }
@@ -336,7 +338,7 @@ void test_set(void)
     assert(set_size(me) == 0);
     assert(set_is_empty(me));
     // Add a lot of items and clear.
-    for (int i = 5000; i < 6000; i++) {
+    for (i = 5000; i < 6000; i++) {
         stub_set_put(me, &i);
         assert(stub_set_contains(me, &i));
     }
@@ -374,11 +376,11 @@ void test_set(void)
     stub_set_remove(me, &key);
     stub_set_clear(me);
     // Allocate many nodes.
-    for (int i = 8123; i < 12314; i += 3) {
+    for (i = 8123; i < 12314; i += 3) {
         stub_set_put(me, &i);
         assert(stub_set_contains(me, &i));
     }
-    for (int i = 13000; i > 8000; i--) {
+    for (i = 13000; i > 8000; i--) {
         stub_set_remove(me, &i);
         assert(!stub_set_contains(me, &i));
     }
@@ -479,11 +481,11 @@ void test_set(void)
     me = stub_set_destroy(me);
     assert(!me);
     me = set_init(sizeof(int), compare_int);
-    for (int i = 4817; i > -2983; i -= 11) {
+    for (i = 4817; i > -2983; i -= 11) {
         stub_set_put(me, &i);
         assert(stub_set_contains(me, &i));
     }
-    for (int i = -432; i < 3849; i += 7) {
+    for (i = -432; i < 3849; i += 7) {
         stub_set_remove(me, &i);
         assert(!stub_set_contains(me, &i));
     }
@@ -495,7 +497,7 @@ void test_set(void)
     key = 5;
     stub_set_remove(me, &key);
     stub_set_clear(me);
-    // Two children edge case other side.
+    // Two children edge case on the other side.
     key = 8;
     stub_set_put(me, &key);
     key = 4;

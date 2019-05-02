@@ -119,11 +119,12 @@ int deque_trim(deque me)
     if (!new_block) {
         return -ENOMEM;
     }
-    for (int i = 0; i < start_block; i++) {
+    int i;
+    for (i = 0; i < start_block; i++) {
         const struct node block_item = me->block[i];
         free(block_item.data);
     }
-    for (int i = end_block + 1; i < me->block_count; i++) {
+    for (i = end_block + 1; i < me->block_count; i++) {
         const struct node block_item = me->block[i];
         free(block_item.data);
     }
@@ -146,7 +147,8 @@ int deque_trim(deque me)
  */
 void deque_copy_to_array(void *const arr, deque me)
 {
-    for (int i = 0; i < deque_size(me); i++) {
+    int i;
+    for (i = 0; i < deque_size(me); i++) {
         deque_get_at(arr + i * me->data_size, me, i);
     }
 }
@@ -187,7 +189,8 @@ int deque_push_front(deque me, void *const data)
             block_index = added_blocks - 1;
             me->start_index += added_blocks * BLOCK_SIZE;
             me->end_index += added_blocks * BLOCK_SIZE;
-            for (int i = 0; i < added_blocks; i++) {
+            int i;
+            for (i = 0; i < added_blocks; i++) {
                 struct node *const block_item = &me->block[i];
                 block_item->data = NULL;
             }
@@ -230,7 +233,8 @@ int deque_push_back(deque me, void *const data)
             }
             me->block = temp;
             me->block_count = new_block_count;
-            for (int i = block_index; i < me->block_count; i++) {
+            int i;
+            for (i = block_index; i < me->block_count; i++) {
                 struct node *const block_item = &me->block[i];
                 block_item->data = NULL;
             }
@@ -414,7 +418,8 @@ int deque_clear(deque me)
         free(temp_block);
         return -ENOMEM;
     }
-    for (int i = 0; i < me->block_count; i++) {
+    int i;
+    for (i = 0; i < me->block_count; i++) {
         const struct node block_item = me->block[i];
         free(block_item.data);
     }
@@ -437,7 +442,8 @@ int deque_clear(deque me)
  */
 deque deque_destroy(deque me)
 {
-    for (int i = 0; i < me->block_count; i++) {
+    int i;
+    for (i = 0; i < me->block_count; i++) {
         const struct node block_item = me->block[i];
         free(block_item.data);
     }
