@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.5.1)
 project(Containers C)
 
-set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD 90)
 
 set(CMAKE_C_FLAGS "-g -O0 -Wall -fprofile-arcs -ftest-coverage")
 

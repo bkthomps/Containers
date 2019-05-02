@@ -35,17 +35,19 @@ void test_map(void)
     assert(map_size(me) == 2);
     assert(map_contains(me, &key));
     int val_arr[10] = {5, 9, 4, -5, 0, 6, 1, 5, 7, 2};
-    for (int i = 0; i < 10; i++) {
+    int i;
+    for (i = 0; i < 10; i++) {
         map_put(me, &val_arr[i], &value);
         assert(map_contains(me, &val_arr[i]));
     }
     assert(map_size(me) == 9);
-    for (int i = 0; i < 10; i++) {
+    for (i = 0; i < 10; i++) {
         assert(map_contains(me, &val_arr[i]));
     }
-    for (int i = -100; i < 100; i++) {
+    int j;
+    for (i = -100; i < 100; i++) {
         bool contains = false;
-        for (int j = 0; j < 10; j++) {
+        for (j = 0; j < 10; j++) {
             if (val_arr[j] == i) {
                 contains = true;
             }
@@ -93,12 +95,12 @@ void test_map(void)
     assert(map_size(me) == 0);
     assert(!map_contains(me, &num));
     // Add a lot of items and remove individually.
-    for (int i = 5000; i < 6000; i++) {
+    for (i = 5000; i < 6000; i++) {
         map_put(me, &i, &value);
         assert(map_contains(me, &i));
     }
     assert(map_size(me) == 1000);
-    for (int i = 5000; i < 6000; i++) {
+    for (i = 5000; i < 6000; i++) {
         map_remove(me, &i);
         assert(!map_contains(me, &i));
     }
@@ -108,7 +110,7 @@ void test_map(void)
     assert(map_size(me) == 0);
     assert(map_is_empty(me));
     // Add a lot of items and clear.
-    for (int i = 5000; i < 6000; i++) {
+    for (i = 5000; i < 6000; i++) {
         map_put(me, &i, &value);
         assert(map_contains(me, &i));
     }
@@ -233,7 +235,7 @@ void test_map(void)
     // Add a lot of items.
     int count = 0;
     bool flip = false;
-    for (int i = 1234; i < 82400; i++) {
+    for (i = 1234; i < 82400; i++) {
         key = i % 765;
         const bool is_already_present = map_contains(me, &key);
         map_put(me, &key, &num);
@@ -266,17 +268,17 @@ void test_map(void)
     assert(map_size(me) == 2);
     assert(map_contains(me, &key));
     int c[10] = {5, 9, 4, -5, 0, 6, 1, 5, 7, 2};
-    for (int i = 0; i < 10; i++) {
+    for (i = 0; i < 10; i++) {
         map_put(me, &c[i], &num);
         assert(map_contains(me, &c[i]));
     }
     assert(map_size(me) == 9);
-    for (int i = 0; i < 10; i++) {
+    for (i = 0; i < 10; i++) {
         assert(map_contains(me, &c[i]));
     }
-    for (int i = -100; i < 100; i++) {
+    for (i = -100; i < 100; i++) {
         bool contains = false;
-        for (int j = 0; j < 10; j++) {
+        for (j = 0; j < 10; j++) {
             if (c[j] == i) {
                 contains = true;
             }
@@ -324,12 +326,12 @@ void test_map(void)
     assert(map_size(me) == 0);
     assert(!map_contains(me, &num));
     // Add a lot of items and remove individually.
-    for (int i = 5000; i < 6000; i++) {
+    for (i = 5000; i < 6000; i++) {
         map_put(me, &i, &num);
         assert(map_contains(me, &i));
     }
     assert(map_size(me) == 1000);
-    for (int i = 5000; i < 5500; i++) {
+    for (i = 5000; i < 5500; i++) {
         map_remove(me, &i);
         assert(!map_contains(me, &i));
     }
@@ -339,7 +341,7 @@ void test_map(void)
     assert(map_size(me) == 0);
     assert(map_is_empty(me));
     // Add a lot of items and clear.
-    for (int i = 5000; i < 6000; i++) {
+    for (i = 5000; i < 6000; i++) {
         map_put(me, &i, &num);
         assert(map_contains(me, &i));
     }
@@ -377,11 +379,11 @@ void test_map(void)
     map_remove(me, &key);
     map_clear(me);
     // Allocate many nodes.
-    for (int i = 8123; i < 12314; i += 3) {
+    for (i = 8123; i < 12314; i += 3) {
         map_put(me, &i, &num);
         assert(map_contains(me, &i));
     }
-    for (int i = 13000; i > 8000; i--) {
+    for (i = 13000; i > 8000; i--) {
         map_remove(me, &i);
         assert(!map_contains(me, &i));
     }
@@ -482,11 +484,11 @@ void test_map(void)
     me = map_destroy(me);
     assert(!me);
     me = map_init(sizeof(int), sizeof(int), compare_int);
-    for (int i = 4817; i > -2983; i -= 11) {
+    for (i = 4817; i > -2983; i -= 11) {
         map_put(me, &i, &num);
         assert(map_contains(me, &i));
     }
-    for (int i = -432; i < 3849; i += 7) {
+    for (i = -432; i < 3849; i += 7) {
         map_remove(me, &i);
         assert(!map_contains(me, &i));
     }

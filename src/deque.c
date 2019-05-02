@@ -119,11 +119,12 @@ int deque_trim(deque me)
     if (!new_block) {
         return -ENOMEM;
     }
-    for (int i = 0; i < start_block; i++) {
+    int i;
+    for (i = 0; i < start_block; i++) {
         const struct node block_item = me->block[i];
         free(block_item.data);
     }
-    for (int i = end_block + 1; i < me->block_count; i++) {
+    for (i = end_block + 1; i < me->block_count; i++) {
         const struct node block_item = me->block[i];
         free(block_item.data);
     }

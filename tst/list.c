@@ -9,7 +9,8 @@ void test_list(void)
     assert(me);
     assert(list_size(me) == 0);
     assert(list_is_empty(me));
-    for (int i = 0; i < 10; i++) {
+    int i;
+    for (i = 0; i < 10; i++) {
         list_add_first(me, &val[i]);
         assert(list_size(me) == i + 1);
         int get = 0;
@@ -20,19 +21,19 @@ void test_list(void)
     assert(!list_is_empty(me));
     int get_arr[10] = {0};
     list_copy_to_array(get_arr, me);
-    for (int i = 0; i < 10; i++) {
+    for (i = 0; i < 10; i++) {
         int get = 0;
         list_get_at(&get, me, i);
         assert(get == val[9 - i]);
         assert(get_arr[i] == val[9 - i]);
     }
-    for (int i = 0; i < 7; i++) {
+    for (i = 0; i < 7; i++) {
         list_remove_last(me);
     }
     int trimmed[5] = {0};
     list_copy_to_array(trimmed, me);
     assert(list_size(me) == 3);
-    for (int i = 0; i < 3; i++) {
+    for (i = 0; i < 3; i++) {
         assert(10 - i == trimmed[i]);
     }
     int index = list_size(me);
