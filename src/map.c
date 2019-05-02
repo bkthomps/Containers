@@ -89,9 +89,9 @@ int map_size(map me)
  *
  * @param me the map to check
  *
- * @return true if the map is empty
+ * @return 1 if the map is empty, otherwise 0
  */
-bool map_is_empty(map me)
+int map_is_empty(map me)
 {
     return map_size(me) == 0;
 }
@@ -301,7 +301,7 @@ int map_put(map me, void *const key, void *const value)
         return 0;
     }
     traverse = me->root;
-    while (true) {
+    for (;;) {
         const int compare = me->comparator(key, traverse->key);
         if (compare < 0) {
             if (traverse->left) {
@@ -341,9 +341,9 @@ static struct node *map_equal_match(map me, const void *const key)
 {
     struct node *traverse = me->root;
     if (!traverse) {
-        return false;
+        return NULL;
     }
-    while (true) {
+    for (;;) {
         const int compare = me->comparator(key, traverse->key);
         if (compare < 0) {
             if (traverse->left) {
@@ -370,16 +370,16 @@ static struct node *map_equal_match(map me, const void *const key)
  * @param me    the map to get from
  * @param key   the key to search for
  *
- * @return true if the map contained the key-value pair
+ * @return 1 if the map contained the key-value pair, otherwise 0
  */
-bool map_get(void *const value, map me, void *const key)
+int map_get(void *const value, map me, void *const key)
 {
     struct node *const traverse = map_equal_match(me, key);
     if (!traverse) {
-        return false;
+        return 0;
     }
     memcpy(value, traverse->value, me->value_size);
-    return true;
+    return 1;
 }
 
 /**
@@ -388,9 +388,9 @@ bool map_get(void *const value, map me, void *const key)
  * @param me  the map to check for the element
  * @param key the key to check
  *
- * @return true if the map contained the element
+ * @return 1 if the map contained the element, otherwise 0
  */
-bool map_contains(map me, void *const key)
+int map_contains(map me, void *const key)
 {
     return map_equal_match(me, key) != NULL;
 }
@@ -400,7 +400,7 @@ bool map_contains(map me, void *const key)
  */
 static struct node *map_repair_pivot(map me,
                                      struct node *const item,
-                                     const bool is_left_pivot)
+                                     const int is_left_pivot)
 {
     struct node *const child = is_left_pivot ? item->right : item->left;
     struct node *const grand_child =
@@ -413,7 +413,7 @@ static struct node *map_repair_pivot(map me,
  */
 static void map_delete_balance(map me,
                                struct node *item,
-                               const bool is_left_deleted)
+                               const int is_left_deleted)
 {
     struct node *child;
     struct node *parent;
@@ -475,10 +475,10 @@ static void map_remove_no_children(map me, const struct node *const traverse)
     /* No re-reference needed since traverse has no children. */
     if (parent->left == traverse) {
         parent->left = NULL;
-        map_delete_balance(me, parent, true);
+        map_delete_balance(me, parent, 1);
     } else {
         parent->right = NULL;
-        map_delete_balance(me, parent, false);
+        map_delete_balance(me, parent, 0);
     }
 }
 
@@ -508,7 +508,7 @@ static void map_remove_one_child(map me, const struct node *const traverse)
             parent->left = traverse->right;
             traverse->right->parent = parent;
         }
-        map_delete_balance(me, parent, true);
+        map_delete_balance(me, parent, 1);
     } else {
         if (traverse->left) {
             parent->right = traverse->left;
@@ -517,7 +517,7 @@ static void map_remove_one_child(map me, const struct node *const traverse)
             parent->right = traverse->right;
             traverse->right->parent = parent;
         }
-        map_delete_balance(me, parent, false);
+        map_delete_balance(me, parent, 0);
     }
 }
 
@@ -528,7 +528,7 @@ static void map_remove_two_children(map me, const struct node *const traverse)
 {
     struct node *item;
     struct node *parent;
-    const bool is_left_deleted = traverse->right->left != NULL;
+    const int is_left_deleted = traverse->right->left != NULL;
     if (!is_left_deleted) {
         item = traverse->right;
         parent = item;
@@ -587,16 +587,16 @@ static void map_remove_element(map me, struct node *const traverse)
  * @param me  the map to remove an element from
  * @param key the key to remove
  *
- * @return true if the map contained the key-value pair
+ * @return 1 if the map contained the key-value pair, otherwise 0
  */
-bool map_remove(map me, void *const key)
+int map_remove(map me, void *const key)
 {
     struct node *const traverse = map_equal_match(me, key);
     if (!traverse) {
-        return false;
+        return 0;
     }
     map_remove_element(me, traverse);
-    return true;
+    return 1;
 }
 
 /**

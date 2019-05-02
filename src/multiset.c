@@ -87,9 +87,9 @@ int multiset_size(multiset me)
  *
  * @param me the multi-set to check
  *
- * @return true if the multi-set is empty
+ * @return 1 if the multi-set is empty, otherwise 0
  */
-bool multiset_is_empty(multiset me)
+int multiset_is_empty(multiset me)
 {
     return multiset_size(me) == 0;
 }
@@ -290,7 +290,7 @@ int multiset_put(multiset me, void *const key)
         return 0;
     }
     traverse = me->root;
-    while (true) {
+    for (;;) {
         const int compare = me->comparator(key, traverse->key);
         if (compare < 0) {
             if (traverse->left) {
@@ -331,9 +331,9 @@ static struct node *multiset_equal_match(multiset me, const void *const key)
 {
     struct node *traverse = me->root;
     if (!traverse) {
-        return false;
+        return 0;
     }
-    while (true) {
+    for (;;) {
         const int compare = me->comparator(key, traverse->key);
         if (compare < 0) {
             if (traverse->left) {
@@ -376,9 +376,9 @@ int multiset_count(multiset me, void *const key)
  * @param me  the multi-set to check for the key
  * @param key the key to check
  *
- * @return true if the multiset contained the key
+ * @return 1 if the multiset contained the key, otherwise 0
  */
-bool multiset_contains(multiset me, void *const key)
+int multiset_contains(multiset me, void *const key)
 {
     return multiset_equal_match(me, key) != NULL;
 }
@@ -388,7 +388,7 @@ bool multiset_contains(multiset me, void *const key)
  */
 static struct node *multiset_repair_pivot(multiset me,
                                           struct node *const item,
-                                          const bool is_left_pivot)
+                                          const int is_left_pivot)
 {
     struct node *const child = is_left_pivot ? item->right : item->left;
     struct node *const grand_child =
@@ -401,7 +401,7 @@ static struct node *multiset_repair_pivot(multiset me,
  */
 static void multiset_delete_balance(multiset me,
                                     struct node *item,
-                                    const bool is_left_deleted)
+                                    const int is_left_deleted)
 {
     struct node *child;
     struct node *parent;
@@ -464,10 +464,10 @@ static void multiset_remove_no_children(multiset me,
     /* No re-reference needed since traverse has no children. */
     if (parent->left == traverse) {
         parent->left = NULL;
-        multiset_delete_balance(me, parent, true);
+        multiset_delete_balance(me, parent, 1);
     } else {
         parent->right = NULL;
-        multiset_delete_balance(me, parent, false);
+        multiset_delete_balance(me, parent, 0);
     }
 }
 
@@ -498,7 +498,7 @@ static void multiset_remove_one_child(multiset me,
             parent->left = traverse->right;
             traverse->right->parent = parent;
         }
-        multiset_delete_balance(me, parent, true);
+        multiset_delete_balance(me, parent, 1);
     } else {
         if (traverse->left) {
             parent->right = traverse->left;
@@ -507,7 +507,7 @@ static void multiset_remove_one_child(multiset me,
             parent->right = traverse->right;
             traverse->right->parent = parent;
         }
-        multiset_delete_balance(me, parent, false);
+        multiset_delete_balance(me, parent, 0);
     }
 }
 
@@ -519,7 +519,7 @@ static void multiset_remove_two_children(multiset me,
 {
     struct node *item;
     struct node *parent;
-    const bool is_left_deleted = traverse->right->left != NULL;
+    const int is_left_deleted = traverse->right->left != NULL;
     if (!is_left_deleted) {
         item = traverse->right;
         parent = item;
@@ -576,20 +576,20 @@ static void multiset_remove_element(multiset me, struct node *const traverse)
  * @param me  the multi-set to remove a key from
  * @param key the key to remove
  *
- * @return true if the multi-set contained the key
+ * @return 1 if the multi-set contained the key, otherwise 0
  */
-bool multiset_remove(multiset me, void *const key)
+int multiset_remove(multiset me, void *const key)
 {
     struct node *const traverse = multiset_equal_match(me, key);
     if (!traverse) {
-        return false;
+        return 0;
     }
     traverse->count--;
     if (traverse->count == 0) {
         multiset_remove_element(me, traverse);
     }
     me->size--;
-    return true;
+    return 1;
 }
 
 /**
@@ -598,17 +598,17 @@ bool multiset_remove(multiset me, void *const key)
  * @param me  the multi-set to remove a key from
  * @param key the key to remove
  *
- * @return true if the multi-set contained the key
+ * @return 1 if the multi-set contained the key, otherwise 0
  */
-bool multiset_remove_all(multiset me, void *const key)
+int multiset_remove_all(multiset me, void *const key)
 {
     struct node *const traverse = multiset_equal_match(me, key);
     if (!traverse) {
-        return false;
+        return 0;
     }
     me->size -= traverse->count;
     multiset_remove_element(me, traverse);
-    return true;
+    return 1;
 }
 
 /**

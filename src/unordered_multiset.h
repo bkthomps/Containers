@@ -23,8 +23,6 @@
 #ifndef CONTAINERS_UNORDERED_MULTISET_H
 #define CONTAINERS_UNORDERED_MULTISET_H
 
-#include <stdbool.h>
-
 /**
  * The unordered_multiset data structure, which is a collection of keys, hashed
  * by keys.
@@ -41,14 +39,14 @@ unordered_multiset_init(size_t key_size,
 /* Utility */
 int unordered_multiset_rehash(unordered_multiset me);
 int unordered_multiset_size(unordered_multiset me);
-bool unordered_multiset_is_empty(unordered_multiset me);
+int unordered_multiset_is_empty(unordered_multiset me);
 
 /* Accessing */
 int unordered_multiset_put(unordered_multiset me, void *key);
 int unordered_multiset_count(unordered_multiset me, void *key);
-bool unordered_multiset_contains(unordered_multiset me, void *key);
-bool unordered_multiset_remove(unordered_multiset me, void *key);
-bool unordered_multiset_remove_all(unordered_multiset me, void *key);
+int unordered_multiset_contains(unordered_multiset me, void *key);
+int unordered_multiset_remove(unordered_multiset me, void *key);
+int unordered_multiset_remove_all(unordered_multiset me, void *key);
 
 /* Ending */
 int unordered_multiset_clear(unordered_multiset me);

@@ -23,8 +23,6 @@
 #ifndef CONTAINERS_PRIORITY_QUEUE_H
 #define CONTAINERS_PRIORITY_QUEUE_H
 
-#include <stdbool.h>
-
 /**
  * The priority_queue data structure, which adapts a container to provide a
  * priority queue. Adapts the vector container.
@@ -38,16 +36,16 @@ priority_queue priority_queue_init(size_t data_size,
 
 /* Utility */
 int priority_queue_size(priority_queue me);
-bool priority_queue_is_empty(priority_queue me);
+int priority_queue_is_empty(priority_queue me);
 
 /* Adding */
 int priority_queue_push(priority_queue me, void *data);
 
 /* Removing */
-bool priority_queue_pop(void *data, priority_queue me);
+int priority_queue_pop(void *data, priority_queue me);
 
 /* Getting */
-bool priority_queue_front(void *data, priority_queue me);
+int priority_queue_front(void *data, priority_queue me);
 
 /* Ending */
 int priority_queue_clear(priority_queue me);

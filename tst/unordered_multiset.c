@@ -67,10 +67,10 @@ void test_unordered_multiset(void)
         assert(unordered_multiset_contains(me, &c[i]));
     }
     for (i = -100; i < 100; i++) {
-        bool contains = false;
+        int contains = 0;
         for (j = 0; j < 10; j++) {
             if (c[j] == i) {
-                contains = true;
+                contains = 1;
             }
         }
         assert(unordered_multiset_contains(me, &i) == contains);

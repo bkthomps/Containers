@@ -17,7 +17,7 @@ void test_map(void)
     int value;
     int num;
     int count;
-    bool flip;
+    int flip;
     int p;
     int i;
     int j;
@@ -54,10 +54,10 @@ void test_map(void)
         assert(map_contains(me, &val_arr[i]));
     }
     for (i = -100; i < 100; i++) {
-        bool contains = false;
+        int contains = 0;
         for (j = 0; j < 10; j++) {
             if (val_arr[j] == i) {
-                contains = true;
+                contains = 1;
             }
         }
         assert(map_contains(me, &i) == contains);
@@ -242,10 +242,10 @@ void test_map(void)
     map_clear(me);
     /* Add a lot of items. */
     count = 0;
-    flip = false;
+    flip = 0;
     for (i = 1234; i < 82400; i++) {
-        bool is_already_present;
-        bool is_now_present;
+        int is_already_present;
+        int is_now_present;
         key = i % 765;
         is_already_present = map_contains(me, &key);
         map_put(me, &key, &num);
@@ -256,7 +256,7 @@ void test_map(void)
         }
         if (i == 1857 && !flip) {
             i *= -1;
-            flip = true;
+            flip = 1;
         }
     }
     assert(count == map_size(me));
@@ -286,10 +286,10 @@ void test_map(void)
         assert(map_contains(me, &c[i]));
     }
     for (i = -100; i < 100; i++) {
-        bool contains = false;
+        int contains = 0;
         for (j = 0; j < 10; j++) {
             if (c[j] == i) {
-                contains = true;
+                contains = 1;
             }
         }
         assert(map_contains(me, &i) == contains);

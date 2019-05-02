@@ -18,7 +18,7 @@ void test_multimap(void)
     int num;
     int count;
     int val;
-    bool flip;
+    int flip;
     int p;
     int i;
     int j;
@@ -61,10 +61,10 @@ void test_multimap(void)
         assert(multimap_contains(me, &val_arr[i]));
     }
     for (i = -100; i < 100; i++) {
-        bool contains = false;
+        int contains = 0;
         for (j = 0; j < 10; j++) {
             if (val_arr[j] == i) {
-                contains = true;
+                contains = 1;
             }
         }
         assert(multimap_contains(me, &i) == contains);
@@ -273,7 +273,7 @@ void test_multimap(void)
     multimap_clear(me);
     /* Add a lot of items. */
     count = 0;
-    flip = false;
+    flip = 0;
     for (i = 1234; i < 82400; i++) {
         key = i % 765;
         multimap_put(me, &key, &num);
@@ -281,7 +281,7 @@ void test_multimap(void)
         count++;
         if (i == 1857 && !flip) {
             i *= -1;
-            flip = true;
+            flip = 1;
         }
     }
     assert(count == multimap_size(me));
@@ -311,10 +311,10 @@ void test_multimap(void)
         assert(multimap_contains(me, &c[i]));
     }
     for (i = -100; i < 100; i++) {
-        bool contains = false;
+        int contains = 0;
         for (j = 0; j < 10; j++) {
             if (c[j] == i) {
-                contains = true;
+                contains = 1;
             }
         }
         assert(multimap_contains(me, &i) == contains);

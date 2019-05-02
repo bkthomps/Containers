@@ -105,9 +105,9 @@ int multimap_size(multimap me)
  *
  * @param me the multi-map to check
  *
- * @return true if the multi-map is empty
+ * @return 1 if the multi-map is empty, otherwise 0
  */
-bool multimap_is_empty(multimap me)
+int multimap_is_empty(multimap me)
 {
     return multimap_size(me) == 0;
 }
@@ -336,7 +336,7 @@ int multimap_put(multimap me, void *const key, void *const value)
         return 0;
     }
     traverse = me->root;
-    while (true) {
+    for (;;) {
         const int compare = me->key_comparator(key, traverse->key);
         if (compare < 0) {
             if (traverse->left) {
@@ -384,9 +384,9 @@ static struct node *multimap_equal_match(multimap me, const void *const key)
 {
     struct node *traverse = me->root;
     if (!traverse) {
-        return false;
+        return 0;
     }
-    while (true) {
+    for (;;) {
         const int compare = me->key_comparator(key, traverse->key);
         if (compare < 0) {
             if (traverse->left) {
@@ -429,19 +429,19 @@ void multimap_get_start(multimap me, void *const key)
  * @param value the value to be copied to from iteration
  * @param me    the multi-map to iterate over
  *
- * @return true if there exist no more values for the key which is being
- *         iterated over
+ * @return 1 if there exist no more values for the key which is being iterated
+ *         over, otherwise 0
  */
-bool multimap_get_next(void *const value, multimap me)
+int multimap_get_next(void *const value, multimap me)
 {
     const struct value_node *item;
     if (!me->iterate_get) {
-        return false;
+        return 0;
     }
     item = me->iterate_get;
     memcpy(value, item->value, me->value_size);
     me->iterate_get = item->next;
-    return true;
+    return 1;
 }
 
 /**
@@ -467,9 +467,9 @@ int multimap_count(multimap me, void *const key)
  * @param me  the multi-map to check for the key
  * @param key the key to check
  *
- * @return true if the multi-map contained the key
+ * @return 1 if the multi-map contained the key, otherwise 0
  */
-bool multimap_contains(multimap me, void *const key)
+int multimap_contains(multimap me, void *const key)
 {
     return multimap_equal_match(me, key) != NULL;
 }
@@ -479,7 +479,7 @@ bool multimap_contains(multimap me, void *const key)
  */
 static struct node *multimap_repair_pivot(multimap me,
                                           struct node *const item,
-                                          const bool is_left_pivot)
+                                          const int is_left_pivot)
 {
     struct node *const child = is_left_pivot ? item->right : item->left;
     struct node *const grand_child =
@@ -492,7 +492,7 @@ static struct node *multimap_repair_pivot(multimap me,
  */
 static void multimap_delete_balance(multimap me,
                                     struct node *item,
-                                    const bool is_left_deleted)
+                                    const int is_left_deleted)
 {
     struct node *child;
     struct node *parent;
@@ -555,10 +555,10 @@ static void multimap_remove_no_children(multimap me,
     /* No re-reference needed since traverse has no children. */
     if (parent->left == traverse) {
         parent->left = NULL;
-        multimap_delete_balance(me, parent, true);
+        multimap_delete_balance(me, parent, 1);
     } else {
         parent->right = NULL;
-        multimap_delete_balance(me, parent, false);
+        multimap_delete_balance(me, parent, 0);
     }
 }
 
@@ -589,7 +589,7 @@ static void multimap_remove_one_child(multimap me,
             parent->left = traverse->right;
             traverse->right->parent = parent;
         }
-        multimap_delete_balance(me, parent, true);
+        multimap_delete_balance(me, parent, 1);
     } else {
         if (traverse->left) {
             parent->right = traverse->left;
@@ -598,7 +598,7 @@ static void multimap_remove_one_child(multimap me,
             parent->right = traverse->right;
             traverse->right->parent = parent;
         }
-        multimap_delete_balance(me, parent, false);
+        multimap_delete_balance(me, parent, 0);
     }
 }
 
@@ -610,7 +610,7 @@ static void multimap_remove_two_children(multimap me,
 {
     struct node *item;
     struct node *parent;
-    const bool is_left_deleted = traverse->right->left != NULL;
+    const int is_left_deleted = traverse->right->left != NULL;
     if (!is_left_deleted) {
         item = traverse->right;
         parent = item;
@@ -668,14 +668,14 @@ static void multimap_remove_element(multimap me, struct node *const traverse)
  * @param key   the key to remove
  * @param value the value to remove
  *
- * @return true if the multi-map contained the key
+ * @return 1 if the multi-map contained the key, otherwise 0
  */
-bool multimap_remove(multimap me, void *const key, void *const value)
+int multimap_remove(multimap me, void *const key, void *const value)
 {
     struct value_node *current;
     struct node *const traverse = multimap_equal_match(me, key);
     if (!traverse) {
-        return false;
+        return 0;
     }
     current = traverse->head;
     if (me->value_comparator(current->value, value) == 0) {
@@ -688,7 +688,7 @@ bool multimap_remove(multimap me, void *const key, void *const value)
             current = current->next;
         }
         if (!current) {
-            return false;
+            return 0;
         }
         previous->next = current->next;
     }
@@ -699,7 +699,7 @@ bool multimap_remove(multimap me, void *const key, void *const value)
         multimap_remove_element(me, traverse);
     }
     me->size--;
-    return true;
+    return 1;
 }
 
 /*
@@ -725,16 +725,16 @@ static void multimap_remove_all_element(multimap me,
  * @param me  the multi-map to remove a key-value pair from
  * @param key the key to remove
  *
- * @return true if the multi-map contained the key
+ * @return 1 if the multi-map contained the key, otherwise 0
  */
-bool multimap_remove_all(multimap me, void *const key)
+int multimap_remove_all(multimap me, void *const key)
 {
     struct node *const traverse = multimap_equal_match(me, key);
     if (!traverse) {
-        return false;
+        return 0;
     }
     multimap_remove_all_element(me, traverse);
-    return true;
+    return 1;
 }
 
 /**

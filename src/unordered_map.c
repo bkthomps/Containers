@@ -169,9 +169,9 @@ int unordered_map_size(unordered_map me)
  *
  * @param me the unordered map to check
  *
- * @return true if the unordered map is empty
+ * @return 1 if the unordered map is empty, otherwise 0
  */
-bool unordered_map_is_empty(unordered_map me)
+int unordered_map_is_empty(unordered_map me)
 {
     return unordered_map_size(me) == 0;
 }
@@ -206,10 +206,10 @@ static int unordered_map_resize(unordered_map me)
 /*
  * Determines if an element is equal to the key.
  */
-static bool unordered_map_is_equal(unordered_map me,
-                                   const struct node *const item,
-                                   const unsigned long hash,
-                                   const void *const key)
+static int unordered_map_is_equal(unordered_map me,
+                                  const struct node *const item,
+                                  const unsigned long hash,
+                                  const void *const key)
 {
     return item->hash == hash && me->comparator(item->key, key) == 0;
 }
@@ -297,9 +297,9 @@ int unordered_map_put(unordered_map me, void *const key, void *const value)
  * @param me    the unordered map to get from
  * @param key   the key to search for
  *
- * @return true if the unordered map contained the key-value pair
+ * @return 1 if the unordered map contained the key-value pair, otherwise 0
  */
-bool unordered_map_get(void *const value, unordered_map me, void *const key)
+int unordered_map_get(void *const value, unordered_map me, void *const key)
 {
     const unsigned long hash = unordered_map_hash(me, key);
     const int index = (int) (hash % me->capacity);
@@ -307,11 +307,11 @@ bool unordered_map_get(void *const value, unordered_map me, void *const key)
     while (traverse) {
         if (unordered_map_is_equal(me, traverse, hash, key)) {
             memcpy(value, traverse->value, me->value_size);
-            return true;
+            return 1;
         }
         traverse = traverse->next;
     }
-    return false;
+    return 0;
 }
 
 /**
@@ -320,20 +320,20 @@ bool unordered_map_get(void *const value, unordered_map me, void *const key)
  * @param me  the unordered map to check for the key
  * @param key the key to check
  *
- * @return true if the unordered map contained the key
+ * @return 1 if the unordered map contained the key, otherwise 0
  */
-bool unordered_map_contains(unordered_map me, void *const key)
+int unordered_map_contains(unordered_map me, void *const key)
 {
     const unsigned long hash = unordered_map_hash(me, key);
     const int index = (int) (hash % me->capacity);
     const struct node *traverse = me->buckets[index];
     while (traverse) {
         if (unordered_map_is_equal(me, traverse, hash, key)) {
-            return true;
+            return 1;
         }
         traverse = traverse->next;
     }
-    return false;
+    return 0;
 }
 
 /**
@@ -342,15 +342,15 @@ bool unordered_map_contains(unordered_map me, void *const key)
  * @param me  the unordered map to remove an key from
  * @param key the key to remove
  *
- * @return true if the unordered map contained the key
+ * @return 1 if the unordered map contained the key, otherwise 0
  */
-bool unordered_map_remove(unordered_map me, void *const key)
+int unordered_map_remove(unordered_map me, void *const key)
 {
     struct node *traverse;
     const unsigned long hash = unordered_map_hash(me, key);
     const int index = (int) (hash % me->capacity);
     if (!me->buckets[index]) {
-        return false;
+        return 0;
     }
     traverse = me->buckets[index];
     if (unordered_map_is_equal(me, traverse, hash, key)) {
@@ -359,7 +359,7 @@ bool unordered_map_remove(unordered_map me, void *const key)
         free(traverse->value);
         free(traverse);
         me->size--;
-        return true;
+        return 1;
     }
     while (traverse->next) {
         if (unordered_map_is_equal(me, traverse->next, hash, key)) {
@@ -369,11 +369,11 @@ bool unordered_map_remove(unordered_map me, void *const key)
             free(backup->value);
             free(backup);
             me->size--;
-            return true;
+            return 1;
         }
         traverse = traverse->next;
     }
-    return false;
+    return 0;
 }
 
 /**

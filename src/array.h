@@ -23,8 +23,6 @@
 #ifndef CONTAINERS_ARRAY_H
 #define CONTAINERS_ARRAY_H
 
-#include <stdbool.h>
-
 /**
  * The array data structure, which is a static contiguous array.
  */

@@ -167,9 +167,9 @@ int unordered_multiset_size(unordered_multiset me)
  *
  * @param me the unordered multi-set to check
  *
- * @return true if the unordered multi-set is empty
+ * @return 1 if the unordered multi-set is empty, otherwise 0
  */
-bool unordered_multiset_is_empty(unordered_multiset me)
+int unordered_multiset_is_empty(unordered_multiset me)
 {
     return unordered_multiset_size(me) == 0;
 }
@@ -204,10 +204,10 @@ static int unordered_multiset_resize(unordered_multiset me)
 /*
  * Determines if an element is equal to the key.
  */
-static bool unordered_multiset_is_equal(unordered_multiset me,
-                                        const struct node *const item,
-                                        const unsigned long hash,
-                                        const void *const key)
+static int unordered_multiset_is_equal(unordered_multiset me,
+                                       const struct node *const item,
+                                       const unsigned long hash,
+                                       const void *const key)
 {
     return item->hash == hash && me->comparator(item->key, key) == 0;
 }
@@ -311,9 +311,9 @@ int unordered_multiset_count(unordered_multiset me, void *const key)
  * @param me  the unordered multi-set to check for the key
  * @param key the key to check
  *
- * @return true if the unordered multi-set contained the key
+ * @return 1 if the unordered multi-set contained the key, otherwise 0
  */
-bool unordered_multiset_contains(unordered_multiset me, void *const key)
+int unordered_multiset_contains(unordered_multiset me, void *const key)
 {
     return unordered_multiset_count(me, key) > 0;
 }
@@ -324,15 +324,15 @@ bool unordered_multiset_contains(unordered_multiset me, void *const key)
  * @param me  the unordered multi-set to remove a key from
  * @param key the key to remove
  *
- * @return true if the unordered multi-set contained the key
+ * @return 1 if the unordered multi-set contained the key, otherwise 0
  */
-bool unordered_multiset_remove(unordered_multiset me, void *const key)
+int unordered_multiset_remove(unordered_multiset me, void *const key)
 {
     struct node *traverse;
     const unsigned long hash = unordered_multiset_hash(me, key);
     const int index = (int) (hash % me->capacity);
     if (!me->buckets[index]) {
-        return false;
+        return 0;
     }
     traverse = me->buckets[index];
     if (unordered_multiset_is_equal(me, traverse, hash, key)) {
@@ -344,7 +344,7 @@ bool unordered_multiset_remove(unordered_multiset me, void *const key)
             me->used--;
         }
         me->size--;
-        return true;
+        return 1;
     }
     while (traverse->next) {
         if (unordered_multiset_is_equal(me, traverse->next, hash, key)) {
@@ -357,11 +357,11 @@ bool unordered_multiset_remove(unordered_multiset me, void *const key)
                 me->used--;
             }
             me->size--;
-            return true;
+            return 1;
         }
         traverse = traverse->next;
     }
-    return false;
+    return 0;
 }
 
 /**
@@ -371,15 +371,15 @@ bool unordered_multiset_remove(unordered_multiset me, void *const key)
  * @param me  the unordered multi-set to remove a key from
  * @param key the key to remove
  *
- * @return true if the unordered multi-set contained the key
+ * @return 1 if the unordered multi-set contained the key, otherwise 0
  */
-bool unordered_multiset_remove_all(unordered_multiset me, void *const key)
+int unordered_multiset_remove_all(unordered_multiset me, void *const key)
 {
     struct node *traverse;
     const unsigned long hash = unordered_multiset_hash(me, key);
     const int index = (int) (hash % me->capacity);
     if (!me->buckets[index]) {
-        return false;
+        return 0;
     }
     traverse = me->buckets[index];
     if (unordered_multiset_is_equal(me, traverse, hash, key)) {
@@ -388,7 +388,7 @@ bool unordered_multiset_remove_all(unordered_multiset me, void *const key)
         free(traverse->key);
         free(traverse);
         me->used--;
-        return true;
+        return 1;
     }
     while (traverse->next) {
         if (unordered_multiset_is_equal(me, traverse->next, hash, key)) {
@@ -398,11 +398,11 @@ bool unordered_multiset_remove_all(unordered_multiset me, void *const key)
             free(backup->key);
             free(backup);
             me->used--;
-            return true;
+            return 1;
         }
         traverse = traverse->next;
     }
-    return false;
+    return 0;
 }
 
 /**

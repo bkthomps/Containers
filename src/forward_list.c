@@ -77,9 +77,9 @@ int forward_list_size(forward_list me)
  *
  * @param me the singly-linked list to check
  *
- * @return true if the singly-linked list is empty
+ * @return 1 if the singly-linked list is empty, otherwise 0
  */
-bool forward_list_is_empty(forward_list me)
+int forward_list_is_empty(forward_list me)
 {
     return forward_list_size(me) == 0;
 }
@@ -184,7 +184,7 @@ int forward_list_add_last(forward_list me, void *const data)
 /*
  * Determines if the input is illegal.
  */
-static bool forward_list_is_illegal_input(forward_list me, const int index)
+static int forward_list_is_illegal_input(forward_list me, const int index)
 {
     return index < 0 || index >= me->item_count;
 }

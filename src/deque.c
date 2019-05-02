@@ -96,9 +96,9 @@ int deque_size(deque me)
  *
  * @param me the deque to check if empty
  *
- * @return true if empty
+ * @return 1 if the deque is empty, otherwise 0
  */
-bool deque_is_empty(deque me)
+int deque_is_empty(deque me)
 {
     return deque_size(me) == 0;
 }

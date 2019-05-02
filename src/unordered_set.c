@@ -162,9 +162,9 @@ int unordered_set_size(unordered_set me)
  *
  * @param me the unordered set to check
  *
- * @return true if the unordered set is empty
+ * @return 1 if the unordered set is empty, otherwise 0
  */
-bool unordered_set_is_empty(unordered_set me)
+int unordered_set_is_empty(unordered_set me)
 {
     return unordered_set_size(me) == 0;
 }
@@ -199,10 +199,10 @@ static int unordered_set_resize(unordered_set me)
 /*
  * Determines if an element is equal to the key.
  */
-static bool unordered_set_is_equal(unordered_set me,
-                                   const struct node *const item,
-                                   const unsigned long hash,
-                                   const void *const key)
+static int unordered_set_is_equal(unordered_set me,
+                                  const struct node *const item,
+                                  const unsigned long hash,
+                                  const void *const key)
 {
     return item->hash == hash && me->comparator(item->key, key) == 0;
 }
@@ -278,20 +278,20 @@ int unordered_set_put(unordered_set me, void *const key)
  * @param me  the unordered set to check for the element
  * @param key the element to check
  *
- * @return true if the unordered set contained the element
+ * @return 1 if the unordered set contained the element, otherwise 0
  */
-bool unordered_set_contains(unordered_set me, void *const key)
+int unordered_set_contains(unordered_set me, void *const key)
 {
     const unsigned long hash = unordered_set_hash(me, key);
     const int index = (int) (hash % me->capacity);
     const struct node *traverse = me->buckets[index];
     while (traverse) {
         if (unordered_set_is_equal(me, traverse, hash, key)) {
-            return true;
+            return 1;
         }
         traverse = traverse->next;
     }
-    return false;
+    return 0;
 }
 
 /**
@@ -300,15 +300,15 @@ bool unordered_set_contains(unordered_set me, void *const key)
  * @param me  the unordered set to remove an key from
  * @param key the key to remove
  *
- * @return true if the unordered set contained the key
+ * @return 1 if the unordered set contained the key, otherwise 0
  */
-bool unordered_set_remove(unordered_set me, void *const key)
+int unordered_set_remove(unordered_set me, void *const key)
 {
     struct node *traverse;
     const unsigned long hash = unordered_set_hash(me, key);
     const int index = (int) (hash % me->capacity);
     if (!me->buckets[index]) {
-        return false;
+        return 0;
     }
     traverse = me->buckets[index];
     if (unordered_set_is_equal(me, traverse, hash, key)) {
@@ -316,7 +316,7 @@ bool unordered_set_remove(unordered_set me, void *const key)
         free(traverse->key);
         free(traverse);
         me->size--;
-        return true;
+        return 1;
     }
     while (traverse->next) {
         if (unordered_set_is_equal(me, traverse->next, hash, key)) {
@@ -325,11 +325,11 @@ bool unordered_set_remove(unordered_set me, void *const key)
             free(backup->key);
             free(backup);
             me->size--;
-            return true;
+            return 1;
         }
         traverse = traverse->next;
     }
-    return false;
+    return 0;
 }
 
 /**

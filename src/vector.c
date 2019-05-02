@@ -92,9 +92,9 @@ int vector_capacity(vector me)
  *
  * @param me the vector to check
  *
- * @return true if the vector is empty
+ * @return 1 if the vector is empty, otherwise 0
  */
-bool vector_is_empty(vector me)
+int vector_is_empty(vector me)
 {
     return vector_size(me) == 0;
 }
@@ -238,7 +238,7 @@ int vector_add_last(vector me, void *const data)
 /*
  * Determines if the input is illegal.
  */
-static bool vector_is_illegal_input(vector me, const int index)
+static int vector_is_illegal_input(vector me, const int index)
 {
     return index < 0 || index >= me->item_count;
 }

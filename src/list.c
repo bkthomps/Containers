@@ -80,9 +80,9 @@ int list_size(list me)
  *
  * @param me the doubly-linked list to check
  *
- * @return true if the list is empty
+ * @return 1 if the list is empty, otherwise 0
  */
-bool list_is_empty(list me)
+int list_is_empty(list me)
 {
     return list_size(me) == 0;
 }
@@ -256,7 +256,7 @@ int list_add_last(list me, void *const data)
 /*
  * Determines if the input is illegal.
  */
-static bool list_is_illegal_input(list me, const int index)
+static int list_is_illegal_input(list me, const int index)
 {
     return index < 0 || index >= me->item_count;
 }

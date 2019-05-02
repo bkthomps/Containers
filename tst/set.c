@@ -85,16 +85,16 @@ static int stub_set_put(set me, void *const key)
     return ret;
 }
 
-static bool stub_set_contains(set me, void *const key)
+static int stub_set_contains(set me, void *const key)
 {
-    const bool ret = set_contains(me, key);
+    const int ret = set_contains(me, key);
     set_verify(me);
     return ret;
 }
 
-static bool stub_set_remove(set me, void *const key)
+static int stub_set_remove(set me, void *const key)
 {
-    const bool ret = set_remove(me, key);
+    const int ret = set_remove(me, key);
     set_verify(me);
     return ret;
 }
@@ -125,7 +125,7 @@ void test_set(void)
     set me;
     int key;
     int count;
-    bool flip;
+    int flip;
     int i;
     int j;
     int num;
@@ -244,10 +244,10 @@ void test_set(void)
     stub_set_clear(me);
     /* Add a lot of items. */
     count = 0;
-    flip = false;
+    flip = 0;
     for (i = 1234; i < 82400; i++) {
-        bool is_already_present;
-        bool is_now_present;
+        int is_already_present;
+        int is_now_present;
         num = i % 765;
         is_already_present = stub_set_contains(me, &num);
         stub_set_put(me, &num);
@@ -258,7 +258,7 @@ void test_set(void)
         }
         if (i == 1857 && !flip) {
             i *= -1;
-            flip = true;
+            flip = 1;
         }
     }
     assert(count == set_size(me));
@@ -288,10 +288,10 @@ void test_set(void)
         assert(stub_set_contains(me, &c[i]));
     }
     for (i = -100; i < 100; i++) {
-        bool contains = false;
+        int contains = 0;
         for (j = 0; j < 10; j++) {
             if (c[j] == i) {
-                contains = true;
+                contains = 1;
             }
         }
         assert(stub_set_contains(me, &i) == contains);

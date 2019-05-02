@@ -23,8 +23,6 @@
 #ifndef CONTAINERS_DEQUE_H
 #define CONTAINERS_DEQUE_H
 
-#include <stdbool.h>
-
 /**
  * The deque data structure, which is a doubly-ended queue.
  */
@@ -35,7 +33,7 @@ deque deque_init(size_t data_size);
 
 /* Utility */
 int deque_size(deque me);
-bool deque_is_empty(deque me);
+int deque_is_empty(deque me);
 int deque_trim(deque me);
 void deque_copy_to_array(void *arr, deque me);
 

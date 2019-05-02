@@ -23,8 +23,6 @@
 #ifndef CONTAINERS_LIST_H
 #define CONTAINERS_LIST_H
 
-#include <stdbool.h>
-
 /**
  * The list data structure, which is a doubly-linked list.
  */
@@ -35,7 +33,7 @@ list list_init(size_t data_size);
 
 /* Utility */
 int list_size(list me);
-bool list_is_empty(list me);
+int list_is_empty(list me);
 void list_copy_to_array(void *arr, list me);
 
 /* Adding */

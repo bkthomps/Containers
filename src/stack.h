@@ -23,8 +23,6 @@
 #ifndef CONTAINERS_STACK_H
 #define CONTAINERS_STACK_H
 
-#include <stdbool.h>
-
 /**
  * The stack data structure, which adapts a container to provide a stack
  * (last-in first-out). Adapts the deque container.
@@ -36,7 +34,7 @@ stack stack_init(size_t data_size);
 
 /* Utility */
 int stack_size(stack me);
-bool stack_is_empty(stack me);
+int stack_is_empty(stack me);
 int stack_trim(stack me);
 void stack_copy_to_array(void *arr, stack me);
 
@@ -44,10 +42,10 @@ void stack_copy_to_array(void *arr, stack me);
 int stack_push(stack me, void *data);
 
 /* Removing */
-bool stack_pop(void *data, stack me);
+int stack_pop(void *data, stack me);
 
 /* Getting */
-bool stack_top(void *data, stack me);
+int stack_top(void *data, stack me);
 
 /* Ending */
 int stack_clear(stack me);

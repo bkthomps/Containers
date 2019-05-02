@@ -81,9 +81,9 @@ int priority_queue_size(priority_queue me)
  *
  * @param me the priority queue to check
  *
- * @return true if the priority queue is empty
+ * @return 1 if the priority queue is empty, otherwise 0
  */
-bool priority_queue_is_empty(priority_queue me)
+int priority_queue_is_empty(priority_queue me)
 {
     return vector_is_empty(me->data);
 }
@@ -139,9 +139,9 @@ int priority_queue_push(priority_queue me, void *const data)
  * @param data the data to have copied from the priority queue
  * @param me   the priority queue to pop the next element from
  *
- * @return true if the priority queue contained elements
+ * @return 1 if the priority queue contained elements, otherwise 0
  */
-bool priority_queue_pop(void *const data, priority_queue me)
+int priority_queue_pop(void *const data, priority_queue me)
 {
     void *vector_storage;
     int size;
@@ -154,7 +154,7 @@ bool priority_queue_pop(void *const data, priority_queue me)
     void *data_right_index;
     const int rc = vector_get_first(data, me->data);
     if (rc != 0) {
-        return false;
+        return 0;
     }
     vector_storage = vector_get_data(me->data);
     size = vector_size(me->data) - 1;
@@ -165,7 +165,7 @@ bool priority_queue_pop(void *const data, priority_queue me)
     data_index = vector_storage;
     data_left_index = (char *) vector_storage + left_index * me->data_size;
     data_right_index = (char *) vector_storage + right_index * me->data_size;
-    while (true) {
+    for (;;) {
         if (right_index < size &&
             me->comparator(data_right_index, data_left_index) > 0 &&
             me->comparator(data_right_index, data_index) > 0) {
@@ -192,7 +192,7 @@ bool priority_queue_pop(void *const data, priority_queue me)
                 (char *) vector_storage + right_index * me->data_size;
     }
     vector_remove_last(me->data);
-    return true;
+    return 1;
 }
 
 /**
@@ -202,9 +202,9 @@ bool priority_queue_pop(void *const data, priority_queue me)
  *             queue
  * @param me   the priority queue to copy from
  *
- * @return true if the priority queue contained elements
+ * @return 1 if the priority queue contained elements, otherwise 0
  */
-bool priority_queue_front(void *const data, priority_queue me)
+int priority_queue_front(void *const data, priority_queue me)
 {
     return vector_get_first(data, me->data) == 0;
 }

@@ -16,7 +16,7 @@ void test_multiset(void)
     int key;
     int num;
     int count;
-    bool flip;
+    int flip;
     int p;
     int i;
     int j;
@@ -56,10 +56,10 @@ void test_multiset(void)
         assert(multiset_contains(me, &val_arr[i]));
     }
     for (i = -100; i < 100; i++) {
-        bool contains = false;
+        int contains = 0;
         for (j = 0; j < 10; j++) {
             if (val_arr[j] == i) {
-                contains = true;
+                contains = 1;
             }
         }
         assert(multiset_contains(me, &i) == contains);
@@ -258,7 +258,7 @@ void test_multiset(void)
     multiset_clear(me);
     /* Add a lot of items. */
     count = 0;
-    flip = false;
+    flip = 0;
     for (i = 1234; i < 82400; i++) {
         key = i % 765;
         multiset_put(me, &key);
@@ -266,7 +266,7 @@ void test_multiset(void)
         count++;
         if (i == 1857 && !flip) {
             i *= -1;
-            flip = true;
+            flip = 1;
         }
     }
     assert(count == multiset_size(me));
@@ -296,10 +296,10 @@ void test_multiset(void)
         assert(multiset_contains(me, &c[i]));
     }
     for (i = -100; i < 100; i++) {
-        bool contains = false;
+        int contains = 0;
         for (j = 0; j < 10; j++) {
             if (c[j] == i) {
-                contains = true;
+                contains = 1;
             }
         }
         assert(multiset_contains(me, &i) == contains);

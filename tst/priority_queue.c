@@ -49,9 +49,9 @@ int stub_priority_queue_push(priority_queue me, void *const data)
     return ret;
 }
 
-bool stub_priority_queue_pop(void *const data, priority_queue me)
+int stub_priority_queue_pop(void *const data, priority_queue me)
 {
-    const bool ret = priority_queue_pop(data, me);
+    const int ret = priority_queue_pop(data, me);
     priority_queue_verify(me);
     return ret;
 }

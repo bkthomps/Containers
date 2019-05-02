@@ -23,8 +23,6 @@
 #ifndef CONTAINERS_MAP_H
 #define CONTAINERS_MAP_H
 
-#include <stdbool.h>
-
 /**
  * The map data structure, which is a collection of key-value pairs, sorted by
  * keys, keys are unique.
@@ -38,13 +36,13 @@ map map_init(size_t key_size,
 
 /* Capacity */
 int map_size(map me);
-bool map_is_empty(map me);
+int map_is_empty(map me);
 
 /* Accessing */
 int map_put(map me, void *key, void *value);
-bool map_get(void *value, map me, void *key);
-bool map_contains(map me, void *key);
-bool map_remove(map me, void *key);
+int map_get(void *value, map me, void *key);
+int map_contains(map me, void *key);
+int map_remove(map me, void *key);
 
 /* Ending */
 void map_clear(map me);

@@ -23,8 +23,6 @@
 #ifndef CONTAINERS_MULTIMAP_H
 #define CONTAINERS_MULTIMAP_H
 
-#include <stdbool.h>
-
 /**
  * The multimap data structure, which is a collection of key-value pairs, sorted
  * by keys.
@@ -41,16 +39,16 @@ multimap multimap_init(size_t key_size,
 
 /* Capacity */
 int multimap_size(multimap me);
-bool multimap_is_empty(multimap me);
+int multimap_is_empty(multimap me);
 
 /* Accessing */
 int multimap_put(multimap me, void *key, void *value);
 void multimap_get_start(multimap me, void *key);
-bool multimap_get_next(void *value, multimap me);
+int multimap_get_next(void *value, multimap me);
 int multimap_count(multimap me, void *key);
-bool multimap_contains(multimap me, void *key);
-bool multimap_remove(multimap me, void *key, void *value);
-bool multimap_remove_all(multimap me, void *key);
+int multimap_contains(multimap me, void *key);
+int multimap_remove(multimap me, void *key, void *value);
+int multimap_remove_all(multimap me, void *key);
 
 /* Ending */
 void multimap_clear(multimap me);

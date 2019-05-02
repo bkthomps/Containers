@@ -23,8 +23,6 @@
 #ifndef CONTAINERS_VECTOR_H
 #define CONTAINERS_VECTOR_H
 
-#include <stdbool.h>
-
 /**
  * The vector data structure, which is a dynamic contiguous array.
  */
@@ -36,7 +34,7 @@ vector vector_init(size_t data_size);
 /* Utility */
 int vector_size(vector me);
 int vector_capacity(vector me);
-bool vector_is_empty(vector me);
+int vector_is_empty(vector me);
 int vector_reserve(vector me, int size);
 int vector_trim(vector me);
 void vector_copy_to_array(void *arr, vector me);

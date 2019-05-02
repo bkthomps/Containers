@@ -23,8 +23,6 @@
 #ifndef CONTAINERS_SET_H
 #define CONTAINERS_SET_H
 
-#include <stdbool.h>
-
 /**
  * The set data structure, which is a collection of unique keys, sorted by keys.
  */
@@ -36,12 +34,12 @@ set set_init(size_t key_size,
 
 /* Capacity */
 int set_size(set me);
-bool set_is_empty(set me);
+int set_is_empty(set me);
 
 /* Accessing */
 int set_put(set me, void *key);
-bool set_contains(set me, void *key);
-bool set_remove(set me, void *key);
+int set_contains(set me, void *key);
+int set_remove(set me, void *key);
 
 /* Ending */
 void set_clear(set me);

@@ -84,9 +84,9 @@ int set_size(set me)
  *
  * @param me the set to check
  *
- * @return true if the set is empty
+ * @return 1 if the set is empty, otherwise 0
  */
-bool set_is_empty(set me)
+int set_is_empty(set me)
 {
     return set_size(me) == 0;
 }
@@ -286,7 +286,7 @@ int set_put(set me, void *const key)
         return 0;
     }
     traverse = me->root;
-    while (true) {
+    for (;;) {
         const int compare = me->comparator(key, traverse->key);
         if (compare < 0) {
             if (traverse->left) {
@@ -325,9 +325,9 @@ static struct node *set_equal_match(set me, const void *const key)
 {
     struct node *traverse = me->root;
     if (!traverse) {
-        return false;
+        return NULL;
     }
-    while (true) {
+    for (;;) {
         const int compare = me->comparator(key, traverse->key);
         if (compare < 0) {
             if (traverse->left) {
@@ -353,9 +353,9 @@ static struct node *set_equal_match(set me, const void *const key)
  * @param me  the set to check for the key
  * @param key the key to check
  *
- * @return true if the set contained the key
+ * @return 1 if the set contained the key, otherwise 0
  */
-bool set_contains(set me, void *const key)
+int set_contains(set me, void *const key)
 {
     return set_equal_match(me, key) != NULL;
 }
@@ -365,7 +365,7 @@ bool set_contains(set me, void *const key)
  */
 static struct node *set_repair_pivot(set me,
                                      struct node *const item,
-                                     const bool is_left_pivot)
+                                     const int is_left_pivot)
 {
     struct node *const child = is_left_pivot ? item->right : item->left;
     struct node *const grand_child =
@@ -378,7 +378,7 @@ static struct node *set_repair_pivot(set me,
  */
 static void set_delete_balance(set me,
                                struct node *item,
-                               const bool is_left_deleted)
+                               const int is_left_deleted)
 {
     struct node *child;
     struct node *parent;
@@ -440,10 +440,10 @@ static void set_remove_no_children(set me, const struct node *const traverse)
     /* No re-reference needed since traverse has no children. */
     if (parent->left == traverse) {
         parent->left = NULL;
-        set_delete_balance(me, parent, true);
+        set_delete_balance(me, parent, 1);
     } else {
         parent->right = NULL;
-        set_delete_balance(me, parent, false);
+        set_delete_balance(me, parent, 0);
     }
 }
 
@@ -473,7 +473,7 @@ static void set_remove_one_child(set me, const struct node *const traverse)
             parent->left = traverse->right;
             traverse->right->parent = parent;
         }
-        set_delete_balance(me, parent, true);
+        set_delete_balance(me, parent, 1);
     } else {
         if (traverse->left) {
             parent->right = traverse->left;
@@ -482,7 +482,7 @@ static void set_remove_one_child(set me, const struct node *const traverse)
             parent->right = traverse->right;
             traverse->right->parent = parent;
         }
-        set_delete_balance(me, parent, false);
+        set_delete_balance(me, parent, 0);
     }
 }
 
@@ -493,7 +493,7 @@ static void set_remove_two_children(set me, const struct node *const traverse)
 {
     struct node *item;
     struct node *parent;
-    const bool is_left_deleted = traverse->right->left != NULL;
+    const int is_left_deleted = traverse->right->left != NULL;
     if (!is_left_deleted) {
         item = traverse->right;
         parent = item;
@@ -551,16 +551,16 @@ static void set_remove_element(set me, struct node *const traverse)
  * @param me  the set to remove an key from
  * @param key the key to remove
  *
- * @return true if the set contained the key
+ * @return 1 if the set contained the key, otherwise 0
  */
-bool set_remove(set me, void *const key)
+int set_remove(set me, void *const key)
 {
     struct node *const traverse = set_equal_match(me, key);
     if (!traverse) {
-        return false;
+        return 0;
     }
     set_remove_element(me, traverse);
-    return true;
+    return 1;
 }
 
 /**

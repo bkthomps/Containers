@@ -79,10 +79,10 @@ void test_unordered_multimap(void)
         assert(unordered_multimap_contains(me, &c[i]));
     }
     for (i = -100; i < 100; i++) {
-        bool contains = false;
+        int contains = 0;
         for (j = 0; j < 10; j++) {
             if (c[j] == i) {
-                contains = true;
+                contains = 1;
             }
         }
         assert(unordered_multimap_contains(me, &i) == contains);

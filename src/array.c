@@ -100,7 +100,7 @@ void *array_get_data(array me)
 /*
  * Determines if the input is illegal.
  */
-static bool array_is_illegal_input(array me, const int index)
+static int array_is_illegal_input(array me, const int index)
 {
     return index < 0 || index >= me->item_count;
 }

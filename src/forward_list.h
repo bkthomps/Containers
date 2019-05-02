@@ -23,8 +23,6 @@
 #ifndef CONTAINERS_FORWARD_LIST_H
 #define CONTAINERS_FORWARD_LIST_H
 
-#include <stdbool.h>
-
 /**
  * The forward_list data structure, which is a singly-linked list.
  */
@@ -35,7 +33,7 @@ forward_list forward_list_init(size_t data_size);
 
 /* Utility */
 int forward_list_size(forward_list me);
-bool forward_list_is_empty(forward_list me);
+int forward_list_is_empty(forward_list me);
 void forward_list_copy_to_array(void *arr, forward_list me);
 
 /* Adding */

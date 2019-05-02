@@ -60,10 +60,10 @@ void test_unordered_set(void)
         assert(unordered_set_contains(me, &val_arr[i]));
     }
     for (i = -100; i < 100; i++) {
-        bool contains = false;
+        int contains = 0;
         for (j = 0; j < 10; j++) {
             if (val_arr[j] == i) {
-                contains = true;
+                contains = 1;
             }
         }
         assert(unordered_set_contains(me, &i) == contains);
