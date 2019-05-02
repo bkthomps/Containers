@@ -497,7 +497,7 @@ void test_set(void)
     key = 5;
     stub_set_remove(me, &key);
     stub_set_clear(me);
-    // Two children edge case other side.
+    // Two children edge case on the other side.
     key = 8;
     stub_set_put(me, &key);
     key = 4;
