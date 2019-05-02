@@ -2,7 +2,8 @@
 [![codecov](https://codecov.io/gh/bkthomps/Containers/branch/master/graph/badge.svg)](https://codecov.io/gh/bkthomps/Containers)
 [![Documentation](https://codedocs.xyz/bkthomps/Containers.svg)](https://codedocs.xyz/bkthomps/Containers/)
 [![CodeFactor](https://www.codefactor.io/repository/github/bkthomps/containers/badge)](https://www.codefactor.io/repository/github/bkthomps/containers)
-[![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/)
+[![Language](https://img.shields.io/badge/language-C11-blue.svg)](https://en.wikipedia.org/wiki/C_(programming_language))
+[![MIT license](https://img.shields.io/badge/license-MIT-purple.svg)](https://lbesson.mit-license.org/)
 
 # Containers
 This library provides various containers. Each container has utility functions to manipulate the data it holds. This is an abstraction as to not have to manually manage and reallocate memory. 
