@@ -135,8 +135,7 @@ int unordered_multiset_rehash(unordered_multiset me)
         me->buckets = old_buckets;
         return -ENOMEM;
     }
-    int i;
-    for (i = 0; i < me->capacity; i++) {
+    for (int i = 0; i < me->capacity; i++) {
         struct node *traverse = old_buckets[i];
         while (traverse) {
             struct node *const backup = traverse->next;
@@ -187,8 +186,7 @@ static int unordered_multiset_resize(unordered_multiset me)
         return -ENOMEM;
     }
     me->capacity = new_capacity;
-    int i;
-    for (i = 0; i < old_capacity; i++) {
+    for (int i = 0; i < old_capacity; i++) {
         struct node *traverse = old_buckets[i];
         while (traverse) {
             struct node *const backup = traverse->next;
@@ -417,8 +415,7 @@ int unordered_multiset_clear(unordered_multiset me)
     if (!temp) {
         return -ENOMEM;
     }
-    int i;
-    for (i = 0; i < me->capacity; i++) {
+    for (int i = 0; i < me->capacity; i++) {
         struct node *traverse = me->buckets[i];
         while (traverse) {
             struct node *const backup = traverse;

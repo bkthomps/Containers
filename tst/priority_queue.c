@@ -15,8 +15,7 @@ static void priority_queue_verify(priority_queue me)
 {
     void *const vector_storage = vector_get_data(me->data);
     const int size = vector_size(me->data);
-    int i;
-    for (i = 0; i < size; i++) {
+    for (int i = 0; i < size; i++) {
         const int val = *(int *) (vector_storage + i * me->data_size);
         const int left_child = 2 * i + 1;
         const int right_child = 2 * i + 2;
@@ -110,8 +109,7 @@ void test_priority_queue(void)
     priority_queue_front(&item, me);
     assert(item == 9);
     int latest = item;
-    int i;
-    for (i = 0; i < 15; i++) {
+    for (int i = 0; i < 15; i++) {
         stub_priority_queue_pop(&item, me);
         assert(item <= latest);
         latest = item;
