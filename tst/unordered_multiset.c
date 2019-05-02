@@ -12,8 +12,8 @@ static int hash_count;
 
 static unsigned long hash_int(const void *const key)
 {
-    hash_count++;
     unsigned long hash = 17;
+    hash_count++;
     hash = 31 * hash + *(int *) key;
     return hash;
 }
@@ -25,15 +25,20 @@ static unsigned long bad_hash_int(const void *const key)
 
 void test_unordered_multiset(void)
 {
+    int c[10] = {5, 9, 4, -5, 0, 6, 1, 5, 7, 2};
+    unordered_multiset me;
+    int key;
+    int num;
+    int i;
+    int j;
     assert(!unordered_multiset_init(0, hash_int, compare_int));
     assert(!unordered_multiset_init(sizeof(int), NULL, compare_int));
     assert(!unordered_multiset_init(sizeof(int), hash_int, NULL));
-    unordered_multiset me =
-            unordered_multiset_init(sizeof(int), hash_int, compare_int);
+    me = unordered_multiset_init(sizeof(int), hash_int, compare_int);
     assert(me);
     assert(unordered_multiset_size(me) == 0);
     assert(unordered_multiset_is_empty(me));
-    int key = 4;
+    key = 4;
     unordered_multiset_put(me, &key);
     assert(unordered_multiset_size(me) == 1);
     unordered_multiset_put(me, &key);
@@ -53,8 +58,6 @@ void test_unordered_multiset(void)
     assert(unordered_multiset_size(me) == 1);
     unordered_multiset_remove(me, &key);
     assert(unordered_multiset_size(me) == 0);
-    int c[10] = {5, 9, 4, -5, 0, 6, 1, 5, 7, 2};
-    int i;
     for (i = 0; i < 10; i++) {
         unordered_multiset_put(me, &c[i]);
         assert(unordered_multiset_contains(me, &c[i]));
@@ -63,7 +66,6 @@ void test_unordered_multiset(void)
     for (i = 0; i < 10; i++) {
         assert(unordered_multiset_contains(me, &c[i]));
     }
-    int j;
     for (i = -100; i < 100; i++) {
         bool contains = false;
         for (j = 0; j < 10; j++) {
@@ -73,7 +75,7 @@ void test_unordered_multiset(void)
         }
         assert(unordered_multiset_contains(me, &i) == contains);
     }
-    int num = -3;
+    num = -3;
     assert(!unordered_multiset_remove(me, &num));
     assert(unordered_multiset_size(me) == 10);
     assert(!unordered_multiset_contains(me, &num));

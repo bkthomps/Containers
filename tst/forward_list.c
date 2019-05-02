@@ -3,26 +3,32 @@
 
 void test_forward_list(void)
 {
-    assert(!forward_list_init(0));
     int val[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-    forward_list me = forward_list_init(sizeof(int));
+    int get_arr[10] = {0};
+    int trimmed[5] = {0};
+    int arr[3] = {0};
+    int add;
+    forward_list me;
+    int get;
+    int set;
+    int i;
+    assert(!forward_list_init(0));
+    me = forward_list_init(sizeof(int));
     assert(me);
     assert(forward_list_size(me) == 0);
     assert(forward_list_is_empty(me));
-    int i;
     for (i = 0; i < 10; i++) {
         forward_list_add_first(me, &val[i]);
         assert(forward_list_size(me) == i + 1);
-        int get = 0;
+        get = 0;
         forward_list_get_first(&get, me);
         assert(get == val[i]);
     }
     assert(forward_list_size(me) == 10);
     assert(!forward_list_is_empty(me));
-    int get_arr[10] = {0};
     forward_list_copy_to_array(get_arr, me);
     for (i = 0; i < 10; i++) {
-        int get = 0;
+        get = 0;
         forward_list_get_at(&get, me, i);
         assert(get == val[9 - i]);
         assert(get_arr[i] == val[9 - i]);
@@ -30,20 +36,19 @@ void test_forward_list(void)
     for (i = 0; i < 7; i++) {
         forward_list_remove_last(me);
     }
-    int trimmed[5] = {0};
     forward_list_copy_to_array(trimmed, me);
     assert(forward_list_size(me) == 3);
     for (i = 0; i < 3; i++) {
         assert(10 - i == trimmed[i]);
     }
-    int add = 3;
+    add = 3;
     forward_list_add_last(me, &add);
     add = -1;
     forward_list_add_at(me, 1, &add);
     add = -2;
     forward_list_add_last(me, &add);
     assert(forward_list_size(me) == 6);
-    int get = 0xdeadbeef;
+    get = 0xdeadbeef;
     forward_list_get_first(&get, me);
     assert(get == 10);
     get = 0xdeadbeef;
@@ -73,13 +78,12 @@ void test_forward_list(void)
     assert(get == 9);
     forward_list_get_last(&get, me);
     assert(get == 3);
-    int set = 12;
+    set = 12;
     forward_list_set_first(me, &set);
     set = 13;
     forward_list_set_at(me, 1, &set);
     set = 14;
     forward_list_set_last(me, &set);
-    int arr[3] = {0};
     forward_list_copy_to_array(arr, me);
     assert(arr[0] == 12);
     assert(arr[1] == 13);

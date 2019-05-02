@@ -40,10 +40,11 @@ struct internal_queue {
  */
 queue queue_init(const size_t data_size)
 {
+    struct internal_queue *init;
     if (data_size == 0) {
         return NULL;
     }
-    struct internal_queue *const init = malloc(sizeof(struct internal_queue));
+    init = malloc(sizeof(struct internal_queue));
     if (!init) {
         return NULL;
     }

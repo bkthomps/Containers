@@ -69,12 +69,12 @@ multimap multimap_init(const size_t key_size,
                        int (*const value_comparator)(const void *const,
                                                      const void *const))
 {
+    struct internal_multimap *init;
     if (key_size == 0 || value_size == 0
         || !key_comparator || !value_comparator) {
         return NULL;
     }
-    struct internal_multimap *const init =
-            malloc(sizeof(struct internal_multimap));
+    init = malloc(sizeof(struct internal_multimap));
     if (!init) {
         return NULL;
     }
@@ -136,8 +136,9 @@ static void multimap_rotate_left(multimap me,
                                  struct node *const parent,
                                  struct node *const child)
 {
+    struct node *grand_child;
     multimap_reference_parent(me, parent, child);
-    struct node *const grand_child = child->left;
+    grand_child = child->left;
     if (grand_child) {
         grand_child->parent = parent;
     }
@@ -153,8 +154,9 @@ static void multimap_rotate_right(multimap me,
                                   struct node *const parent,
                                   struct node *const child)
 {
+    struct node *grand_child;
     multimap_reference_parent(me, parent, child);
-    struct node *const grand_child = child->right;
+    grand_child = child->right;
     if (grand_child) {
         grand_child->parent = parent;
     }
@@ -324,6 +326,7 @@ static struct node *multimap_create_node(multimap me,
  */
 int multimap_put(multimap me, void *const key, void *const value)
 {
+    struct node *traverse;
     if (!me->root) {
         struct node *insert = multimap_create_node(me, key, value, NULL);
         if (!insert) {
@@ -332,7 +335,7 @@ int multimap_put(multimap me, void *const key, void *const value)
         me->root = insert;
         return 0;
     }
-    struct node *traverse = me->root;
+    traverse = me->root;
     while (true) {
         const int compare = me->key_comparator(key, traverse->key);
         if (compare < 0) {
@@ -431,10 +434,11 @@ void multimap_get_start(multimap me, void *const key)
  */
 bool multimap_get_next(void *const value, multimap me)
 {
+    const struct value_node *item;
     if (!me->iterate_get) {
         return false;
     }
-    const struct value_node *const item = me->iterate_get;
+    item = me->iterate_get;
     memcpy(value, item->value, me->value_size);
     me->iterate_get = item->next;
     return true;
@@ -490,6 +494,8 @@ static void multimap_delete_balance(multimap me,
                                     struct node *item,
                                     const bool is_left_deleted)
 {
+    struct node *child;
+    struct node *parent;
     if (is_left_deleted) {
         item->balance++;
     } else {
@@ -506,8 +512,8 @@ static void multimap_delete_balance(multimap me,
             return;
         }
     }
-    struct node *child = item;
-    struct node *parent = item->parent;
+    child = item;
+    parent = item->parent;
     while (parent) {
         if (parent->left == child) {
             parent->balance++;
@@ -666,11 +672,12 @@ static void multimap_remove_element(multimap me, struct node *const traverse)
  */
 bool multimap_remove(multimap me, void *const key, void *const value)
 {
+    struct value_node *current;
     struct node *const traverse = multimap_equal_match(me, key);
     if (!traverse) {
         return false;
     }
-    struct value_node *current = traverse->head;
+    current = traverse->head;
     if (me->value_comparator(current->value, value) == 0) {
         traverse->head = current->next;
     } else {

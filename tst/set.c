@@ -30,14 +30,18 @@ struct node {
  * must be the right height minus the left height. Also, the left key must be
  * less than the right key.
  */
+#if 0
 static int set_verify_recursive(struct node *const item)
 {
+    int left;
+    int right;
+    int max;
     if (!item) {
         return 0;
     }
-    const int left = set_verify_recursive(item->left);
-    const int right = set_verify_recursive(item->right);
-    const int max = left > right ? left : right;
+    left = set_verify_recursive(item->left);
+    right = set_verify_recursive(item->right);
+    max = left > right ? left : right;
     assert(right - left == item->balance);
     if (item->left && item->right) {
         const int left_val = *(int *) item->left->key;
@@ -54,7 +58,9 @@ static int set_verify_recursive(struct node *const item)
     }
     return max + 1;
 }
+#endif
 
+#if 0
 static int set_compute_size(struct node *const item)
 {
     if (!item) {
@@ -62,6 +68,7 @@ static int set_compute_size(struct node *const item)
     }
     return 1 + set_compute_size(item->left) + set_compute_size(item->right);
 }
+#endif
 
 static void set_verify(set me)
 {
@@ -114,11 +121,19 @@ static int compare_int(const void *const one, const void *const two)
 
 void test_set(void)
 {
+    int c[10] = {5, 9, 4, -5, 0, 6, 1, 5, 7, 2};
+    set me;
+    int key;
+    int count;
+    bool flip;
+    int i;
+    int j;
+    int num;
+    int p;
     assert(!set_init(0, compare_int));
     assert(!set_init(sizeof(int), NULL));
-    set me = set_init(sizeof(int), compare_int);
+    me = set_init(sizeof(int), compare_int);
     assert(me);
-    int key;
     // left-left
     key = 5;
     stub_set_put(me, &key);
@@ -228,14 +243,15 @@ void test_set(void)
     stub_set_put(me, &key);
     stub_set_clear(me);
     // Add a lot of items.
-    int count = 0;
-    bool flip = false;
-    int i;
+    count = 0;
+    flip = false;
     for (i = 1234; i < 82400; i++) {
-        int num = i % 765;
-        const bool is_already_present = stub_set_contains(me, &num);
+        bool is_already_present;
+        bool is_now_present;
+        num = i % 765;
+        is_already_present = stub_set_contains(me, &num);
         stub_set_put(me, &num);
-        const bool is_now_present = stub_set_contains(me, &num);
+        is_now_present = stub_set_contains(me, &num);
         assert(is_now_present);
         if (!is_already_present && is_now_present) {
             count++;
@@ -263,7 +279,6 @@ void test_set(void)
     stub_set_put(me, &key);
     assert(set_size(me) == 2);
     assert(stub_set_contains(me, &key));
-    int c[10] = {5, 9, 4, -5, 0, 6, 1, 5, 7, 2};
     for (i = 0; i < 10; i++) {
         stub_set_put(me, &c[i]);
         assert(stub_set_contains(me, &c[i]));
@@ -272,7 +287,6 @@ void test_set(void)
     for (i = 0; i < 10; i++) {
         assert(stub_set_contains(me, &c[i]));
     }
-    int j;
     for (i = -100; i < 100; i++) {
         bool contains = false;
         for (j = 0; j < 10; j++) {
@@ -282,7 +296,7 @@ void test_set(void)
         }
         assert(stub_set_contains(me, &i) == contains);
     }
-    int num = -3;
+    num = -3;
     assert(!stub_set_remove(me, &num));
     assert(set_size(me) == 9);
     assert(!stub_set_contains(me, &num));
@@ -344,7 +358,7 @@ void test_set(void)
     }
     assert(set_size(me) == 1000);
     stub_set_clear(me);
-    int p = 0xdeadbeef;
+    p = 0xdeadbeef;
     assert(!stub_set_remove(me, &p));
     assert(set_size(me) == 0);
     assert(set_is_empty(me));

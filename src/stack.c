@@ -38,10 +38,11 @@ struct internal_stack {
  */
 stack stack_init(const size_t data_size)
 {
+    struct internal_stack *init;
     if (data_size == 0) {
         return NULL;
     }
-    struct internal_stack *const init = malloc(sizeof(struct internal_stack));
+    init = malloc(sizeof(struct internal_stack));
     if (!init) {
         return NULL;
     }

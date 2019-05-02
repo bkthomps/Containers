@@ -10,13 +10,23 @@ static int compare_int(const void *const one, const void *const two)
 
 void test_multiset(void)
 {
+    int val_arr[10] = {5, 9, 4, -5, 0, 6, 1, 5, 7, 2};
+    int c[10] = {5, 9, 4, -5, 0, 6, 1, 5, 7, 2};
+    multiset me;
+    int key;
+    int num;
+    int count;
+    bool flip;
+    int p;
+    int i;
+    int j;
     assert(!multiset_init(0, compare_int));
     assert(!multiset_init(sizeof(int), NULL));
-    multiset me = multiset_init(sizeof(int), compare_int);
+    me = multiset_init(sizeof(int), compare_int);
     assert(me);
     assert(multiset_size(me) == 0);
     assert(multiset_is_empty(me));
-    int key = 4;
+    key = 4;
     multiset_put(me, &key);
     assert(multiset_size(me) == 1);
     multiset_put(me, &key);
@@ -37,8 +47,6 @@ void test_multiset(void)
     assert(multiset_size(me) == 1);
     multiset_remove(me, &key);
     assert(multiset_size(me) == 0);
-    int val_arr[10] = {5, 9, 4, -5, 0, 6, 1, 5, 7, 2};
-    int i;
     for (i = 0; i < 10; i++) {
         multiset_put(me, &val_arr[i]);
         assert(multiset_contains(me, &val_arr[i]));
@@ -47,7 +55,6 @@ void test_multiset(void)
     for (i = 0; i < 10; i++) {
         assert(multiset_contains(me, &val_arr[i]));
     }
-    int j;
     for (i = -100; i < 100; i++) {
         bool contains = false;
         for (j = 0; j < 10; j++) {
@@ -57,7 +64,7 @@ void test_multiset(void)
         }
         assert(multiset_contains(me, &i) == contains);
     }
-    int num = -3;
+    num = -3;
     assert(!multiset_remove(me, &num));
     assert(multiset_size(me) == 10);
     assert(!multiset_contains(me, &num));
@@ -250,8 +257,8 @@ void test_multiset(void)
     multiset_put(me, &key);
     multiset_clear(me);
     // Add a lot of items.
-    int count = 0;
-    bool flip = false;
+    count = 0;
+    flip = false;
     for (i = 1234; i < 82400; i++) {
         key = i % 765;
         multiset_put(me, &key);
@@ -280,7 +287,6 @@ void test_multiset(void)
     multiset_put(me, &key);
     assert(multiset_size(me) == 3);
     assert(multiset_contains(me, &key));
-    int c[10] = {5, 9, 4, -5, 0, 6, 1, 5, 7, 2};
     for (i = 0; i < 10; i++) {
         multiset_put(me, &c[i]);
         assert(multiset_contains(me, &c[i]));
@@ -361,7 +367,7 @@ void test_multiset(void)
     }
     assert(multiset_size(me) == 1000);
     multiset_clear(me);
-    int p = 0xdeadbeef;
+    p = 0xdeadbeef;
     assert(!multiset_remove(me, &p));
     assert(multiset_size(me) == 0);
     assert(multiset_is_empty(me));

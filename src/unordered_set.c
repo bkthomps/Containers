@@ -49,8 +49,7 @@ struct node {
  * second hash to prevent hashing clusters if the user-defined hash is
  * sub-optimal.
  */
-static inline unsigned long unordered_set_hash(unordered_set me,
-                                               const void *const key)
+static unsigned long unordered_set_hash(unordered_set me, const void *const key)
 {
     unsigned long hash = me->hash(key);
     hash ^= (hash >> 20UL) ^ (hash >> 12UL);
@@ -75,11 +74,11 @@ unordered_set unordered_set_init(const size_t key_size,
                                  int (*comparator)(const void *const,
                                                    const void *const))
 {
+    struct internal_unordered_set *init;
     if (key_size == 0 || !hash || !comparator) {
         return NULL;
     }
-    struct internal_unordered_set *const init =
-            malloc(sizeof(struct internal_unordered_set));
+    init = malloc(sizeof(struct internal_unordered_set));
     if (!init) {
         return NULL;
     }
@@ -101,13 +100,14 @@ unordered_set unordered_set_init(const size_t key_size,
  */
 static void unordered_set_add_item(unordered_set me, struct node *const add)
 {
+    struct node *traverse;
     const int index = (int) (add->hash % me->capacity);
     add->next = NULL;
     if (!me->buckets[index]) {
         me->buckets[index] = add;
         return;
     }
-    struct node *traverse = me->buckets[index];
+    traverse = me->buckets[index];
     while (traverse->next) {
         traverse = traverse->next;
     }
@@ -125,13 +125,13 @@ static void unordered_set_add_item(unordered_set me, struct node *const add)
  */
 int unordered_set_rehash(unordered_set me)
 {
+    int i;
     struct node **old_buckets = me->buckets;
     me->buckets = calloc((size_t) me->capacity, sizeof(struct node *));
     if (!me->buckets) {
         me->buckets = old_buckets;
         return -ENOMEM;
     }
-    int i;
     for (i = 0; i < me->capacity; i++) {
         struct node *traverse = old_buckets[i];
         while (traverse) {
@@ -174,6 +174,7 @@ bool unordered_set_is_empty(unordered_set me)
  */
 static int unordered_set_resize(unordered_set me)
 {
+    int i;
     const int old_capacity = me->capacity;
     const int new_capacity = (int) (me->capacity * RESIZE_RATIO);
     struct node **old_buckets = me->buckets;
@@ -183,7 +184,6 @@ static int unordered_set_resize(unordered_set me)
         return -ENOMEM;
     }
     me->capacity = new_capacity;
-    int i;
     for (i = 0; i < old_capacity; i++) {
         struct node *traverse = old_buckets[i];
         while (traverse) {
@@ -199,10 +199,10 @@ static int unordered_set_resize(unordered_set me)
 /*
  * Determines if an element is equal to the key.
  */
-inline static bool unordered_set_is_equal(unordered_set me,
-                                          const struct node *const item,
-                                          const unsigned long hash,
-                                          const void *const key)
+static bool unordered_set_is_equal(unordered_set me,
+                                   const struct node *const item,
+                                   const unsigned long hash,
+                                   const void *const key)
 {
     return item->hash == hash && me->comparator(item->key, key) == 0;
 }
@@ -304,12 +304,13 @@ bool unordered_set_contains(unordered_set me, void *const key)
  */
 bool unordered_set_remove(unordered_set me, void *const key)
 {
+    struct node *traverse;
     const unsigned long hash = unordered_set_hash(me, key);
     const int index = (int) (hash % me->capacity);
     if (!me->buckets[index]) {
         return false;
     }
-    struct node *traverse = me->buckets[index];
+    traverse = me->buckets[index];
     if (unordered_set_is_equal(me, traverse, hash, key)) {
         me->buckets[index] = traverse->next;
         free(traverse->key);
@@ -341,12 +342,12 @@ bool unordered_set_remove(unordered_set me, void *const key)
  */
 int unordered_set_clear(unordered_set me)
 {
+    int i;
     struct node **temp =
             calloc((size_t) STARTING_BUCKETS, sizeof(struct node *));
     if (!temp) {
         return -ENOMEM;
     }
-    int i;
     for (i = 0; i < me->capacity; i++) {
         struct node *traverse = me->buckets[i];
         while (traverse) {

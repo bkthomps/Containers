@@ -10,15 +10,26 @@ static int compare_int(const void *const one, const void *const two)
 
 void test_map(void)
 {
+    int val_arr[10] = {5, 9, 4, -5, 0, 6, 1, 5, 7, 2};
+    int c[10] = {5, 9, 4, -5, 0, 6, 1, 5, 7, 2};
+    map me;
+    int key;
+    int value;
+    int num;
+    int count;
+    bool flip;
+    int p;
+    int i;
+    int j;
     assert(!map_init(0, sizeof(int), compare_int));
     assert(!map_init(sizeof(int), 0, compare_int));
     assert(!map_init(sizeof(int), sizeof(int), NULL));
-    map me = map_init(sizeof(int), sizeof(int), compare_int);
+    me = map_init(sizeof(int), sizeof(int), compare_int);
     assert(me);
     assert(map_size(me) == 0);
     assert(map_is_empty(me));
-    int key = 4;
-    int value = 9;
+    key = 4;
+    value = 9;
     map_put(me, &key, &value);
     assert(map_size(me) == 1);
     value = 5;
@@ -34,8 +45,6 @@ void test_map(void)
     map_put(me, &key, &value);
     assert(map_size(me) == 2);
     assert(map_contains(me, &key));
-    int val_arr[10] = {5, 9, 4, -5, 0, 6, 1, 5, 7, 2};
-    int i;
     for (i = 0; i < 10; i++) {
         map_put(me, &val_arr[i], &value);
         assert(map_contains(me, &val_arr[i]));
@@ -44,7 +53,6 @@ void test_map(void)
     for (i = 0; i < 10; i++) {
         assert(map_contains(me, &val_arr[i]));
     }
-    int j;
     for (i = -100; i < 100; i++) {
         bool contains = false;
         for (j = 0; j < 10; j++) {
@@ -54,7 +62,7 @@ void test_map(void)
         }
         assert(map_contains(me, &i) == contains);
     }
-    int num = -3;
+    num = -3;
     assert(!map_remove(me, &num));
     assert(map_size(me) == 9);
     assert(!map_contains(me, &num));
@@ -233,13 +241,15 @@ void test_map(void)
     map_put(me, &key, &num);
     map_clear(me);
     // Add a lot of items.
-    int count = 0;
-    bool flip = false;
+    count = 0;
+    flip = false;
     for (i = 1234; i < 82400; i++) {
+        bool is_already_present;
+        bool is_now_present;
         key = i % 765;
-        const bool is_already_present = map_contains(me, &key);
+        is_already_present = map_contains(me, &key);
         map_put(me, &key, &num);
-        const bool is_now_present = map_contains(me, &key);
+        is_now_present = map_contains(me, &key);
         assert(is_now_present);
         if (!is_already_present && is_now_present) {
             count++;
@@ -267,7 +277,6 @@ void test_map(void)
     map_put(me, &key, &num);
     assert(map_size(me) == 2);
     assert(map_contains(me, &key));
-    int c[10] = {5, 9, 4, -5, 0, 6, 1, 5, 7, 2};
     for (i = 0; i < 10; i++) {
         map_put(me, &c[i], &num);
         assert(map_contains(me, &c[i]));
@@ -347,7 +356,7 @@ void test_map(void)
     }
     assert(map_size(me) == 1000);
     map_clear(me);
-    int p = 0xdeadbeef;
+    p = 0xdeadbeef;
     assert(!map_remove(me, &p));
     assert(map_size(me) == 0);
     assert(map_is_empty(me));

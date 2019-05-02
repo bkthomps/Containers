@@ -12,8 +12,8 @@ static int hash_count;
 
 static unsigned long hash_int(const void *const key)
 {
-    hash_count++;
     unsigned long hash = 17;
+    hash_count++;
     hash = 31 * hash + *(int *) key;
     return hash;
 }
@@ -25,16 +25,22 @@ static unsigned long bad_hash_int(const void *const key)
 
 void test_unordered_map(void)
 {
+    int val_arr[10] = {5, 9, 4, -5, 0, 6, 1, 5, 7, 2};
+    unordered_map me;
+    int key;
+    int num;
+    int value;
+    int i;
+    int j;
     assert(!unordered_map_init(0, sizeof(int), hash_int, compare_int));
     assert(!unordered_map_init(sizeof(int), 0, hash_int, compare_int));
     assert(!unordered_map_init(sizeof(int), sizeof(int), NULL, compare_int));
     assert(!unordered_map_init(sizeof(int), sizeof(int), hash_int, NULL));
-    unordered_map me = unordered_map_init(sizeof(int), sizeof(int),
-                                          hash_int, compare_int);
+    me = unordered_map_init(sizeof(int), sizeof(int), hash_int, compare_int);
     assert(unordered_map_size(me) == 0);
     assert(unordered_map_is_empty(me));
-    int key = 4;
-    int value = 9;
+    key = 4;
+    value = 9;
     unordered_map_put(me, &key, &value);
     assert(unordered_map_size(me) == 1);
     value = 5;
@@ -50,8 +56,6 @@ void test_unordered_map(void)
     unordered_map_put(me, &key, &value);
     assert(unordered_map_size(me) == 2);
     assert(unordered_map_contains(me, &key));
-    int val_arr[10] = {5, 9, 4, -5, 0, 6, 1, 5, 7, 2};
-    int i;
     for (i = 0; i < 10; i++) {
         unordered_map_put(me, &val_arr[i], &value);
         assert(unordered_map_contains(me, &val_arr[i]));
@@ -60,7 +64,6 @@ void test_unordered_map(void)
     for (i = 0; i < 10; i++) {
         assert(unordered_map_contains(me, &val_arr[i]));
     }
-    int j;
     for (i = -100; i < 100; i++) {
         bool contains = false;
         for (j = 0; j < 10; j++) {
@@ -70,7 +73,7 @@ void test_unordered_map(void)
         }
         assert(unordered_map_contains(me, &i) == contains);
     }
-    int num = -3;
+    num = -3;
     assert(!unordered_map_remove(me, &num));
     assert(unordered_map_size(me) == 9);
     assert(!unordered_map_contains(me, &num));

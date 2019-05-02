@@ -52,10 +52,11 @@ struct node {
 set set_init(const size_t key_size,
              int (*const comparator)(const void *const, const void *const))
 {
+    struct internal_set *init;
     if (key_size == 0 || !comparator) {
         return NULL;
     }
-    struct internal_set *const init = malloc(sizeof(struct internal_set));
+    init = malloc(sizeof(struct internal_set));
     if (!init) {
         return NULL;
     }
@@ -114,8 +115,9 @@ static void set_rotate_left(set me,
                             struct node *const parent,
                             struct node *const child)
 {
+    struct node *grand_child;
     set_reference_parent(me, parent, child);
-    struct node *const grand_child = child->left;
+    grand_child = child->left;
     if (grand_child) {
         grand_child->parent = parent;
     }
@@ -131,8 +133,9 @@ static void set_rotate_right(set me,
                              struct node *const parent,
                              struct node *const child)
 {
+    struct node *grand_child;
     set_reference_parent(me, parent, child);
-    struct node *const grand_child = child->right;
+    grand_child = child->right;
     if (grand_child) {
         grand_child->parent = parent;
     }
@@ -273,6 +276,7 @@ static struct node *set_create_node(set me,
  */
 int set_put(set me, void *const key)
 {
+    struct node *traverse;
     if (!me->root) {
         struct node *insert = set_create_node(me, key, NULL);
         if (!insert) {
@@ -281,7 +285,7 @@ int set_put(set me, void *const key)
         me->root = insert;
         return 0;
     }
-    struct node *traverse = me->root;
+    traverse = me->root;
     while (true) {
         const int compare = me->comparator(key, traverse->key);
         if (compare < 0) {
@@ -376,6 +380,8 @@ static void set_delete_balance(set me,
                                struct node *item,
                                const bool is_left_deleted)
 {
+    struct node *child;
+    struct node *parent;
     if (is_left_deleted) {
         item->balance++;
     } else {
@@ -392,8 +398,8 @@ static void set_delete_balance(set me,
             return;
         }
     }
-    struct node *child = item;
-    struct node *parent = item->parent;
+    child = item;
+    parent = item->parent;
     while (parent) {
         if (parent->left == child) {
             parent->balance++;

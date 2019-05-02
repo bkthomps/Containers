@@ -56,10 +56,11 @@ map map_init(const size_t key_size,
              const size_t value_size,
              int (*const comparator)(const void *const, const void *const))
 {
+    struct internal_map *init;
     if (key_size == 0 || value_size == 0 || !comparator) {
         return NULL;
     }
-    struct internal_map *const init = malloc(sizeof(struct internal_map));
+    init = malloc(sizeof(struct internal_map));
     if (!init) {
         return NULL;
     }
@@ -119,8 +120,9 @@ static void map_rotate_left(map me,
                             struct node *const parent,
                             struct node *const child)
 {
+    struct node *grand_child;
     map_reference_parent(me, parent, child);
-    struct node *const grand_child = child->left;
+    grand_child = child->left;
     if (grand_child) {
         grand_child->parent = parent;
     }
@@ -136,8 +138,9 @@ static void map_rotate_right(map me,
                              struct node *const parent,
                              struct node *const child)
 {
+    struct node *grand_child;
     map_reference_parent(me, parent, child);
-    struct node *const grand_child = child->right;
+    grand_child = child->right;
     if (grand_child) {
         grand_child->parent = parent;
     }
@@ -288,6 +291,7 @@ static struct node *map_create_node(map me,
  */
 int map_put(map me, void *const key, void *const value)
 {
+    struct node *traverse;
     if (!me->root) {
         struct node *insert = map_create_node(me, key, value, NULL);
         if (!insert) {
@@ -296,7 +300,7 @@ int map_put(map me, void *const key, void *const value)
         me->root = insert;
         return 0;
     }
-    struct node *traverse = me->root;
+    traverse = me->root;
     while (true) {
         const int compare = me->comparator(key, traverse->key);
         if (compare < 0) {
@@ -411,6 +415,8 @@ static void map_delete_balance(map me,
                                struct node *item,
                                const bool is_left_deleted)
 {
+    struct node *child;
+    struct node *parent;
     if (is_left_deleted) {
         item->balance++;
     } else {
@@ -427,8 +433,8 @@ static void map_delete_balance(map me,
             return;
         }
     }
-    struct node *child = item;
-    struct node *parent = item->parent;
+    child = item;
+    parent = item->parent;
     while (parent) {
         if (parent->left == child) {
             parent->balance++;
