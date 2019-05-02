@@ -4,9 +4,9 @@
 
 static void test_vector_of_vectors(void)
 {
-    // Test using a vector of vectors of ints
+    /* Test using a vector of vectors of ints */
     vector outer = vector_init(sizeof(vector));
-    // Add vectors to the outer vector
+    /* Add vectors to the outer vector */
     int i;
     int j;
     for (i = 0; i < 5; i++) {
@@ -18,7 +18,7 @@ static void test_vector_of_vectors(void)
         vector_add_last(outer, &inner);
     }
     assert(vector_size(outer) == 5);
-    // Delete the vectors in the outer vector
+    /* Delete the vectors in the outer vector */
     for (i = 0; i < 5; i++) {
         vector inner = NULL;
         vector_get_first(&inner, outer);

@@ -31,26 +31,26 @@
  */
 typedef struct internal_unordered_multiset *unordered_multiset;
 
-// Starting
+/* Starting */
 unordered_multiset
 unordered_multiset_init(size_t key_size,
                         unsigned long (*hash)(const void *const key),
                         int (*comparator)(const void *const one,
                                           const void *const two));
 
-// Utility
+/* Utility */
 int unordered_multiset_rehash(unordered_multiset me);
 int unordered_multiset_size(unordered_multiset me);
 bool unordered_multiset_is_empty(unordered_multiset me);
 
-// Accessing
+/* Accessing */
 int unordered_multiset_put(unordered_multiset me, void *key);
 int unordered_multiset_count(unordered_multiset me, void *key);
 bool unordered_multiset_contains(unordered_multiset me, void *key);
 bool unordered_multiset_remove(unordered_multiset me, void *key);
 bool unordered_multiset_remove_all(unordered_multiset me, void *key);
 
-// Ending
+/* Ending */
 int unordered_multiset_clear(unordered_multiset me);
 unordered_multiset unordered_multiset_destroy(unordered_multiset me);
 

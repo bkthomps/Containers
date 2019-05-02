@@ -141,7 +141,7 @@ void test_unordered_multimap(void)
     assert(unordered_multimap_remove(me, &num, &value));
     assert(unordered_multimap_size(me) == 0);
     assert(!unordered_multimap_contains(me, &num));
-    // Add a lot of items and remove individually.
+    /* Add a lot of items and remove individually. */
     for (i = 5000; i < 6000; i++) {
         unordered_multimap_put(me, &i, &value);
         assert(unordered_multimap_contains(me, &i));
@@ -156,7 +156,7 @@ void test_unordered_multimap(void)
     unordered_multimap_clear(me);
     assert(unordered_multimap_size(me) == 0);
     assert(unordered_multimap_is_empty(me));
-    // Add a lot of items and clear.
+    /* Add a lot of items and clear. */
     for (i = 5000; i < 6000; i++) {
         unordered_multimap_put(me, &i, &value);
         assert(unordered_multimap_contains(me, &i));

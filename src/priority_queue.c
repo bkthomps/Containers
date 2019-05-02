@@ -169,14 +169,14 @@ bool priority_queue_pop(void *const data, priority_queue me)
         if (right_index < size &&
             me->comparator(data_right_index, data_left_index) > 0 &&
             me->comparator(data_right_index, data_index) > 0) {
-            // Swap parent and right child then continue down right child.
+            /* Swap parent and right child then continue down right child. */
             memcpy(temp, data_index, me->data_size);
             memcpy(data_index, data_right_index, me->data_size);
             memcpy(data_right_index, temp, me->data_size);
             index = right_index;
         } else if (left_index < size &&
                    me->comparator(data_left_index, data_index) > 0) {
-            // Swap parent and left child then continue down left child.
+            /* Swap parent and left child then continue down left child. */
             memcpy(temp, data_index, me->data_size);
             memcpy(data_index, data_left_index, me->data_size);
             memcpy(data_left_index, temp, me->data_size);

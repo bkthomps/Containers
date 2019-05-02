@@ -31,26 +31,26 @@
  */
 typedef struct internal_queue *queue;
 
-// Starting
+/* Starting */
 queue queue_init(size_t data_size);
 
-// Utility
+/* Utility */
 int queue_size(queue me);
 bool queue_is_empty(queue me);
 int queue_trim(queue me);
 void queue_copy_to_array(void *arr, queue me);
 
-// Adding
+/* Adding */
 int queue_push(queue me, void *data);
 
-// Removing
+/* Removing */
 bool queue_pop(void *data, queue me);
 
-// Getting
+/* Getting */
 bool queue_front(void *data, queue me);
 bool queue_back(void *data, queue me);
 
-// Ending
+/* Ending */
 int queue_clear(queue me);
 queue queue_destroy(queue me);
 

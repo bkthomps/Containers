@@ -123,7 +123,7 @@ void test_multimap(void)
     assert(multimap_remove(me, &num, &value));
     assert(multimap_size(me) == 0);
     assert(!multimap_contains(me, &num));
-    // Add a lot of items and remove individually.
+    /* Add a lot of items and remove individually. */
     for (i = 5000; i < 6000; i++) {
         multimap_put(me, &i, &value);
         assert(multimap_contains(me, &i));
@@ -138,7 +138,7 @@ void test_multimap(void)
     multimap_clear(me);
     assert(multimap_size(me) == 0);
     assert(multimap_is_empty(me));
-    // Add a lot of items and clear.
+    /* Add a lot of items and clear. */
     for (i = 5000; i < 6000; i++) {
         multimap_put(me, &i, &value);
         assert(multimap_contains(me, &i));
@@ -163,7 +163,7 @@ void test_multimap(void)
     assert(!me);
     me = multimap_init(sizeof(int), sizeof(int), compare_int, compare_int);
     assert(me);
-    // left-left
+    /* left-left */
     key = 5;
     multimap_put(me, &key, &num);
     key = 3;
@@ -173,7 +173,7 @@ void test_multimap(void)
     key = 0xdeadbeef;
     multimap_contains(me, &key);
     multimap_clear(me);
-    // right-right
+    /* right-right */
     key = 1;
     multimap_put(me, &key, &num);
     key = 3;
@@ -183,7 +183,7 @@ void test_multimap(void)
     key = 0xdeadbeef;
     multimap_contains(me, &key);
     multimap_clear(me);
-    // left-right
+    /* left-right */
     key = 5;
     multimap_put(me, &key, &num);
     key = 1;
@@ -193,7 +193,7 @@ void test_multimap(void)
     key = 0xdeadbeef;
     multimap_contains(me, &key);
     multimap_clear(me);
-    // right-left
+    /* right-left */
     key = 1;
     multimap_put(me, &key, &num);
     key = 5;
@@ -203,7 +203,7 @@ void test_multimap(void)
     key = 0xdeadbeef;
     multimap_contains(me, &key);
     multimap_clear(me);
-    // Two children edge case.
+    /* Two children edge case. */
     key = 8;
     multimap_put(me, &key, &num);
     key = 5;
@@ -237,7 +237,7 @@ void test_multimap(void)
     key = 14;
     multimap_put(me, &key, &num);
     multimap_clear(me);
-    // Two children edge case.
+    /* Two children edge case. */
     key = 8;
     multimap_put(me, &key, &num);
     key = 4;
@@ -271,7 +271,7 @@ void test_multimap(void)
     key = 14;
     multimap_put(me, &key, &num);
     multimap_clear(me);
-    // Add a lot of items.
+    /* Add a lot of items. */
     count = 0;
     flip = false;
     for (i = 1234; i < 82400; i++) {
@@ -360,7 +360,7 @@ void test_multimap(void)
     assert(multimap_size(me) == 4);
     assert(!multimap_contains(me, &num));
     multimap_clear(me);
-    // Add a lot of items and remove individually.
+    /* Add a lot of items and remove individually. */
     value = 37;
     for (i = 5000; i < 6000; i++) {
         multimap_put(me, &i, &value);
@@ -376,7 +376,7 @@ void test_multimap(void)
     multimap_clear(me);
     assert(multimap_size(me) == 0);
     assert(multimap_is_empty(me));
-    // Add a lot of items and clear.
+    /* Add a lot of items and clear. */
     for (i = 5000; i < 6000; i++) {
         multimap_put(me, &i, &num);
         assert(multimap_contains(me, &i));
@@ -389,7 +389,7 @@ void test_multimap(void)
     assert(multimap_is_empty(me));
     me = multimap_destroy(me);
     assert(!me);
-    // Create odd shape graph.
+    /* Create odd shape graph. */
     me = multimap_init(sizeof(int), sizeof(int), compare_int, compare_int);
     key = 10;
     multimap_put(me, &key, &num);
@@ -414,7 +414,7 @@ void test_multimap(void)
     key = 8;
     multimap_remove(me, &key, &value);
     multimap_clear(me);
-    // Allocate many nodes.
+    /* Allocate many nodes. */
     value = 54;
     for (i = 8123; i < 12314; i += 3) {
         multimap_put(me, &i, &value);
@@ -425,7 +425,7 @@ void test_multimap(void)
         assert(!multimap_contains(me, &i));
     }
     multimap_clear(me);
-    // Create another odd shape graph.
+    /* Create another odd shape graph. */
     key = 20;
     multimap_put(me, &key, &num);
     key = 10;
@@ -457,7 +457,7 @@ void test_multimap(void)
     key = 32;
     assert(multimap_contains(me, &key));
     multimap_clear(me);
-    // One sided tree.
+    /* One sided tree. */
     key = 10;
     multimap_put(me, &key, &num);
     key = 9;
@@ -471,7 +471,7 @@ void test_multimap(void)
     key = 7;
     assert(multimap_contains(me, &key));
     multimap_destroy(me);
-    // Replace two sided two children.
+    /* Replace two sided two children. */
     me = multimap_init(sizeof(int), sizeof(int), compare_int, compare_int);
     key = 5;
     multimap_put(me, &key, &num);
@@ -538,7 +538,7 @@ void test_multimap(void)
     key = 5;
     multimap_remove(me, &key, &value);
     multimap_clear(me);
-    // Two children edge case other side.
+    /* Two children edge case other side. */
     key = 8;
     multimap_put(me, &key, &num);
     key = 4;
@@ -574,7 +574,7 @@ void test_multimap(void)
     multimap_clear(me);
     assert(multimap_count(me, &key) == 0);
     assert(!multimap_remove_all(me, &key));
-    // Edge case.
+    /* Edge case. */
     me = multimap_init(sizeof(int), sizeof(int), compare_int, compare_int);
     value = 17;
     key = 5;

@@ -31,25 +31,25 @@
  */
 typedef struct internal_priority_queue *priority_queue;
 
-// Starting
+/* Starting */
 priority_queue priority_queue_init(size_t data_size,
                                    int (*comparator)(const void *const one,
                                                      const void *const two));
 
-// Utility
+/* Utility */
 int priority_queue_size(priority_queue me);
 bool priority_queue_is_empty(priority_queue me);
 
-// Adding
+/* Adding */
 int priority_queue_push(priority_queue me, void *data);
 
-// Removing
+/* Removing */
 bool priority_queue_pop(void *data, priority_queue me);
 
-// Getting
+/* Getting */
 bool priority_queue_front(void *data, priority_queue me);
 
-// Ending
+/* Ending */
 int priority_queue_clear(priority_queue me);
 priority_queue priority_queue_destroy(priority_queue me);
 

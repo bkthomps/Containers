@@ -206,7 +206,7 @@ static struct node *set_repair(set me,
         grand_child->balance = 0;
         return grand_child;
     }
-    // Impossible to get here.
+    /* Impossible to get here. */
     return NULL;
 }
 
@@ -224,13 +224,13 @@ static void set_insert_balance(set me, struct node *const item)
         } else {
             parent->balance++;
         }
-        // If balance is zero after modification, then the tree is balanced.
+        /* If balance is zero after modification, then the tree is balanced. */
         if (parent->balance == 0) {
             return;
         }
-        // Must re-balance if not in {-1, 0, 1}
+        /* Must re-balance if not in {-1, 0, 1} */
         if (parent->balance > 1 || parent->balance < -1) {
-            // After one repair, the tree is balanced.
+            /* After one repair, the tree is balanced. */
             set_repair(me, parent, child, grand_child);
             return;
         }
@@ -387,11 +387,11 @@ static void set_delete_balance(set me,
     } else {
         item->balance--;
     }
-    // If balance is -1 or +1 after modification, then the tree is balanced.
+    /* If balance is -1 or +1 after modification, then the tree is balanced. */
     if (item->balance == -1 || item->balance == 1) {
         return;
     }
-    // Must re-balance if not in {-1, 0, 1}
+    /* Must re-balance if not in {-1, 0, 1} */
     if (item->balance > 1 || item->balance < -1) {
         item = set_repair_pivot(me, item, is_left_deleted);
         if (!item->parent || item->balance == -1 || item->balance == 1) {
@@ -406,16 +406,16 @@ static void set_delete_balance(set me,
         } else {
             parent->balance--;
         }
-        // If balance is -1 or +1 after modification, then the tree is balanced.
+        /* The tree is balanced if balance is -1 or +1 after modification. */
         if (parent->balance == -1 || parent->balance == 1) {
             return;
         }
-        // Must re-balance if not in {-1, 0, 1}
+        /* Must re-balance if not in {-1, 0, 1} */
         if (parent->balance > 1 || parent->balance < -1) {
             child = set_repair_pivot(me, parent, parent->left == child);
             parent = child->parent;
-            // If balance is -1 or +1 after modification or the parent is NULL,
-            // then the tree is balanced.
+            /* If balance is -1 or +1 after modification or the parent is */
+            /* NULL, then the tree is balanced. */
             if (!parent || child->balance == -1 || child->balance == 1) {
                 return;
             }
@@ -432,12 +432,12 @@ static void set_delete_balance(set me,
 static void set_remove_no_children(set me, const struct node *const traverse)
 {
     struct node *const parent = traverse->parent;
-    // If no parent and no children, then the only node is traverse.
+    /* If no parent and no children, then the only node is traverse. */
     if (!parent) {
         me->root = NULL;
         return;
     }
-    // No re-reference needed since traverse has no children.
+    /* No re-reference needed since traverse has no children. */
     if (parent->left == traverse) {
         parent->left = NULL;
         set_delete_balance(me, parent, true);
@@ -453,7 +453,7 @@ static void set_remove_no_children(set me, const struct node *const traverse)
 static void set_remove_one_child(set me, const struct node *const traverse)
 {
     struct node *const parent = traverse->parent;
-    // If no parent, make the child of traverse the new root.
+    /* If no parent, make the child of traverse the new root. */
     if (!parent) {
         if (traverse->left) {
             traverse->left->parent = NULL;
@@ -464,7 +464,7 @@ static void set_remove_one_child(set me, const struct node *const traverse)
         }
         return;
     }
-    // The parent of traverse now references the child of traverse.
+    /* The parent of traverse now references the child of traverse. */
     if (parent->left == traverse) {
         if (traverse->left) {
             parent->left = traverse->left;

@@ -227,7 +227,7 @@ static struct node *multimap_repair(multimap me,
         grand_child->balance = 0;
         return grand_child;
     }
-    // Impossible to get here.
+    /* Impossible to get here. */
     return NULL;
 }
 
@@ -245,13 +245,13 @@ static void multimap_insert_balance(multimap me, struct node *const item)
         } else {
             parent->balance++;
         }
-        // If balance is zero after modification, then the tree is balanced.
+        /* If balance is zero after modification, then the tree is balanced. */
         if (parent->balance == 0) {
             return;
         }
-        // Must re-balance if not in {-1, 0, 1}
+        /* Must re-balance if not in {-1, 0, 1} */
         if (parent->balance > 1 || parent->balance < -1) {
-            // After one repair, the tree is balanced.
+            /* After one repair, the tree is balanced. */
             multimap_repair(me, parent, child, grand_child);
             return;
         }
@@ -501,11 +501,11 @@ static void multimap_delete_balance(multimap me,
     } else {
         item->balance--;
     }
-    // If balance is -1 or +1 after modification, then the tree is balanced.
+    /* If balance is -1 or +1 after modification, then the tree is balanced. */
     if (item->balance == -1 || item->balance == 1) {
         return;
     }
-    // Must re-balance if not in {-1, 0, 1}
+    /* Must re-balance if not in {-1, 0, 1} */
     if (item->balance > 1 || item->balance < -1) {
         item = multimap_repair_pivot(me, item, is_left_deleted);
         if (!item->parent || item->balance == -1 || item->balance == 1) {
@@ -520,16 +520,16 @@ static void multimap_delete_balance(multimap me,
         } else {
             parent->balance--;
         }
-        // If balance is -1 or +1 after modification, then the tree is balanced.
+        /* The tree is balanced if balance is -1 or +1 after modification. */
         if (parent->balance == -1 || parent->balance == 1) {
             return;
         }
-        // Must re-balance if not in {-1, 0, 1}
+        /* Must re-balance if not in {-1, 0, 1} */
         if (parent->balance > 1 || parent->balance < -1) {
             child = multimap_repair_pivot(me, parent, parent->left == child);
             parent = child->parent;
-            // If balance is -1 or +1 after modification or the parent is NULL,
-            // then the tree is balanced.
+            /* If balance is -1 or +1 after modification or the parent is */
+            /* NULL, then the tree is balanced. */
             if (!parent || child->balance == -1 || child->balance == 1) {
                 return;
             }
@@ -547,12 +547,12 @@ static void multimap_remove_no_children(multimap me,
                                         const struct node *const traverse)
 {
     struct node *const parent = traverse->parent;
-    // If no parent and no children, then the only node is traverse.
+    /* If no parent and no children, then the only node is traverse. */
     if (!parent) {
         me->root = NULL;
         return;
     }
-    // No re-reference needed since traverse has no children.
+    /* No re-reference needed since traverse has no children. */
     if (parent->left == traverse) {
         parent->left = NULL;
         multimap_delete_balance(me, parent, true);
@@ -569,7 +569,7 @@ static void multimap_remove_one_child(multimap me,
                                       const struct node *const traverse)
 {
     struct node *const parent = traverse->parent;
-    // If no parent, make the child of traverse the new root.
+    /* If no parent, make the child of traverse the new root. */
     if (!parent) {
         if (traverse->left) {
             traverse->left->parent = NULL;
@@ -580,7 +580,7 @@ static void multimap_remove_one_child(multimap me,
         }
         return;
     }
-    // The parent of traverse now references the child of traverse.
+    /* The parent of traverse now references the child of traverse. */
     if (parent->left == traverse) {
         if (traverse->left) {
             parent->left = traverse->left;

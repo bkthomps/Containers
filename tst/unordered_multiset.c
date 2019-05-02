@@ -119,7 +119,7 @@ void test_unordered_multiset(void)
     assert(unordered_multiset_remove(me, &num));
     assert(unordered_multiset_size(me) == 0);
     assert(!unordered_multiset_contains(me, &num));
-    // Add a lot of items and remove individually.
+    /* Add a lot of items and remove individually. */
     for (i = 5000; i < 6000; i++) {
         unordered_multiset_put(me, &i);
         assert(unordered_multiset_contains(me, &i));
@@ -134,7 +134,7 @@ void test_unordered_multiset(void)
     unordered_multiset_clear(me);
     assert(unordered_multiset_size(me) == 0);
     assert(unordered_multiset_is_empty(me));
-    // Add a lot of items and clear.
+    /* Add a lot of items and clear. */
     for (i = 5000; i < 6000; i++) {
         unordered_multiset_put(me, &i);
         assert(unordered_multiset_contains(me, &i));

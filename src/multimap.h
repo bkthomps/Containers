@@ -31,7 +31,7 @@
  */
 typedef struct internal_multimap *multimap;
 
-// Starting
+/* Starting */
 multimap multimap_init(size_t key_size,
                        size_t value_size,
                        int (*key_comparator)(const void *const one,
@@ -39,11 +39,11 @@ multimap multimap_init(size_t key_size,
                        int (*value_comparator)(const void *const one,
                                                const void *const two));
 
-// Capacity
+/* Capacity */
 int multimap_size(multimap me);
 bool multimap_is_empty(multimap me);
 
-// Accessing
+/* Accessing */
 int multimap_put(multimap me, void *key, void *value);
 void multimap_get_start(multimap me, void *key);
 bool multimap_get_next(void *value, multimap me);
@@ -52,7 +52,7 @@ bool multimap_contains(multimap me, void *key);
 bool multimap_remove(multimap me, void *key, void *value);
 bool multimap_remove_all(multimap me, void *key);
 
-// Ending
+/* Ending */
 void multimap_clear(multimap me);
 multimap multimap_destroy(multimap me);
 

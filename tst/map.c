@@ -102,7 +102,7 @@ void test_map(void)
     assert(map_remove(me, &num));
     assert(map_size(me) == 0);
     assert(!map_contains(me, &num));
-    // Add a lot of items and remove individually.
+    /* Add a lot of items and remove individually. */
     for (i = 5000; i < 6000; i++) {
         map_put(me, &i, &value);
         assert(map_contains(me, &i));
@@ -117,7 +117,7 @@ void test_map(void)
     map_clear(me);
     assert(map_size(me) == 0);
     assert(map_is_empty(me));
-    // Add a lot of items and clear.
+    /* Add a lot of items and clear. */
     for (i = 5000; i < 6000; i++) {
         map_put(me, &i, &value);
         assert(map_contains(me, &i));
@@ -132,7 +132,7 @@ void test_map(void)
     assert(!me);
     me = map_init(sizeof(int), sizeof(int), compare_int);
     assert(me);
-    // left-left
+    /* left-left */
     key = 5;
     map_put(me, &key, &num);
     key = 3;
@@ -142,7 +142,7 @@ void test_map(void)
     key = 0xdeadbeef;
     map_contains(me, &key);
     map_clear(me);
-    // right-right
+    /* right-right */
     key = 1;
     map_put(me, &key, &num);
     key = 3;
@@ -152,7 +152,7 @@ void test_map(void)
     key = 0xdeadbeef;
     map_contains(me, &key);
     map_clear(me);
-    // left-right
+    /* left-right */
     key = 5;
     map_put(me, &key, &num);
     key = 1;
@@ -162,7 +162,7 @@ void test_map(void)
     key = 0xdeadbeef;
     map_contains(me, &key);
     map_clear(me);
-    // right-left
+    /* right-left */
     key = 1;
     map_put(me, &key, &num);
     key = 5;
@@ -172,7 +172,7 @@ void test_map(void)
     key = 0xdeadbeef;
     map_contains(me, &key);
     map_clear(me);
-    // Two children edge case.
+    /* Two children edge case. */
     key = 8;
     map_put(me, &key, &num);
     key = 5;
@@ -206,7 +206,7 @@ void test_map(void)
     key = 14;
     map_put(me, &key, &num);
     map_clear(me);
-    // Two children edge case.
+    /* Two children edge case. */
     key = 8;
     map_put(me, &key, &num);
     key = 4;
@@ -240,7 +240,7 @@ void test_map(void)
     key = 14;
     map_put(me, &key, &num);
     map_clear(me);
-    // Add a lot of items.
+    /* Add a lot of items. */
     count = 0;
     flip = false;
     for (i = 1234; i < 82400; i++) {
@@ -334,7 +334,7 @@ void test_map(void)
     assert(map_remove(me, &num));
     assert(map_size(me) == 0);
     assert(!map_contains(me, &num));
-    // Add a lot of items and remove individually.
+    /* Add a lot of items and remove individually. */
     for (i = 5000; i < 6000; i++) {
         map_put(me, &i, &num);
         assert(map_contains(me, &i));
@@ -349,7 +349,7 @@ void test_map(void)
     map_clear(me);
     assert(map_size(me) == 0);
     assert(map_is_empty(me));
-    // Add a lot of items and clear.
+    /* Add a lot of items and clear. */
     for (i = 5000; i < 6000; i++) {
         map_put(me, &i, &num);
         assert(map_contains(me, &i));
@@ -362,7 +362,7 @@ void test_map(void)
     assert(map_is_empty(me));
     me = map_destroy(me);
     assert(!me);
-    // Create odd shape graph.
+    /* Create odd shape graph. */
     me = map_init(sizeof(int), sizeof(int), compare_int);
     key = 10;
     map_put(me, &key, &num);
@@ -387,7 +387,7 @@ void test_map(void)
     key = 8;
     map_remove(me, &key);
     map_clear(me);
-    // Allocate many nodes.
+    /* Allocate many nodes. */
     for (i = 8123; i < 12314; i += 3) {
         map_put(me, &i, &num);
         assert(map_contains(me, &i));
@@ -397,7 +397,7 @@ void test_map(void)
         assert(!map_contains(me, &i));
     }
     map_clear(me);
-    // Create another odd shape graph.
+    /* Create another odd shape graph. */
     key = 20;
     map_put(me, &key, &num);
     key = 10;
@@ -429,7 +429,7 @@ void test_map(void)
     key = 32;
     assert(map_contains(me, &key));
     map_clear(me);
-    // One sided tree.
+    /* One sided tree. */
     key = 10;
     map_put(me, &key, &num);
     key = 9;
@@ -443,7 +443,7 @@ void test_map(void)
     key = 7;
     assert(map_contains(me, &key));
     map_destroy(me);
-    // Replace two sided two children.
+    /* Replace two sided two children. */
     me = map_init(sizeof(int), sizeof(int), compare_int);
     key = 5;
     map_put(me, &key, &num);
@@ -509,7 +509,7 @@ void test_map(void)
     key = 5;
     map_remove(me, &key);
     map_clear(me);
-    // Two children edge case other side.
+    /* Two children edge case other side. */
     key = 8;
     map_put(me, &key, &num);
     key = 4;

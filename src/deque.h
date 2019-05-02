@@ -30,34 +30,34 @@
  */
 typedef struct internal_deque *deque;
 
-// Starting
+/* Starting */
 deque deque_init(size_t data_size);
 
-// Utility
+/* Utility */
 int deque_size(deque me);
 bool deque_is_empty(deque me);
 int deque_trim(deque me);
 void deque_copy_to_array(void *arr, deque me);
 
-// Adding
+/* Adding */
 int deque_push_front(deque me, void *data);
 int deque_push_back(deque me, void *data);
 
-// Removing
+/* Removing */
 int deque_pop_front(void *data, deque me);
 int deque_pop_back(void *data, deque me);
 
-// Setting
+/* Setting */
 int deque_set_first(deque me, void *data);
 int deque_set_at(deque me, int index, void *data);
 int deque_set_last(deque me, void *data);
 
-// Getting
+/* Getting */
 int deque_get_first(void *data, deque me);
 int deque_get_at(void *data, deque me, int index);
 int deque_get_last(void *data, deque me);
 
-// Ending
+/* Ending */
 int deque_clear(deque me);
 deque deque_destroy(deque me);
 

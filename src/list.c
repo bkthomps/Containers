@@ -201,7 +201,7 @@ int list_add_at(list me, const int index, void *const data)
     if (index == me->item_count) {
         return list_add_last(me, data);
     }
-    // The new node will go right before this node.
+    /* The new node will go right before this node. */
     traverse = list_get_node_at(me, index);
     add = malloc(sizeof(struct node));
     if (!add) {

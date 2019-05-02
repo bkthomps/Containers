@@ -31,25 +31,25 @@
  */
 typedef struct internal_stack *stack;
 
-// Starting
+/* Starting */
 stack stack_init(size_t data_size);
 
-// Utility
+/* Utility */
 int stack_size(stack me);
 bool stack_is_empty(stack me);
 int stack_trim(stack me);
 void stack_copy_to_array(void *arr, stack me);
 
-// Adding
+/* Adding */
 int stack_push(stack me, void *data);
 
-// Removing
+/* Removing */
 bool stack_pop(void *data, stack me);
 
-// Getting
+/* Getting */
 bool stack_top(void *data, stack me);
 
-// Ending
+/* Ending */
 int stack_clear(stack me);
 stack stack_destroy(stack me);
 

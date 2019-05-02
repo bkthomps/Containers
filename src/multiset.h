@@ -31,23 +31,23 @@
  */
 typedef struct internal_multiset *multiset;
 
-// Starting
+/* Starting */
 multiset multiset_init(size_t key_size,
                        int (*comparator)(const void *const one,
                                          const void *const two));
 
-// Capacity
+/* Capacity */
 int multiset_size(multiset me);
 bool multiset_is_empty(multiset me);
 
-// Accessing
+/* Accessing */
 int multiset_put(multiset me, void *key);
 int multiset_count(multiset me, void *key);
 bool multiset_contains(multiset me, void *key);
 bool multiset_remove(multiset me, void *key);
 bool multiset_remove_all(multiset me, void *key);
 
-// Ending
+/* Ending */
 void multiset_clear(multiset me);
 multiset multiset_destroy(multiset me);
 

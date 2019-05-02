@@ -1,8 +1,8 @@
 #include "test.h"
 #include "../src/set.h"
 
-// Used for thorough testing, but takes longer to run.
-//#define LONG_TEST
+/* Used for thorough testing, but takes longer to run. */
+/* #define LONG_TEST */
 
 /*
  * Include this struct for the stubs.
@@ -134,7 +134,7 @@ void test_set(void)
     assert(!set_init(sizeof(int), NULL));
     me = set_init(sizeof(int), compare_int);
     assert(me);
-    // left-left
+    /* left-left */
     key = 5;
     stub_set_put(me, &key);
     key = 3;
@@ -144,7 +144,7 @@ void test_set(void)
     key = 0xdeadbeef;
     stub_set_contains(me, &key);
     stub_set_clear(me);
-    // right-right
+    /* right-right */
     key = 1;
     stub_set_put(me, &key);
     key = 3;
@@ -154,7 +154,7 @@ void test_set(void)
     key = 0xdeadbeef;
     stub_set_contains(me, &key);
     stub_set_clear(me);
-    // left-right
+    /* left-right */
     key = 5;
     stub_set_put(me, &key);
     key = 1;
@@ -164,7 +164,7 @@ void test_set(void)
     key = 0xdeadbeef;
     stub_set_contains(me, &key);
     stub_set_clear(me);
-    // right-left
+    /* right-left */
     key = 1;
     stub_set_put(me, &key);
     key = 5;
@@ -174,7 +174,7 @@ void test_set(void)
     key = 0xdeadbeef;
     stub_set_contains(me, &key);
     stub_set_clear(me);
-    // Two children edge case.
+    /* Two children edge case. */
     key = 8;
     stub_set_put(me, &key);
     key = 5;
@@ -208,7 +208,7 @@ void test_set(void)
     key = 14;
     stub_set_put(me, &key);
     stub_set_clear(me);
-    // Two children edge case.
+    /* Two children edge case. */
     key = 8;
     stub_set_put(me, &key);
     key = 4;
@@ -242,7 +242,7 @@ void test_set(void)
     key = 14;
     stub_set_put(me, &key);
     stub_set_clear(me);
-    // Add a lot of items.
+    /* Add a lot of items. */
     count = 0;
     flip = false;
     for (i = 1234; i < 82400; i++) {
@@ -336,7 +336,7 @@ void test_set(void)
     assert(stub_set_remove(me, &num));
     assert(set_size(me) == 0);
     assert(!stub_set_contains(me, &num));
-    // Add a lot of items and remove individually.
+    /* Add a lot of items and remove individually. */
     for (i = 5000; i < 6000; i++) {
         stub_set_put(me, &i);
         assert(stub_set_contains(me, &i));
@@ -351,7 +351,7 @@ void test_set(void)
     stub_set_clear(me);
     assert(set_size(me) == 0);
     assert(set_is_empty(me));
-    // Add a lot of items and clear.
+    /* Add a lot of items and clear. */
     for (i = 5000; i < 6000; i++) {
         stub_set_put(me, &i);
         assert(stub_set_contains(me, &i));
@@ -364,7 +364,7 @@ void test_set(void)
     assert(set_is_empty(me));
     me = stub_set_destroy(me);
     assert(!me);
-    // Create odd shape graph.
+    /* Create odd shape graph. */
     me = set_init(sizeof(int), compare_int);
     key = 10;
     stub_set_put(me, &key);
@@ -389,7 +389,7 @@ void test_set(void)
     key = 8;
     stub_set_remove(me, &key);
     stub_set_clear(me);
-    // Allocate many nodes.
+    /* Allocate many nodes. */
     for (i = 8123; i < 12314; i += 3) {
         stub_set_put(me, &i);
         assert(stub_set_contains(me, &i));
@@ -399,7 +399,7 @@ void test_set(void)
         assert(!stub_set_contains(me, &i));
     }
     stub_set_clear(me);
-    // Create another odd shape graph.
+    /* Create another odd shape graph. */
     key = 20;
     stub_set_put(me, &key);
     key = 10;
@@ -431,7 +431,7 @@ void test_set(void)
     key = 32;
     assert(stub_set_contains(me, &key));
     stub_set_clear(me);
-    // One sided tree.
+    /* One sided tree. */
     key = 10;
     stub_set_put(me, &key);
     key = 9;
@@ -445,7 +445,7 @@ void test_set(void)
     key = 7;
     assert(stub_set_contains(me, &key));
     stub_set_destroy(me);
-    // Replace two sided two children.
+    /* Replace two sided two children. */
     me = set_init(sizeof(int), compare_int);
     key = 5;
     stub_set_put(me, &key);
@@ -511,7 +511,7 @@ void test_set(void)
     key = 5;
     stub_set_remove(me, &key);
     stub_set_clear(me);
-    // Two children edge case on the other side.
+    /* Two children edge case on the other side. */
     key = 8;
     stub_set_put(me, &key);
     key = 4;

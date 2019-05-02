@@ -108,7 +108,7 @@ void test_multiset(void)
     assert(multiset_remove(me, &num));
     assert(multiset_size(me) == 0);
     assert(!multiset_contains(me, &num));
-    // Add a lot of items and remove individually.
+    /* Add a lot of items and remove individually. */
     for (i = 5000; i < 6000; i++) {
         multiset_put(me, &i);
         assert(multiset_contains(me, &i));
@@ -123,7 +123,7 @@ void test_multiset(void)
     multiset_clear(me);
     assert(multiset_size(me) == 0);
     assert(multiset_is_empty(me));
-    // Add a lot of items and clear.
+    /* Add a lot of items and clear. */
     for (i = 5000; i < 6000; i++) {
         multiset_put(me, &i);
         assert(multiset_contains(me, &i));
@@ -148,7 +148,7 @@ void test_multiset(void)
     assert(!me);
     me = multiset_init(sizeof(int), compare_int);
     assert(me);
-    // left-left
+    /* left-left */
     key = 5;
     multiset_put(me, &key);
     key = 3;
@@ -158,7 +158,7 @@ void test_multiset(void)
     key = 0xdeadbeef;
     multiset_contains(me, &key);
     multiset_clear(me);
-    // right-right
+    /* right-right */
     key = 1;
     multiset_put(me, &key);
     key = 3;
@@ -168,7 +168,7 @@ void test_multiset(void)
     key = 0xdeadbeef;
     multiset_contains(me, &key);
     multiset_clear(me);
-    // left-right
+    /* left-right */
     key = 5;
     multiset_put(me, &key);
     key = 1;
@@ -178,7 +178,7 @@ void test_multiset(void)
     key = 0xdeadbeef;
     multiset_contains(me, &key);
     multiset_clear(me);
-    // right-left
+    /* right-left */
     key = 1;
     multiset_put(me, &key);
     key = 5;
@@ -188,7 +188,7 @@ void test_multiset(void)
     key = 0xdeadbeef;
     multiset_contains(me, &key);
     multiset_clear(me);
-    // Two children edge case.
+    /* Two children edge case. */
     key = 8;
     multiset_put(me, &key);
     key = 5;
@@ -222,7 +222,7 @@ void test_multiset(void)
     key = 14;
     multiset_put(me, &key);
     multiset_clear(me);
-    // Two children edge case.
+    /* Two children edge case. */
     key = 8;
     multiset_put(me, &key);
     key = 4;
@@ -256,7 +256,7 @@ void test_multiset(void)
     key = 14;
     multiset_put(me, &key);
     multiset_clear(me);
-    // Add a lot of items.
+    /* Add a lot of items. */
     count = 0;
     flip = false;
     for (i = 1234; i < 82400; i++) {
@@ -345,7 +345,7 @@ void test_multiset(void)
     assert(multiset_size(me) == 4);
     assert(!multiset_contains(me, &num));
     multiset_clear(me);
-    // Add a lot of items and remove individually.
+    /* Add a lot of items and remove individually. */
     for (i = 5000; i < 6000; i++) {
         multiset_put(me, &i);
         assert(multiset_contains(me, &i));
@@ -360,7 +360,7 @@ void test_multiset(void)
     multiset_clear(me);
     assert(multiset_size(me) == 0);
     assert(multiset_is_empty(me));
-    // Add a lot of items and clear.
+    /* Add a lot of items and clear. */
     for (i = 5000; i < 6000; i++) {
         multiset_put(me, &i);
         assert(multiset_contains(me, &i));
@@ -373,7 +373,7 @@ void test_multiset(void)
     assert(multiset_is_empty(me));
     me = multiset_destroy(me);
     assert(!me);
-    // Create odd shape graph.
+    /* Create odd shape graph. */
     me = multiset_init(sizeof(int), compare_int);
     key = 10;
     multiset_put(me, &key);
@@ -398,7 +398,7 @@ void test_multiset(void)
     key = 8;
     multiset_remove(me, &key);
     multiset_clear(me);
-    // Allocate many nodes.
+    /* Allocate many nodes. */
     for (i = 8123; i < 12314; i += 3) {
         multiset_put(me, &i);
         assert(multiset_contains(me, &i));
@@ -408,7 +408,7 @@ void test_multiset(void)
         assert(!multiset_contains(me, &i));
     }
     multiset_clear(me);
-    // Create another odd shape graph.
+    /* Create another odd shape graph. */
     key = 20;
     multiset_put(me, &key);
     key = 10;
@@ -440,7 +440,7 @@ void test_multiset(void)
     key = 32;
     assert(multiset_contains(me, &key));
     multiset_clear(me);
-    // One sided tree.
+    /* One sided tree. */
     key = 10;
     multiset_put(me, &key);
     key = 9;
@@ -454,7 +454,7 @@ void test_multiset(void)
     key = 7;
     assert(multiset_contains(me, &key));
     multiset_destroy(me);
-    // Replace two sided two children.
+    /* Replace two sided two children. */
     me = multiset_init(sizeof(int), compare_int);
     key = 5;
     multiset_put(me, &key);
@@ -520,7 +520,7 @@ void test_multiset(void)
     key = 5;
     multiset_remove(me, &key);
     multiset_clear(me);
-    // Two children edge case other side.
+    /* Two children edge case other side. */
     key = 8;
     multiset_put(me, &key);
     key = 4;

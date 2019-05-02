@@ -108,7 +108,7 @@ void test_unordered_set(void)
     assert(unordered_set_remove(me, &num));
     assert(unordered_set_size(me) == 0);
     assert(!unordered_set_contains(me, &num));
-    // Add a lot of items and remove individually.
+    /* Add a lot of items and remove individually. */
     for (i = 5000; i < 6000; i++) {
         unordered_set_put(me, &i);
         assert(unordered_set_contains(me, &i));
@@ -123,7 +123,7 @@ void test_unordered_set(void)
     unordered_set_clear(me);
     assert(unordered_set_size(me) == 0);
     assert(unordered_set_is_empty(me));
-    // Add a lot of items and clear.
+    /* Add a lot of items and clear. */
     for (i = 5000; i < 6000; i++) {
         unordered_set_put(me, &i);
         assert(unordered_set_contains(me, &i));
