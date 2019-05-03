@@ -17,7 +17,7 @@ void *malloc(size_t size)
 {
     void *p = NULL;
     if (!real_malloc) {
-        real_malloc = (void *(*)(size_t)) dlsym(RTLD_NEXT, "malloc");
+        real_malloc = dlsym(RTLD_NEXT, "malloc");
     }
     if (!fail_malloc) {
         p = real_malloc(size);
