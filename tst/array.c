@@ -1,13 +1,13 @@
 #include "test.h"
 #include "../src/array.h"
 
-void test_invalid_init(void)
+static void test_invalid_init(void)
 {
     assert(!array_init(-1, sizeof(int)));
     assert(!array_init(1, 0));
 }
 
-void test_empty_array(void)
+static void test_empty_array(void)
 {
     int get = 0xdeadbeef;
     int arr[2] = {0xdeadbeef, 0xdeadbeef};
@@ -23,7 +23,7 @@ void test_empty_array(void)
     assert(!array_destroy(me));
 }
 
-void test_individual_operations(array me)
+static void test_individual_operations(array me)
 {
     int i;
     for (i = 0; i < 10; i++) {
@@ -44,7 +44,7 @@ void test_individual_operations(array me)
     }
 }
 
-void test_array_copying(array me)
+static void test_array_copying(array me)
 {
     int i;
     int *data;
@@ -59,14 +59,14 @@ void test_array_copying(array me)
     }
 }
 
-void test_out_of_bounds(array me)
+static void test_out_of_bounds(array me)
 {
     int get = 0xdeadbeef;
     assert(array_set(me, -1, &get) == -EINVAL);
     assert(array_get(&get, me, -1) == -EINVAL);
 }
 
-void test_not_empty_array(void)
+static void test_not_empty_array(void)
 {
     array me = array_init(10, sizeof(int));
     assert(me);
@@ -78,14 +78,10 @@ void test_not_empty_array(void)
     assert(!me);
 }
 
-void test_init_fail_malloc(void)
+static void test_init_out_of_memory(void)
 {
     fail_malloc = 1;
     assert(!array_init(10, sizeof(int)));
-}
-
-void test_init_fail_calloc(void)
-{
     fail_calloc = 1;
     assert(!array_init(10, sizeof(int)));
 }
@@ -95,6 +91,5 @@ void test_array(void)
     test_invalid_init();
     test_empty_array();
     test_not_empty_array();
-    test_init_fail_malloc();
-    test_init_fail_calloc();
+    test_init_out_of_memory();
 }
