@@ -7,6 +7,7 @@
 
 extern int fail_malloc;
 extern int fail_calloc;
+extern int fail_realloc;
 
 void test_array(void);
 void test_vector(void);
