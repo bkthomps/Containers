@@ -230,8 +230,19 @@ void test_init_out_of_memory(void)
 void test_set_space_out_of_memory(void)
 {
     vector me = vector_init(sizeof(int));
+    int i;
+    for (i = 0; i < 7; i++) {
+        assert(vector_add_last(me, &i) == 0);
+    }
     fail_realloc = 1;
     assert(vector_reserve(me, 9) == -ENOMEM);
+    assert(vector_size(me) == 7);
+    assert(vector_capacity(me) == 8);
+    for (i = 0; i < 7; i++) {
+        int get = 0xdeadbeef;
+        vector_get_at(&get, me, i);
+        assert(get == i);
+    }
     assert(!vector_destroy(me));
 }
 
@@ -245,6 +256,13 @@ void test_add_out_of_memory(void)
     i++;
     fail_realloc = 1;
     assert(vector_add_last(me, &i) == -ENOMEM);
+    assert(vector_size(me) == 7);
+    assert(vector_capacity(me) == 8);
+    for (i = 0; i < 7; i++) {
+        int get = 0xdeadbeef;
+        vector_get_at(&get, me, i);
+        assert(get == i);
+    }
     assert(!vector_destroy(me));
 }
 
