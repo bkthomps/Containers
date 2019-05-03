@@ -7,7 +7,7 @@ static void test_invalid_init(void)
     assert(!vector_init(0));
 }
 
-void test_adding(vector me)
+static void test_adding(vector me)
 {
     int val[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     int get_arr[10] = {0};
@@ -36,7 +36,7 @@ void test_adding(vector me)
     assert(vector_capacity(me) >= vector_size(me));
 }
 
-void test_trim(vector me)
+static void test_trim(vector me)
 {
     int trimmed[5] = {0};
     int i;
@@ -52,7 +52,7 @@ void test_trim(vector me)
     }
 }
 
-void test_linear_operations(vector me)
+static void test_linear_operations(vector me)
 {
     int arr[3] = {0};
     int get;
@@ -117,7 +117,7 @@ void test_linear_operations(vector me)
     assert(arr[2] == -7);
 }
 
-void test_invalid_operations(vector me)
+static void test_invalid_operations(vector me)
 {
     int set;
     int i;
@@ -142,7 +142,7 @@ void test_invalid_operations(vector me)
     assert(vector_remove_last(me) == -EINVAL);
 }
 
-void test_basic(void)
+static void test_basic(void)
 {
     vector me = vector_init(sizeof(int));
     assert(me);
@@ -218,7 +218,7 @@ static void test_dynamic(void)
     assert(!vector_destroy(str_vector));
 }
 
-void test_init_out_of_memory(void)
+static void test_init_out_of_memory(void)
 {
     fail_malloc = 1;
     assert(!vector_init(sizeof(int)));
@@ -227,7 +227,7 @@ void test_init_out_of_memory(void)
     assert(!vector_init(sizeof(int)));
 }
 
-void test_set_space_out_of_memory(void)
+static void test_set_space_out_of_memory(void)
 {
     vector me = vector_init(sizeof(int));
     int i;
@@ -246,7 +246,7 @@ void test_set_space_out_of_memory(void)
     assert(!vector_destroy(me));
 }
 
-void test_add_out_of_memory(void)
+static void test_add_out_of_memory(void)
 {
     vector me = vector_init(sizeof(int));
     int i;
