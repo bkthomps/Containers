@@ -1,6 +1,8 @@
 #include "test.h"
 #include "../src/array.h"
 
+#define _GNU_SOURCE
+
 #include <stdio.h>
 #include <dlfcn.h>
 
