@@ -1,8 +1,13 @@
 #include "test.h"
 #include "../src/array.h"
 
-#include <stdio.h>
+#define _GNU_SOURCE
+
 #include <dlfcn.h>
+
+#ifndef RTLD_NEXT
+#define RTLD_NEXT ((void *) -1L)
+#endif
 
 static int fail_malloc;
 
@@ -12,7 +17,7 @@ void *malloc(size_t size)
 {
     void *p = NULL;
     if (!real_malloc) {
-        real_malloc = (void *(*)(size_t)) dlsym(RTLD_NOW, "malloc");
+        real_malloc = (void *(*)(size_t)) dlsym(RTLD_NEXT, "malloc");
     }
     if (!fail_malloc) {
         p = real_malloc(size);
