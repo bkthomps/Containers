@@ -3,7 +3,7 @@ project(Containers C)
 
 set(CMAKE_C_STANDARD 90)
 
-set(CMAKE_C_FLAGS "-pedantic -fpic -g -O0 -Wall -fprofile-arcs -ftest-coverage")
+set(CMAKE_C_FLAGS "-pedantic -ldl -g -O0 -Wall -fprofile-arcs -ftest-coverage")
 
 add_executable(Containers tst/test.c tst/test.h
         src/array.c src/array.h tst/array.c
