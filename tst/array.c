@@ -1,8 +1,6 @@
 #include "test.h"
 #include "../src/array.h"
 
-#define _GNU_SOURCE
-
 #include <stdio.h>
 #include <dlfcn.h>
 
@@ -14,7 +12,7 @@ void *malloc(size_t size)
 {
     void *p = NULL;
     if (!real_malloc) {
-        real_malloc = (void *(*)(size_t)) dlsym(RTLD_NEXT, "malloc");
+        real_malloc = (void *(*)(size_t)) dlsym(RTLD_NOW, "malloc");
     }
     if (!fail_malloc) {
         p = real_malloc(size);
