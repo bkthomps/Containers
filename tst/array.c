@@ -1,31 +1,6 @@
 #include "test.h"
 #include "../src/array.h"
 
-#define _GNU_SOURCE
-
-#include <dlfcn.h>
-
-#ifndef RTLD_NEXT
-#define RTLD_NEXT ((void *) -1L)
-#endif
-
-static int fail_malloc;
-
-static void *(*real_malloc)(size_t);
-
-void *malloc(size_t size)
-{
-    void *p = NULL;
-    if (!real_malloc) {
-        real_malloc = dlsym(RTLD_NEXT, "malloc");
-    }
-    if (!fail_malloc) {
-        p = real_malloc(size);
-    }
-    return p;
-}
-
-
 void test_invalid_init(void)
 {
     assert(!array_init(-1, sizeof(int)));
@@ -103,11 +78,16 @@ void test_not_empty_array(void)
     assert(!me);
 }
 
-void test_fail_malloc(void)
+void test_init_fail_malloc(void)
 {
     fail_malloc = 1;
     assert(!array_init(10, sizeof(int)));
-    fail_malloc = 0;
+}
+
+void test_init_fail_calloc(void)
+{
+    fail_calloc = 1;
+    assert(!array_init(10, sizeof(int)));
 }
 
 void test_array(void)
@@ -115,5 +95,6 @@ void test_array(void)
     test_invalid_init();
     test_empty_array();
     test_not_empty_array();
-    test_fail_malloc();
+    test_init_fail_malloc();
+    test_init_fail_calloc();
 }
