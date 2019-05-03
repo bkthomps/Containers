@@ -1,13 +1,33 @@
 #include "test.h"
 #include "../src/array.h"
 
-void test_invalid_init()
+#include <stdio.h>
+#include <dlfcn.h>
+
+static int fail_malloc;
+
+static void *(*real_malloc)(size_t);
+
+void *malloc(size_t size)
+{
+    void *p = NULL;
+    if (!real_malloc) {
+        real_malloc = (void *(*)(size_t)) dlsym(RTLD_NEXT, "malloc");
+    }
+    if (!fail_malloc) {
+        p = real_malloc(size);
+    }
+    return p;
+}
+
+
+void test_invalid_init(void)
 {
     assert(!array_init(-1, sizeof(int)));
     assert(!array_init(1, 0));
 }
 
-void test_empty_array()
+void test_empty_array(void)
 {
     int get = 0xdeadbeef;
     int arr[2] = {0xdeadbeef, 0xdeadbeef};
@@ -66,7 +86,7 @@ void test_out_of_bounds(array me)
     assert(array_get(&get, me, -1) == -EINVAL);
 }
 
-void test_not_empty_array()
+void test_not_empty_array(void)
 {
     array me = array_init(10, sizeof(int));
     assert(me);
@@ -78,9 +98,17 @@ void test_not_empty_array()
     assert(!me);
 }
 
+void test_fail_malloc(void)
+{
+    fail_malloc = 1;
+    assert(!array_init(10, sizeof(int)));
+    fail_malloc = 0;
+}
+
 void test_array(void)
 {
     test_invalid_init();
     test_empty_array();
     test_not_empty_array();
+    test_fail_malloc();
 }
