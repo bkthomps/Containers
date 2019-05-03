@@ -12,47 +12,57 @@ int fail_malloc = 0;
 int fail_calloc = 0;
 int fail_realloc = 0;
 
+int delay_fail_malloc = 0;
+int delay_fail_calloc = 0;
+int delay_fail_realloc = 0;
+
 static void *(*real_malloc)(size_t);
 static void *(*real_calloc)(size_t, size_t);
 static void *(*real_realloc)(void *, size_t);
 
 void *malloc(size_t size)
 {
-    void *p = NULL;
     if (!real_malloc) {
         real_malloc = dlsym(RTLD_NEXT, "malloc");
     }
-    if (!fail_malloc) {
-        p = real_malloc(size);
+    if (delay_fail_malloc == 0 && fail_malloc == 1) {
+        fail_malloc = 0;
+        return NULL;
     }
-    fail_malloc = 0;
-    return p;
+    if (delay_fail_malloc > 0) {
+        delay_fail_malloc--;
+    }
+    return real_malloc(size);
 }
 
 void *calloc(size_t count, size_t size)
 {
-    void *p = NULL;
     if (!real_calloc) {
         real_calloc = dlsym(RTLD_NEXT, "calloc");
     }
-    if (!fail_calloc) {
-        p = real_calloc(count, size);
+    if (delay_fail_calloc == 0 && fail_calloc == 1) {
+        fail_calloc = 0;
+        return NULL;
     }
-    fail_calloc = 0;
-    return p;
+    if (delay_fail_calloc > 0) {
+        delay_fail_calloc--;
+    }
+    return real_calloc(count, size);
 }
 
 void *realloc(void *ptr, size_t new_size)
 {
-    void *p = NULL;
     if (!real_realloc) {
         real_realloc = dlsym(RTLD_NEXT, "realloc");
     }
-    if (!fail_realloc) {
-        p = real_realloc(ptr, new_size);
+    if (delay_fail_realloc == 0 && fail_realloc == 1) {
+        fail_realloc = 0;
+        return NULL;
     }
-    fail_realloc = 0;
-    return p;
+    if (delay_fail_realloc > 0) {
+        delay_fail_realloc--;
+    }
+    return real_realloc(ptr, new_size);
 }
 
 int main(void)
