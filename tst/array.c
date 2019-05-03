@@ -5,10 +5,6 @@
 
 #include <dlfcn.h>
 
-#ifndef RTLD_NEXT
-#define RTLD_NEXT ((void *) -1L)
-#endif
-
 static int fail_malloc;
 
 static void *(*real_malloc)(size_t);
