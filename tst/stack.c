@@ -11,7 +11,6 @@ static void test_linear_operations(stack me)
     int val[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     int get;
     int i;
-    assert(me);
     assert(stack_size(me) == 0);
     assert(stack_is_empty(me));
     for (i = 0; i < 10; i++) {
