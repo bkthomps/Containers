@@ -437,7 +437,8 @@ void list_clear(list me)
 }
 
 /**
- * Destroys the doubly-linked list.
+ * Destroys the doubly-linked list. Performing further operations after calling
+ * this function results in undefined behavior.
  *
  * @param me the doubly-linked list to destroy
  *

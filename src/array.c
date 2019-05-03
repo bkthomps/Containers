@@ -154,7 +154,8 @@ int array_get(void *const data, array me, const int index)
 }
 
 /**
- * Frees the array memory.
+ * Frees the array memory. Performing further operations after calling this
+ * function results in undefined behavior.
  *
  * @param me the array to free from memory
  *

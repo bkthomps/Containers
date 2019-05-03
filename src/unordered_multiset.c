@@ -440,7 +440,8 @@ int unordered_multiset_clear(unordered_multiset me)
 }
 
 /**
- * Frees the unordered multi-set memory.
+ * Frees the unordered multi-set memory. Performing further operations after
+ * calling this function results in undefined behavior.
  *
  * @param me the unordered multi-set to free from memory
  *

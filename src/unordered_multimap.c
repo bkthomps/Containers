@@ -538,7 +538,8 @@ int unordered_multimap_clear(unordered_multimap me)
 }
 
 /**
- * Frees the unordered multi-map memory.
+ * Frees the unordered multi-map memory. Performing further operations after
+ * calling this function results in undefined behavior.
  *
  * @param me the unordered multi-map to free from memory
  *

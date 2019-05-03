@@ -576,7 +576,8 @@ void set_clear(set me)
 }
 
 /**
- * Frees the set memory.
+ * Frees the set memory. Performing further operations after calling this
+ * function results in undefined behavior.
  *
  * @param me the set to free from memory
  *

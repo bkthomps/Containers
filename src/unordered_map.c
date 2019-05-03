@@ -411,7 +411,8 @@ int unordered_map_clear(unordered_map me)
 }
 
 /**
- * Frees the unordered map memory.
+ * Frees the unordered map memory. Performing further operations after calling
+ * this function results in undefined behavior.
  *
  * @param me the unordered map to free from memory
  *

@@ -460,7 +460,8 @@ int deque_clear(deque me)
 }
 
 /**
- * Destroys the deque.
+ * Destroys the deque. Performing further operations after calling this function
+ * results in undefined behavior.
  *
  * @param me the deque to destroy
  *

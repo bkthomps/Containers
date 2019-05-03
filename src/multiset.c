@@ -625,7 +625,8 @@ void multiset_clear(multiset me)
 }
 
 /**
- * Frees the multi-set memory.
+ * Frees the multi-set memory. Performing further operations after calling this
+ * function results in undefined behavior.
  *
  * @param me the multi-set to free from memory
  *

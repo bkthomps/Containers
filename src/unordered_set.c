@@ -366,7 +366,8 @@ int unordered_set_clear(unordered_set me)
 }
 
 /**
- * Frees the unordered set memory.
+ * Frees the unordered set memory. Performing further operations after calling
+ * this function results in undefined behavior.
  *
  * @param me the unordered set to free from memory
  *

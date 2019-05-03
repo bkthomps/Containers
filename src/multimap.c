@@ -750,7 +750,8 @@ void multimap_clear(multimap me)
 }
 
 /**
- * Frees the multi-map memory.
+ * Frees the multi-map memory. Performing further operations after calling this
+ * function results in undefined behavior.
  *
  * @param me the multi-map to free from memory
  *
