@@ -332,11 +332,25 @@ static void test_put_already_existing(void)
     assert(!set_destroy(me));
 }
 
+static void test_remove_nothing(void)
+{
+    int key;
+    set me = set_init(sizeof(int), compare_int);
+    assert(me);
+    key = 3;
+    set_put(me, &key);
+    key = 5;
+    assert(!set_remove(me, &key));
+    assert(!set_destroy(me));
+}
+
 static void test_contains(void)
 {
     int key;
     set me = set_init(sizeof(int), compare_int);
     assert(me);
+    key = 7;
+    assert(!set_contains(me, &key));
     key = 3;
     set_put(me, &key);
     key = 1;
@@ -365,6 +379,7 @@ void test_set(void)
     test_invalid_init();
     test_auto_balancing();
     test_put_already_existing();
+    test_remove_nothing();
     test_contains();
     test_init_out_of_memory();
 }
