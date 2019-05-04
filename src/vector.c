@@ -405,7 +405,8 @@ int vector_clear(vector me)
 }
 
 /**
- * Frees the vector memory.
+ * Frees the vector memory. Performing further operations after calling this
+ * function results in undefined behavior.
  *
  * @param me the vector to free from memory
  *

@@ -5,6 +5,14 @@
 #include <errno.h>
 #include <assert.h>
 
+extern int fail_malloc;
+extern int fail_calloc;
+extern int fail_realloc;
+
+extern int delay_fail_malloc;
+extern int delay_fail_calloc;
+extern int delay_fail_realloc;
+
 void test_array(void);
 void test_vector(void);
 void test_deque(void);

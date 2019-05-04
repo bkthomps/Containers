@@ -178,7 +178,8 @@ int queue_clear(queue me)
 }
 
 /**
- * Destroys the queue.
+ * Destroys the queue. Performing further operations after calling this function
+ * results in undefined behavior.
  *
  * @param me the queue to destroy
  *

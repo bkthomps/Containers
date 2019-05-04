@@ -157,7 +157,8 @@ int stack_clear(stack me)
 }
 
 /**
- * Destroys the stack and frees the memory associated with it.
+ * Frees the stack memory. Performing further operations after calling this
+ * function results in undefined behavior.
  *
  * @param me the stack to destroy
  *

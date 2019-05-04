@@ -207,7 +207,6 @@ static struct node *set_repair(set me,
         return grand_child;
     }
     /* Impossible to get here. */
-    return NULL;
 }
 
 /*
@@ -576,7 +575,8 @@ void set_clear(set me)
 }
 
 /**
- * Frees the set memory.
+ * Frees the set memory. Performing further operations after calling this
+ * function results in undefined behavior.
  *
  * @param me the set to free from memory
  *

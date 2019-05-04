@@ -223,7 +223,8 @@ int priority_queue_clear(priority_queue me)
 }
 
 /**
- * Frees the priority queue memory.
+ * Frees the priority queue memory. Performing further operations after calling
+ * this function results in undefined behavior.
  *
  * @param me the priority queue to free from memory
  *

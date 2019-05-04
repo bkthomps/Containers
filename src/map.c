@@ -212,7 +212,6 @@ static struct node *map_repair(map me,
         return grand_child;
     }
     /* Impossible to get here. */
-    return NULL;
 }
 
 /*
@@ -612,7 +611,8 @@ void map_clear(map me)
 }
 
 /**
- * Frees the map memory.
+ * Frees the map memory. Performing further operations after calling this
+ * function results in undefined behavior.
  *
  * @param me the map to free from memory
  *

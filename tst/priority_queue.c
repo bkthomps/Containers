@@ -42,29 +42,32 @@ static int compare_int(const void *const one, const void *const two)
     return a - b;
 }
 
-int stub_priority_queue_push(priority_queue me, void *const data)
+static int stub_priority_queue_push(priority_queue me, void *const data)
 {
     const int ret = priority_queue_push(me, data);
     priority_queue_verify(me);
     return ret;
 }
 
-int stub_priority_queue_pop(void *const data, priority_queue me)
+static int stub_priority_queue_pop(void *const data, priority_queue me)
 {
     const int ret = priority_queue_pop(data, me);
     priority_queue_verify(me);
     return ret;
 }
 
-void test_priority_queue(void)
+static void test_invalid_init(void)
 {
-    priority_queue me;
+    assert(!priority_queue_init(0, compare_int));
+    assert(!priority_queue_init(sizeof(int), NULL));
+}
+
+static void test_basic(void)
+{
     int item;
     int latest;
     int i;
-    assert(!priority_queue_init(0, compare_int));
-    assert(!priority_queue_init(sizeof(int), NULL));
-    me = priority_queue_init(sizeof(int), compare_int);
+    priority_queue me = priority_queue_init(sizeof(int), compare_int);
     assert(me);
     assert(priority_queue_size(me) == 0);
     assert(priority_queue_is_empty(me));
@@ -128,6 +131,57 @@ void test_priority_queue(void)
     assert(!priority_queue_front(&item, me));
     assert(item == 0xdeadbeef);
     assert(priority_queue_is_empty(me));
-    me = priority_queue_destroy(me);
-    assert(!me);
+    assert(!priority_queue_destroy(me));
+}
+
+static void test_init_out_of_memory(void)
+{
+    fail_malloc = 1;
+    assert(!priority_queue_init(sizeof(int), compare_int));
+    fail_malloc = 1;
+    delay_fail_malloc = 1;
+    assert(!priority_queue_init(sizeof(int), compare_int));
+    fail_malloc = 1;
+    delay_fail_malloc = 2;
+    assert(!priority_queue_init(sizeof(int), compare_int));
+}
+
+static void test_push_out_of_memory(void)
+{
+    int i;
+    int get = 0xdeadbeef;
+    priority_queue me = priority_queue_init(sizeof(int), compare_int);
+    for (i = 0; i < 16; i++) {
+        assert(priority_queue_push(me, &i) == 0);
+    }
+    assert(priority_queue_size(me) == 16);
+    fail_malloc = 1;
+    assert(priority_queue_push(me, &get) == -ENOMEM);
+    for (i = 0; i < 16; i++) {
+        get = 0xdeadbeef;
+        assert(priority_queue_pop(&get, me));
+        assert(get == 15 - i);
+    }
+    assert(priority_queue_size(me) == 0);
+    priority_queue_clear(me);
+    for (i = 0; i < 11; i++) {
+        assert(priority_queue_push(me, &i) == 0);
+    }
+    assert(priority_queue_size(me) == 11);
+    fail_realloc = 1;
+    assert(priority_queue_push(me, &get) == -ENOMEM);
+    for (i = 0; i < 11; i++) {
+        get = 0xdeadbeef;
+        assert(priority_queue_pop(&get, me));
+        assert(get == 10 - i);
+    }
+    assert(!priority_queue_destroy(me));
+}
+
+void test_priority_queue(void)
+{
+    test_invalid_init();
+    test_basic();
+    test_init_out_of_memory();
+    test_push_out_of_memory();
 }

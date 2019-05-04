@@ -367,7 +367,8 @@ void forward_list_clear(forward_list me)
 }
 
 /**
- * Destroys the singly-linked list.
+ * Destroys the singly-linked list. Performing further operations after calling
+ * this function results in undefined behavior.
  *
  * @param me the singly-linked list to destroy
  *

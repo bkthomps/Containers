@@ -2,88 +2,18 @@
 #include "test.h"
 #include "../src/vector.h"
 
-static void test_vector_of_vectors(void)
+static void test_invalid_init(void)
 {
-    /* Test using a vector of vectors of ints */
-    vector outer = vector_init(sizeof(vector));
-    /* Add vectors to the outer vector */
-    int i;
-    int j;
-    for (i = 0; i < 5; i++) {
-        vector inner = vector_init(sizeof(int));
-        for (j = 1; j <= 10; j++) {
-            vector_add_last(inner, &j);
-        }
-        assert(vector_size(inner) == 10);
-        vector_add_last(outer, &inner);
-    }
-    assert(vector_size(outer) == 5);
-    /* Delete the vectors in the outer vector */
-    for (i = 0; i < 5; i++) {
-        vector inner = NULL;
-        vector_get_first(&inner, outer);
-        for (j = 0; j < 10; j++) {
-            int num = 0xdeadbeef;
-            vector_get_at(&num, inner, j);
-            assert(num == j + 1);
-        }
-        vector_remove_first(outer);
-        vector_destroy(inner);
-    }
-    assert(vector_is_empty(outer));
-    vector_destroy(outer);
+    assert(!vector_init(0));
 }
 
-static void test_vector_dynamic(void)
+static void test_adding(vector me)
 {
-    char **str = malloc(5 * sizeof(char **));
-    int i;
-    int j;
-    vector str_vector;
-    for (i = 0; i < 5; i++) {
-        str[i] = malloc(10 * sizeof(char *));
-        for (j = 0; j < 9; j++) {
-            str[i][j] = (char) ('a' + i);
-        }
-        str[i][9] = '\0';
-    }
-    str_vector = vector_init(sizeof(char *));
-    assert(str_vector);
-    for (i = 0; i < 5; i++) {
-        vector_add_last(str_vector, &str[i]);
-    }
-    assert(vector_size(str_vector) == 5);
-    for (i = 0; i < 5; i++) {
-        char *retrieve = NULL;
-        vector_get_first(&retrieve, str_vector);
-        vector_remove_first(str_vector);
-        assert(strcmp(retrieve, str[i]) == 0);
-        free(retrieve);
-    }
-    free(str);
-    assert(vector_size(str_vector) == 0);
-    str_vector = vector_destroy(str_vector);
-    assert(!str_vector);
-}
-
-void test_vector(void)
-{
-
     int val[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     int get_arr[10] = {0};
-    int trimmed[5] = {0};
-    int arr[3] = {0};
-    int get;
-    vector me;
-    int i;
     int *data;
-    int add;
-    int set;
-    assert(!vector_init(0));
-    me = vector_init(sizeof(int));
-    assert(me);
-    assert(vector_size(me) == 0);
-    assert(vector_is_empty(me));
+    int get;
+    int i;
     for (i = 0; i < 10; i++) {
         vector_add_first(me, &val[i]);
         get = 0;
@@ -104,6 +34,12 @@ void test_vector(void)
         assert(data[i] == val[9 - i]);
     }
     assert(vector_capacity(me) >= vector_size(me));
+}
+
+static void test_trim(vector me)
+{
+    int trimmed[5] = {0};
+    int i;
     vector_trim(me);
     vector_reserve(me, 3);
     for (i = 0; i < 7; i++) {
@@ -114,7 +50,15 @@ void test_vector(void)
     for (i = 0; i < 3; i++) {
         assert(10 - i == trimmed[i]);
     }
-    add = 3;
+}
+
+static void test_linear_operations(vector me)
+{
+    int arr[3] = {0};
+    int get;
+    int set;
+    int add = 3;
+    assert(vector_size(me) == 3);
     vector_add_last(me, &add);
     add = -1;
     vector_add_at(me, 1, &add);
@@ -171,6 +115,12 @@ void test_vector(void)
     assert(arr[0] == -5);
     assert(arr[1] == -6);
     assert(arr[2] == -7);
+}
+
+static void test_invalid_operations(vector me)
+{
+    int set;
+    int i;
     assert(vector_reserve(me, 100) == 0);
     assert(vector_set_at(me, 4, &set) == -EINVAL);
     assert(vector_get_at(&set, me, 4) == -EINVAL);
@@ -190,8 +140,139 @@ void test_vector(void)
     assert(vector_is_empty(me));
     assert(vector_remove_first(me) == -EINVAL);
     assert(vector_remove_last(me) == -EINVAL);
-    me = vector_destroy(me);
-    assert(!me);
-    test_vector_dynamic();
+}
+
+static void test_basic(void)
+{
+    vector me = vector_init(sizeof(int));
+    assert(me);
+    assert(vector_size(me) == 0);
+    assert(vector_is_empty(me));
+    test_adding(me);
+    test_trim(me);
+    test_linear_operations(me);
+    test_invalid_operations(me);
+    assert(!vector_destroy(me));
+}
+
+static void test_vector_of_vectors(void)
+{
+    /* Test using a vector of vectors of ints. */
+    vector outer = vector_init(sizeof(vector));
+    /* Add vectors to the outer vector. */
+    int i;
+    int j;
+    for (i = 0; i < 5; i++) {
+        vector inner = vector_init(sizeof(int));
+        for (j = 1; j <= 10; j++) {
+            vector_add_last(inner, &j);
+        }
+        assert(vector_size(inner) == 10);
+        vector_add_last(outer, &inner);
+    }
+    assert(vector_size(outer) == 5);
+    /* Delete the vectors in the outer vector. */
+    for (i = 0; i < 5; i++) {
+        vector inner = NULL;
+        vector_get_first(&inner, outer);
+        for (j = 0; j < 10; j++) {
+            int num = 0xdeadbeef;
+            vector_get_at(&num, inner, j);
+            assert(num == j + 1);
+        }
+        vector_remove_first(outer);
+        vector_destroy(inner);
+    }
+    assert(vector_is_empty(outer));
+    vector_destroy(outer);
+}
+
+static void test_dynamic(void)
+{
+    char **str = malloc(5 * sizeof(char **));
+    int i;
+    int j;
+    vector str_vector;
+    for (i = 0; i < 5; i++) {
+        str[i] = malloc(10 * sizeof(char *));
+        for (j = 0; j < 9; j++) {
+            str[i][j] = (char) ('a' + i);
+        }
+        str[i][9] = '\0';
+    }
+    str_vector = vector_init(sizeof(char *));
+    assert(str_vector);
+    for (i = 0; i < 5; i++) {
+        vector_add_last(str_vector, &str[i]);
+    }
+    assert(vector_size(str_vector) == 5);
+    for (i = 0; i < 5; i++) {
+        char *retrieve = NULL;
+        vector_get_first(&retrieve, str_vector);
+        vector_remove_first(str_vector);
+        assert(strcmp(retrieve, str[i]) == 0);
+        free(retrieve);
+    }
+    free(str);
+    assert(vector_size(str_vector) == 0);
+    assert(!vector_destroy(str_vector));
+}
+
+static void test_init_out_of_memory(void)
+{
+    fail_malloc = 1;
+    assert(!vector_init(sizeof(int)));
+    fail_malloc = 1;
+    delay_fail_malloc = 1;
+    assert(!vector_init(sizeof(int)));
+}
+
+static void test_set_space_out_of_memory(void)
+{
+    vector me = vector_init(sizeof(int));
+    int i;
+    for (i = 0; i < 7; i++) {
+        assert(vector_add_last(me, &i) == 0);
+    }
+    fail_realloc = 1;
+    assert(vector_reserve(me, 9) == -ENOMEM);
+    assert(vector_size(me) == 7);
+    assert(vector_capacity(me) == 8);
+    for (i = 0; i < 7; i++) {
+        int get = 0xdeadbeef;
+        vector_get_at(&get, me, i);
+        assert(get == i);
+    }
+    assert(!vector_destroy(me));
+}
+
+static void test_add_out_of_memory(void)
+{
+    vector me = vector_init(sizeof(int));
+    int i;
+    for (i = 0; i < 7; i++) {
+        assert(vector_add_last(me, &i) == 0);
+    }
+    i++;
+    fail_realloc = 1;
+    assert(vector_add_last(me, &i) == -ENOMEM);
+    assert(vector_size(me) == 7);
+    assert(vector_capacity(me) == 8);
+    for (i = 0; i < 7; i++) {
+        int get = 0xdeadbeef;
+        vector_get_at(&get, me, i);
+        assert(get == i);
+    }
+    assert(!vector_destroy(me));
+}
+
+void test_vector(void)
+{
+    test_invalid_init();
+    test_basic();
     test_vector_of_vectors();
+    test_dynamic();
+    test_init_out_of_memory();
+    test_set_space_out_of_memory();
+    test_add_out_of_memory();
 }
