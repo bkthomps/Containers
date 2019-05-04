@@ -520,20 +520,22 @@ static void test_override_value(void)
 static void test_multiple_operations(void)
 {
     int key = 5;
+    int value = 17;
     multimap me = multimap_init(sizeof(int), sizeof(int), compare_int,
                                 compare_int);
     assert(me);
     assert(multimap_count(me, &key) == 0);
     assert(!multimap_remove_all(me, &key));
+    multimap_put(me, &key, &value);
     multimap_put(me, &key, &key);
-    multimap_put(me, &key, &key);
-    assert(multimap_size(me) == 2);
-    key = 7;
     multimap_put(me, &key, &key);
     assert(multimap_size(me) == 3);
+    key = 7;
+    multimap_put(me, &key, &key);
+    assert(multimap_size(me) == 4);
     assert(multimap_count(me, &key) == 1);
     key = 5;
-    assert(multimap_count(me, &key) == 2);
+    assert(multimap_count(me, &key) == 3);
     multimap_remove_all(me, &key);
     assert(multimap_size(me) == 1);
     key = 7;
@@ -559,6 +561,9 @@ static void test_put_root_out_of_memory(multimap me)
     fail_malloc = 1;
     delay_fail_malloc = 2;
     assert(multimap_put(me, &key, &key) == -ENOMEM);
+    fail_malloc = 1;
+    delay_fail_malloc = 3;
+    assert(multimap_put(me, &key, &key) == -ENOMEM);
 }
 
 static void test_put_on_left_out_of_memory(multimap me)
@@ -572,6 +577,9 @@ static void test_put_on_left_out_of_memory(multimap me)
     fail_malloc = 1;
     delay_fail_malloc = 2;
     assert(multimap_put(me, &key, &key) == -ENOMEM);
+    fail_malloc = 1;
+    delay_fail_malloc = 3;
+    assert(multimap_put(me, &key, &key) == -ENOMEM);
 }
 
 static void test_put_on_right_out_of_memory(multimap me)
@@ -584,6 +592,9 @@ static void test_put_on_right_out_of_memory(multimap me)
     assert(multimap_put(me, &key, &key) == -ENOMEM);
     fail_malloc = 1;
     delay_fail_malloc = 2;
+    assert(multimap_put(me, &key, &key) == -ENOMEM);
+    fail_malloc = 1;
+    delay_fail_malloc = 3;
     assert(multimap_put(me, &key, &key) == -ENOMEM);
 }
 
