@@ -473,6 +473,9 @@ static void test_override_value(void)
     int value = 17;
     map me = map_init(sizeof(int), sizeof(int), compare_int);
     assert(me);
+    assert(!map_get(&value, me, &key));
+    assert(key == 5);
+    assert(value == 17);
     map_put(me, &key, &value);
     key = 5;
     value = 0xdeafbeef;
@@ -505,6 +508,9 @@ static void test_put_root_out_of_memory(map me)
     fail_malloc = 1;
     delay_fail_malloc = 1;
     assert(map_put(me, &key, &key) == -ENOMEM);
+    fail_malloc = 1;
+    delay_fail_malloc = 2;
+    assert(map_put(me, &key, &key) == -ENOMEM);
 }
 
 static void test_put_on_left_out_of_memory(map me)
@@ -515,6 +521,9 @@ static void test_put_on_left_out_of_memory(map me)
     fail_malloc = 1;
     delay_fail_malloc = 1;
     assert(map_put(me, &key, &key) == -ENOMEM);
+    fail_malloc = 1;
+    delay_fail_malloc = 2;
+    assert(map_put(me, &key, &key) == -ENOMEM);
 }
 
 static void test_put_on_right_out_of_memory(map me)
@@ -524,6 +533,9 @@ static void test_put_on_right_out_of_memory(map me)
     assert(map_put(me, &key, &key) == -ENOMEM);
     fail_malloc = 1;
     delay_fail_malloc = 1;
+    assert(map_put(me, &key, &key) == -ENOMEM);
+    fail_malloc = 1;
+    delay_fail_malloc = 2;
     assert(map_put(me, &key, &key) == -ENOMEM);
 }
 
