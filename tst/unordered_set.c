@@ -23,20 +23,19 @@ static unsigned long bad_hash_int(const void *const key)
     return 5;
 }
 
-void test_unordered_set(void)
+static void test_invalid_init(void)
 {
-    int val_arr[10] = {5, 9, 4, -5, 0, 6, 1, 5, 7, 2};
-    unordered_set me;
-    int key;
-    int num;
-    int p;
-    int i;
-    int j;
     assert(!unordered_set_init(0, hash_int, compare_int));
     assert(!unordered_set_init(sizeof(int), NULL, compare_int));
     assert(!unordered_set_init(sizeof(int), hash_int, NULL));
-    me = unordered_set_init(sizeof(int), hash_int, compare_int);
-    assert(me);
+}
+
+static void test_put(unordered_set me)
+{
+    int val_arr[10] = {5, 9, 4, -5, 0, 6, 1, 5, 7, 2};
+    int key;
+    int i;
+    int j;
     assert(unordered_set_size(me) == 0);
     assert(unordered_set_is_empty(me));
     key = 4;
@@ -68,7 +67,11 @@ void test_unordered_set(void)
         }
         assert(unordered_set_contains(me, &i) == contains);
     }
-    num = -3;
+}
+
+static void test_remove(unordered_set me)
+{
+    int num = -3;
     assert(!unordered_set_remove(me, &num));
     assert(unordered_set_size(me) == 9);
     assert(!unordered_set_contains(me, &num));
@@ -108,7 +111,11 @@ void test_unordered_set(void)
     assert(unordered_set_remove(me, &num));
     assert(unordered_set_size(me) == 0);
     assert(!unordered_set_contains(me, &num));
-    /* Add a lot of items and remove individually. */
+}
+
+static void test_stress_remove(unordered_set me)
+{
+    int i;
     for (i = 5000; i < 6000; i++) {
         unordered_set_put(me, &i);
         assert(unordered_set_contains(me, &i));
@@ -123,7 +130,12 @@ void test_unordered_set(void)
     unordered_set_clear(me);
     assert(unordered_set_size(me) == 0);
     assert(unordered_set_is_empty(me));
-    /* Add a lot of items and clear. */
+}
+
+static void test_stress_clear(unordered_set me)
+{
+    int i;
+    int p = 0xdeadbeef;
     for (i = 5000; i < 6000; i++) {
         unordered_set_put(me, &i);
         assert(unordered_set_contains(me, &i));
@@ -133,13 +145,28 @@ void test_unordered_set(void)
     unordered_set_rehash(me);
     assert(hash_count == 1000);
     unordered_set_clear(me);
-    p = 0xdeadbeef;
     assert(!unordered_set_remove(me, &p));
     assert(unordered_set_size(me) == 0);
     assert(unordered_set_is_empty(me));
-    me = unordered_set_destroy(me);
-    assert(!me);
-    me = unordered_set_init(sizeof(int), bad_hash_int, compare_int);
+}
+
+static void test_basic(void)
+{
+    unordered_set me = unordered_set_init(sizeof(int), hash_int, compare_int);
+    assert(me);
+    test_put(me);
+    test_remove(me);
+    test_stress_remove(me);
+    test_stress_clear(me);
+    assert(!unordered_set_destroy(me));
+}
+
+static void test_bad_hash(void)
+{
+    int num;
+    unordered_set me = unordered_set_init(sizeof(int), bad_hash_int,
+                                          compare_int);
+    assert(me);
     num = 1;
     unordered_set_put(me, &num);
     num = 2;
@@ -156,4 +183,72 @@ void test_unordered_set(void)
     assert(unordered_set_size(me) == 3);
     unordered_set_rehash(me);
     assert(unordered_set_size(me) == 3);
+    assert(!unordered_set_destroy(me));
+}
+
+static void test_init_out_of_memory(void)
+{
+    fail_malloc = 1;
+    assert(!unordered_set_init(sizeof(int), hash_int, compare_int));
+    fail_calloc = 1;
+    assert(!unordered_set_init(sizeof(int), hash_int, compare_int));
+}
+
+static void test_rehash_out_of_memory(void)
+{
+    int key = 5;
+    unordered_set me = unordered_set_init(sizeof(int), hash_int, compare_int);
+    assert(me);
+    unordered_set_put(me, &key);
+    assert(unordered_set_size(me) == 1);
+    assert(unordered_set_contains(me, &key));
+    fail_calloc = 1;
+    assert(unordered_set_rehash(me) == -ENOMEM);
+    assert(unordered_set_size(me) == 1);
+    assert(unordered_set_contains(me, &key));
+    assert(!unordered_set_destroy(me));
+}
+
+static void test_put_out_of_memory(void)
+{
+    int key = 5;
+    unordered_set me = unordered_set_init(sizeof(int), hash_int, compare_int);
+    assert(me);
+    fail_malloc = 1;
+    assert(unordered_set_put(me, &key) == -ENOMEM);
+    fail_malloc = 1;
+    delay_fail_malloc = 1;
+    assert(unordered_set_put(me, &key) == -ENOMEM);
+    assert(unordered_set_put(me, &key) == 0);
+    fail_malloc = 1;
+    assert(unordered_set_put(me, &key) == -ENOMEM);
+    fail_malloc = 1;
+    delay_fail_malloc = 1;
+    assert(unordered_set_put(me, &key) == -ENOMEM);
+}
+
+static void test_clear_out_of_memory(void)
+{
+    int key = 5;
+    unordered_set me = unordered_set_init(sizeof(int), hash_int, compare_int);
+    assert(me);
+    assert(unordered_set_put(me, &key) == 0);
+    assert(unordered_set_size(me) == 1);
+    assert(unordered_set_contains(me, &key));
+    fail_calloc = 1;
+    assert(unordered_set_clear(me) == -ENOMEM);
+    assert(unordered_set_size(me) == 1);
+    assert(unordered_set_contains(me, &key));
+    assert(!unordered_set_destroy(me));
+}
+
+void test_unordered_set(void)
+{
+    test_invalid_init();
+    test_basic();
+    test_bad_hash();
+    test_init_out_of_memory();
+    test_rehash_out_of_memory();
+    // TODO: insert more here
+    test_clear_out_of_memory();
 }
