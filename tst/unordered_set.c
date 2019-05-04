@@ -227,6 +227,25 @@ static void test_put_out_of_memory(void)
     fail_malloc = 1;
     delay_fail_malloc = 1;
     assert(unordered_set_put(me, &key) == -ENOMEM);
+    assert(!unordered_set_destroy(me));
+}
+
+static void test_resize_out_of_memory(void)
+{
+    int i;
+    unordered_set me = unordered_set_init(sizeof(int), hash_int, compare_int);
+    for (i = 0; i < 5; i++) {
+        assert(unordered_set_put(me, &i) == 0);
+    }
+    assert(unordered_set_size(me) == 5);
+    i++;
+    fail_calloc = 1;
+    assert(unordered_set_put(me, &i) == -ENOMEM);
+    assert(unordered_set_size(me) == 5);
+    for (i = 0; i < 5; i++) {
+        assert(unordered_set_contains(me, &i));
+    }
+    assert(!unordered_set_destroy(me));
 }
 
 static void test_clear_out_of_memory(void)
@@ -252,5 +271,6 @@ void test_unordered_set(void)
     test_init_out_of_memory();
     test_rehash_out_of_memory();
     test_put_out_of_memory();
+    test_resize_out_of_memory();
     test_clear_out_of_memory();
 }
