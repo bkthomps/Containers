@@ -319,9 +319,52 @@ static void test_init_out_of_memory(void)
     assert(!set_init(sizeof(int), compare_int));
 }
 
+static void test_put_already_existing(void)
+{
+    int key = 5;
+    set me = set_init(sizeof(int), compare_int);
+    assert(me);
+    assert(set_size(me) == 0);
+    set_put(me, &key);
+    assert(set_size(me) == 1);
+    set_put(me, &key);
+    assert(set_size(me) == 1);
+    assert(!set_destroy(me));
+}
+
+static void test_contains(void)
+{
+    int key;
+    set me = set_init(sizeof(int), compare_int);
+    assert(me);
+    key = 3;
+    set_put(me, &key);
+    key = 1;
+    set_put(me, &key);
+    key = 5;
+    set_put(me, &key);
+    key = 0;
+    assert(!set_contains(me, &key));
+    key = 1;
+    assert(set_contains(me, &key));
+    key = 2;
+    assert(!set_contains(me, &key));
+    key = 3;
+    assert(set_contains(me, &key));
+    key = 4;
+    assert(!set_contains(me, &key));
+    key = 5;
+    assert(set_contains(me, &key));
+    key = 6;
+    assert(!set_contains(me, &key));
+    assert(!set_destroy(me));
+}
+
 void test_set(void)
 {
     test_invalid_init();
     test_auto_balancing();
+    test_put_already_existing();
+    test_contains();
     test_init_out_of_memory();
 }
