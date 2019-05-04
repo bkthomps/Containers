@@ -464,6 +464,7 @@ static void test_multiset_differences(void)
     int key = 5;
     multiset me = multiset_init(sizeof(int), compare_int);
     assert(me);
+    assert(multiset_count(me, &key) == 0);
     multiset_put(me, &key);
     multiset_put(me, &key);
     assert(multiset_size(me) == 2);
