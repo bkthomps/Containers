@@ -257,9 +257,15 @@ static struct node *const unordered_map_create_element(unordered_map me,
  */
 int unordered_map_put(unordered_map me, void *const key, void *const value)
 {
-
     const unsigned long hash = unordered_map_hash(me, key);
-    const int index = (int) (hash % me->capacity);
+    int index;
+    if (me->size + 1 >= RESIZE_AT * me->capacity) {
+        const int rc = unordered_map_resize(me);
+        if (rc != 0) {
+            return rc;
+        }
+    }
+    index = (int) (hash % me->capacity);
     if (!me->buckets[index]) {
         me->buckets[index] = unordered_map_create_element(me, hash, key, value);
         if (!me->buckets[index]) {
@@ -284,9 +290,6 @@ int unordered_map_put(unordered_map me, void *const key, void *const value)
         }
     }
     me->size++;
-    if (me->size >= RESIZE_AT * me->capacity) {
-        return unordered_map_resize(me);
-    }
     return 0;
 }
 

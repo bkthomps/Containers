@@ -242,7 +242,14 @@ static struct node *const unordered_set_create_element(unordered_set me,
 int unordered_set_put(unordered_set me, void *const key)
 {
     const unsigned long hash = unordered_set_hash(me, key);
-    const int index = (int) (hash % me->capacity);
+    int index;
+    if (me->size + 1 >= RESIZE_AT * me->capacity) {
+        const int rc = unordered_set_resize(me);
+        if (rc != 0) {
+            return rc;
+        }
+    }
+    index = (int) (hash % me->capacity);
     if (!me->buckets[index]) {
         me->buckets[index] = unordered_set_create_element(me, hash, key);
         if (!me->buckets[index]) {
@@ -265,9 +272,6 @@ int unordered_set_put(unordered_set me, void *const key)
         }
     }
     me->size++;
-    if (me->size >= RESIZE_AT * me->capacity) {
-        return unordered_set_resize(me);
-    }
     return 0;
 }
 

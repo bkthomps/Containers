@@ -280,7 +280,14 @@ int unordered_multimap_put(unordered_multimap me,
                            void *const value)
 {
     const unsigned long hash = unordered_multimap_hash(me, key);
-    const int index = (int) (hash % me->capacity);
+    int index;
+    if (me->size + 1 >= RESIZE_AT * me->capacity) {
+        const int rc = unordered_multimap_resize(me);
+        if (rc != 0) {
+            return rc;
+        }
+    }
+    index = (int) (hash % me->capacity);
     if (!me->buckets[index]) {
         me->buckets[index] =
                 unordered_multimap_create_element(me, hash, key, value);
@@ -299,9 +306,6 @@ int unordered_multimap_put(unordered_multimap me,
         }
     }
     me->size++;
-    if (me->size >= RESIZE_AT * me->capacity) {
-        return unordered_multimap_resize(me);
-    }
     return 0;
 }
 

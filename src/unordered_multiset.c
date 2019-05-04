@@ -247,9 +247,15 @@ unordered_multiset_create_element(unordered_multiset me,
  */
 int unordered_multiset_put(unordered_multiset me, void *const key)
 {
-
     const unsigned long hash = unordered_multiset_hash(me, key);
-    const int index = (int) (hash % me->capacity);
+    int index;
+    if (me->used + 1 >= RESIZE_AT * me->capacity) {
+        const int rc = unordered_multiset_resize(me);
+        if (rc != 0) {
+            return rc;
+        }
+    }
+    index = (int) (hash % me->capacity);
     if (!me->buckets[index]) {
         me->buckets[index] = unordered_multiset_create_element(me, hash, key);
         if (!me->buckets[index]) {
@@ -277,9 +283,6 @@ int unordered_multiset_put(unordered_multiset me, void *const key)
     }
     me->size++;
     me->used++;
-    if (me->used >= RESIZE_AT * me->capacity) {
-        return unordered_multiset_resize(me);
-    }
     return 0;
 }
 
