@@ -87,14 +87,7 @@ static void test_invalid_init(void)
  */
 static void test_rotate_left_balanced_child(set me)
 {
-    int key = 1;
-    set_put(me, &key);
-    key = 3;
-    set_put(me, &key);
-    key = 2;
-    set_put(me, &key);
-    key = 4;
-    set_put(me, &key);
+    // TODO
 }
 
 /*
@@ -102,7 +95,18 @@ static void test_rotate_left_balanced_child(set me)
  */
 static void test_rotate_left_unbalanced_child(set me)
 {
-    // TODO
+    int key;
+    assert(set_is_empty(me));
+    key = 1;
+    set_put(me, &key);
+    key = 2;
+    set_put(me, &key);
+    key = 3;
+    set_put(me, &key);
+    assert(set_size(me) == 3);
+    for (key = 1; key <= 3; key++) {
+        assert(set_contains(me, &key));
+    }
 }
 
 /*
