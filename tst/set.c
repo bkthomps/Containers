@@ -147,7 +147,25 @@ static void test_rotate_left(void)
  */
 static void test_rotate_right_balanced_child(set me)
 {
-    // TODO
+    int key;
+    assert(set_is_empty(me));
+    key = 2;
+    set_put(me, &key);
+    key = 4;
+    set_put(me, &key);
+    key = 1;
+    set_put(me, &key);
+    key = 3;
+    set_put(me, &key);
+    key = 5;
+    set_put(me, &key);
+    key = 1;
+    set_remove(me, &key);
+    assert(set_size(me) == 4);
+    for (key = 2; key <= 5; key++) {
+        assert(set_contains(me, &key));
+    }
+    set_verify(me);
 }
 
 /*
@@ -189,7 +207,25 @@ static void test_rotate_right(void)
  */
 static void test_rotate_left_right_positively_balanced_grand_child(set me)
 {
-    // TODO
+    int key;
+    assert(set_is_empty(me));
+    key = 4;
+    set_put(me, &key);
+    key = 2;
+    set_put(me, &key);
+    key = 5;
+    set_put(me, &key);
+    key = 1;
+    set_put(me, &key);
+    key = 3;
+    set_put(me, &key);
+    key = 5;
+    set_remove(me, &key);
+    assert(set_size(me) == 4);
+    for (key = 2; key <= 5; key++) {
+        assert(set_contains(me, &key));
+    }
+    set_verify(me);
 }
 
 /*
