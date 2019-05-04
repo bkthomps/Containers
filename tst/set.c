@@ -215,11 +215,11 @@ static void test_rotate_left_right_positively_balanced_grand_child(set me)
     set_put(me, &key);
     key = 6;
     set_put(me, &key);
+    key = 1;
+    set_put(me, &key);
     key = 3;
     set_put(me, &key);
     key = 4;
-    set_put(me, &key);
-    key = 1;
     set_put(me, &key);
     assert(set_size(me) == 6);
     for (key = 1; key <= 6; key++) {
