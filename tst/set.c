@@ -401,10 +401,11 @@ static void test_stress_add(void)
     assert(!set_destroy(me));
 }
 
-static void stress_test_remove(void)
+static void test_stress_remove(void)
 {
     int i;
     set me = set_init(sizeof(int), compare_int);
+    assert(me);
     for (i = 8123; i < 12314; i += 3) {
         set_put(me, &i);
         assert(set_contains(me, &i));
@@ -416,6 +417,58 @@ static void stress_test_remove(void)
     assert(!set_destroy(me));
 }
 
+static void test_unique_delete_one_child(set me)
+{
+    int arr1[] = {2, 1, -2};
+    int arr2[] = {1, 2, -1};
+    int arr3[] = {3, 2, 4, 1, -2};
+    int arr4[] = {3, 1, 4, 2, -1};
+    int arr5[] = {3, 1, 4, 2, -4};
+    int arr6[] = {2, 1, 3, 4, -3};
+    int sz1 = sizeof(arr1) / sizeof(arr1[0]);
+    int sz2 = sizeof(arr2) / sizeof(arr2[0]);
+    int sz3 = sizeof(arr3) / sizeof(arr3[0]);
+    int sz4 = sizeof(arr4) / sizeof(arr4[0]);
+    int sz5 = sizeof(arr5) / sizeof(arr5[0]);
+    int sz6 = sizeof(arr6) / sizeof(arr6[0]);
+    mutation_order(me, arr1, sz1);
+    set_clear(me);
+    mutation_order(me, arr2, sz2);
+    set_clear(me);
+    mutation_order(me, arr3, sz3);
+    set_clear(me);
+    mutation_order(me, arr4, sz4);
+    set_clear(me);
+    mutation_order(me, arr5, sz5);
+    set_clear(me);
+    mutation_order(me, arr6, sz6);
+}
+
+static void test_unique_delete_two_children(set me)
+{
+    int arr1[] = {2, 1, 3, -2};
+    int arr2[] = {4, 2, 5, 1, 3, -2};
+    int arr3[] = {2, 1, 4, 3, 5, -4};
+    int sz1 = sizeof(arr1) / sizeof(arr1[0]);
+    int sz2 = sizeof(arr2) / sizeof(arr2[0]);
+    int sz3 = sizeof(arr3) / sizeof(arr3[0]);
+    mutation_order(me, arr1, sz1);
+    set_clear(me);
+    mutation_order(me, arr2, sz2);
+    set_clear(me);
+    mutation_order(me, arr3, sz3);
+}
+
+static void test_unique_deletion_patterns(void)
+{
+    set me = set_init(sizeof(int), compare_int);
+    assert(me);
+    test_unique_delete_one_child(me);
+    set_clear(me);
+    test_unique_delete_two_children(me);
+    assert(!set_destroy(me));
+}
+
 void test_set(void)
 {
     test_invalid_init();
@@ -424,6 +477,7 @@ void test_set(void)
     test_remove_nothing();
     test_contains();
     test_stress_add();
-    stress_test_remove();
+    test_stress_remove();
+    test_unique_deletion_patterns();
     test_init_out_of_memory();
 }
