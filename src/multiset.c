@@ -148,68 +148,108 @@ static void multiset_rotate_right(multiset me,
 }
 
 /*
- * Repairs the AVL tree on insert.
+ * Performs a left repair.
+ */
+static struct node *multiset_repair_left(multiset me,
+                                         struct node *const parent,
+                                         struct node *const child)
+{
+    multiset_rotate_left(me, parent, child);
+    if (child->balance == 0) {
+        parent->balance = 1;
+        child->balance = -1;
+    } else {
+        parent->balance = 0;
+        child->balance = 0;
+    }
+    return child;
+}
+
+/*
+ * Performs a right repair.
+ */
+static struct node *multiset_repair_right(multiset me,
+                                          struct node *const parent,
+                                          struct node *const child)
+{
+    multiset_rotate_right(me, parent, child);
+    if (child->balance == 0) {
+        parent->balance = -1;
+        child->balance = 1;
+    } else {
+        parent->balance = 0;
+        child->balance = 0;
+    }
+    return child;
+}
+
+/*
+ * Performs a left-right repair.
+ */
+static struct node *multiset_repair_left_right(multiset me,
+                                               struct node *const parent,
+                                               struct node *const child,
+                                               struct node *const grand_child)
+{
+    multiset_rotate_left(me, child, grand_child);
+    multiset_rotate_right(me, parent, grand_child);
+    if (grand_child->balance == 1) {
+        parent->balance = 0;
+        child->balance = -1;
+    } else if (grand_child->balance == 0) {
+        parent->balance = 0;
+        child->balance = 0;
+    } else {
+        parent->balance = 1;
+        child->balance = 0;
+    }
+    grand_child->balance = 0;
+    return grand_child;
+}
+
+/*
+ * Performs a right-left repair.
+ */
+static struct node *multiset_repair_right_left(multiset me,
+                                               struct node *const parent,
+                                               struct node *const child,
+                                               struct node *const grand_child)
+{
+    multiset_rotate_right(me, child, grand_child);
+    multiset_rotate_left(me, parent, grand_child);
+    if (grand_child->balance == 1) {
+        parent->balance = -1;
+        child->balance = 0;
+    } else if (grand_child->balance == 0) {
+        parent->balance = 0;
+        child->balance = 0;
+    } else {
+        parent->balance = 0;
+        child->balance = 1;
+    }
+    grand_child->balance = 0;
+    return grand_child;
+}
+
+/*
+ * Repairs the AVL tree on insert. The only possible values of parent->balance
+ * are {-2, 2} and the only possible values of child->balance are {-1, 0, 1}.
  */
 static struct node *multiset_repair(multiset me,
                                     struct node *const parent,
                                     struct node *const child,
                                     struct node *const grand_child)
 {
-    if (parent->balance == 2 && child->balance >= 0) {
-        multiset_rotate_left(me, parent, child);
-        if (child->balance == 0) {
-            parent->balance = 1;
-            child->balance = -1;
-        } else {
-            parent->balance = 0;
-            child->balance = 0;
+    if (parent->balance == 2) {
+        if (child->balance == -1) {
+            return multiset_repair_right_left(me, parent, child, grand_child);
         }
-        return child;
+        return multiset_repair_left(me, parent, child);
     }
-    if (parent->balance == -2 && child->balance <= 0) {
-        multiset_rotate_right(me, parent, child);
-        if (child->balance == 0) {
-            parent->balance = -1;
-            child->balance = 1;
-        } else {
-            parent->balance = 0;
-            child->balance = 0;
-        }
-        return child;
+    if (child->balance == 1) {
+        return multiset_repair_left_right(me, parent, child, grand_child);
     }
-    if (parent->balance == -2 && child->balance == 1) {
-        multiset_rotate_left(me, child, grand_child);
-        multiset_rotate_right(me, parent, grand_child);
-        if (grand_child->balance == 1) {
-            parent->balance = 0;
-            child->balance = -1;
-        } else if (grand_child->balance == 0) {
-            parent->balance = 0;
-            child->balance = 0;
-        } else {
-            parent->balance = 1;
-            child->balance = 0;
-        }
-        grand_child->balance = 0;
-        return grand_child;
-    }
-    if (parent->balance == 2 && child->balance == -1) {
-        multiset_rotate_right(me, child, grand_child);
-        multiset_rotate_left(me, parent, grand_child);
-        if (grand_child->balance == 1) {
-            parent->balance = -1;
-            child->balance = 0;
-        } else if (grand_child->balance == 0) {
-            parent->balance = 0;
-            child->balance = 0;
-        } else {
-            parent->balance = 0;
-            child->balance = 1;
-        }
-        grand_child->balance = 0;
-        return grand_child;
-    }
-    /* Impossible to get here. */
+    return multiset_repair_right(me, parent, child);
 }
 
 /*
