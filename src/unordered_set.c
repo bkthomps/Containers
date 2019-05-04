@@ -241,7 +241,6 @@ static struct node *const unordered_set_create_element(unordered_set me,
  */
 int unordered_set_put(unordered_set me, void *const key)
 {
-
     const unsigned long hash = unordered_set_hash(me, key);
     const int index = (int) (hash % me->capacity);
     if (!me->buckets[index]) {

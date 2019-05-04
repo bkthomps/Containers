@@ -212,7 +212,8 @@ static void test_rehash_out_of_memory(void)
 static void test_put_out_of_memory(void)
 {
     int key = 5;
-    unordered_set me = unordered_set_init(sizeof(int), hash_int, compare_int);
+    unordered_set me = unordered_set_init(sizeof(int), bad_hash_int,
+                                          compare_int);
     assert(me);
     fail_malloc = 1;
     assert(unordered_set_put(me, &key) == -ENOMEM);
@@ -220,6 +221,7 @@ static void test_put_out_of_memory(void)
     delay_fail_malloc = 1;
     assert(unordered_set_put(me, &key) == -ENOMEM);
     assert(unordered_set_put(me, &key) == 0);
+    key = 7;
     fail_malloc = 1;
     assert(unordered_set_put(me, &key) == -ENOMEM);
     fail_malloc = 1;
@@ -249,6 +251,6 @@ void test_unordered_set(void)
     test_bad_hash();
     test_init_out_of_memory();
     test_rehash_out_of_memory();
-    // TODO: insert more here
+    test_put_out_of_memory();
     test_clear_out_of_memory();
 }
