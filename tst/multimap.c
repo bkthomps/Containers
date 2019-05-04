@@ -517,6 +517,31 @@ static void test_override_value(void)
     assert(!multimap_destroy(me));
 }
 
+static void test_multiple_operations(void)
+{
+    int key = 5;
+    multimap me = multimap_init(sizeof(int), sizeof(int), compare_int,
+                                compare_int);
+    assert(me);
+    assert(multimap_count(me, &key) == 0);
+    assert(!multimap_remove_all(me, &key));
+    multimap_put(me, &key, &key);
+    multimap_put(me, &key, &key);
+    assert(multimap_size(me) == 2);
+    key = 7;
+    multimap_put(me, &key, &key);
+    assert(multimap_size(me) == 3);
+    assert(multimap_count(me, &key) == 1);
+    key = 5;
+    assert(multimap_count(me, &key) == 2);
+    multimap_remove_all(me, &key);
+    assert(multimap_size(me) == 1);
+    key = 7;
+    multimap_remove_all(me, &key);
+    assert(multimap_size(me) == 0);
+    assert(!multimap_destroy(me));
+}
+
 static void test_init_out_of_memory(void)
 {
     fail_malloc = 1;
@@ -586,6 +611,7 @@ void test_multimap(void)
     test_stress_remove();
     test_unique_deletion_patterns();
     test_override_value();
+    test_multiple_operations();
     test_init_out_of_memory();
     test_put_out_of_memory();
 }

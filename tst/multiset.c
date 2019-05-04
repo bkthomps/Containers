@@ -459,7 +459,7 @@ static void test_unique_deletion_patterns(void)
     assert(!multiset_destroy(me));
 }
 
-static void test_multiset_differences(void)
+static void test_multiple_operations(void)
 {
     int key = 5;
     multiset me = multiset_init(sizeof(int), compare_int);
@@ -541,7 +541,7 @@ void test_multiset(void)
     test_stress_add();
     test_stress_remove();
     test_unique_deletion_patterns();
-    test_multiset_differences();
+    test_multiple_operations();
     test_init_out_of_memory();
     test_put_out_of_memory();
 }
