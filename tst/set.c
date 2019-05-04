@@ -377,13 +377,11 @@ static void test_stress_add(void)
     assert(me);
     for (i = 1234; i < 82400; i++) {
         int is_already_present;
-        int is_now_present;
         int num = i % 765;
         is_already_present = set_contains(me, &num);
         set_put(me, &num);
-        is_now_present = set_contains(me, &num);
-        assert(is_now_present);
-        if (!is_already_present && is_now_present) {
+        assert(set_contains(me, &num));
+        if (!is_already_present) {
             count++;
         }
         if (i == 1857 && !flip) {
