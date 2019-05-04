@@ -18,25 +18,26 @@ static unsigned long hash_int(const void *const key)
     return hash;
 }
 
-static unsigned long bad_hash_int(const void *const key)
+static unsigned long bad_hash_int()
 {
     return 5;
 }
 
-void test_unordered_map(void)
+static void test_invalid_init(void)
 {
-    int val_arr[10] = {5, 9, 4, -5, 0, 6, 1, 5, 7, 2};
-    unordered_map me;
-    int key;
-    int num;
-    int value;
-    int i;
-    int j;
     assert(!unordered_map_init(0, sizeof(int), hash_int, compare_int));
     assert(!unordered_map_init(sizeof(int), 0, hash_int, compare_int));
     assert(!unordered_map_init(sizeof(int), sizeof(int), NULL, compare_int));
     assert(!unordered_map_init(sizeof(int), sizeof(int), hash_int, NULL));
-    me = unordered_map_init(sizeof(int), sizeof(int), hash_int, compare_int);
+}
+
+static void test_put(unordered_map me)
+{
+    int val_arr[10] = {5, 9, 4, -5, 0, 6, 1, 5, 7, 2};
+    int key;
+    int value;
+    int i;
+    int j;
     assert(unordered_map_size(me) == 0);
     assert(unordered_map_is_empty(me));
     key = 4;
@@ -73,7 +74,11 @@ void test_unordered_map(void)
         }
         assert(unordered_map_contains(me, &i) == contains);
     }
-    num = -3;
+}
+
+static void test_remove(unordered_map me)
+{
+    int num = -3;
     assert(!unordered_map_remove(me, &num));
     assert(unordered_map_size(me) == 9);
     assert(!unordered_map_contains(me, &num));
@@ -113,7 +118,12 @@ void test_unordered_map(void)
     assert(unordered_map_remove(me, &num));
     assert(unordered_map_size(me) == 0);
     assert(!unordered_map_contains(me, &num));
-    /* Add a lot of items and remove individually. */
+}
+
+static void test_stress_remove(unordered_map me)
+{
+    int value = 27;
+    int i;
     for (i = 5000; i < 6000; i++) {
         unordered_map_put(me, &i, &value);
         assert(unordered_map_contains(me, &i));
@@ -128,7 +138,13 @@ void test_unordered_map(void)
     unordered_map_clear(me);
     assert(unordered_map_size(me) == 0);
     assert(unordered_map_is_empty(me));
-    /* Add a lot of items and clear. */
+}
+
+static void test_stress_clear(unordered_map me)
+{
+    int value = 57;
+    int key;
+    int i;
     for (i = 5000; i < 6000; i++) {
         unordered_map_put(me, &i, &value);
         assert(unordered_map_contains(me, &i));
@@ -142,10 +158,27 @@ void test_unordered_map(void)
     assert(!unordered_map_remove(me, &key));
     assert(unordered_map_size(me) == 0);
     assert(unordered_map_is_empty(me));
-    me = unordered_map_destroy(me);
-    assert(!me);
-    me = unordered_map_init(sizeof(int), sizeof(int), bad_hash_int,
-                            compare_int);
+}
+
+static void test_basic(void)
+{
+    unordered_map me = unordered_map_init(sizeof(int), sizeof(int), hash_int,
+                                          compare_int);
+    assert(me);
+    test_put(me);
+    test_remove(me);
+    test_stress_remove(me);
+    test_stress_clear(me);
+    assert(!unordered_map_destroy(me));
+}
+
+static void test_bad_hash(void)
+{
+    int num;
+    int key;
+    int value;
+    unordered_map me = unordered_map_init(sizeof(int), sizeof(int),
+                                          bad_hash_int, compare_int);
     num = 1;
     unordered_map_put(me, &num, &num);
     num = 2;
@@ -166,4 +199,102 @@ void test_unordered_map(void)
     value = 0xdeadbeef;
     assert(!unordered_map_get(&value, me, &key));
     assert(value == 0xdeadbeef);
+    assert(!unordered_map_destroy(me));
+}
+
+static void test_init_out_of_memory(void)
+{
+    fail_malloc = 1;
+    assert(!unordered_map_init(sizeof(int), sizeof(int), bad_hash_int,
+                               compare_int));
+    fail_calloc = 1;
+    assert(!unordered_map_init(sizeof(int), sizeof(int), bad_hash_int,
+                               compare_int));
+}
+
+static void test_rehash_out_of_memory(void)
+{
+    int key = 5;
+    int value = 7;
+    unordered_map me = unordered_map_init(sizeof(int), sizeof(int),
+                                          bad_hash_int, compare_int);
+    assert(me);
+    unordered_map_put(me, &key, &value);
+    assert(unordered_map_size(me) == 1);
+    assert(unordered_map_contains(me, &key));
+    fail_calloc = 1;
+    assert(unordered_map_rehash(me) == -ENOMEM);
+    assert(unordered_map_size(me) == 1);
+    assert(unordered_map_contains(me, &key));
+    assert(!unordered_map_destroy(me));
+}
+
+static void test_put_out_of_memory(void)
+{
+    int key = 5;
+    int value = 7;
+    unordered_map me = unordered_map_init(sizeof(int), sizeof(int),
+                                          bad_hash_int, compare_int);
+    assert(me);
+    fail_malloc = 1;
+    assert(unordered_map_put(me, &key, &value) == -ENOMEM);
+    fail_malloc = 1;
+    delay_fail_malloc = 1;
+    assert(unordered_map_put(me, &key, &value) == -ENOMEM);
+    assert(unordered_map_put(me, &key, &value) == 0);
+    key = 7;
+    fail_malloc = 1;
+    assert(unordered_map_put(me, &key, &value) == -ENOMEM);
+    fail_malloc = 1;
+    delay_fail_malloc = 1;
+    assert(unordered_map_put(me, &key, &value) == -ENOMEM);
+    assert(!unordered_map_destroy(me));
+}
+
+static void test_resize_out_of_memory(void)
+{
+    int i;
+    unordered_map me = unordered_map_init(sizeof(int), sizeof(int), hash_int,
+                                          compare_int);
+    for (i = 0; i < 5; i++) {
+        assert(unordered_map_put(me, &i, &i) == 0);
+    }
+    assert(unordered_map_size(me) == 5);
+    i++;
+    fail_calloc = 1;
+    assert(unordered_map_put(me, &i, &i) == -ENOMEM);
+    assert(unordered_map_size(me) == 5);
+    for (i = 0; i < 5; i++) {
+        assert(unordered_map_contains(me, &i));
+    }
+    assert(!unordered_map_destroy(me));
+}
+
+static void test_clear_out_of_memory(void)
+{
+    int key = 5;
+    int value = 7;
+    unordered_map me = unordered_map_init(sizeof(int), sizeof(int), hash_int,
+                                          compare_int);
+    assert(me);
+    assert(unordered_map_put(me, &key, &value) == 0);
+    assert(unordered_map_size(me) == 1);
+    assert(unordered_map_contains(me, &key));
+    fail_calloc = 1;
+    assert(unordered_map_clear(me) == -ENOMEM);
+    assert(unordered_map_size(me) == 1);
+    assert(unordered_map_contains(me, &key));
+    assert(!unordered_map_destroy(me));
+}
+
+void test_unordered_map(void)
+{
+    test_invalid_init();
+    test_basic();
+    test_bad_hash();
+    test_init_out_of_memory();
+    test_rehash_out_of_memory();
+    test_put_out_of_memory();
+    test_resize_out_of_memory();
+    test_clear_out_of_memory();
 }
