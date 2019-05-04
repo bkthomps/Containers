@@ -211,7 +211,7 @@ static void test_bad_hash(void)
     assert(!unordered_multiset_destroy(me));
 }
 
-void test_collision(void)
+static void test_collision(void)
 {
     int num;
     unordered_multiset me = unordered_multiset_init(sizeof(int), bad_hash_int,
