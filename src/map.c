@@ -212,7 +212,6 @@ static struct node *map_repair(map me,
         return grand_child;
     }
     /* Impossible to get here. */
-    return NULL;
 }
 
 /*

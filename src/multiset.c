@@ -210,7 +210,6 @@ static struct node *multiset_repair(multiset me,
         return grand_child;
     }
     /* Impossible to get here. */
-    return NULL;
 }
 
 /*

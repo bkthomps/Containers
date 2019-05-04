@@ -228,7 +228,6 @@ static struct node *multimap_repair(multimap me,
         return grand_child;
     }
     /* Impossible to get here. */
-    return NULL;
 }
 
 /*
