@@ -527,23 +527,28 @@ static void test_multiple_operations(void)
     assert(multimap_count(me, &key) == 0);
     assert(!multimap_remove_all(me, &key));
     multimap_put(me, &key, &value);
+    multimap_put(me, &key, &value);
     multimap_put(me, &key, &key);
     multimap_put(me, &key, &key);
-    multimap_put(me, &key, &key);
-    assert(multimap_size(me) == 4);
-    key = 7;
     multimap_put(me, &key, &key);
     assert(multimap_size(me) == 5);
+    key = 7;
+    multimap_put(me, &key, &key);
+    assert(multimap_size(me) == 6);
     assert(multimap_count(me, &key) == 1);
     key = 5;
-    assert(multimap_count(me, &key) == 4);
+    assert(multimap_count(me, &key) == 5);
     multimap_remove(me, &key, &key);
-    assert(multimap_count(me, &key) == 3);
+    assert(multimap_count(me, &key) == 4);
     multimap_remove_all(me, &key);
     assert(multimap_size(me) == 1);
     key = 7;
     multimap_remove_all(me, &key);
     assert(multimap_size(me) == 0);
+    multimap_put(me, &key, &value);
+    value = 23;
+    multimap_remove(me, &key, &value);
+    assert(multimap_size(me) == 1);
     assert(!multimap_destroy(me));
 }
 
