@@ -305,7 +305,25 @@ static void test_rotate_right_left_neutral_balanced_grand_child(set me)
  */
 static void test_rotate_right_left_negatively_balanced_grand_child(set me)
 {
-    // TODO
+    int key;
+    assert(set_is_empty(me));
+    key = 2;
+    set_put(me, &key);
+    key = 1;
+    set_put(me, &key);
+    key = 5;
+    set_put(me, &key);
+    key = 3;
+    set_put(me, &key);
+    key = 6;
+    set_put(me, &key);
+    key = 4;
+    set_put(me, &key);
+    assert(set_size(me) == 6);
+    for (key = 1; key <= 6; key++) {
+        assert(set_contains(me, &key));
+    }
+    set_verify(me);
 }
 
 /*
