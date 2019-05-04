@@ -28,14 +28,6 @@ struct node {
 };
 
 /*
- * Include this struct to verify the tree.
- */
-struct value_node {
-    void *value;
-    struct value_node *next;
-};
-
-/*
  * Verifies that the AVL tree rules are followed. The balance factor of an item
  * must be the right height minus the left height. Also, the left key must be
  * less than the right key.
