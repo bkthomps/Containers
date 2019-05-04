@@ -238,6 +238,7 @@ static void test_bad_hash(void)
     assert(unordered_multimap_size(me) == 4);
     unordered_multimap_rehash(me);
     assert(unordered_multimap_size(me) == 4);
+    assert(!unordered_multimap_destroy(me));
 }
 
 static void test_collision(void)
