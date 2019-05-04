@@ -310,6 +310,10 @@ static void test_init_out_of_memory(void)
     fail_calloc = 1;
     assert(!unordered_multimap_init(sizeof(int), sizeof(int), hash_int,
                                     compare_int, compare_int));
+    fail_calloc = 1;
+    delay_fail_calloc = 1;
+    assert(!unordered_multimap_init(sizeof(int), sizeof(int), hash_int,
+                                    compare_int, compare_int));
 }
 
 static void test_rehash_out_of_memory(void)
