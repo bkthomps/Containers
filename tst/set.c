@@ -374,7 +374,7 @@ static void test_contains(void)
     assert(!set_destroy(me));
 }
 
-static void test_stress(void)
+static void test_stress_add(void)
 {
     int count = 0;
     int flip = 0;
@@ -401,6 +401,21 @@ static void test_stress(void)
     assert(!set_destroy(me));
 }
 
+static void stress_test_remove(void)
+{
+    int i;
+    set me = set_init(sizeof(int), compare_int);
+    for (i = 8123; i < 12314; i += 3) {
+        set_put(me, &i);
+        assert(set_contains(me, &i));
+    }
+    for (i = 13000; i > 8000; i--) {
+        set_remove(me, &i);
+        assert(!set_contains(me, &i));
+    }
+    assert(!set_destroy(me));
+}
+
 void test_set(void)
 {
     test_invalid_init();
@@ -408,6 +423,7 @@ void test_set(void)
     test_put_already_existing();
     test_remove_nothing();
     test_contains();
-    test_stress();
+    test_stress_add();
+    stress_test_remove();
     test_init_out_of_memory();
 }
