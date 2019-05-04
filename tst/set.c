@@ -87,7 +87,14 @@ static void test_invalid_init(void)
  */
 static void test_rotate_left_balanced_child(set me)
 {
-    // TODO
+    int key = 1;
+    set_put(me, &key);
+    key = 3;
+    set_put(me, &key);
+    key = 2;
+    set_put(me, &key);
+    key = 4;
+    set_put(me, &key);
 }
 
 /*
@@ -233,8 +240,15 @@ static void test_auto_balancing(void)
     test_rotate_right_left();
 }
 
+static void test_init_out_of_memory(void)
+{
+    fail_malloc = 1;
+    assert(!set_init(sizeof(int), compare_int));
+}
+
 void test_set(void)
 {
     test_invalid_init();
     test_auto_balancing();
+    test_init_out_of_memory();
 }
