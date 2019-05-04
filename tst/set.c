@@ -82,30 +82,38 @@ static void test_invalid_init(void)
     assert(!set_init(sizeof(int), NULL));
 }
 
+static void mutation_order(set me, const int *const arr, const int size)
+{
+    int i;
+    int actual_size = 0;
+    assert(set_is_empty(me));
+    for (i = 0; i < size; i++) {
+        int num = arr[i];
+        if (num > 0) {
+            assert(set_put(me, &num) == 0);
+            actual_size++;
+        } else {
+            int actual_num = -1 * num;
+            assert(set_remove(me, &actual_num));
+            actual_size--;
+        }
+    }
+    assert(set_size(me) == actual_size);
+    set_verify(me);
+}
+
 /*
  * Targets the (child->balance == 0) branch.
  */
 static void test_rotate_left_balanced_child(set me)
 {
-    int key;
-    assert(set_is_empty(me));
-    key = 2;
-    set_put(me, &key);
-    key = 4;
-    set_put(me, &key);
-    key = 1;
-    set_put(me, &key);
-    key = 3;
-    set_put(me, &key);
-    key = 5;
-    set_put(me, &key);
-    key = 1;
-    set_remove(me, &key);
-    assert(set_size(me) == 4);
-    for (key = 2; key <= 5; key++) {
-        assert(set_contains(me, &key));
+    int i;
+    int arr[] = {2, 4, 1, 3, 5, -1};
+    int size = sizeof(arr) / sizeof(arr[0]);
+    mutation_order(me, arr, size);
+    for (i = 2; i <= 5; i++) {
+        assert(set_contains(me, &i));
     }
-    set_verify(me);
 }
 
 /*
@@ -113,19 +121,13 @@ static void test_rotate_left_balanced_child(set me)
  */
 static void test_rotate_left_unbalanced_child(set me)
 {
-    int key;
-    assert(set_is_empty(me));
-    key = 1;
-    set_put(me, &key);
-    key = 2;
-    set_put(me, &key);
-    key = 3;
-    set_put(me, &key);
-    assert(set_size(me) == 3);
-    for (key = 1; key <= 3; key++) {
-        assert(set_contains(me, &key));
+    int i;
+    int arr[] = {1, 2, 3};
+    int size = sizeof(arr) / sizeof(arr[0]);
+    mutation_order(me, arr, size);
+    for (i = 1; i <= 3; i++) {
+        assert(set_contains(me, &i));
     }
-    set_verify(me);
 }
 
 /*
@@ -147,25 +149,13 @@ static void test_rotate_left(void)
  */
 static void test_rotate_right_balanced_child(set me)
 {
-    int key;
-    assert(set_is_empty(me));
-    key = 4;
-    set_put(me, &key);
-    key = 2;
-    set_put(me, &key);
-    key = 5;
-    set_put(me, &key);
-    key = 1;
-    set_put(me, &key);
-    key = 3;
-    set_put(me, &key);
-    key = 5;
-    set_remove(me, &key);
-    assert(set_size(me) == 4);
-    for (key = 1; key <= 4; key++) {
-        assert(set_contains(me, &key));
+    int i;
+    int arr[] = {4, 2, 5, 1, 3, -5};
+    int size = sizeof(arr) / sizeof(arr[0]);
+    mutation_order(me, arr, size);
+    for (i = 1; i <= 4; i++) {
+        assert(set_contains(me, &i));
     }
-    set_verify(me);
 }
 
 /*
@@ -173,19 +163,13 @@ static void test_rotate_right_balanced_child(set me)
  */
 static void test_rotate_right_unbalanced_child(set me)
 {
-    int key;
-    assert(set_is_empty(me));
-    key = 3;
-    set_put(me, &key);
-    key = 2;
-    set_put(me, &key);
-    key = 1;
-    set_put(me, &key);
-    assert(set_size(me) == 3);
-    for (key = 1; key <= 3; key++) {
-        assert(set_contains(me, &key));
+    int i;
+    int arr[] = {3, 2, 1};
+    int size = sizeof(arr) / sizeof(arr[0]);
+    mutation_order(me, arr, size);
+    for (i = 1; i <= 3; i++) {
+        assert(set_contains(me, &i));
     }
-    set_verify(me);
 }
 
 /*
@@ -207,25 +191,13 @@ static void test_rotate_right(void)
  */
 static void test_rotate_left_right_positively_balanced_grand_child(set me)
 {
-    int key;
-    assert(set_is_empty(me));
-    key = 5;
-    set_put(me, &key);
-    key = 2;
-    set_put(me, &key);
-    key = 6;
-    set_put(me, &key);
-    key = 1;
-    set_put(me, &key);
-    key = 3;
-    set_put(me, &key);
-    key = 4;
-    set_put(me, &key);
-    assert(set_size(me) == 6);
-    for (key = 1; key <= 6; key++) {
-        assert(set_contains(me, &key));
+    int i;
+    int arr[] = {5, 2, 6, 1, 3, 4};
+    int size = sizeof(arr) / sizeof(arr[0]);
+    mutation_order(me, arr, size);
+    for (i = 1; i <= 6; i++) {
+        assert(set_contains(me, &i));
     }
-    set_verify(me);
 }
 
 /*
@@ -233,19 +205,13 @@ static void test_rotate_left_right_positively_balanced_grand_child(set me)
  */
 static void test_rotate_left_right_neutral_balanced_grand_child(set me)
 {
-    int key;
-    assert(set_is_empty(me));
-    key = 3;
-    set_put(me, &key);
-    key = 1;
-    set_put(me, &key);
-    key = 2;
-    set_put(me, &key);
-    assert(set_size(me) == 3);
-    for (key = 1; key <= 3; key++) {
-        assert(set_contains(me, &key));
+    int i;
+    int arr[] = {3, 1, 2};
+    int size = sizeof(arr) / sizeof(arr[0]);
+    mutation_order(me, arr, size);
+    for (i = 1; i <= 3; i++) {
+        assert(set_contains(me, &i));
     }
-    set_verify(me);
 }
 
 /*
@@ -253,25 +219,13 @@ static void test_rotate_left_right_neutral_balanced_grand_child(set me)
  */
 static void test_rotate_left_right_negatively_balanced_grand_child(set me)
 {
-    int key;
-    assert(set_is_empty(me));
-    key = 5;
-    set_put(me, &key);
-    key = 2;
-    set_put(me, &key);
-    key = 6;
-    set_put(me, &key);
-    key = 1;
-    set_put(me, &key);
-    key = 4;
-    set_put(me, &key);
-    key = 3;
-    set_put(me, &key);
-    assert(set_size(me) == 6);
-    for (key = 1; key <= 6; key++) {
-        assert(set_contains(me, &key));
+    int i;
+    int arr[] = {5, 2, 6, 1, 4, 3};
+    int size = sizeof(arr) / sizeof(arr[0]);
+    mutation_order(me, arr, size);
+    for (i = 1; i <= 6; i++) {
+        assert(set_contains(me, &i));
     }
-    set_verify(me);
 }
 
 /*
@@ -295,25 +249,13 @@ static void test_rotate_left_right(void)
  */
 static void test_rotate_right_left_positively_balanced_grand_child(set me)
 {
-    int key;
-    assert(set_is_empty(me));
-    key = 2;
-    set_put(me, &key);
-    key = 1;
-    set_put(me, &key);
-    key = 5;
-    set_put(me, &key);
-    key = 3;
-    set_put(me, &key);
-    key = 6;
-    set_put(me, &key);
-    key = 4;
-    set_put(me, &key);
-    assert(set_size(me) == 6);
-    for (key = 1; key <= 6; key++) {
-        assert(set_contains(me, &key));
+    int i;
+    int arr[] = {2, 1, 5, 3, 6, 4};
+    int size = sizeof(arr) / sizeof(arr[0]);
+    mutation_order(me, arr, size);
+    for (i = 1; i <= 6; i++) {
+        assert(set_contains(me, &i));
     }
-    set_verify(me);
 }
 
 /*
@@ -321,19 +263,13 @@ static void test_rotate_right_left_positively_balanced_grand_child(set me)
  */
 static void test_rotate_right_left_neutral_balanced_grand_child(set me)
 {
-    int key;
-    assert(set_is_empty(me));
-    key = 1;
-    set_put(me, &key);
-    key = 3;
-    set_put(me, &key);
-    key = 2;
-    set_put(me, &key);
-    assert(set_size(me) == 3);
-    for (key = 1; key <= 3; key++) {
-        assert(set_contains(me, &key));
+    int i;
+    int arr[] = {1, 3, 2};
+    int size = sizeof(arr) / sizeof(arr[0]);
+    mutation_order(me, arr, size);
+    for (i = 1; i <= 3; i++) {
+        assert(set_contains(me, &i));
     }
-    set_verify(me);
 }
 
 /*
@@ -341,25 +277,13 @@ static void test_rotate_right_left_neutral_balanced_grand_child(set me)
  */
 static void test_rotate_right_left_negatively_balanced_grand_child(set me)
 {
-    int key;
-    assert(set_is_empty(me));
-    key = 2;
-    set_put(me, &key);
-    key = 1;
-    set_put(me, &key);
-    key = 5;
-    set_put(me, &key);
-    key = 4;
-    set_put(me, &key);
-    key = 6;
-    set_put(me, &key);
-    key = 3;
-    set_put(me, &key);
-    assert(set_size(me) == 6);
-    for (key = 1; key <= 6; key++) {
-        assert(set_contains(me, &key));
+    int i;
+    int arr[] = {2, 1, 5, 4, 6, 3};
+    int size = sizeof(arr) / sizeof(arr[0]);
+    mutation_order(me, arr, size);
+    for (i = 1; i <= 6; i++) {
+        assert(set_contains(me, &i));
     }
-    set_verify(me);
 }
 
 /*
