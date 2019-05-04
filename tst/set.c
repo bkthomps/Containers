@@ -222,7 +222,7 @@ static void test_rotate_left_right_positively_balanced_grand_child(set me)
     key = 5;
     set_remove(me, &key);
     assert(set_size(me) == 4);
-    for (key = 2; key <= 5; key++) {
+    for (key = 1; key <= 4; key++) {
         assert(set_contains(me, &key));
     }
     set_verify(me);
