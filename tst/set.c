@@ -374,6 +374,33 @@ static void test_contains(void)
     assert(!set_destroy(me));
 }
 
+static void test_stress(void)
+{
+    int count = 0;
+    int flip = 0;
+    int i;
+    set me = set_init(sizeof(int), compare_int);
+    assert(me);
+    for (i = 1234; i < 82400; i++) {
+        int is_already_present;
+        int is_now_present;
+        int num = i % 765;
+        is_already_present = set_contains(me, &num);
+        set_put(me, &num);
+        is_now_present = set_contains(me, &num);
+        assert(is_now_present);
+        if (!is_already_present && is_now_present) {
+            count++;
+        }
+        if (i == 1857 && !flip) {
+            i *= -1;
+            flip = 1;
+        }
+    }
+    assert(count == set_size(me));
+    assert(!set_destroy(me));
+}
+
 void test_set(void)
 {
     test_invalid_init();
@@ -381,5 +408,6 @@ void test_set(void)
     test_put_already_existing();
     test_remove_nothing();
     test_contains();
+    test_stress();
     test_init_out_of_memory();
 }
