@@ -241,12 +241,18 @@ static void test_put_out_of_memory(void)
     fail_malloc = 1;
     delay_fail_malloc = 1;
     assert(unordered_map_put(me, &key, &value) == -ENOMEM);
+    fail_malloc = 1;
+    delay_fail_malloc = 2;
+    assert(unordered_map_put(me, &key, &value) == -ENOMEM);
     assert(unordered_map_put(me, &key, &value) == 0);
     key = 7;
     fail_malloc = 1;
     assert(unordered_map_put(me, &key, &value) == -ENOMEM);
     fail_malloc = 1;
     delay_fail_malloc = 1;
+    assert(unordered_map_put(me, &key, &value) == -ENOMEM);
+    fail_malloc = 1;
+    delay_fail_malloc = 2;
     assert(unordered_map_put(me, &key, &value) == -ENOMEM);
     assert(!unordered_map_destroy(me));
 }
