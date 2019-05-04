@@ -459,6 +459,28 @@ static void test_unique_deletion_patterns(void)
     assert(!multiset_destroy(me));
 }
 
+static void test_multiset_differences(void)
+{
+    int key = 5;
+    multiset me = multiset_init(sizeof(int), compare_int);
+    assert(me);
+    multiset_put(me, &key);
+    multiset_put(me, &key);
+    assert(multiset_size(me) == 2);
+    key = 7;
+    multiset_put(me, &key);
+    assert(multiset_size(me) == 3);
+    assert(multiset_count(me, &key) == 1);
+    key = 5;
+    assert(multiset_count(me, &key) == 2);
+    multiset_remove_all(me, &key);
+    assert(multiset_size(me) == 1);
+    key = 7;
+    multiset_remove_all(me, &key);
+    assert(multiset_size(me) == 0);
+    assert(!multiset_destroy(me));
+}
+
 static void test_init_out_of_memory(void)
 {
     fail_malloc = 1;
@@ -517,6 +539,7 @@ void test_multiset(void)
     test_stress_add();
     test_stress_remove();
     test_unique_deletion_patterns();
+    test_multiset_differences();
     test_init_out_of_memory();
     test_put_out_of_memory();
 }
