@@ -436,32 +436,12 @@ static struct node *multiset_repair_pivot(multiset me,
 }
 
 /*
- * Balances the AVL tree on deletion.
+ * Goes back up the tree repairing it along the way.
  */
-static void multiset_delete_balance(multiset me,
-                                    struct node *item,
-                                    const int is_left_deleted)
+static void multiset_trace_ancestors(multiset me, struct node *item)
 {
-    struct node *child;
-    struct node *parent;
-    if (is_left_deleted) {
-        item->balance++;
-    } else {
-        item->balance--;
-    }
-    /* If balance is -1 or +1 after modification, then the tree is balanced. */
-    if (item->balance == -1 || item->balance == 1) {
-        return;
-    }
-    /* Must re-balance if not in {-1, 0, 1} */
-    if (item->balance > 1 || item->balance < -1) {
-        item = multiset_repair_pivot(me, item, is_left_deleted);
-        if (!item->parent || item->balance == -1 || item->balance == 1) {
-            return;
-        }
-    }
-    child = item;
-    parent = item->parent;
+    struct node *child = item;
+    struct node *parent = item->parent;
     while (parent) {
         if (parent->left == child) {
             parent->balance++;
@@ -486,6 +466,32 @@ static void multiset_delete_balance(multiset me,
             parent = parent->parent;
         }
     }
+}
+
+/*
+ * Balances the AVL tree on deletion.
+ */
+static void multiset_delete_balance(multiset me,
+                                    struct node *item,
+                                    const int is_left_deleted)
+{
+    if (is_left_deleted) {
+        item->balance++;
+    } else {
+        item->balance--;
+    }
+    /* If balance is -1 or +1 after modification, then the tree is balanced. */
+    if (item->balance == -1 || item->balance == 1) {
+        return;
+    }
+    /* Must re-balance if not in {-1, 0, 1} */
+    if (item->balance > 1 || item->balance < -1) {
+        item = multiset_repair_pivot(me, item, is_left_deleted);
+        if (!item->parent || item->balance == -1 || item->balance == 1) {
+            return;
+        }
+    }
+    multiset_trace_ancestors(me, item);
 }
 
 /*

@@ -413,32 +413,12 @@ static struct node *set_repair_pivot(set me,
 }
 
 /*
- * Balances the AVL tree on deletion.
+ * Goes back up the tree repairing it along the way.
  */
-static void set_delete_balance(set me,
-                               struct node *item,
-                               const int is_left_deleted)
+static void set_trace_ancestors(set me, struct node *item)
 {
-    struct node *child;
-    struct node *parent;
-    if (is_left_deleted) {
-        item->balance++;
-    } else {
-        item->balance--;
-    }
-    /* If balance is -1 or +1 after modification, then the tree is balanced. */
-    if (item->balance == -1 || item->balance == 1) {
-        return;
-    }
-    /* Must re-balance if not in {-1, 0, 1} */
-    if (item->balance > 1 || item->balance < -1) {
-        item = set_repair_pivot(me, item, is_left_deleted);
-        if (!item->parent || item->balance == -1 || item->balance == 1) {
-            return;
-        }
-    }
-    child = item;
-    parent = item->parent;
+    struct node *child = item;
+    struct node *parent = item->parent;
     while (parent) {
         if (parent->left == child) {
             parent->balance++;
@@ -463,6 +443,32 @@ static void set_delete_balance(set me,
             parent = parent->parent;
         }
     }
+}
+
+/*
+ * Balances the AVL tree on deletion.
+ */
+static void set_delete_balance(set me,
+                               struct node *item,
+                               const int is_left_deleted)
+{
+    if (is_left_deleted) {
+        item->balance++;
+    } else {
+        item->balance--;
+    }
+    /* If balance is -1 or +1 after modification, then the tree is balanced. */
+    if (item->balance == -1 || item->balance == 1) {
+        return;
+    }
+    /* Must re-balance if not in {-1, 0, 1} */
+    if (item->balance > 1 || item->balance < -1) {
+        item = set_repair_pivot(me, item, is_left_deleted);
+        if (!item->parent || item->balance == -1 || item->balance == 1) {
+            return;
+        }
+    }
+    set_trace_ancestors(me, item);
 }
 
 /*
