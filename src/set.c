@@ -145,68 +145,108 @@ static void set_rotate_right(set me,
 }
 
 /*
- * Repairs the AVL tree on insert.
+ * Performs a left repair.
+ */
+static struct node *set_repair_left(set me,
+                                    struct node *const parent,
+                                    struct node *const child)
+{
+    set_rotate_left(me, parent, child);
+    if (child->balance == 0) {
+        parent->balance = 1;
+        child->balance = -1;
+    } else {
+        parent->balance = 0;
+        child->balance = 0;
+    }
+    return child;
+}
+
+/*
+ * Performs a right repair.
+ */
+static struct node *set_repair_right(set me,
+                                     struct node *const parent,
+                                     struct node *const child)
+{
+    set_rotate_right(me, parent, child);
+    if (child->balance == 0) {
+        parent->balance = -1;
+        child->balance = 1;
+    } else {
+        parent->balance = 0;
+        child->balance = 0;
+    }
+    return child;
+}
+
+/*
+ * Performs a left-right repair.
+ */
+static struct node *set_repair_left_right(set me,
+                                          struct node *const parent,
+                                          struct node *const child,
+                                          struct node *const grand_child)
+{
+    set_rotate_left(me, child, grand_child);
+    set_rotate_right(me, parent, grand_child);
+    if (grand_child->balance == 1) {
+        parent->balance = 0;
+        child->balance = -1;
+    } else if (grand_child->balance == 0) {
+        parent->balance = 0;
+        child->balance = 0;
+    } else {
+        parent->balance = 1;
+        child->balance = 0;
+    }
+    grand_child->balance = 0;
+    return grand_child;
+}
+
+/*
+ * Performs a right-left repair.
+ */
+static struct node *set_repair_right_left(set me,
+                                          struct node *const parent,
+                                          struct node *const child,
+                                          struct node *const grand_child)
+{
+    set_rotate_right(me, child, grand_child);
+    set_rotate_left(me, parent, grand_child);
+    if (grand_child->balance == 1) {
+        parent->balance = -1;
+        child->balance = 0;
+    } else if (grand_child->balance == 0) {
+        parent->balance = 0;
+        child->balance = 0;
+    } else {
+        parent->balance = 0;
+        child->balance = 1;
+    }
+    grand_child->balance = 0;
+    return grand_child;
+}
+
+/*
+ * Repairs the AVL tree on insert. The only possible values of parent->balance
+ * are {-2, 2} and the only possible values of child->balance are {-1, 0, 1}.
  */
 static struct node *set_repair(set me,
                                struct node *const parent,
                                struct node *const child,
                                struct node *const grand_child)
 {
-    if (parent->balance == 2 && child->balance >= 0) {
-        set_rotate_left(me, parent, child);
-        if (child->balance == 0) {
-            parent->balance = 1;
-            child->balance = -1;
-        } else {
-            parent->balance = 0;
-            child->balance = 0;
+    if (parent->balance == 2) {
+        if (child->balance == -1) {
+            return set_repair_right_left(me, parent, child, grand_child);
         }
-        return child;
+        return set_repair_left(me, parent, child);
     }
-    if (parent->balance == -2 && child->balance <= 0) {
-        set_rotate_right(me, parent, child);
-        if (child->balance == 0) {
-            parent->balance = -1;
-            child->balance = 1;
-        } else {
-            parent->balance = 0;
-            child->balance = 0;
-        }
-        return child;
+    if (child->balance == 1) {
+        return set_repair_left_right(me, parent, child, grand_child);
     }
-    if (parent->balance == -2 && child->balance == 1) {
-        set_rotate_left(me, child, grand_child);
-        set_rotate_right(me, parent, grand_child);
-        if (grand_child->balance == 1) {
-            parent->balance = 0;
-            child->balance = -1;
-        } else if (grand_child->balance == 0) {
-            parent->balance = 0;
-            child->balance = 0;
-        } else {
-            parent->balance = 1;
-            child->balance = 0;
-        }
-        grand_child->balance = 0;
-        return grand_child;
-    }
-    if (parent->balance == 2 && child->balance == -1) {
-        set_rotate_right(me, child, grand_child);
-        set_rotate_left(me, parent, grand_child);
-        if (grand_child->balance == 1) {
-            parent->balance = -1;
-            child->balance = 0;
-        } else if (grand_child->balance == 0) {
-            parent->balance = 0;
-            child->balance = 0;
-        } else {
-            parent->balance = 0;
-            child->balance = 1;
-        }
-        grand_child->balance = 0;
-        return grand_child;
-    }
-    /* Impossible to get here. */
+    return set_repair_right(me, parent, child);
 }
 
 /*
@@ -373,32 +413,12 @@ static struct node *set_repair_pivot(set me,
 }
 
 /*
- * Balances the AVL tree on deletion.
+ * Goes back up the tree repairing it along the way.
  */
-static void set_delete_balance(set me,
-                               struct node *item,
-                               const int is_left_deleted)
+static void set_trace_ancestors(set me, struct node *item)
 {
-    struct node *child;
-    struct node *parent;
-    if (is_left_deleted) {
-        item->balance++;
-    } else {
-        item->balance--;
-    }
-    /* If balance is -1 or +1 after modification, then the tree is balanced. */
-    if (item->balance == -1 || item->balance == 1) {
-        return;
-    }
-    /* Must re-balance if not in {-1, 0, 1} */
-    if (item->balance > 1 || item->balance < -1) {
-        item = set_repair_pivot(me, item, is_left_deleted);
-        if (!item->parent || item->balance == -1 || item->balance == 1) {
-            return;
-        }
-    }
-    child = item;
-    parent = item->parent;
+    struct node *child = item;
+    struct node *parent = item->parent;
     while (parent) {
         if (parent->left == child) {
             parent->balance++;
@@ -423,6 +443,32 @@ static void set_delete_balance(set me,
             parent = parent->parent;
         }
     }
+}
+
+/*
+ * Balances the AVL tree on deletion.
+ */
+static void set_delete_balance(set me,
+                               struct node *item,
+                               const int is_left_deleted)
+{
+    if (is_left_deleted) {
+        item->balance++;
+    } else {
+        item->balance--;
+    }
+    /* If balance is -1 or +1 after modification, then the tree is balanced. */
+    if (item->balance == -1 || item->balance == 1) {
+        return;
+    }
+    /* Must re-balance if not in {-1, 0, 1} */
+    if (item->balance > 1 || item->balance < -1) {
+        item = set_repair_pivot(me, item, is_left_deleted);
+        if (!item->parent || item->balance == -1 || item->balance == 1) {
+            return;
+        }
+    }
+    set_trace_ancestors(me, item);
 }
 
 /*
