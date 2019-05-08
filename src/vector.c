@@ -20,10 +20,9 @@
  * SOFTWARE.
  */
 
-#include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-#include "vector.h"
+#include "include/vector.h"
 
 static const int START_SPACE = 8;
 static const double RESIZE_RATIO = 1.5;

@@ -20,44 +20,38 @@
  * SOFTWARE.
  */
 
-#ifndef CONTAINERS_FORWARD_LIST_H
-#define CONTAINERS_FORWARD_LIST_H
+#ifndef CONTAINERS_QUEUE_H
+#define CONTAINERS_QUEUE_H
+
+#include <stdlib.h>
 
 /**
- * The forward_list data structure, which is a singly-linked list.
+ * The queue data structure, which adapts a container to provide a queue
+ * (first-in first-out). Adapts the deque container.
  */
-typedef struct internal_forward_list *forward_list;
+typedef struct internal_queue *queue;
 
 /* Starting */
-forward_list forward_list_init(size_t data_size);
+queue queue_init(size_t data_size);
 
 /* Utility */
-int forward_list_size(forward_list me);
-int forward_list_is_empty(forward_list me);
-void forward_list_copy_to_array(void *arr, forward_list me);
+int queue_size(queue me);
+int queue_is_empty(queue me);
+int queue_trim(queue me);
+void queue_copy_to_array(void *arr, queue me);
 
 /* Adding */
-int forward_list_add_first(forward_list me, void *data);
-int forward_list_add_at(forward_list me, int index, void *data);
-int forward_list_add_last(forward_list me, void *data);
+int queue_push(queue me, void *data);
 
 /* Removing */
-int forward_list_remove_first(forward_list me);
-int forward_list_remove_at(forward_list me, int index);
-int forward_list_remove_last(forward_list me);
-
-/* Setting */
-int forward_list_set_first(forward_list me, void *data);
-int forward_list_set_at(forward_list me, int index, void *data);
-int forward_list_set_last(forward_list me, void *data);
+int queue_pop(void *data, queue me);
 
 /* Getting */
-int forward_list_get_first(void *data, forward_list me);
-int forward_list_get_at(void *data, forward_list me, int index);
-int forward_list_get_last(void *data, forward_list me);
+int queue_front(void *data, queue me);
+int queue_back(void *data, queue me);
 
 /* Ending */
-void forward_list_clear(forward_list me);
-forward_list forward_list_destroy(forward_list me);
+int queue_clear(queue me);
+queue queue_destroy(queue me);
 
-#endif /* CONTAINERS_FORWARD_LIST_H */
+#endif /* CONTAINERS_QUEUE_H */

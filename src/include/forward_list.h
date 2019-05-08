@@ -20,43 +20,46 @@
  * SOFTWARE.
  */
 
-#ifndef CONTAINERS_DEQUE_H
-#define CONTAINERS_DEQUE_H
+#ifndef CONTAINERS_FORWARD_LIST_H
+#define CONTAINERS_FORWARD_LIST_H
+
+#include <stdlib.h>
 
 /**
- * The deque data structure, which is a doubly-ended queue.
+ * The forward_list data structure, which is a singly-linked list.
  */
-typedef struct internal_deque *deque;
+typedef struct internal_forward_list *forward_list;
 
 /* Starting */
-deque deque_init(size_t data_size);
+forward_list forward_list_init(size_t data_size);
 
 /* Utility */
-int deque_size(deque me);
-int deque_is_empty(deque me);
-int deque_trim(deque me);
-void deque_copy_to_array(void *arr, deque me);
+int forward_list_size(forward_list me);
+int forward_list_is_empty(forward_list me);
+void forward_list_copy_to_array(void *arr, forward_list me);
 
 /* Adding */
-int deque_push_front(deque me, void *data);
-int deque_push_back(deque me, void *data);
+int forward_list_add_first(forward_list me, void *data);
+int forward_list_add_at(forward_list me, int index, void *data);
+int forward_list_add_last(forward_list me, void *data);
 
 /* Removing */
-int deque_pop_front(void *data, deque me);
-int deque_pop_back(void *data, deque me);
+int forward_list_remove_first(forward_list me);
+int forward_list_remove_at(forward_list me, int index);
+int forward_list_remove_last(forward_list me);
 
 /* Setting */
-int deque_set_first(deque me, void *data);
-int deque_set_at(deque me, int index, void *data);
-int deque_set_last(deque me, void *data);
+int forward_list_set_first(forward_list me, void *data);
+int forward_list_set_at(forward_list me, int index, void *data);
+int forward_list_set_last(forward_list me, void *data);
 
 /* Getting */
-int deque_get_first(void *data, deque me);
-int deque_get_at(void *data, deque me, int index);
-int deque_get_last(void *data, deque me);
+int forward_list_get_first(void *data, forward_list me);
+int forward_list_get_at(void *data, forward_list me, int index);
+int forward_list_get_last(void *data, forward_list me);
 
 /* Ending */
-int deque_clear(deque me);
-deque deque_destroy(deque me);
+void forward_list_clear(forward_list me);
+forward_list forward_list_destroy(forward_list me);
 
-#endif /* CONTAINERS_DEQUE_H */
+#endif /* CONTAINERS_FORWARD_LIST_H */

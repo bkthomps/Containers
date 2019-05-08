@@ -23,6 +23,8 @@
 #ifndef CONTAINERS_MULTISET_H
 #define CONTAINERS_MULTISET_H
 
+#include <stdlib.h>
+
 /**
  * The multiset data structure, which is a collection of key-value pairs, sorted
  * by keys, keys are unique

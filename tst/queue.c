@@ -1,5 +1,5 @@
 #include "test.h"
-#include "../src/queue.h"
+#include "../src/include/queue.h"
 
 static void test_invalid_init(void)
 {

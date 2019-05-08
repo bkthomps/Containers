@@ -20,44 +20,35 @@
  * SOFTWARE.
  */
 
-#ifndef CONTAINERS_LIST_H
-#define CONTAINERS_LIST_H
+#ifndef CONTAINERS_UNORDERED_SET_H
+#define CONTAINERS_UNORDERED_SET_H
+
+#include <stdlib.h>
 
 /**
- * The list data structure, which is a doubly-linked list.
+ * The unordered_set data structure, which is a collection of unique keys,
+ * hashed by keys.
  */
-typedef struct internal_list *list;
+typedef struct internal_unordered_set *unordered_set;
 
 /* Starting */
-list list_init(size_t data_size);
+unordered_set unordered_set_init(size_t key_size,
+                                 unsigned long (*hash)(const void *const key),
+                                 int (*comparator)(const void *const one,
+                                                   const void *const two));
 
 /* Utility */
-int list_size(list me);
-int list_is_empty(list me);
-void list_copy_to_array(void *arr, list me);
+int unordered_set_rehash(unordered_set me);
+int unordered_set_size(unordered_set me);
+int unordered_set_is_empty(unordered_set me);
 
-/* Adding */
-int list_add_first(list me, void *data);
-int list_add_at(list me, int index, void *data);
-int list_add_last(list me, void *data);
-
-/* Removing */
-int list_remove_first(list me);
-int list_remove_at(list me, int index);
-int list_remove_last(list me);
-
-/* Setting */
-int list_set_first(list me, void *data);
-int list_set_at(list me, int index, void *data);
-int list_set_last(list me, void *data);
-
-/* Getting */
-int list_get_first(void *data, list me);
-int list_get_at(void *data, list me, int index);
-int list_get_last(void *data, list me);
+/* Accessing */
+int unordered_set_put(unordered_set me, void *key);
+int unordered_set_contains(unordered_set me, void *key);
+int unordered_set_remove(unordered_set me, void *key);
 
 /* Ending */
-void list_clear(list me);
-list list_destroy(list me);
+int unordered_set_clear(unordered_set me);
+unordered_set unordered_set_destroy(unordered_set me);
 
-#endif /* CONTAINERS_LIST_H */
+#endif /* CONTAINERS_UNORDERED_SET_H */

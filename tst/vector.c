@@ -1,6 +1,6 @@
 #include <string.h>
 #include "test.h"
-#include "../src/vector.h"
+#include "../src/include/vector.h"
 
 static void test_invalid_init(void)
 {

@@ -20,36 +20,50 @@
  * SOFTWARE.
  */
 
-#ifndef CONTAINERS_QUEUE_H
-#define CONTAINERS_QUEUE_H
+#ifndef CONTAINERS_VECTOR_H
+#define CONTAINERS_VECTOR_H
+
+#include <stdlib.h>
 
 /**
- * The queue data structure, which adapts a container to provide a queue
- * (first-in first-out). Adapts the deque container.
+ * The vector data structure, which is a dynamic contiguous array.
  */
-typedef struct internal_queue *queue;
+typedef struct internal_vector *vector;
 
 /* Starting */
-queue queue_init(size_t data_size);
+vector vector_init(size_t data_size);
 
 /* Utility */
-int queue_size(queue me);
-int queue_is_empty(queue me);
-int queue_trim(queue me);
-void queue_copy_to_array(void *arr, queue me);
+int vector_size(vector me);
+int vector_capacity(vector me);
+int vector_is_empty(vector me);
+int vector_reserve(vector me, int size);
+int vector_trim(vector me);
+void vector_copy_to_array(void *arr, vector me);
+void *vector_get_data(vector me);
 
 /* Adding */
-int queue_push(queue me, void *data);
+int vector_add_first(vector me, void *data);
+int vector_add_at(vector me, int index, void *data);
+int vector_add_last(vector me, void *data);
 
 /* Removing */
-int queue_pop(void *data, queue me);
+int vector_remove_first(vector me);
+int vector_remove_at(vector me, int index);
+int vector_remove_last(vector me);
+
+/* Setting */
+int vector_set_first(vector me, void *data);
+int vector_set_at(vector me, int index, void *data);
+int vector_set_last(vector me, void *data);
 
 /* Getting */
-int queue_front(void *data, queue me);
-int queue_back(void *data, queue me);
+int vector_get_first(void *data, vector me);
+int vector_get_at(void *data, vector me, int index);
+int vector_get_last(void *data, vector me);
 
 /* Ending */
-int queue_clear(queue me);
-queue queue_destroy(queue me);
+int vector_clear(vector me);
+vector vector_destroy(vector me);
 
-#endif /* CONTAINERS_QUEUE_H */
+#endif /* CONTAINERS_VECTOR_H */

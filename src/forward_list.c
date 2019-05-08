@@ -20,10 +20,9 @@
  * SOFTWARE.
  */
 
-#include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-#include "forward_list.h"
+#include "include/forward_list.h"
 
 struct internal_forward_list {
     size_t bytes_per_item;

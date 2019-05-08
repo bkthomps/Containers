@@ -20,36 +20,34 @@
  * SOFTWARE.
  */
 
-#ifndef CONTAINERS_UNORDERED_MULTISET_H
-#define CONTAINERS_UNORDERED_MULTISET_H
+#ifndef CONTAINERS_MAP_H
+#define CONTAINERS_MAP_H
+
+#include <stdlib.h>
 
 /**
- * The unordered_multiset data structure, which is a collection of keys, hashed
- * by keys.
+ * The map data structure, which is a collection of key-value pairs, sorted by
+ * keys, keys are unique.
  */
-typedef struct internal_unordered_multiset *unordered_multiset;
+typedef struct internal_map *map;
 
 /* Starting */
-unordered_multiset
-unordered_multiset_init(size_t key_size,
-                        unsigned long (*hash)(const void *const key),
-                        int (*comparator)(const void *const one,
-                                          const void *const two));
+map map_init(size_t key_size,
+             size_t value_size,
+             int (*comparator)(const void *const one, const void *const two));
 
-/* Utility */
-int unordered_multiset_rehash(unordered_multiset me);
-int unordered_multiset_size(unordered_multiset me);
-int unordered_multiset_is_empty(unordered_multiset me);
+/* Capacity */
+int map_size(map me);
+int map_is_empty(map me);
 
 /* Accessing */
-int unordered_multiset_put(unordered_multiset me, void *key);
-int unordered_multiset_count(unordered_multiset me, void *key);
-int unordered_multiset_contains(unordered_multiset me, void *key);
-int unordered_multiset_remove(unordered_multiset me, void *key);
-int unordered_multiset_remove_all(unordered_multiset me, void *key);
+int map_put(map me, void *key, void *value);
+int map_get(void *value, map me, void *key);
+int map_contains(map me, void *key);
+int map_remove(map me, void *key);
 
 /* Ending */
-int unordered_multiset_clear(unordered_multiset me);
-unordered_multiset unordered_multiset_destroy(unordered_multiset me);
+void map_clear(map me);
+map map_destroy(map me);
 
-#endif /* CONTAINERS_UNORDERED_MULTISET_H */
+#endif /* CONTAINERS_MAP_H */

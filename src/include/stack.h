@@ -20,27 +20,37 @@
  * SOFTWARE.
  */
 
-#ifndef CONTAINERS_ARRAY_H
-#define CONTAINERS_ARRAY_H
+#ifndef CONTAINERS_STACK_H
+#define CONTAINERS_STACK_H
+
+#include <stdlib.h>
 
 /**
- * The array data structure, which is a static contiguous array.
+ * The stack data structure, which adapts a container to provide a stack
+ * (last-in first-out). Adapts the deque container.
  */
-typedef struct internal_array *array;
+typedef struct internal_stack *stack;
 
 /* Starting */
-array array_init(int element_count, size_t data_size);
+stack stack_init(size_t data_size);
 
 /* Utility */
-int array_size(array me);
-void array_copy_to_array(void *arr, array me);
-void *array_get_data(array me);
+int stack_size(stack me);
+int stack_is_empty(stack me);
+int stack_trim(stack me);
+void stack_copy_to_array(void *arr, stack me);
 
-/* Accessing */
-int array_set(array me, int index, void *data);
-int array_get(void *data, array me, int index);
+/* Adding */
+int stack_push(stack me, void *data);
+
+/* Removing */
+int stack_pop(void *data, stack me);
+
+/* Getting */
+int stack_top(void *data, stack me);
 
 /* Ending */
-array array_destroy(array me);
+int stack_clear(stack me);
+stack stack_destroy(stack me);
 
-#endif /* CONTAINERS_ARRAY_H */
+#endif /* CONTAINERS_STACK_H */

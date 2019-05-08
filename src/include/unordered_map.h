@@ -20,32 +20,37 @@
  * SOFTWARE.
  */
 
-#ifndef CONTAINERS_MAP_H
-#define CONTAINERS_MAP_H
+#ifndef CONTAINERS_UNORDERED_MAP_H
+#define CONTAINERS_UNORDERED_MAP_H
+
+#include <stdlib.h>
 
 /**
- * The map data structure, which is a collection of key-value pairs, sorted by
- * keys, keys are unique.
+ * The unordered_map data structure, which is a collection of key-value pairs,
+ * hashed by keys, keys are unique
  */
-typedef struct internal_map *map;
+typedef struct internal_unordered_map *unordered_map;
 
 /* Starting */
-map map_init(size_t key_size,
-             size_t value_size,
-             int (*comparator)(const void *const one, const void *const two));
+unordered_map unordered_map_init(size_t key_size,
+                                 size_t value_size,
+                                 unsigned long (*hash)(const void *const key),
+                                 int (*comparator)(const void *const one,
+                                                   const void *const two));
 
-/* Capacity */
-int map_size(map me);
-int map_is_empty(map me);
+/* Utility */
+int unordered_map_rehash(unordered_map me);
+int unordered_map_size(unordered_map me);
+int unordered_map_is_empty(unordered_map me);
 
 /* Accessing */
-int map_put(map me, void *key, void *value);
-int map_get(void *value, map me, void *key);
-int map_contains(map me, void *key);
-int map_remove(map me, void *key);
+int unordered_map_put(unordered_map me, void *key, void *value);
+int unordered_map_get(void *value, unordered_map me, void *key);
+int unordered_map_contains(unordered_map me, void *key);
+int unordered_map_remove(unordered_map me, void *key);
 
 /* Ending */
-void map_clear(map me);
-map map_destroy(map me);
+int unordered_map_clear(unordered_map me);
+unordered_map unordered_map_destroy(unordered_map me);
 
-#endif /* CONTAINERS_MAP_H */
+#endif /* CONTAINERS_UNORDERED_MAP_H */

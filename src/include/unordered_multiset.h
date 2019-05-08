@@ -20,38 +20,38 @@
  * SOFTWARE.
  */
 
-#ifndef CONTAINERS_MULTIMAP_H
-#define CONTAINERS_MULTIMAP_H
+#ifndef CONTAINERS_UNORDERED_MULTISET_H
+#define CONTAINERS_UNORDERED_MULTISET_H
+
+#include <stdlib.h>
 
 /**
- * The multimap data structure, which is a collection of key-value pairs, sorted
+ * The unordered_multiset data structure, which is a collection of keys, hashed
  * by keys.
  */
-typedef struct internal_multimap *multimap;
+typedef struct internal_unordered_multiset *unordered_multiset;
 
 /* Starting */
-multimap multimap_init(size_t key_size,
-                       size_t value_size,
-                       int (*key_comparator)(const void *const one,
-                                             const void *const two),
-                       int (*value_comparator)(const void *const one,
-                                               const void *const two));
+unordered_multiset
+unordered_multiset_init(size_t key_size,
+                        unsigned long (*hash)(const void *const key),
+                        int (*comparator)(const void *const one,
+                                          const void *const two));
 
-/* Capacity */
-int multimap_size(multimap me);
-int multimap_is_empty(multimap me);
+/* Utility */
+int unordered_multiset_rehash(unordered_multiset me);
+int unordered_multiset_size(unordered_multiset me);
+int unordered_multiset_is_empty(unordered_multiset me);
 
 /* Accessing */
-int multimap_put(multimap me, void *key, void *value);
-void multimap_get_start(multimap me, void *key);
-int multimap_get_next(void *value, multimap me);
-int multimap_count(multimap me, void *key);
-int multimap_contains(multimap me, void *key);
-int multimap_remove(multimap me, void *key, void *value);
-int multimap_remove_all(multimap me, void *key);
+int unordered_multiset_put(unordered_multiset me, void *key);
+int unordered_multiset_count(unordered_multiset me, void *key);
+int unordered_multiset_contains(unordered_multiset me, void *key);
+int unordered_multiset_remove(unordered_multiset me, void *key);
+int unordered_multiset_remove_all(unordered_multiset me, void *key);
 
 /* Ending */
-void multimap_clear(multimap me);
-multimap multimap_destroy(multimap me);
+int unordered_multiset_clear(unordered_multiset me);
+unordered_multiset unordered_multiset_destroy(unordered_multiset me);
 
-#endif /* CONTAINERS_MULTIMAP_H */
+#endif /* CONTAINERS_UNORDERED_MULTISET_H */

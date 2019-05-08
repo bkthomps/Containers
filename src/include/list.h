@@ -20,29 +20,46 @@
  * SOFTWARE.
  */
 
-#ifndef CONTAINERS_SET_H
-#define CONTAINERS_SET_H
+#ifndef CONTAINERS_LIST_H
+#define CONTAINERS_LIST_H
+
+#include <stdlib.h>
 
 /**
- * The set data structure, which is a collection of unique keys, sorted by keys.
+ * The list data structure, which is a doubly-linked list.
  */
-typedef struct internal_set *set;
+typedef struct internal_list *list;
 
 /* Starting */
-set set_init(size_t key_size,
-             int (*comparator)(const void *const one, const void *const two));
+list list_init(size_t data_size);
 
-/* Capacity */
-int set_size(set me);
-int set_is_empty(set me);
+/* Utility */
+int list_size(list me);
+int list_is_empty(list me);
+void list_copy_to_array(void *arr, list me);
 
-/* Accessing */
-int set_put(set me, void *key);
-int set_contains(set me, void *key);
-int set_remove(set me, void *key);
+/* Adding */
+int list_add_first(list me, void *data);
+int list_add_at(list me, int index, void *data);
+int list_add_last(list me, void *data);
+
+/* Removing */
+int list_remove_first(list me);
+int list_remove_at(list me, int index);
+int list_remove_last(list me);
+
+/* Setting */
+int list_set_first(list me, void *data);
+int list_set_at(list me, int index, void *data);
+int list_set_last(list me, void *data);
+
+/* Getting */
+int list_get_first(void *data, list me);
+int list_get_at(void *data, list me, int index);
+int list_get_last(void *data, list me);
 
 /* Ending */
-void set_clear(set me);
-set set_destroy(set me);
+void list_clear(list me);
+list list_destroy(list me);
 
-#endif /* CONTAINERS_SET_H */
+#endif /* CONTAINERS_LIST_H */

@@ -20,10 +20,9 @@
  * SOFTWARE.
  */
 
-#include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-#include "multimap.h"
+#include "include/multimap.h"
 
 struct internal_multimap {
     size_t key_size;

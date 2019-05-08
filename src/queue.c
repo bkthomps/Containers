@@ -20,9 +20,8 @@
  * SOFTWARE.
  */
 
-#include <stdlib.h>
-#include "deque.h"
-#include "queue.h"
+#include "include/deque.h"
+#include "include/queue.h"
 
 static const double TRIM_RATIO = 1.5;
 

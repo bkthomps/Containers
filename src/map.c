@@ -20,10 +20,9 @@
  * SOFTWARE.
  */
 
-#include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-#include "map.h"
+#include "include/map.h"
 
 struct internal_map {
     size_t key_size;

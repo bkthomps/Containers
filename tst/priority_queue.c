@@ -1,6 +1,6 @@
 #include "test.h"
-#include "../src/vector.h"
-#include "../src/priority_queue.h"
+#include "../src/include/vector.h"
+#include "../src/include/priority_queue.h"
 
 /*
  * Include this for the stubs.

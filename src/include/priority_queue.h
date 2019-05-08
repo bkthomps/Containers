@@ -20,48 +20,37 @@
  * SOFTWARE.
  */
 
-#ifndef CONTAINERS_VECTOR_H
-#define CONTAINERS_VECTOR_H
+#ifndef CONTAINERS_PRIORITY_QUEUE_H
+#define CONTAINERS_PRIORITY_QUEUE_H
+
+#include <stdlib.h>
 
 /**
- * The vector data structure, which is a dynamic contiguous array.
+ * The priority_queue data structure, which adapts a container to provide a
+ * priority queue. Adapts the vector container.
  */
-typedef struct internal_vector *vector;
+typedef struct internal_priority_queue *priority_queue;
 
 /* Starting */
-vector vector_init(size_t data_size);
+priority_queue priority_queue_init(size_t data_size,
+                                   int (*comparator)(const void *const one,
+                                                     const void *const two));
 
 /* Utility */
-int vector_size(vector me);
-int vector_capacity(vector me);
-int vector_is_empty(vector me);
-int vector_reserve(vector me, int size);
-int vector_trim(vector me);
-void vector_copy_to_array(void *arr, vector me);
-void *vector_get_data(vector me);
+int priority_queue_size(priority_queue me);
+int priority_queue_is_empty(priority_queue me);
 
 /* Adding */
-int vector_add_first(vector me, void *data);
-int vector_add_at(vector me, int index, void *data);
-int vector_add_last(vector me, void *data);
+int priority_queue_push(priority_queue me, void *data);
 
 /* Removing */
-int vector_remove_first(vector me);
-int vector_remove_at(vector me, int index);
-int vector_remove_last(vector me);
-
-/* Setting */
-int vector_set_first(vector me, void *data);
-int vector_set_at(vector me, int index, void *data);
-int vector_set_last(vector me, void *data);
+int priority_queue_pop(void *data, priority_queue me);
 
 /* Getting */
-int vector_get_first(void *data, vector me);
-int vector_get_at(void *data, vector me, int index);
-int vector_get_last(void *data, vector me);
+int priority_queue_front(void *data, priority_queue me);
 
 /* Ending */
-int vector_clear(vector me);
-vector vector_destroy(vector me);
+int priority_queue_clear(priority_queue me);
+priority_queue priority_queue_destroy(priority_queue me);
 
-#endif /* CONTAINERS_VECTOR_H */
+#endif /* CONTAINERS_PRIORITY_QUEUE_H */

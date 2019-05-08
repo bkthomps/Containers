@@ -20,10 +20,9 @@
  * SOFTWARE.
  */
 
-#include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-#include "unordered_set.h"
+#include "include/unordered_set.h"
 
 static const int STARTING_BUCKETS = 8;
 static const double RESIZE_AT = 0.75;

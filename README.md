@@ -11,7 +11,85 @@ This library provides various containers. Each container has utility functions t
 
 Inspired by the C++ standard library; however, implemented using C with different function interfaces as the C++ standard library but with the same container names.
 
-## Sequence containers
+## Setup
+There are two types of library files which can be generated: dynamic and static. Both ways will be described below using clang. However, the steps are the same with gcc except `clang` is to be replaced with `gcc`.
+
+### Dynamic Library
+
+1. Navigate to your C working directory
+
+2. Run:
+```
+git clone ssh://git@github.com/bkthomps/Containers.git
+cd Containers/src
+```
+
+3. To create a dynamic library, run:
+```
+clang -shared -o containers.so -fPIC *.c
+```
+
+4. Now, you can copy and paste the `include` directory and `containers.so` to any project that you would like to use the dynamic library with.
+
+5. Thus, for an example program, the directory would look like this:
+    * containers.so
+    * include/
+      * array.h
+      * deque.h
+      * ...
+    * test.c
+
+6. The test.c file could then contain, for example:
+```
+#include "include/vector.h"
+```
+
+7. And the project would be compiled with:
+```
+clang test.c -o test containers.so -ldl
+```
+
+### Static Library
+
+1. Navigate to your C working directory
+
+2. Run:
+```
+git clone ssh://git@github.com/bkthomps/Containers.git
+cd Containers/src
+```
+
+3. To create a static library, run:
+```
+gcc *.c -c -fpic
+ar rcs containers.a *.o
+rm *.o
+```
+
+4. Now, you can copy and paste the `include` directory and `containers.a` to any project that you would like to use the static library with.
+
+5. Thus, for an example program, the directory would look like this:
+    * containers.a
+    * include/
+      * array.h
+      * deque.h
+      * ...
+    * test.c
+
+6. The test.c file could then contain, for example:
+```
+#include "include/vector.h"
+```
+
+7. And the project would be compiled with:
+```
+clang test.c -o test containers.a -ldl
+```
+
+## Container Types
+The container types that this library contains are described below.
+
+### Sequence containers
 Data structures which can be accessed sequentially.
 * array - static contiguous array
 * vector - dynamic contiguous array
@@ -19,21 +97,21 @@ Data structures which can be accessed sequentially.
 * forward_list - singly-linked list
 * list - doubly-linked list
 
-## Associative containers
+### Associative containers
 Data structures that can be quickly searched which use comparators.
 * set - collection of unique keys, sorted by keys
 * map - collection of key-value pairs, sorted by keys, keys are unique
 * multiset - collection of keys, sorted by keys
 * multimap - collection of key-value pairs, sorted by keys
 
-## Unordered associative containers
+### Unordered associative containers
 Data structures that can be quickly searched which use hashing.
 * unordered_set - collection of unique keys, hashed by keys
 * unordered_map - collection of key-value pairs, hashed by keys, keys are unique
 * unordered_multiset - collection of keys, hashed by keys
 * unordered_multimap - collection of key-value pairs, hashed by keys
 
-## Container adaptors
+### Container adaptors
 Data structures which adapt other containers to enhance functionality.
 * stack - adapts a container to provide stack (last-in first-out)
 * queue - adapts a container to provide queue (first-in first-out)

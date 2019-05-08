@@ -20,35 +20,45 @@
  * SOFTWARE.
  */
 
-#ifndef CONTAINERS_PRIORITY_QUEUE_H
-#define CONTAINERS_PRIORITY_QUEUE_H
+#ifndef CONTAINERS_DEQUE_H
+#define CONTAINERS_DEQUE_H
+
+#include <stdlib.h>
 
 /**
- * The priority_queue data structure, which adapts a container to provide a
- * priority queue. Adapts the vector container.
+ * The deque data structure, which is a doubly-ended queue.
  */
-typedef struct internal_priority_queue *priority_queue;
+typedef struct internal_deque *deque;
 
 /* Starting */
-priority_queue priority_queue_init(size_t data_size,
-                                   int (*comparator)(const void *const one,
-                                                     const void *const two));
+deque deque_init(size_t data_size);
 
 /* Utility */
-int priority_queue_size(priority_queue me);
-int priority_queue_is_empty(priority_queue me);
+int deque_size(deque me);
+int deque_is_empty(deque me);
+int deque_trim(deque me);
+void deque_copy_to_array(void *arr, deque me);
 
 /* Adding */
-int priority_queue_push(priority_queue me, void *data);
+int deque_push_front(deque me, void *data);
+int deque_push_back(deque me, void *data);
 
 /* Removing */
-int priority_queue_pop(void *data, priority_queue me);
+int deque_pop_front(void *data, deque me);
+int deque_pop_back(void *data, deque me);
+
+/* Setting */
+int deque_set_first(deque me, void *data);
+int deque_set_at(deque me, int index, void *data);
+int deque_set_last(deque me, void *data);
 
 /* Getting */
-int priority_queue_front(void *data, priority_queue me);
+int deque_get_first(void *data, deque me);
+int deque_get_at(void *data, deque me, int index);
+int deque_get_last(void *data, deque me);
 
 /* Ending */
-int priority_queue_clear(priority_queue me);
-priority_queue priority_queue_destroy(priority_queue me);
+int deque_clear(deque me);
+deque deque_destroy(deque me);
 
-#endif /* CONTAINERS_PRIORITY_QUEUE_H */
+#endif /* CONTAINERS_DEQUE_H */
