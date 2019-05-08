@@ -13,19 +13,24 @@ Inspired by the C++ standard library; however, implemented using C with differen
 
 ## Setup
 Follow these steps to start using the containers library:
+
 1. Navigate to your C working directory
+
 2. Run:
 ```
 git clone ssh://git@github.com/bkthomps/Containers.git
 cd Containers/src
 ```
 You will now be in the source code directory.
+
 3. To create a dynamic library with clang:
 ```
 clang -shared -o containers.so -fPIC *.c
 ```
 If you are using gcc, replace `clang` with `gcc`.
+
 4. Now, you can copy and paste the `include` directory and `containers.so` to any project that you would like to use the library with.
+
 5. Thus, for an example program, the directory would look like this:
   * containers.so
   * include/
