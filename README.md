@@ -86,7 +86,10 @@ rm *.o
 clang test.c -o test containers.a -ldl
 ```
 
-## Sequence containers
+## Container Types
+The container types that this library contains are described below.
+
+### Sequence containers
 Data structures which can be accessed sequentially.
 * array - static contiguous array
 * vector - dynamic contiguous array
@@ -94,21 +97,21 @@ Data structures which can be accessed sequentially.
 * forward_list - singly-linked list
 * list - doubly-linked list
 
-## Associative containers
+### Associative containers
 Data structures that can be quickly searched which use comparators.
 * set - collection of unique keys, sorted by keys
 * map - collection of key-value pairs, sorted by keys, keys are unique
 * multiset - collection of keys, sorted by keys
 * multimap - collection of key-value pairs, sorted by keys
 
-## Unordered associative containers
+### Unordered associative containers
 Data structures that can be quickly searched which use hashing.
 * unordered_set - collection of unique keys, hashed by keys
 * unordered_map - collection of key-value pairs, hashed by keys, keys are unique
 * unordered_multiset - collection of keys, hashed by keys
 * unordered_multimap - collection of key-value pairs, hashed by keys
 
-## Container adaptors
+### Container adaptors
 Data structures which adapt other containers to enhance functionality.
 * stack - adapts a container to provide stack (last-in first-out)
 * queue - adapts a container to provide queue (first-in first-out)
