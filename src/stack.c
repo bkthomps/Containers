@@ -20,7 +20,6 @@
  * SOFTWARE.
  */
 
-#include <stdlib.h>
 #include "include/deque.h"
 #include "include/stack.h"
 

@@ -23,6 +23,8 @@
 #ifndef CONTAINERS_UNORDERED_MAP_H
 #define CONTAINERS_UNORDERED_MAP_H
 
+#include <stdlib.h>
+
 /**
  * The unordered_map data structure, which is a collection of key-value pairs,
  * hashed by keys, keys are unique

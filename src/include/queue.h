@@ -23,6 +23,8 @@
 #ifndef CONTAINERS_QUEUE_H
 #define CONTAINERS_QUEUE_H
 
+#include <stdlib.h>
+
 /**
  * The queue data structure, which adapts a container to provide a queue
  * (first-in first-out). Adapts the deque container.

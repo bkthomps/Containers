@@ -23,6 +23,8 @@
 #ifndef CONTAINERS_VECTOR_H
 #define CONTAINERS_VECTOR_H
 
+#include <stdlib.h>
+
 /**
  * The vector data structure, which is a dynamic contiguous array.
  */

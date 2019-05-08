@@ -23,6 +23,8 @@
 #ifndef CONTAINERS_LIST_H
 #define CONTAINERS_LIST_H
 
+#include <stdlib.h>
+
 /**
  * The list data structure, which is a doubly-linked list.
  */

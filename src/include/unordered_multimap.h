@@ -23,6 +23,8 @@
 #ifndef CONTAINERS_UNORDERED_MULTIMAP_H
 #define CONTAINERS_UNORDERED_MULTIMAP_H
 
+#include <stdlib.h>
+
 /**
  * The unordered_multimap data structure, which is a collection of key-value
  * pairs, hashed by keys.

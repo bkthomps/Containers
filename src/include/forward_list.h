@@ -23,6 +23,8 @@
 #ifndef CONTAINERS_FORWARD_LIST_H
 #define CONTAINERS_FORWARD_LIST_H
 
+#include <stdlib.h>
+
 /**
  * The forward_list data structure, which is a singly-linked list.
  */

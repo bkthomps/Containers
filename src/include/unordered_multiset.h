@@ -23,6 +23,8 @@
 #ifndef CONTAINERS_UNORDERED_MULTISET_H
 #define CONTAINERS_UNORDERED_MULTISET_H
 
+#include <stdlib.h>
+
 /**
  * The unordered_multiset data structure, which is a collection of keys, hashed
  * by keys.

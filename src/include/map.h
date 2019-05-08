@@ -23,6 +23,8 @@
 #ifndef CONTAINERS_MAP_H
 #define CONTAINERS_MAP_H
 
+#include <stdlib.h>
+
 /**
  * The map data structure, which is a collection of key-value pairs, sorted by
  * keys, keys are unique.

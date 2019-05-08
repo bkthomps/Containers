@@ -23,6 +23,8 @@
 #ifndef CONTAINERS_DEQUE_H
 #define CONTAINERS_DEQUE_H
 
+#include <stdlib.h>
+
 /**
  * The deque data structure, which is a doubly-ended queue.
  */

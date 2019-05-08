@@ -23,6 +23,8 @@
 #ifndef CONTAINERS_UNORDERED_SET_H
 #define CONTAINERS_UNORDERED_SET_H
 
+#include <stdlib.h>
+
 /**
  * The unordered_set data structure, which is a collection of unique keys,
  * hashed by keys.

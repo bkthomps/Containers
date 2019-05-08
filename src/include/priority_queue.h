@@ -23,6 +23,8 @@
 #ifndef CONTAINERS_PRIORITY_QUEUE_H
 #define CONTAINERS_PRIORITY_QUEUE_H
 
+#include <stdlib.h>
+
 /**
  * The priority_queue data structure, which adapts a container to provide a
  * priority queue. Adapts the vector container.

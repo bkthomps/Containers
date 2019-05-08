@@ -23,6 +23,8 @@
 #ifndef CONTAINERS_STACK_H
 #define CONTAINERS_STACK_H
 
+#include <stdlib.h>
+
 /**
  * The stack data structure, which adapts a container to provide a stack
  * (last-in first-out). Adapts the deque container.

@@ -23,6 +23,8 @@
 #ifndef CONTAINERS_MULTIMAP_H
 #define CONTAINERS_MULTIMAP_H
 
+#include <stdlib.h>
+
 /**
  * The multimap data structure, which is a collection of key-value pairs, sorted
  * by keys.
