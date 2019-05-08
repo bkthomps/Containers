@@ -12,7 +12,9 @@ This library provides various containers. Each container has utility functions t
 Inspired by the C++ standard library; however, implemented using C with different function interfaces as the C++ standard library but with the same container names.
 
 ## Setup
-Follow these steps to start using the containers library:
+There are two types of library files which can be generated: dynamic and static. Both ways will be described below using clang. However, the steps are the same with gcc except `clang` is to be replaced with `gcc`.
+
+### Dynamic Library
 
 1. Navigate to your C working directory
 
@@ -22,12 +24,12 @@ git clone ssh://git@github.com/bkthomps/Containers.git
 cd Containers/src
 ```
 
-3. To create a dynamic library with clang (if you are using gcc, replace `clang` with `gcc`):
+3. To create a dynamic library, run:
 ```
 clang -shared -o containers.so -fPIC *.c
 ```
 
-4. Now, you can copy and paste the `include` directory and `containers.so` to any project that you would like to use the library with.
+4. Now, you can copy and paste the `include` directory and `containers.so` to any project that you would like to use the dynamic library with.
 
 5. Thus, for an example program, the directory would look like this:
     * containers.so
@@ -45,6 +47,43 @@ clang -shared -o containers.so -fPIC *.c
 7. And the project would be compiled with:
 ```
 clang test.c -o test containers.so -ldl
+```
+
+### Static Library
+
+1. Navigate to your C working directory
+
+2. Run:
+```
+git clone ssh://git@github.com/bkthomps/Containers.git
+cd Containers/src
+```
+
+3. To create a static library, run:
+```
+gcc *.c -c -fpic
+ar rcs containers.a *.o
+rm *.o
+```
+
+4. Now, you can copy and paste the `include` directory and `containers.a` to any project that you would like to use the static library with.
+
+5. Thus, for an example program, the directory would look like this:
+    * containers.a
+    * include/
+      * array.h
+      * deque.h
+      * ...
+    * test.c
+
+6. The test.c file could then contain, for example:
+```
+#include "include/vector.h"
+```
+
+7. And the project would be compiled with:
+```
+clang test.c -o test containers.a -ldl
 ```
 
 ## Sequence containers
