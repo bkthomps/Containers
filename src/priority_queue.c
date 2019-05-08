@@ -23,8 +23,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-#include "vector.h"
-#include "priority_queue.h"
+#include "include/vector.h"
+#include "include/priority_queue.h"
 
 struct internal_priority_queue {
     vector data;

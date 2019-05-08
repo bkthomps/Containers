@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-#include "deque.h"
+#include "include/deque.h"
 
 static const int BLOCK_SIZE = 8;
 static const double RESIZE_RATIO = 1.5;

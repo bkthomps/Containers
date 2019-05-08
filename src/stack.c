@@ -21,8 +21,8 @@
  */
 
 #include <stdlib.h>
-#include "deque.h"
-#include "stack.h"
+#include "include/deque.h"
+#include "include/stack.h"
 
 struct internal_stack {
     deque deque_data;

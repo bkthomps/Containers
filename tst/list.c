@@ -1,5 +1,5 @@
 #include "test.h"
-#include "../src/list.h"
+#include "../src/include/list.h"
 
 static void test_invalid_init(void)
 {

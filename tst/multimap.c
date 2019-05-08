@@ -1,5 +1,5 @@
 #include "test.h"
-#include "../src/multimap.h"
+#include "../src/include/multimap.h"
 
 /*
  * Include this struct to verify the tree.

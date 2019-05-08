@@ -1,5 +1,5 @@
 #include "test.h"
-#include "../src/deque.h"
+#include "../src/include/deque.h"
 
 static void test_invalid_init(void)
 {

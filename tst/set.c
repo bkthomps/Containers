@@ -1,5 +1,5 @@
 #include "test.h"
-#include "../src/set.h"
+#include "../src/include/set.h"
 
 /*
  * Include this struct to verify the tree.

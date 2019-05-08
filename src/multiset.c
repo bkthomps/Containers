@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-#include "multiset.h"
+#include "include/multiset.h"
 
 struct internal_multiset {
     size_t key_size;

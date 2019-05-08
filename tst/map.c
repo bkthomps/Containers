@@ -1,5 +1,5 @@
 #include "test.h"
-#include "../src/map.h"
+#include "../src/include/map.h"
 
 /*
  * Include this struct to verify the tree.

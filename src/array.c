@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-#include "array.h"
+#include "include/array.h"
 
 struct internal_array {
     size_t bytes_per_item;
