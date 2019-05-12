@@ -19,15 +19,15 @@ There are two types of library files which can be generated: dynamic and static.
 1. Navigate to your C working directory
 
 2. Run:
-```
-git clone ssh://git@github.com/bkthomps/Containers.git
-cd Containers/src
-```
+   ```
+   git clone ssh://git@github.com/bkthomps/Containers.git
+   cd Containers/src
+   ```
 
 3. To create a dynamic library, run:
-```
-clang -shared -o containers.so -fPIC *.c
-```
+   ```
+   clang -shared -o containers.so -fPIC *.c
+   ```
 
 4. Now, you can copy and paste the `include` directory and `containers.so` to any project that you would like to use the dynamic library with.
 
@@ -40,31 +40,31 @@ clang -shared -o containers.so -fPIC *.c
     * test.c
 
 6. The test.c file could then contain, for example:
-```
-#include "include/vector.h"
-```
+   ```
+   #include "include/vector.h"
+   ```
 
 7. And the project would be compiled with:
-```
-clang test.c -o test containers.so -ldl
-```
+   ```
+   clang test.c -o test containers.so -ldl
+   ```
 
 ### Static Library
 
 1. Navigate to your C working directory
 
 2. Run:
-```
-git clone ssh://git@github.com/bkthomps/Containers.git
-cd Containers/src
-```
+   ```
+   git clone ssh://git@github.com/bkthomps/Containers.git
+   cd Containers/src
+   ```
 
 3. To create a static library, run:
-```
-gcc *.c -c -fpic
-ar rcs containers.a *.o
-rm *.o
-```
+   ```
+   gcc *.c -c -fpic
+   ar rcs containers.a *.o
+   rm *.o
+   ```
 
 4. Now, you can copy and paste the `include` directory and `containers.a` to any project that you would like to use the static library with.
 
@@ -77,14 +77,14 @@ rm *.o
     * test.c
 
 6. The test.c file could then contain, for example:
-```
-#include "include/vector.h"
-```
+   ```
+   #include "include/vector.h"
+   ```
 
 7. And the project would be compiled with:
-```
-clang test.c -o test containers.a -ldl
-```
+   ```
+   clang test.c -o test containers.a -ldl
+   ```
 
 ## Container Types
 The container types that this library contains are described below.
