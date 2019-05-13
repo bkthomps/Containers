@@ -14,6 +14,10 @@ Inspired by the C++ standard library; however, implemented using C with differen
 ## Setup
 There are two types of library files which can be generated: dynamic and static. Both ways will be described below using clang. However, the steps are the same with gcc except `clang` is to be replaced with `gcc`.
 
+The benefit of a dynamic library is that changing the `containers.so` library can be done without needing to recompile the codebase which is using the library. Nevertheless, it is slower than a static library.
+
+The benefit of a static library is that it is faster than a dynamic library. However, if the `containers.a` library is modified, the codebase which is using the library needs to be recompiled.
+
 ### Dynamic Library
 
 1. Navigate to your C working directory
@@ -26,7 +30,7 @@ There are two types of library files which can be generated: dynamic and static.
 
 3. To create a dynamic library, run:
    ```
-   clang -shared -o containers.so -fPIC *.c
+   clang -shared -o containers.so -O3 -fPIC *.c
    ```
 
 4. Now, you can copy and paste the `include` directory and `containers.so` to any project that you would like to use the dynamic library with.
@@ -61,7 +65,7 @@ There are two types of library files which can be generated: dynamic and static.
 
 3. To create a static library, run:
    ```
-   gcc *.c -c -fpic
+   clang *.c -c -O3 -fpic
    ar rcs containers.a *.o
    rm *.o
    ```
