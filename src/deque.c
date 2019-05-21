@@ -114,21 +114,12 @@ int deque_is_empty(deque me)
 int deque_trim(deque me)
 {
     int i;
-#ifdef __STDC_VERSION__
-#define C_VERSION __STDC_VERSION__
-#else
-#define C_VERSION 0
-#endif
-#if C_VERSION >= 199901L /* C99 */
-    const int start_block = me->start_index / BLOCK_SIZE;
-    const int end_block = (me->end_index - 1) / BLOCK_SIZE;
-#else
+    /* The start and end blocks are written like this because in C89,   */
+    /* negative integer division and modulo are implementation-defined. */
     const int start_block =
             me->start_index == -1 ? 0 : me->start_index / BLOCK_SIZE;
     const int end_block =
             me->end_index == 0 ? 0 : (me->end_index - 1) / BLOCK_SIZE;
-#endif
-#undef C_VERSION
     const int new_block_count = end_block - start_block + 1;
     void *const new_block = malloc(new_block_count * sizeof(struct node));
     if (!new_block) {
