@@ -114,8 +114,12 @@ int deque_is_empty(deque me)
 int deque_trim(deque me)
 {
     int i;
-    const int start_block = me->start_index / BLOCK_SIZE;
-    const int end_block = (me->end_index - 1) / BLOCK_SIZE;
+    /* The start and end blocks are written like this because in C89,   */
+    /* negative integer division and modulo are implementation-defined. */
+    const int start_block =
+            me->start_index == -1 ? 0 : me->start_index / BLOCK_SIZE;
+    const int end_block =
+            me->end_index == 0 ? 0 : (me->end_index - 1) / BLOCK_SIZE;
     const int new_block_count = end_block - start_block + 1;
     void *const new_block = malloc(new_block_count * sizeof(struct node));
     if (!new_block) {
@@ -166,11 +170,14 @@ void deque_copy_to_array(void *const arr, deque me)
 int deque_push_front(deque me, void *const data)
 {
     struct node block_item;
-    int block_index = me->start_index / BLOCK_SIZE;
-    int inner_index = me->start_index % BLOCK_SIZE;
-    if (inner_index == -1) {
+    int block_index;
+    int inner_index;
+    if (me->start_index == -1) {
         block_index = -1;
         inner_index = BLOCK_SIZE - 1;
+    } else {
+        block_index = me->start_index / BLOCK_SIZE;
+        inner_index = me->start_index % BLOCK_SIZE;
     }
     if (inner_index == BLOCK_SIZE - 1) {
         struct node *block_item_reference;

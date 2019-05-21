@@ -253,6 +253,25 @@ static void test_clear_out_of_memory(void)
     assert(!deque_destroy(me));
 }
 
+void test_single_full_block(void)
+{
+    int i;
+    int num = 5;
+    deque me = deque_init(sizeof(int));
+    for (i = 0; i < 5; i++) {
+        deque_push_front(me, &num);
+    }
+    for (i = 0; i < 3; i++) {
+        deque_push_back(me, &num);
+    }
+    for (i = 0; i < 8; i++) {
+        deque_pop_back(&num, me);
+    }
+    deque_trim(me);
+    assert(deque_size(me) == 0);
+    deque_destroy(me);
+}
+
 void test_deque(void)
 {
     test_invalid_init();
@@ -263,4 +282,5 @@ void test_deque(void)
     test_push_front_out_of_memory();
     test_push_back_out_of_memory();
     test_clear_out_of_memory();
+    test_single_full_block();
 }
