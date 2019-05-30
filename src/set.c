@@ -26,7 +26,9 @@
 
 struct internal_set {
     size_t key_size;
+
     int (*comparator)(const void *const one, const void *const two);
+
     int size;
     struct node *root;
 };
@@ -306,7 +308,11 @@ static struct node *set_create_node(set me,
 }
 
 /**
- * Adds a key to the set if the set does not already contain it.
+ * Adds a key to the set if the set does not already contain it. The pointer to
+ * the key being passed in should point to the key type which this set holds.
+ * For example, if this set holds key integers, the key pointer should be a
+ * pointer to an integer. Since the key is being copied, the pointer only has
+ * to be valid when this function is called.
  *
  * @param me  the set to add to
  * @param key the key to add
@@ -388,7 +394,11 @@ static struct node *set_equal_match(set me, const void *const key)
 }
 
 /**
- * Determines if the set contains the specified key.
+ * Determines if the set contains the specified key. The pointer to the key
+ * being passed in should point to the key type which this set holds. For
+ * example, if this set holds key integers, the key pointer should be a pointer
+ * to an integer. Since the key is being copied, the pointer only has to be
+ * valid when this function is called.
  *
  * @param me  the set to check for the key
  * @param key the key to check
@@ -592,7 +602,11 @@ static void set_remove_element(set me, struct node *const traverse)
 }
 
 /**
- * Removes the key from the set if it contains it.
+ * Removes the key from the set if it contains it. The pointer to the key
+ * being passed in should point to the key type which this set holds. For
+ * example, if this set holds key integers, the key pointer should be a pointer
+ * to an integer. Since the key is being copied, the pointer only has to be
+ * valid when this function is called.
  *
  * @param me  the set to remove an key from
  * @param key the key to remove
