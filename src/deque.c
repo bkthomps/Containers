@@ -147,7 +147,10 @@ int deque_trim(deque me)
 }
 
 /**
- * Copies the deque to an array.
+ * Copies the deque to an array. Since it is a copy, the array may be modified
+ * without causing side effects to the deque data structure. Memory is not
+ * allocated, thus the array being used for the copy must be allocated
+ * before this function is called.
  *
  * @param arr the initialized array to copy the deque to
  * @param me  the deque to copy to the array
@@ -161,7 +164,11 @@ void deque_copy_to_array(void *const arr, deque me)
 }
 
 /**
- * Adds an element to the front of the deque.
+ * Adds an element to the front of the deque. The pointer to the data being
+ * passed in should point to the data type which this deque holds. For example,
+ * if this deque holds integers, the data pointer should be a pointer to an
+ * integer. Since the data is being copied, the pointer only has to be valid
+ * when this function is called.
  *
  * @param me   the deque to add an element to
  * @param data the element to add
@@ -223,7 +230,11 @@ int deque_push_front(deque me, void *const data)
 }
 
 /**
- * Adds an element to the back of the deque.
+ * Adds an element to the back of the deque. The pointer to the data being
+ * passed in should point to the data type which this deque holds. For example,
+ * if this deque holds integers, the data pointer should be a pointer to an
+ * integer. Since the data is being copied, the pointer only has to be valid
+ * when this function is called.
  *
  * @param me   the deque to add an element to
  * @param data the element to add
@@ -270,7 +281,12 @@ int deque_push_back(deque me, void *const data)
 }
 
 /**
- * Removes the front element from the deque and copies it to a data value.
+ * Removes the front element from the deque and copies it to a data value. The
+ * pointer to the data being obtained should point to the data type which this
+ * deque holds. For example, if this deque holds integers, the data pointer
+ * should be a pointer to an integer. Since this data is being copied from the
+ * array to the data pointer, the pointer only has to be valid when this
+ * function is called.
  *
  * @param data the value to copy to
  * @param me   the deque to remove from
@@ -296,7 +312,12 @@ int deque_pop_front(void *const data, deque me)
 }
 
 /**
- * Removes the back element from the deque and copies it to a data value.
+ * Removes the back element from the deque and copies it to a data value. The
+ * pointer to the data being obtained should point to the data type which this
+ * deque holds. For example, if this deque holds integers, the data pointer
+ * should be a pointer to an integer. Since this data is being copied from the
+ * array to the data pointer, the pointer only has to be valid when this
+ * function is called.
  *
  * @param data the value to copy to
  * @param me   the deque to remove from
@@ -322,7 +343,11 @@ int deque_pop_back(void *const data, deque me)
 }
 
 /**
- * Sets the first value of the deque.
+ * Sets the first value of the deque. The pointer to the data being passed in
+ * should point to the data type which this deque holds. For example, if this
+ * deque holds integers, the data pointer should be a pointer to an integer.
+ * Since the data is being copied, the pointer only has to be valid when this
+ * function is called.
  *
  * @param me   the deque to set value of
  * @param data the data to set
@@ -336,7 +361,11 @@ int deque_set_first(deque me, void *const data)
 }
 
 /**
- * Sets the value of the deque at the specified index.
+ * Sets the value of the deque at the specified index. The pointer to the data
+ * being passed in should point to the data type which this deque holds. For
+ * example, if this deque holds integers, the data pointer should be a pointer
+ * to an integer. Since the data is being copied, the pointer only has to be
+ * valid when this function is called.
  *
  * @param me    the deque to set value of
  * @param index the index to set at
@@ -363,7 +392,11 @@ int deque_set_at(deque me, int index, void *const data)
 }
 
 /**
- * Sets the last value of the deque.
+ * Sets the last value of the deque. The pointer to the data being passed in
+ * should point to the data type which this deque holds. For example, if this
+ * deque holds integers, the data pointer should be a pointer to an integer.
+ * Since the data is being copied, the pointer only has to be valid when this
+ * function is called.
  *
  * @param me   the deque to set value of
  * @param data the data to set
@@ -377,7 +410,11 @@ int deque_set_last(deque me, void *const data)
 }
 
 /**
- * Gets the first value of the deque.
+ * Gets the first value of the deque. The pointer to the data being obtained
+ * should point to the data type which this deque holds. For example, if this
+ * deque holds integers, the data pointer should be a pointer to an integer.
+ * Since this data is being copied from the array to the data pointer, the
+ * pointer only has to be valid when this function is called.
  *
  * @param data the data to set
  * @param me   the deque to set value of
@@ -391,7 +428,11 @@ int deque_get_first(void *const data, deque me)
 }
 
 /**
- * Gets the value of the deque at the specified index.
+ * Gets the value of the deque at the specified index. The pointer to the data
+ * being obtained should point to the data type which this deque holds. For
+ * example, if this deque holds integers, the data pointer should be a pointer
+ * to an integer. Since this data is being copied from the array to the data
+ * pointer, the pointer only has to be valid when this function is called.
  *
  * @param data  the data to set
  * @param me    the deque to set value of
@@ -418,7 +459,11 @@ int deque_get_at(void *const data, deque me, int index)
 }
 
 /**
- * Gets the last value of the deque.
+ * Gets the last value of the deque. The pointer to the data being obtained
+ * should point to the data type which this deque holds. For example, if this
+ * deque holds integers, the data pointer should be a pointer to an integer.
+ * Since this data is being copied from the array to the data pointer, the
+ * pointer only has to be valid when this function is called.
  *
  * @param data the data to set
  * @param me   the deque to set value of

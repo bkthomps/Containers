@@ -79,9 +79,9 @@ int array_size(array me)
 
 /**
  * Copies the array to a raw array. Since it is a copy, the raw array may be
- * modified without causing a side affect to the array data structure. Memory
- * is not allocated, thus the array being used for the copy must be allocated
- * before this function is called.
+ * modified without causing side effects to the array data structure. Memory
+ * is not allocated, thus the raw array being used for the copy must be
+ * allocated before this function is called.
  *
  * @param arr the initialized raw array to copy the array to
  * @param me  the array to copy to the raw array
