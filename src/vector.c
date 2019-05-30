@@ -147,7 +147,10 @@ int vector_trim(vector me)
 }
 
 /**
- * Copies the vector to an array.
+ * Copies the vector to an array. Since it is a copy, the array may be modified
+ * without causing side effects to the vector data structure. Memory is not
+ * allocated, thus the array being used for the copy must be allocated before
+ * this function is called.
  *
  * @param arr the initialized array to copy the vector to
  * @param me  the vector to copy to the array
@@ -158,10 +161,11 @@ void vector_copy_to_array(void *const arr, vector me)
 }
 
 /**
- * Gets the storage element of the vector which is contiguous in memory. If the
- * data is modified, the data in the vector is modified. Also, any vector
- * operation may invalidate this data pointer. The vector owns the data pointer,
- * thus it must not be freed.
+ * Gets the storage element of the vector which is contiguous in memory. This
+ * pointer is not a copy, thus any modification to the data will cause the
+ * vector structure data to be modified. Operations using the vector functions
+ * may invalidate this pointer. The vector owns this memory, thus it should not
+ * be freed.
  *
  * @param me the vector to get the storage element from
  *
@@ -173,7 +177,11 @@ void *vector_get_data(vector me)
 }
 
 /**
- * Adds an element to the start of the vector.
+ * Adds an element to the start of the vector. The pointer to the data being
+ * passed in should point to the data type which this vector holds. For example,
+ * if this vector holds integers, the data pointer should be a pointer to an
+ * integer. Since the data is being copied, the pointer only has to be valid
+ * when this function is called.
  *
  * @param me   the vector to add to
  * @param data the data to add to the vector
@@ -187,7 +195,11 @@ int vector_add_first(vector me, void *const data)
 }
 
 /**
- * Adds an element to the location specified.
+ * Adds an element to the location specified. The pointer to the data being
+ * passed in should point to the data type which this vector holds. For example,
+ * if this vector holds integers, the data pointer should be a pointer to an
+ * integer. Since the data is being copied, the pointer only has to be valid
+ * when this function is called.
  *
  * @param me    the vector to add to
  * @param index the location in the vector to add the data to
@@ -296,7 +308,11 @@ int vector_remove_last(vector me)
 }
 
 /**
- * Sets the data for the first element in the vector.
+ * Sets the data for the first element in the vector. The pointer to the data
+ * being passed in should point to the data type which this vector holds. For
+ * example, if this vector holds integers, the data pointer should be a pointer
+ * to an integer. Since the data is being copied, the pointer only has to be
+ * valid when this function is called.
  *
  * @param me   the vector to set data for
  * @param data the data to set at the start of the vector
@@ -310,7 +326,11 @@ int vector_set_first(vector me, void *const data)
 }
 
 /**
- * Sets the data for a specified element in the vector.
+ * Sets the data for a specified element in the vector. The pointer to the data
+ * being passed in should point to the data type which this vector holds. For
+ * example, if this vector holds integers, the data pointer should be a pointer
+ * to an integer. Since the data is being copied, the pointer only has to be
+ * valid when this function is called.
  *
  * @param me    the vector to set data for
  * @param index the location to set data at in the vector
@@ -330,7 +350,11 @@ int vector_set_at(vector me, const int index, void *const data)
 }
 
 /**
- * Sets the data for the last element in the vector.
+ * Sets the data for the last element in the vector. The pointer to the data
+ * being passed in should point to the data type which this vector holds. For
+ * example, if this vector holds integers, the data pointer should be a pointer
+ * to an integer. Since the data is being copied, the pointer only has to be
+ * valid when this function is called.
  *
  * @param me   the vector to set data for
  * @param data the data to set at the end of the vector
@@ -344,7 +368,11 @@ int vector_set_last(vector me, void *const data)
 }
 
 /**
- * Copies the first element of the vector to data.
+ * Copies the first element of the vector to data. The pointer to the data being
+ * obtained should point to the data type which this vector holds. For example,
+ * if this vector holds integers, the data pointer should be a pointer to an
+ * integer. Since this data is being copied from the array to the data pointer,
+ * the pointer only has to be valid when this function is called.
  *
  * @param data the data to copy to
  * @param me   the vector to copy from
@@ -358,7 +386,11 @@ int vector_get_first(void *const data, vector me)
 }
 
 /**
- * Copies the element at index of the vector to data.
+ * Copies the element at index of the vector to data. The pointer to the data
+ * being obtained should point to the data type which this vector holds. For
+ * example, if this vector holds integers, the data pointer should be a pointer
+ * to an integer. Since this data is being copied from the array to the data
+ * pointer, the pointer only has to be valid when this function is called.
  *
  * @param data  the data to copy to
  * @param me    the vector to copy from
@@ -378,7 +410,11 @@ int vector_get_at(void *const data, vector me, const int index)
 }
 
 /**
- * Copies the last element of the vector to data.
+ * Copies the last element of the vector to data. The pointer to the data being
+ * obtained should point to the data type which this vector holds. For example,
+ * if this vector holds integers, the data pointer should be a pointer to an
+ * integer. Since this data is being copied from the array to the data pointer,
+ * the pointer only has to be valid when this function is called.
  *
  * @param data the data to copy to
  * @param me   the vector to copy from

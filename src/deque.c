@@ -149,8 +149,8 @@ int deque_trim(deque me)
 /**
  * Copies the deque to an array. Since it is a copy, the array may be modified
  * without causing side effects to the deque data structure. Memory is not
- * allocated, thus the array being used for the copy must be allocated
- * before this function is called.
+ * allocated, thus the array being used for the copy must be allocated before
+ * this function is called.
  *
  * @param arr the initialized array to copy the deque to
  * @param me  the deque to copy to the array
