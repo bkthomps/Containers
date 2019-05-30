@@ -27,11 +27,8 @@
 struct internal_multimap {
     size_t key_size;
     size_t value_size;
-
     int (*key_comparator)(const void *const one, const void *const two);
-
     int (*value_comparator)(const void *const one, const void *const two);
-
     int size;
     struct node *root;
     struct value_node *iterate_get;

@@ -27,9 +27,7 @@
 struct internal_map {
     size_t key_size;
     size_t value_size;
-
     int (*comparator)(const void *const one, const void *const two);
-
     int size;
     struct node *root;
 };

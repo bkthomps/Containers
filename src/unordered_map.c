@@ -31,11 +31,8 @@ static const double RESIZE_RATIO = 1.5;
 struct internal_unordered_map {
     size_t key_size;
     size_t value_size;
-
     unsigned long (*hash)(const void *const key);
-
     int (*comparator)(const void *const one, const void *const two);
-
     int size;
     int capacity;
     struct node **buckets;

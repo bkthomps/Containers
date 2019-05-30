@@ -26,9 +26,7 @@
 
 struct internal_set {
     size_t key_size;
-
     int (*comparator)(const void *const one, const void *const two);
-
     int size;
     struct node *root;
 };
