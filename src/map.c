@@ -27,7 +27,9 @@
 struct internal_map {
     size_t key_size;
     size_t value_size;
+
     int (*comparator)(const void *const one, const void *const two);
+
     int size;
     struct node *root;
 };
@@ -320,7 +322,11 @@ static struct node *map_create_node(map me,
 
 /**
  * Adds a key-value pair to the map. If the map already contains the key, the
- * value is updated to the new value.
+ * value is updated to the new value. The pointer to the key and value being
+ * passed in should point to the key and value type which this map holds. For
+ * example, if this map holds integer keys and values, the key and value pointer
+ * should be a pointer to an integer. Since the key and value are being copied,
+ * the pointer only has to be valid when this function is called.
  *
  * @param me    the map to add to
  * @param key   the key to add
@@ -404,7 +410,12 @@ static struct node *map_equal_match(map me, const void *const key)
 }
 
 /**
- * Gets the value associated with a key in the map.
+ * Gets the value associated with a key in the map. The pointer to the key being
+ * passed in and the value being obtained should point to the key and value
+ * types which this map holds. For example, if this map holds integer keys and
+ * values, the key and value pointers should be a pointer to an integer. Since
+ * the key and value are being copied, the pointer only has to be valid when
+ * this function is called.
  *
  * @param value the value to copy to
  * @param me    the map to get from
@@ -423,7 +434,11 @@ int map_get(void *const value, map me, void *const key)
 }
 
 /**
- * Determines if the map contains the specified key.
+ * Determines if the map contains the specified key. The pointer to the key
+ * being passed in should point to the key type which this map holds. For
+ * example, if this map holds key integers, the key pointer should be a pointer
+ * to an integer. Since the key is being copied, the pointer only has to be
+ * valid when this function is called.
  *
  * @param me  the map to check for the element
  * @param key the key to check
@@ -628,7 +643,11 @@ static void map_remove_element(map me, struct node *const traverse)
 }
 
 /**
- * Removes the key-value pair from the map if it contains it.
+ * Removes the key-value pair from the map if it contains it. The pointer to the
+ * key being passed in should point to the key type which this map holds. For
+ * example, if this map holds key integers, the key pointer should be a pointer
+ * to an integer. Since the key is being copied, the pointer only has to be
+ * valid when this function is called.
  *
  * @param me  the map to remove an element from
  * @param key the key to remove
