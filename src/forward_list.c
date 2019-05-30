@@ -85,7 +85,10 @@ int forward_list_is_empty(forward_list me)
 }
 
 /**
- * Copies the nodes of the singly-linked list to an array.
+ * Copies the nodes of the singly-linked list to an array. Since it is a copy,
+ * the array may be modified without causing side effects to the singly-linked
+ * list data structure. Memory is not allocated, thus the array being used for
+ * the copy must be allocated before this function is called.
  *
  * @param arr the initialized array to copy the singly-linked list to
  * @param me  the singly-linked list to copy to the array
@@ -115,7 +118,11 @@ static struct node *forward_list_get_node_at(forward_list me, const int index)
 }
 
 /**
- * Adds data at the first index in the singly-linked list.
+ * Adds data at the first index in the singly-linked list. The pointer to the
+ * data being passed in should point to the data type which this singly-linked
+ * list holds. For example, if this singly-linked list holds integers, the data
+ * pointer should be a pointer to an integer. Since the data is being copied,
+ * the pointer only has to be valid when this function is called.
  *
  * @param me   the singly-linked list to add data to
  * @param data the data to add to the singly-linked list
@@ -129,7 +136,11 @@ int forward_list_add_first(forward_list me, void *const data)
 }
 
 /**
- * Adds data at a specified index in the singly-linked list.
+ * Adds data at a specified index in the singly-linked list. The pointer to the
+ * data being passed in should point to the data type which this singly-linked
+ * list holds. For example, if this singly-linked list holds integers, the data
+ * pointer should be a pointer to an integer. Since the data is being copied,
+ * the pointer only has to be valid when this function is called.
  *
  * @param me    the singly-linked list to add data to
  * @param index the index to add the data at
@@ -168,7 +179,11 @@ int forward_list_add_at(forward_list me, const int index, void *const data)
 }
 
 /**
- * Adds data at the last index in the singly-linked list.
+ * Adds data at the last index in the singly-linked list. The pointer to the
+ * data being passed in should point to the data type which this singly-linked
+ * list holds. For example, if this singly-linked list holds integers, the data
+ * pointer should be a pointer to an integer. Since the data is being copied,
+ * the pointer only has to be valid when this function is called.
  *
  * @param me   the singly-linked list to add data to
  * @param data the data to add to the singly-linked list
@@ -190,7 +205,12 @@ static int forward_list_is_illegal_input(forward_list me, const int index)
 }
 
 /**
- * Removes the first piece of data from the singly-linked list.
+ * Removes the first piece of data from the singly-linked list. The pointer to
+ * the data being obtained should point to the data type which this singly-
+ * linked list holds. For example, if this singly-linked list holds integers,
+ * the data pointer should be a pointer to an integer. Since this data is being
+ * copied from the array to the data pointer, the pointer only has to be valid
+ * when this function is called.
  *
  * @param me the singly-linked list to remove data from
  *
@@ -203,7 +223,12 @@ int forward_list_remove_first(forward_list me)
 }
 
 /**
- * Removes data from the singly-linked list at the specified index.
+ * Removes data from the singly-linked list at the specified index. The pointer
+ * to the data being obtained should point to the data type which this singly-
+ * linked list holds. For example, if this singly-linked list holds integers,
+ * the data pointer should be a pointer to an integer. Since this data is being
+ * copied from the array to the data pointer, the pointer only has to be valid
+ * when this function is called.
  *
  * @param me    the singly-linked list to remove data from
  * @param index the index to remove from
@@ -238,7 +263,12 @@ int forward_list_remove_at(forward_list me, const int index)
 }
 
 /**
- * Removes the last piece of data from the singly-linked list.
+ * Removes the last piece of data from the singly-linked list. The pointer to
+ * the data being obtained should point to the data type which this singly-
+ * linked list holds. For example, if this singly-linked list holds integers,
+ * the data pointer should be a pointer to an integer. Since this data is being
+ * copied from the array to the data pointer, the pointer only has to be valid
+ * when this function is called.
  *
  * @param me the singly-linked list to remove data from
  *
@@ -251,7 +281,11 @@ int forward_list_remove_last(forward_list me)
 }
 
 /**
- * Sets the data at the first index in the singly-linked list.
+ * Sets the data at the first index in the singly-linked list. The pointer to
+ * the data being passed in should point to the data type which this singly-
+ * linked list holds. For example, if this singly-linked list holds integers,
+ * the data pointer should be a pointer to an integer. Since the data is being
+ * copied, the pointer only has to be valid when this function is called.
  *
  * @param me   the singly-linked list to set data for
  * @param data the data to set in the singly-linked list
@@ -265,7 +299,11 @@ int forward_list_set_first(forward_list me, void *const data)
 }
 
 /**
- * Sets the data at the specified index in the singly-linked list.
+ * Sets the data at the specified index in the singly-linked list. The pointer
+ * to the data being passed in should point to the data type which this singly-
+ * linked list holds. For example, if this singly-linked list holds integers,
+ * the data pointer should be a pointer to an integer. Since the data is being
+ * copied, the pointer only has to be valid when this function is called.
  *
  * @param me    the singly-linked list to set data for
  * @param index the index to set data in the singly-linked list
@@ -286,7 +324,11 @@ int forward_list_set_at(forward_list me, const int index, void *const data)
 }
 
 /**
- * Sets the data at the last index in the singly-linked list.
+ * Sets the data at the last index in the singly-linked list. The pointer to
+ * the data being passed in should point to the data type which this singly-
+ * linked list holds. For example, if this singly-linked list holds integers,
+ * the data pointer should be a pointer to an integer. Since the data is being
+ * copied, the pointer only has to be valid when this function is called.
  *
  * @param me   the singly-linked list to set data for
  * @param data the data to set in the singly-linked list
@@ -300,7 +342,12 @@ int forward_list_set_last(forward_list me, void *const data)
 }
 
 /**
- * Gets the data at the first index in the singly-linked list.
+ * Gets the data at the first index in the singly-linked list. The pointer to
+ * the data being obtained should point to the data type which this singly-
+ * linked list holds. For example, if this singly-linked list holds integers,
+ * the data pointer should be a pointer to an integer. Since this data is being
+ * copied from the array to the data pointer, the pointer only has to be valid
+ * when this function is called.
  *
  * @param data the data to get
  * @param me   the singly-linked list to get data from
@@ -314,7 +361,12 @@ int forward_list_get_first(void *const data, forward_list me)
 }
 
 /**
- * Gets the data at the specified index in the singly-linked list.
+ * Gets the data at the specified index in the singly-linked list. The pointer
+ * to the data being obtained should point to the data type which this singly-
+ * linked list holds. For example, if this singly-linked list holds integers,
+ * the data pointer should be a pointer to an integer. Since this data is being
+ * copied from the array to the data pointer, the pointer only has to be valid
+ * when this function is called.
  *
  * @param data  the data to get
  * @param me    the singly-linked list to get data from
@@ -335,7 +387,12 @@ int forward_list_get_at(void *const data, forward_list me, const int index)
 }
 
 /**
- * Gets the data at the last index in the singly-linked list.
+ * Gets the data at the last index in the singly-linked list. The pointer to
+ * the data being obtained should point to the data type which this singly-
+ * linked list holds. For example, if this singly-linked list holds integers,
+ * the data pointer should be a pointer to an integer. Since this data is being
+ * copied from the array to the data pointer, the pointer only has to be valid
+ * when this function is called.
  *
  * @param data the data to get
  * @param me   the singly-linked list to get data from
