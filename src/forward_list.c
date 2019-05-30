@@ -205,12 +205,7 @@ static int forward_list_is_illegal_input(forward_list me, const int index)
 }
 
 /**
- * Removes the first piece of data from the singly-linked list. The pointer to
- * the data being obtained should point to the data type which this singly-
- * linked list holds. For example, if this singly-linked list holds integers,
- * the data pointer should be a pointer to an integer. Since this data is being
- * copied from the array to the data pointer, the pointer only has to be valid
- * when this function is called.
+ * Removes the first piece of data from the singly-linked list.
  *
  * @param me the singly-linked list to remove data from
  *
@@ -223,12 +218,7 @@ int forward_list_remove_first(forward_list me)
 }
 
 /**
- * Removes data from the singly-linked list at the specified index. The pointer
- * to the data being obtained should point to the data type which this singly-
- * linked list holds. For example, if this singly-linked list holds integers,
- * the data pointer should be a pointer to an integer. Since this data is being
- * copied from the array to the data pointer, the pointer only has to be valid
- * when this function is called.
+ * Removes data from the singly-linked list at the specified index.
  *
  * @param me    the singly-linked list to remove data from
  * @param index the index to remove from
@@ -263,12 +253,7 @@ int forward_list_remove_at(forward_list me, const int index)
 }
 
 /**
- * Removes the last piece of data from the singly-linked list. The pointer to
- * the data being obtained should point to the data type which this singly-
- * linked list holds. For example, if this singly-linked list holds integers,
- * the data pointer should be a pointer to an integer. Since this data is being
- * copied from the array to the data pointer, the pointer only has to be valid
- * when this function is called.
+ * Removes the last piece of data from the singly-linked list.
  *
  * @param me the singly-linked list to remove data from
  *

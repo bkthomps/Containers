@@ -249,12 +249,7 @@ static int list_is_illegal_input(list me, const int index)
 }
 
 /**
- * Removes the first piece of data from the doubly-linked list. The pointer to
- * the data being obtained should point to the data type which this doubly-
- * linked list holds. For example, if this doubly-linked list holds integers,
- * the data pointer should be a pointer to an integer. Since this data is being
- * copied from the array to the data pointer, the pointer only has to be valid
- * when this function is called.
+ * Removes the first piece of data from the doubly-linked list.
  *
  * @param me the doubly-linked list to remove data from
  *
@@ -267,12 +262,7 @@ int list_remove_first(list me)
 }
 
 /**
- * Removes data from the doubly-linked list at the specified index. The pointer
- * to the data being obtained should point to the data type which this doubly-
- * linked list holds. For example, if this doubly-linked list holds integers,
- * the data pointer should be a pointer to an integer. Since this data is being
- * copied from the array to the data pointer, the pointer only has to be valid
- * when this function is called.
+ * Removes data from the doubly-linked list at the specified index.
  *
  * @param me    the doubly-linked list to remove data from
  * @param index the index to remove from
@@ -304,12 +294,7 @@ int list_remove_at(list me, const int index)
 }
 
 /**
- * Removes the last piece of data from the doubly-linked list. The pointer to
- * the data being obtained should point to the data type which this doubly-
- * linked list holds. For example, if this doubly-linked list holds integers,
- * the data pointer should be a pointer to an integer. Since this data is being
- * copied from the array to the data pointer, the pointer only has to be valid
- * when this function is called.
+ * Removes the last piece of data from the doubly-linked list.
  *
  * @param me the doubly-linked list to remove data from
  *
