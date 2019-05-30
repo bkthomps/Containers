@@ -48,7 +48,9 @@ struct node {
  * @param comparator the comparator function used for key ordering; must not be
  *                   NULL
  *
- * @return the newly-initialized multi-set, or NULL if memory allocation error
+ * @return the newly-initialized multi-set, or NULL if it was not successfully
+ *         initialized due to either invalid input arguments or memory
+ *         allocation error
  */
 multiset multiset_init(const size_t key_size,
                        int (*const comparator)(const void *const,

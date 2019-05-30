@@ -33,7 +33,9 @@ struct internal_stack {
  * @param data_size the size of each data element in the stack; must be
  *                  positive
  *
- * @return the newly-initialized stack, or NULL if memory allocation error
+ * @return the newly-initialized stack, or NULL if it was not successfully
+ *         initialized due to either invalid input arguments or memory
+ *         allocation error
  */
 stack stack_init(const size_t data_size)
 {

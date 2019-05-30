@@ -70,8 +70,9 @@ static unsigned long unordered_map_hash(unordered_map me,
  * @param comparator the comparator function which compares two keys; must not
  *                   be NULL
  *
- * @return the newly-initialized unordered map, or NULL if memory allocation
- *         error
+ * @return the newly-initialized unordered map, or NULL if it was not
+ *         successfully initialized due to either invalid input arguments or
+ *         memory allocation error
  */
 unordered_map unordered_map_init(const size_t key_size,
                                  const size_t value_size,

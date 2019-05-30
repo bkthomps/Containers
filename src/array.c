@@ -37,7 +37,9 @@ struct internal_array {
  *                      negative
  * @param data_size     the size of each element in the array; must be positive
  *
- * @return the newly-initialized array, or NULL if memory allocation error
+ * @return the newly-initialized array, or NULL if it was not successfully
+ *         initialized due to either invalid input arguments or memory
+ *         allocation error
  */
 array array_init(const int element_count, const size_t data_size)
 {

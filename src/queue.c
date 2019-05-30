@@ -35,7 +35,9 @@ struct internal_queue {
  *
  * @param data_size the size of each element; must be positive
  *
- * @return the newly-initialized queue, or NULL if memory allocation error
+ * @return the newly-initialized queue, or NULL if it was not successfully
+ *         initialized due to either invalid input arguments or memory
+ *         allocation error
  */
 queue queue_init(const size_t data_size)
 {

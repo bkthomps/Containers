@@ -76,8 +76,9 @@ static unsigned long unordered_multimap_hash(unordered_multimap me,
  * @param value_comparator the comparator function which compares two values;
  *                         must not be NULL
  *
- * @return the newly-initialized unordered multi-map, or NULL if memory
- *         allocation error
+ * @return the newly-initialized unordered multi-map, or NULL if it was not
+ *         successfully initialized due to either invalid input arguments or
+ *         memory allocation error
  */
 unordered_multimap
 unordered_multimap_init(const size_t key_size,

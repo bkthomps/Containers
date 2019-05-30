@@ -65,8 +65,9 @@ static unsigned long unordered_set_hash(unordered_set me, const void *const key)
  * @param comparator the comparator function which compares two keys; must not
  *                   be NULL
  *
- * @return the newly-initialized unordered set, or NULL if memory allocation
- *         error
+ * @return the newly-initialized unordered set, or NULL if it was not
+ *         successfully initialized due to either invalid input arguments or
+ *         memory allocation error
  */
 unordered_set unordered_set_init(const size_t key_size,
                                  unsigned long (*hash)(const void *const),

@@ -68,8 +68,9 @@ static unsigned long unordered_multiset_hash(unordered_multiset me,
  * @param comparator the comparator function which compares two keys; must not
  *                   be NULL
  *
- * @return the newly-initialized unordered multi-set, or NULL if memory
- *         allocation error
+ * @return the newly-initialized unordered multi-set, or NULL if it was not
+ *         successfully initialized due to either invalid input arguments or
+ *         memory allocation error
  */
 unordered_multiset
 unordered_multiset_init(const size_t key_size,

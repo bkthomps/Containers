@@ -46,7 +46,9 @@ struct node {
  * @param comparator the comparator function used for key ordering; must not be
  *                   NULL
  *
- * @return the newly-initialized set, or NULL if memory allocation error
+ * @return the newly-initialized set, or NULL if it was not successfully
+ *         initialized due to either invalid input arguments or memory
+ *         allocation error
  */
 set set_init(const size_t key_size,
              int (*const comparator)(const void *const, const void *const))

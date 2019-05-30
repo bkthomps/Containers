@@ -38,8 +38,9 @@ struct internal_priority_queue {
  *                   positive
  * @param comparator the priority comparator function; must not be NULL
  *
- * @return the newly-initialized priority queue, or NULL if memory allocation
- *         error
+ * @return the newly-initialized priority queue, or NULL if it was not
+ *         successfully initialized due to either invalid input arguments or
+ *         memory allocation error
  */
 priority_queue priority_queue_init(const size_t data_size,
                                    int (*comparator)(const void *const,

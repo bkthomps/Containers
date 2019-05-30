@@ -40,8 +40,9 @@ struct node {
  *
  * @param data_size the size of data to store; must be positive
  *
- * @return the newly-initialized singly-linked list, or NULL if memory
- *         allocation error
+ * @return the newly-initialized singly-linked list, or NULL if it was not
+ *         successfully initialized due to either invalid input arguments or
+ *         memory allocation error
  */
 forward_list forward_list_init(const size_t data_size)
 {

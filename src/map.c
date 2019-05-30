@@ -49,7 +49,9 @@ struct node {
  * @param comparator the comparator function used for key ordering; must not be
  *                   NULL
  *
- * @return the newly-initialized map, or NULL if memory allocation error
+ * @return the newly-initialized map, or NULL if it was not successfully
+ *         initialized due to either invalid input arguments or memory
+ *         allocation error
  */
 map map_init(const size_t key_size,
              const size_t value_size,

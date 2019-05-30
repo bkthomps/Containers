@@ -59,7 +59,9 @@ struct value_node {
  * @param key_comparator   the key comparator function; must not be NULL
  * @param value_comparator the value comparator function; must not be NULL
  *
- * @return the newly-initialized multi-map, or NULL if memory allocation error
+ * @return the newly-initialized multi-map, or NULL if it was not successfully
+ *         initialized due to either invalid input arguments or memory
+ *         allocation error
  */
 multimap multimap_init(const size_t key_size,
                        const size_t value_size,

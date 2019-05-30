@@ -39,7 +39,9 @@ struct internal_vector {
  *
  * @param data_size the size of each element in the vector; must be positive
  *
- * @return the newly-initialized vector, or NULL if memory allocation error
+ * @return the newly-initialized vector, or NULL if it was not successfully
+ *         initialized due to either invalid input arguments or memory
+ *         allocation error
  */
 vector vector_init(const size_t data_size)
 {
