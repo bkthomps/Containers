@@ -358,10 +358,10 @@ static struct node *multimap_create_node(multimap me,
 }
 
 /**
- * Adds a key-value pair to the multi-map. If the multimap already contains the
+ * Adds a key-value pair to the multi-map. If the multi-map already contains the
  * key, the value is updated to the new value. The pointer to the key and value
  * being passed in should point to the key and value type which this map holds.
- * For example, if this multimap holds integer keys and values, the key and
+ * For example, if this multi-map holds integer keys and values, the key and
  * value pointer should be a pointer to an integer. Since the key and value are
  * being copied, the pointer only has to be valid when this function is called.
  *
@@ -458,7 +458,7 @@ static struct node *multimap_equal_match(multimap me, const void *const key)
  * Creates the iterator for the specified key. To iterate over the values, keep
  * getting the next value. Between starting and iterations, the multi-map must
  * not be mutated. The pointer to the key being passed in should point to the
- * key type which this multimap holds. For example, if this multimap holds key
+ * key type which this multi-map holds. For example, if this multi-map holds key
  * integers, the key pointer should be a pointer to an integer. Since the key is
  * being copied, the pointer only has to be valid when this function is called.
  *
@@ -477,8 +477,8 @@ void multimap_get_start(multimap me, void *const key)
  * Iterates over the values for the specified key. Must be called after starting
  * the iterator. The multi-map must not be mutated between start and iterations.
  * The pointer to the value being obtained should point to the value type which
- * this multimap holds. For example, if this multimap holds value integers, the
- * value pointer should be a pointer to an integer. Since the value is being
+ * this multi-map holds. For example, if this multi-map holds value integers,
+ * the value pointer should be a pointer to an integer. Since the value is being
  * copied, the pointer only has to be valid when this function is called.
  *
  * @param value the value to be copied to from iteration
@@ -501,8 +501,8 @@ int multimap_get_next(void *const value, multimap me)
 
 /**
  * Determines the amount of times the key appears in the multi-map. The pointer
- * to the key being passed in should point to the key type which this multimap
- * holds. For example, if this multimap holds key integers, the key pointer
+ * to the key being passed in should point to the key type which this multi-map
+ * holds. For example, if this multi-map holds key integers, the key pointer
  * should be a pointer to an integer. Since the key is being copied, the pointer
  * only has to be valid when this function is called.
  *
@@ -522,8 +522,8 @@ int multimap_count(multimap me, void *const key)
 
 /**
  * Determines if the multi-map contains the specified key. The pointer to the
- * key being passed in should point to the key type which this multimap holds.
- * For example, if this multimap holds key integers, the key pointer should be
+ * key being passed in should point to the key type which this multi-map holds.
+ * For example, if this multi-map holds key integers, the key pointer should be
  * a pointer to an integer. Since the key is being copied, the pointer only has
  * to be valid when this function is called.
  *
@@ -733,7 +733,7 @@ static void multimap_remove_element(multimap me, struct node *const traverse)
 /**
  * Removes the key-value pair from the multi-map if it contains it. The pointer
  * to the key and value being passed in should point to the key and value type
- * which this multimap holds. For example, if this multimap holds integer keys
+ * which this multi-map holds. For example, if this multi-map holds integer keys
  * and values, the key and value pointer should be a pointer to an integer.
  * Since the key and value are being copied, the pointer only has to be valid
  * when this function is called.
@@ -796,7 +796,7 @@ static void multimap_remove_all_element(multimap me,
 /**
  * Removes all the key-value pairs from the multi-map specified by the key. The
  * pointer to the key being passed in should point to the key type which this
- * multimap holds. For example, if this multimap holds key integers, the key
+ * multi-map holds. For example, if this multi-map holds key integers, the key
  * pointer should be a pointer to an integer. Since the key is being copied,
  * the pointer only has to be valid when this function is called.
  *
