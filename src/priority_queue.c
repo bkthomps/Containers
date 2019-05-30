@@ -28,6 +28,7 @@
 struct internal_priority_queue {
     vector data;
     size_t data_size;
+
     int (*comparator)(const void *const one, const void *const two);
 };
 
@@ -89,7 +90,11 @@ int priority_queue_is_empty(priority_queue me)
 }
 
 /**
- * Adds an element to the priority queue.
+ * Adds an element to the priority queue. The pointer to the data being passed
+ * in should point to the data type which this priority queue holds. For
+ * example, if this priority queue holds integers, the data pointer should be a
+ * pointer to an integer. Since the data is being copied, the pointer only has
+ * to be valid when this function is called.
  *
  * @param me   the priority queue to add an element to
  * @param data the data to add to the queue
@@ -134,7 +139,12 @@ int priority_queue_push(priority_queue me, void *const data)
 }
 
 /**
- * Removes the highest priority element from the priority queue.
+ * Removes the highest priority element from the priority queue. The pointer to
+ * the data being obtained should point to the data type which this priority
+ * queue holds. For example, if this priority queue holds integers, the data
+ * pointer should be a pointer to an integer. Since this data is being copied
+ * from the array to the data pointer, the pointer only has to be valid when
+ * this function is called.
  *
  * @param data the data to have copied from the priority queue
  * @param me   the priority queue to pop the next element from
@@ -196,7 +206,12 @@ int priority_queue_pop(void *const data, priority_queue me)
 }
 
 /**
- * Gets the highest priority element in the priority queue.
+ * Gets the highest priority element in the priority queue. The pointer to the
+ * data being obtained should point to the data type which this priority queue
+ * holds. For example, if this priority queue holds integers, the data pointer
+ * should be a pointer to an integer. Since this data is being copied from the
+ * array to the data pointer, the pointer only has to be valid when this
+ * function is called.
  *
  * @param data the out copy of the highest priority element in the priority
  *             queue

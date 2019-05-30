@@ -97,7 +97,10 @@ int queue_trim(queue me)
 }
 
 /**
- * Copies the queue to an array.
+ * Copies the queue to an array. Since it is a copy, the array may be modified
+ * without causing side effects to the queue data structure. Memory is not
+ * allocated, thus the array being used for the copy must be allocated before
+ * this function is called.
  *
  * @param arr the initialized array to copy the queue to
  * @param me  the queue to copy to the array
@@ -108,7 +111,11 @@ void queue_copy_to_array(void *const arr, queue me)
 }
 
 /**
- * Adds an element to the queue.
+ * Adds an element to the queue. The pointer to the data being passed in should
+ * point to the data type which this queue holds. For example, if this queue
+ * holds integers, the data pointer should be a pointer to an integer. Since the
+ * data is being copied, the pointer only has to be valid when this function is
+ * called.
  *
  * @param me   the queue to add an element to
  * @param data the data to add to the queue
@@ -122,7 +129,11 @@ int queue_push(queue me, void *const data)
 }
 
 /**
- * Removes the next element in the queue and copies the data.
+ * Removes the next element in the queue and copies the data. The pointer to the
+ * data being obtained should point to the data type which this queue holds. For
+ * example, if this queue holds integers, the data pointer should be a pointer
+ * to an integer. Since this data is being copied from the array to the data
+ * pointer, the pointer only has to be valid when this function is called.
  *
  * @param data the data to have copied from the queue
  * @param me   the queue to pop the next element from
@@ -140,7 +151,11 @@ int queue_pop(void *const data, queue me)
 }
 
 /**
- * Gets the front element of the queue.
+ * Gets the front element of the queue. The pointer to the data being obtained
+ * should point to the data type which this queue holds. For example, if this
+ * queue holds integers, the data pointer should be a pointer to an integer.
+ * Since this data is being copied from the array to the data pointer, the
+ * pointer only has to be valid when this function is called.
  *
  * @param data the copy of the front element of the queue
  * @param me   the queue to copy from
@@ -153,7 +168,11 @@ int queue_front(void *const data, queue me)
 }
 
 /**
- * Gets the back element of the queue.
+ * Gets the back element of the queue. The pointer to the data being obtained
+ * should point to the data type which this queue holds. For example, if this
+ * queue holds integers, the data pointer should be a pointer to an integer.
+ * Since this data is being copied from the array to the data pointer, the
+ * pointer only has to be valid when this function is called.
  *
  * @param data the copy of the back element of the queue
  * @param me   the queue to copy from

@@ -93,7 +93,10 @@ int stack_trim(stack me)
 }
 
 /**
- * Copies the stack to an array.
+ * Copies the stack to an array. Since it is a copy, the array may be modified
+ * without causing side effects to the stack data structure. Memory is not
+ * allocated, thus the array being used for the copy must be allocated before
+ * this function is called.
  *
  * @param arr the initialized array to copy the stack to
  * @param me  the stack to copy to the array
@@ -104,7 +107,11 @@ void stack_copy_to_array(void *const arr, stack me)
 }
 
 /**
- * Adds an element to the top of the stack.
+ * Adds an element to the top of the stack. The pointer to the data being passed
+ * in should point to the data type which this stack holds. For example, if this
+ * stack holds integers, the data pointer should be a pointer to an integer.
+ * Since the data is being copied, the pointer only has to be valid when this
+ * function is called.
  *
  * @param me   the stack to add an element to
  * @param data the data to add to the stack
@@ -119,7 +126,11 @@ int stack_push(stack me, void *const data)
 
 /**
  * Removes the top element of the stack, and copies the data which is being
- * removed.
+ * removed. The pointer to the data being obtained should point to the data type
+ * which this stack holds. For example, if this stack holds integers, the data
+ * pointer should be a pointer to an integer. Since this data is being copied
+ * from the array to the data pointer, the pointer only has to be valid when
+ * this function is called.
  *
  * @param data the copy of the element being removed
  * @param me   the stack to remove the top element from
@@ -132,7 +143,11 @@ int stack_pop(void *const data, stack me)
 }
 
 /**
- * Copies the top element of the stack.
+ * Copies the top element of the stack. The pointer to the data being obtained
+ * should point to the data type which this stack holds. For example, if this
+ * stack holds integers, the data pointer should be a pointer to an integer.
+ * Since this data is being copied from the array to the data pointer, the
+ * pointer only has to be valid when this function is called.
  *
  * @param data the copy of the top element of the stack
  * @param me   the stack to copy from
