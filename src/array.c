@@ -78,7 +78,10 @@ int array_size(array me)
 }
 
 /**
- * Copies the array to a raw array.
+ * Copies the array to a raw array. Since it is a copy, the raw array may be
+ * modified without causing a side affect to the array data structure. Memory
+ * is not allocated, thus the array being used for the copy must be allocated
+ * before this function is called.
  *
  * @param arr the initialized raw array to copy the array to
  * @param me  the array to copy to the raw array
@@ -92,10 +95,10 @@ void array_copy_to_array(void *const arr, array me)
 }
 
 /**
- * Gets the storage element of the array which is contiguous in memory. If the
- * data is modified, the data in the array is modified. Also, any array
- * operation may invalidate this data pointer. The array owns the data pointer,
- * thus it must not be freed.
+ * Gets the storage element of the array structure. This pointer is not a copy,
+ * thus any modification to the data will cause the array structure data to be
+ * modified. Operations using the array functions may invalidate this pointer.
+ * The array owns this memory, thus it should not be freed.
  *
  * @param me the array to get the storage element from
  *
@@ -115,7 +118,11 @@ static int array_is_illegal_input(array me, const int index)
 }
 
 /**
- * Sets the data for a specified element in the array.
+ * Sets the data for a specified element in the array. The pointer to the data
+ * being passed in should point to the data type which this array holds. For
+ * example, if this array holds integers, the data pointer should be a pointer
+ * to an integer. Since the data is being copied, the pointer only has to be
+ * valid when this function is called.
  *
  * @param me    the array to set data for
  * @param index the location to set data at in the array
@@ -135,7 +142,12 @@ int array_set(array me, const int index, void *const data)
 }
 
 /**
- * Copies the element at index of the array to data.
+ * Copies the element at index of the array to data. The pointer to the data
+ * being obtained should point to the data type which this array holds. For
+ * example, if this array holds integers, the data pointer should be a pointer
+ * to an integer. Since this data is being copied from the array to the data
+ * pointer, the pointer only has to be valid when this function is called.
+ *
  *
  * @param data  the data to copy to
  * @param me    the array to copy from
