@@ -48,7 +48,9 @@ struct node {
  * @param comparator the comparator function used for key ordering; must not be
  *                   NULL
  *
- * @return the newly-initialized multi-set, or NULL if memory allocation error
+ * @return the newly-initialized multi-set, or NULL if it was not successfully
+ *         initialized due to either invalid input arguments or memory
+ *         allocation error
  */
 multiset multiset_init(const size_t key_size,
                        int (*const comparator)(const void *const,
@@ -308,7 +310,11 @@ static struct node *multiset_create_node(multiset me,
 }
 
 /**
- * Adds a key to the multi-set.
+ * Adds a key to the multi-set. The pointer to the key being passed in should
+ * point to the key type which this multi-set holds. For example, if this
+ * multi-set holds key integers, the key pointer should be a pointer to an
+ * integer. Since the key is being copied, the pointer only has to be valid
+ * when this function is called.
  *
  * @param me  the multi-set to add to
  * @param key the key to add
@@ -392,7 +398,11 @@ static struct node *multiset_equal_match(multiset me, const void *const key)
 }
 
 /**
- * Determines the count of a specific key in the multi-set.
+ * Determines the count of a specific key in the multi-set. The pointer to the
+ * key being passed in should point to the key type which this multi-set holds.
+ * For example, if this multi-set holds key integers, the key pointer should be
+ * a pointer to an integer. Since the key is being copied, the pointer only has
+ * to be valid when this function is called.
  *
  * @param me  the multi-set to check for the count
  * @param key the key to check
@@ -409,7 +419,11 @@ int multiset_count(multiset me, void *const key)
 }
 
 /**
- * Determines if the multi-set contains the specified key.
+ * Determines if the multi-set contains the specified key. The pointer to the
+ * key being passed in should point to the key type which this multi-set holds.
+ * For example, if this multi-set holds key integers, the key pointer should be
+ * a pointer to an integer. Since the key is being copied, the pointer only has
+ * to be valid when this function is called.
  *
  * @param me  the multi-set to check for the key
  * @param key the key to check
@@ -615,7 +629,11 @@ static void multiset_remove_element(multiset me, struct node *const traverse)
 }
 
 /**
- * Removes a key from the multi-set if it contains it.
+ * Removes a key from the multi-set if it contains it. The pointer to the key
+ * being passed in should point to the key type which this multi-set holds. For
+ * example, if this multi-set holds key integers, the key pointer should be a
+ * pointer to an integer. Since the key is being copied, the pointer only has
+ * to be valid when this function is called.
  *
  * @param me  the multi-set to remove a key from
  * @param key the key to remove
@@ -637,7 +655,11 @@ int multiset_remove(multiset me, void *const key)
 }
 
 /**
- * Removes all the occurrences of a specified key in the multi-set.
+ * Removes all the occurrences of a specified key in the multi-set. The pointer
+ * to the key being passed in should point to the key type which this multi-set
+ * holds. For example, if this multi-set holds key integers, the key pointer
+ * should be a pointer to an integer. Since the key is being copied, the pointer
+ * only has to be valid when this function is called.
  *
  * @param me  the multi-set to remove a key from
  * @param key the key to remove

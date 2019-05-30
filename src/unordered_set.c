@@ -65,8 +65,9 @@ static unsigned long unordered_set_hash(unordered_set me, const void *const key)
  * @param comparator the comparator function which compares two keys; must not
  *                   be NULL
  *
- * @return the newly-initialized unordered set, or NULL if memory allocation
- *         error
+ * @return the newly-initialized unordered set, or NULL if it was not
+ *         successfully initialized due to either invalid input arguments or
+ *         memory allocation error
  */
 unordered_set unordered_set_init(const size_t key_size,
                                  unsigned long (*hash)(const void *const),
@@ -209,9 +210,9 @@ static int unordered_set_is_equal(unordered_set me,
 /*
  * Creates an element to add.
  */
-static struct node *const unordered_set_create_element(unordered_set me,
-                                                       const unsigned long hash,
-                                                       const void *const key)
+static struct node *unordered_set_create_element(unordered_set me,
+                                                 const unsigned long hash,
+                                                 const void *const key)
 {
     struct node *const init = malloc(sizeof(struct node));
     if (!init) {
@@ -230,7 +231,11 @@ static struct node *const unordered_set_create_element(unordered_set me,
 
 /**
  * Adds an element to the unordered set if the unordered set does not already
- * contain it.
+ * contain it. The pointer to the key being passed in should point to the key
+ * type which this unordered set holds. For example, if this unordered set holds
+ * key integers, the key pointer should be a pointer to an integer. Since the
+ * key is being copied, the pointer only has to be valid when this function is
+ * called.
  *
  * @param me  the unordered set to add to
  * @param key the element to add
@@ -275,7 +280,11 @@ int unordered_set_put(unordered_set me, void *const key)
 }
 
 /**
- * Determines if the unordered set contains the specified element.
+ * Determines if the unordered set contains the specified element. The pointer
+ * to the key being passed in should point to the key type which this unordered
+ * set holds. For example, if this unordered set holds key integers, the key
+ * pointer should be a pointer to an integer. Since the key is being copied,
+ * the pointer only has to be valid when this function is called.
  *
  * @param me  the unordered set to check for the element
  * @param key the element to check
@@ -297,7 +306,11 @@ int unordered_set_contains(unordered_set me, void *const key)
 }
 
 /**
- * Removes the key from the unordered set if it contains it.
+ * Removes the key from the unordered set if it contains it. The pointer to the
+ * key being passed in should point to the key type which this unordered set
+ * holds. For example, if this unordered set holds key integers, the key pointer
+ * should be a pointer to an integer. Since the key is being copied, the pointer
+ * only has to be valid when this function is called.
  *
  * @param me  the unordered set to remove an key from
  * @param key the key to remove

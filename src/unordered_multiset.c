@@ -68,8 +68,9 @@ static unsigned long unordered_multiset_hash(unordered_multiset me,
  * @param comparator the comparator function which compares two keys; must not
  *                   be NULL
  *
- * @return the newly-initialized unordered multi-set, or NULL if memory
- *         allocation error
+ * @return the newly-initialized unordered multi-set, or NULL if it was not
+ *         successfully initialized due to either invalid input arguments or
+ *         memory allocation error
  */
 unordered_multiset
 unordered_multiset_init(const size_t key_size,
@@ -214,10 +215,9 @@ static int unordered_multiset_is_equal(unordered_multiset me,
 /*
  * Creates an element to add.
  */
-static struct node *const
-unordered_multiset_create_element(unordered_multiset me,
-                                  const unsigned long hash,
-                                  const void *const key)
+static struct node *unordered_multiset_create_element(unordered_multiset me,
+                                                      const unsigned long hash,
+                                                      const void *const key)
 {
     struct node *const init = malloc(sizeof(struct node));
     if (!init) {
@@ -236,7 +236,11 @@ unordered_multiset_create_element(unordered_multiset me,
 }
 
 /**
- * Adds an element to the unordered multi-set.
+ * Adds an element to the unordered multi-set. The pointer to the key being
+ * passed in should point to the key type which this unordered multi-set holds.
+ * For example, if this multi-set holds key integers, the key pointer should be
+ * a pointer to an integer. Since the key is being copied, the pointer only has
+ * to be valid when this function is called.
  *
  * @param me  the unordered multi-set to add to
  * @param key the element to add
@@ -286,7 +290,11 @@ int unordered_multiset_put(unordered_multiset me, void *const key)
 }
 
 /**
- * Determines the count of a specific key in the unordered multi-set.
+ * Determines the count of a specific key in the unordered multi-set. The
+ * pointer to the key being passed in should point to the key type which this
+ * unordered multi-set holds. For example, if this unordered multi-set holds key
+ * integers, the key pointer should be a pointer to an integer. Since the key is
+ * being copied, the pointer only has to be valid when this function is called.
  *
  * @param me  the unordered multi-set to check for the count
  * @param key the element to check
@@ -308,7 +316,11 @@ int unordered_multiset_count(unordered_multiset me, void *const key)
 }
 
 /**
- * Determines if the unordered multi-set contains the specified element.
+ * Determines if the unordered multi-set contains the specified element. The
+ * pointer to the key being passed in should point to the key type which this
+ * unordered multi-set holds. For example, if this unordered multi-set holds key
+ * integers, the key pointer should be a pointer to an integer. Since the key is
+ * being copied, the pointer only has to be valid when this function is called.
  *
  * @param me  the unordered multi-set to check for the key
  * @param key the key to check
@@ -321,7 +333,11 @@ int unordered_multiset_contains(unordered_multiset me, void *const key)
 }
 
 /**
- * Removes a key from the unordered multi-set if it contains it.
+ * Removes a key from the unordered multi-set if it contains it. The pointer to
+ * the key being passed in should point to the key type which this unordered
+ * multi-set holds. For example, if this unordered multi-set holds key integers,
+ * the key pointer should be a pointer to an integer. Since the key is being
+ * copied, the pointer only has to be valid when this function is called.
  *
  * @param me  the unordered multi-set to remove a key from
  * @param key the key to remove
@@ -368,7 +384,10 @@ int unordered_multiset_remove(unordered_multiset me, void *const key)
 
 /**
  * Removes all the keys specified by the key from an unordered multi-set if it
- * contains the key.
+ * contains the key. The pointer to the key being passed in should point to the
+ * key type which this multi-set holds. For example, if this multi-set holds key
+ * integers, the key pointer should be a pointer to an integer. Since the key is
+ * being copied, the pointer only has to be valid when this function is called.
  *
  * @param me  the unordered multi-set to remove a key from
  * @param key the key to remove

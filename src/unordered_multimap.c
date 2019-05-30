@@ -76,8 +76,9 @@ static unsigned long unordered_multimap_hash(unordered_multimap me,
  * @param value_comparator the comparator function which compares two values;
  *                         must not be NULL
  *
- * @return the newly-initialized unordered multi-map, or NULL if memory
- *         allocation error
+ * @return the newly-initialized unordered multi-map, or NULL if it was not
+ *         successfully initialized due to either invalid input arguments or
+ *         memory allocation error
  */
 unordered_multimap
 unordered_multimap_init(const size_t key_size,
@@ -236,11 +237,10 @@ static int unordered_multimap_is_equal(unordered_multimap me,
 /*
  * Creates an element to add.
  */
-static struct node *const
-unordered_multimap_create_element(unordered_multimap me,
-                                  const unsigned long hash,
-                                  const void *const key,
-                                  const void *const value)
+static struct node *unordered_multimap_create_element(unordered_multimap me,
+                                                      const unsigned long hash,
+                                                      const void *const key,
+                                                      const void *const value)
 {
     struct node *const init = malloc(sizeof(struct node));
     if (!init) {
@@ -265,7 +265,12 @@ unordered_multimap_create_element(unordered_multimap me,
 }
 
 /**
- * Adds a key-value pair to the unordered multi-map.
+ * Adds a key-value pair to the unordered multi-map. The pointer to the key and
+ * value being passed in should point to the key and value type which this
+ * unordered multi-map holds. For example, if this unordered multi-map holds
+ * integer keys and values, the key and value pointer should be a pointer to an
+ * integer. Since the key and value are being copied, the pointer only has to be
+ * valid when this function is called.
  *
  * @param me    the unordered multi-map to add to
  * @param key   the key to add
@@ -311,7 +316,11 @@ int unordered_multimap_put(unordered_multimap me,
 /**
  * Creates the iterator for the specified key. To iterate over the values, keep
  * getting the next value. Between starting and iterations, the unordered
- * multi-map must not be mutated.
+ * multi-map must not be mutated. The pointer to the key being passed in should
+ * point to the key type which this unordered multi-map holds. For example, if
+ * this unordered multi-map holds key integers, the key pointer should be a
+ * pointer to an integer. Since the key is being copied, the pointer only has
+ * to be valid when this function is called.
  *
  * @param me  the unordered multi-map to start the iterator for
  * @param key the key to start the iterator for
@@ -337,7 +346,11 @@ void unordered_multimap_get_start(unordered_multimap me, void *const key)
 /**
  * Iterates over the values for the specified key. Must be called after starting
  * the iterator. The unordered multi-map must not be mutated between start and
- * iterations.
+ * iterations.The pointer to the value being obtained should point to the value
+ * type which this unordered multi-map holds. For example, if this unordered
+ * multi-map holds value integers, the value pointer should be a pointer to an
+ * integer. Since the value is being copied, the pointer only has to be valid
+ * when this function is called.
  *
  * @param value the value to be copied to from iteration
  * @param me    the unordered multi-map to iterate over
@@ -370,6 +383,11 @@ int unordered_multimap_get_next(void *const value, unordered_multimap me)
 
 /**
  * Determines the amount of times the key appears in the unordered multi-map.
+ * The pointer to the key being passed in should point to the key type which
+ * this unordered multi-map holds. For example, if this unordered multi-map
+ * holds key integers, the key pointer should be a pointer to an integer. Since
+ * the key is being copied, the pointer only has to be valid when this function
+ * is called.
  *
  * @param me  the unordered multi-map to check for the key
  * @param key the key to check
@@ -392,7 +410,11 @@ int unordered_multimap_count(unordered_multimap me, void *const key)
 }
 
 /**
- * Determines if the unordered multi-map contains the specified key.
+ * Determines if the unordered multi-map contains the specified key. The pointer
+ * to the key being passed in should point to the key type which this unordered
+ * multi-map holds. For example, if this unordered multi-map holds key integers,
+ * the key pointer should be a pointer to an integer. Since the key is being
+ * copied, the pointer only has to be valid when this function is called.
  *
  * @param me  the unordered multi-map to check for the key
  * @param key the key to check
@@ -415,6 +437,11 @@ int unordered_multimap_contains(unordered_multimap me, void *const key)
 
 /**
  * Removes the key-value pair from the unordered multi-map if it contains it.
+ * The pointer to the key and value being passed in should point to the key and
+ * value type which this unordered multi-map holds. For example, if this
+ * unordered multi-map holds integer keys and values, the key and value pointer
+ * should be a pointer to an integer. Since the key and value are being copied,
+ * the pointer only has to be valid when this function is called.
  *
  * @param me    the unordered multi-map to remove an key from
  * @param key   the key to remove
@@ -461,8 +488,12 @@ int unordered_multimap_remove(unordered_multimap me,
 }
 
 /**
- * Removes all the key-value pairs from the unordered multi-map specified by the
- * key.
+ * Removes all the key-value pairs from the unordered multi-map specified by
+ * the key. The pointer to the key being passed in should point to the key
+ * type which this unordered multi-map holds. For example, if this unordered
+ * multi-map holds key integers, the key pointer should be a pointer to an
+ * integer. Since the key is being copied, the pointer only has to be valid
+ * when this function is called.
  *
  * @param me  the unordered multi-map to remove a key-value pair from
  * @param key the key to remove

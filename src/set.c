@@ -46,7 +46,9 @@ struct node {
  * @param comparator the comparator function used for key ordering; must not be
  *                   NULL
  *
- * @return the newly-initialized set, or NULL if memory allocation error
+ * @return the newly-initialized set, or NULL if it was not successfully
+ *         initialized due to either invalid input arguments or memory
+ *         allocation error
  */
 set set_init(const size_t key_size,
              int (*const comparator)(const void *const, const void *const))
@@ -304,7 +306,11 @@ static struct node *set_create_node(set me,
 }
 
 /**
- * Adds a key to the set if the set does not already contain it.
+ * Adds a key to the set if the set does not already contain it. The pointer to
+ * the key being passed in should point to the key type which this set holds.
+ * For example, if this set holds key integers, the key pointer should be a
+ * pointer to an integer. Since the key is being copied, the pointer only has
+ * to be valid when this function is called.
  *
  * @param me  the set to add to
  * @param key the key to add
@@ -386,7 +392,11 @@ static struct node *set_equal_match(set me, const void *const key)
 }
 
 /**
- * Determines if the set contains the specified key.
+ * Determines if the set contains the specified key. The pointer to the key
+ * being passed in should point to the key type which this set holds. For
+ * example, if this set holds key integers, the key pointer should be a pointer
+ * to an integer. Since the key is being copied, the pointer only has to be
+ * valid when this function is called.
  *
  * @param me  the set to check for the key
  * @param key the key to check
@@ -590,7 +600,11 @@ static void set_remove_element(set me, struct node *const traverse)
 }
 
 /**
- * Removes the key from the set if it contains it.
+ * Removes the key from the set if it contains it. The pointer to the key
+ * being passed in should point to the key type which this set holds. For
+ * example, if this set holds key integers, the key pointer should be a pointer
+ * to an integer. Since the key is being copied, the pointer only has to be
+ * valid when this function is called.
  *
  * @param me  the set to remove an key from
  * @param key the key to remove

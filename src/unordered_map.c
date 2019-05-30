@@ -70,8 +70,9 @@ static unsigned long unordered_map_hash(unordered_map me,
  * @param comparator the comparator function which compares two keys; must not
  *                   be NULL
  *
- * @return the newly-initialized unordered map, or NULL if memory allocation
- *         error
+ * @return the newly-initialized unordered map, or NULL if it was not
+ *         successfully initialized due to either invalid input arguments or
+ *         memory allocation error
  */
 unordered_map unordered_map_init(const size_t key_size,
                                  const size_t value_size,
@@ -216,10 +217,10 @@ static int unordered_map_is_equal(unordered_map me,
 /*
  * Creates an element to add.
  */
-static struct node *const unordered_map_create_element(unordered_map me,
-                                                       const unsigned long hash,
-                                                       const void *const key,
-                                                       const void *const value)
+static struct node *unordered_map_create_element(unordered_map me,
+                                                 const unsigned long hash,
+                                                 const void *const key,
+                                                 const void *const value)
 {
     struct node *const init = malloc(sizeof(struct node));
     if (!init) {
@@ -245,7 +246,12 @@ static struct node *const unordered_map_create_element(unordered_map me,
 
 /**
  * Adds a key-value pair to the unordered map. If the unordered map already
- * contains the key, the value is updated to the new value.
+ * contains the key, the value is updated to the new value. The pointer to the
+ * key and value being passed in should point to the key and value type which
+ * this unordered map holds. For example, if this unordered map holds integer
+ * keys and values, the key and value pointer should be a pointer to an integer.
+ * Since the key and value are being copied, the pointer only has to be valid
+ * when this function is called.
  *
  * @param me    the unordered map to add to
  * @param key   the key to add
@@ -293,7 +299,12 @@ int unordered_map_put(unordered_map me, void *const key, void *const value)
 }
 
 /**
- * Gets the value associated with a key in the unordered map.
+ * Gets the value associated with a key in the unordered map. The pointer to the
+ * key being passed in and the value being obtained should point to the key and
+ * value types which this unordered map holds. For example, if this unordered
+ * map holds integer keys and values, the key and value pointers should be a
+ * pointer to an integer. Since the key and value are being copied, the pointer
+ * only has to be valid when this function is called.
  *
  * @param value the value to copy to
  * @param me    the unordered map to get from
@@ -317,7 +328,11 @@ int unordered_map_get(void *const value, unordered_map me, void *const key)
 }
 
 /**
- * Determines if the unordered map contains the specified key.
+ * Determines if the unordered map contains the specified key. The pointer to
+ * the key being passed in should point to the key type which this unordered map
+ * holds. For example, if this unordered map holds key integers, the key pointer
+ * should be a pointer to an integer. Since the key is being copied, the pointer
+ * only has to be valid when this function is called.
  *
  * @param me  the unordered map to check for the key
  * @param key the key to check
@@ -339,7 +354,11 @@ int unordered_map_contains(unordered_map me, void *const key)
 }
 
 /**
- * Removes the key-value pair from the unordered map if it contains it.
+ * Removes the key-value pair from the unordered map if it contains it. The
+ * pointer to the key being passed in should point to the key type which this
+ * unordered map holds. For example, if this unordered map holds key integers,
+ * the key pointer should be a pointer to an integer. Since the key is being
+ * copied, the pointer only has to be valid when this function is called.
  *
  * @param me  the unordered map to remove an key from
  * @param key the key to remove
