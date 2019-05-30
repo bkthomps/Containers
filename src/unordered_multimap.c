@@ -237,11 +237,10 @@ static int unordered_multimap_is_equal(unordered_multimap me,
 /*
  * Creates an element to add.
  */
-static struct node *const
-unordered_multimap_create_element(unordered_multimap me,
-                                  const unsigned long hash,
-                                  const void *const key,
-                                  const void *const value)
+static struct node *unordered_multimap_create_element(unordered_multimap me,
+                                                      const unsigned long hash,
+                                                      const void *const key,
+                                                      const void *const value)
 {
     struct node *const init = malloc(sizeof(struct node));
     if (!init) {

@@ -215,10 +215,9 @@ static int unordered_multiset_is_equal(unordered_multiset me,
 /*
  * Creates an element to add.
  */
-static struct node *const
-unordered_multiset_create_element(unordered_multiset me,
-                                  const unsigned long hash,
-                                  const void *const key)
+static struct node *unordered_multiset_create_element(unordered_multiset me,
+                                                      const unsigned long hash,
+                                                      const void *const key)
 {
     struct node *const init = malloc(sizeof(struct node));
     if (!init) {

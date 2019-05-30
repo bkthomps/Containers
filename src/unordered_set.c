@@ -210,9 +210,9 @@ static int unordered_set_is_equal(unordered_set me,
 /*
  * Creates an element to add.
  */
-static struct node *const unordered_set_create_element(unordered_set me,
-                                                       const unsigned long hash,
-                                                       const void *const key)
+static struct node *unordered_set_create_element(unordered_set me,
+                                                 const unsigned long hash,
+                                                 const void *const key)
 {
     struct node *const init = malloc(sizeof(struct node));
     if (!init) {

@@ -217,10 +217,10 @@ static int unordered_map_is_equal(unordered_map me,
 /*
  * Creates an element to add.
  */
-static struct node *const unordered_map_create_element(unordered_map me,
-                                                       const unsigned long hash,
-                                                       const void *const key,
-                                                       const void *const value)
+static struct node *unordered_map_create_element(unordered_map me,
+                                                 const unsigned long hash,
+                                                 const void *const key,
+                                                 const void *const value)
 {
     struct node *const init = malloc(sizeof(struct node));
     if (!init) {
