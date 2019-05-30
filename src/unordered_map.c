@@ -31,8 +31,11 @@ static const double RESIZE_RATIO = 1.5;
 struct internal_unordered_map {
     size_t key_size;
     size_t value_size;
+
     unsigned long (*hash)(const void *const key);
+
     int (*comparator)(const void *const one, const void *const two);
+
     int size;
     int capacity;
     struct node **buckets;
@@ -246,7 +249,12 @@ static struct node *const unordered_map_create_element(unordered_map me,
 
 /**
  * Adds a key-value pair to the unordered map. If the unordered map already
- * contains the key, the value is updated to the new value.
+ * contains the key, the value is updated to the new value. The pointer to the
+ * key and value being passed in should point to the key and value type which
+ * this unordered map holds. For example, if this unordered map holds integer
+ * keys and values, the key and value pointer should be a pointer to an integer.
+ * Since the key and value are being copied, the pointer only has to be valid
+ * when this function is called.
  *
  * @param me    the unordered map to add to
  * @param key   the key to add
@@ -294,7 +302,12 @@ int unordered_map_put(unordered_map me, void *const key, void *const value)
 }
 
 /**
- * Gets the value associated with a key in the unordered map.
+ * Gets the value associated with a key in the unordered map. The pointer to the
+ * key being passed in and the value being obtained should point to the key and
+ * value types which this unordered map holds. For example, if this unordered
+ * map holds integer keys and values, the key and value pointers should be a
+ * pointer to an integer. Since the key and value are being copied, the pointer
+ * only has to be valid when this function is called.
  *
  * @param value the value to copy to
  * @param me    the unordered map to get from
@@ -318,7 +331,11 @@ int unordered_map_get(void *const value, unordered_map me, void *const key)
 }
 
 /**
- * Determines if the unordered map contains the specified key.
+ * Determines if the unordered map contains the specified key. The pointer to
+ * the key being passed in should point to the key type which this unordered map
+ * holds. For example, if this unordered map holds key integers, the key pointer
+ * should be a pointer to an integer. Since the key is being copied, the pointer
+ * only has to be valid when this function is called.
  *
  * @param me  the unordered map to check for the key
  * @param key the key to check
@@ -340,7 +357,11 @@ int unordered_map_contains(unordered_map me, void *const key)
 }
 
 /**
- * Removes the key-value pair from the unordered map if it contains it.
+ * Removes the key-value pair from the unordered map if it contains it. The
+ * pointer to the key being passed in should point to the key type which this
+ * unordered map holds. For example, if this unordered map holds key integers,
+ * the key pointer should be a pointer to an integer. Since the key is being
+ * copied, the pointer only has to be valid when this function is called.
  *
  * @param me  the unordered map to remove an key from
  * @param key the key to remove

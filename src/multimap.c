@@ -360,10 +360,11 @@ static struct node *multimap_create_node(multimap me,
 /**
  * Adds a key-value pair to the multi-map. If the multi-map already contains the
  * key, the value is updated to the new value. The pointer to the key and value
- * being passed in should point to the key and value type which this map holds.
- * For example, if this multi-map holds integer keys and values, the key and
- * value pointer should be a pointer to an integer. Since the key and value are
- * being copied, the pointer only has to be valid when this function is called.
+ * being passed in should point to the key and value type which this multi-map
+ * holds. For example, if this multi-map holds integer keys and values, the key
+ * and value pointer should be a pointer to an integer. Since the key and value
+ * are being copied, the pointer only has to be valid when this function is
+ * called.
  *
  * @param me    the multi-map to add to
  * @param key   the key to add
