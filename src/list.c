@@ -91,7 +91,9 @@ int list_is_empty(list me)
  * Copies the nodes of the doubly-linked list to an array.Since it is a copy,
  * the array may be modified without causing side effects to the doubly-linked
  * list data structure. Memory is not allocated, thus the array being used for
- * the copy must be allocated before this function is called.
+ * the copy must be allocated before this function is called. The size of the
+ * doubly-linked list should be queried prior to calling this function, which
+ * also serves as the size of the newly-copied array.
  *
  * @param arr the initialized array to copy the doubly-linked list to
  * @param me  the doubly-linked list to copy to the array

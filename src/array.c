@@ -81,7 +81,9 @@ int array_size(array me)
  * Copies the array to a raw array. Since it is a copy, the raw array may be
  * modified without causing side effects to the array data structure. Memory
  * is not allocated, thus the raw array being used for the copy must be
- * allocated before this function is called.
+ * allocated before this function is called. The size of the array should be
+ * queried prior to calling this function, which also serves as the size of the
+ * newly-copied raw array.
  *
  * @param arr the initialized raw array to copy the array to
  * @param me  the array to copy to the raw array
@@ -95,10 +97,15 @@ void array_copy_to_array(void *const arr, array me)
 }
 
 /**
- * Gets the storage element of the array structure. This pointer is not a copy,
- * thus any modification to the data will cause the array structure data to be
- * modified. Operations using the array functions may invalidate this pointer.
- * The array owns this memory, thus it should not be freed.
+ * Gets the storage element of the array structure. The storage element is
+ * contiguous in memory. The data pointer should be assigned to the correct
+ * array type. For example, if the array holds integers, the data pointer should
+ * be assigned to a raw integer array. The size of the array should be obtained
+ * prior to calling this function, which also serves as the size of the queried
+ * raw array. This pointer is not a copy, thus any modification to the data will
+ * cause the array structure data to be modified. Operations using the array
+ * functions may invalidate this pointer. The array owns this memory, thus it
+ * should not be freed.
  *
  * @param me the array to get the storage element from
  *
