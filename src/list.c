@@ -88,7 +88,7 @@ int list_is_empty(list me)
 }
 
 /**
- * Copies the nodes of the doubly-linked list to an array.Since it is a copy,
+ * Copies the nodes of the doubly-linked list to an array. Since it is a copy,
  * the array may be modified without causing side effects to the doubly-linked
  * list data structure. Memory is not allocated, thus the array being used for
  * the copy must be allocated before this function is called. The size of the
