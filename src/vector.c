@@ -150,7 +150,9 @@ int vector_trim(vector me)
  * Copies the vector to an array. Since it is a copy, the array may be modified
  * without causing side effects to the vector data structure. Memory is not
  * allocated, thus the array being used for the copy must be allocated before
- * this function is called.
+ * this function is called. The size of the vector should be queried prior to
+ * calling this function, which also serves as the size of the newly-copied
+ * array.
  *
  * @param arr the initialized array to copy the vector to
  * @param me  the vector to copy to the array
@@ -161,11 +163,15 @@ void vector_copy_to_array(void *const arr, vector me)
 }
 
 /**
- * Gets the storage element of the vector which is contiguous in memory. This
- * pointer is not a copy, thus any modification to the data will cause the
- * vector structure data to be modified. Operations using the vector functions
- * may invalidate this pointer. The vector owns this memory, thus it should not
- * be freed.
+ * Gets the storage element of the vector structure. The storage element is
+ * contiguous in memory. The data pointer should be assigned to the correct
+ * array type. For example, if the vector holds integers, the data pointer
+ * should be assigned to an integer array. The size of the vector should be
+ * obtained prior to calling this function, which also serves as the size of
+ * the queried array. This pointer is not a copy, thus any modification to the
+ * data will cause the vector structure data to be modified. Operations using
+ * the vector functions may invalidate this pointer. The vector owns this
+ * memory, thus it should not be freed.
  *
  * @param me the vector to get the storage element from
  *

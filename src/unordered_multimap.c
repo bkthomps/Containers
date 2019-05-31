@@ -346,7 +346,7 @@ void unordered_multimap_get_start(unordered_multimap me, void *const key)
 /**
  * Iterates over the values for the specified key. Must be called after starting
  * the iterator. The unordered multi-map must not be mutated between start and
- * iterations.The pointer to the value being obtained should point to the value
+ * iterations. The pointer to the value being obtained should point to the value
  * type which this unordered multi-map holds. For example, if this unordered
  * multi-map holds value integers, the value pointer should be a pointer to an
  * integer. Since the value is being copied, the pointer only has to be valid
