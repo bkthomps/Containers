@@ -382,7 +382,7 @@ int unordered_multimap_get_next(void *const value, unordered_multimap me)
 }
 
 /**
- * Determines the amount of times the key appears in the unordered multi-map.
+ * Determines the number of times the key appears in the unordered multi-map.
  * The pointer to the key being passed in should point to the key type which
  * this unordered multi-map holds. For example, if this unordered multi-map
  * holds key integers, the key pointer should be a pointer to an integer. Since
@@ -392,7 +392,7 @@ int unordered_multimap_get_next(void *const value, unordered_multimap me)
  * @param me  the unordered multi-map to check for the key
  * @param key the key to check
  *
- * @return the amount of times the key appears in the unordered multi-map
+ * @return the number of times the key appears in the unordered multi-map
  */
 int unordered_multimap_count(unordered_multimap me, void *const key)
 {
@@ -443,7 +443,7 @@ int unordered_multimap_contains(unordered_multimap me, void *const key)
  * should be a pointer to an integer. Since the key and value are being copied,
  * the pointer only has to be valid when this function is called.
  *
- * @param me    the unordered multi-map to remove an key from
+ * @param me    the unordered multi-map to remove a key from
  * @param key   the key to remove
  * @param value the value to remove
  *

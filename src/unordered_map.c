@@ -360,7 +360,7 @@ int unordered_map_contains(unordered_map me, void *const key)
  * the key pointer should be a pointer to an integer. Since the key is being
  * copied, the pointer only has to be valid when this function is called.
  *
- * @param me  the unordered map to remove an key from
+ * @param me  the unordered map to remove a key from
  * @param key the key to remove
  *
  * @return 1 if the unordered map contained the key, otherwise 0

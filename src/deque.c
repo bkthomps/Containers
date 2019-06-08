@@ -79,11 +79,11 @@ deque deque_init(const size_t data_size)
 }
 
 /**
- * Determines the size of the deque. The size is the amount of data spaces being
+ * Determines the size of the deque. The size is the number of data spaces being
  * used. The size starts at zero, and every time an element is added, it
  * increases by one.
  *
- * @param me the deque to check size of
+ * @param me the deque to check the size of
  *
  * @return the size of the deque
  */
@@ -116,7 +116,7 @@ int deque_is_empty(deque me)
 int deque_trim(deque me)
 {
     int i;
-    /* The start and end blocks are written like this because in C89,   */
+    /* The start and end blocks are written like this because in C89    */
     /* negative integer division and modulo are implementation-defined. */
     const int start_block =
             me->start_index == -1 ? 0 : me->start_index / BLOCK_SIZE;
@@ -351,7 +351,7 @@ int deque_pop_back(void *const data, deque me)
  * Since the data is being copied, the pointer only has to be valid when this
  * function is called.
  *
- * @param me   the deque to set value of
+ * @param me   the deque to set the value of
  * @param data the data to set
  *
  * @return 0       if no error
@@ -369,7 +369,7 @@ int deque_set_first(deque me, void *const data)
  * to an integer. Since the data is being copied, the pointer only has to be
  * valid when this function is called.
  *
- * @param me    the deque to set value of
+ * @param me    the deque to set the value of
  * @param index the index to set at
  * @param data  the data to set
  *
@@ -400,7 +400,7 @@ int deque_set_at(deque me, int index, void *const data)
  * Since the data is being copied, the pointer only has to be valid when this
  * function is called.
  *
- * @param me   the deque to set value of
+ * @param me   the deque to set the value of
  * @param data the data to set
  *
  * @return 0       if no error
@@ -419,7 +419,7 @@ int deque_set_last(deque me, void *const data)
  * pointer only has to be valid when this function is called.
  *
  * @param data the data to set
- * @param me   the deque to set value of
+ * @param me   the deque to set the value of
  *
  * @return 0       if no error
  * @return -EINVAL if invalid argument
@@ -437,7 +437,7 @@ int deque_get_first(void *const data, deque me)
  * pointer, the pointer only has to be valid when this function is called.
  *
  * @param data  the data to set
- * @param me    the deque to set value of
+ * @param me    the deque to set the value of
  * @param index the index to set at
  *
  * @return 0       if no error
@@ -468,7 +468,7 @@ int deque_get_at(void *const data, deque me, int index)
  * pointer only has to be valid when this function is called.
  *
  * @param data the data to set
- * @param me   the deque to set value of
+ * @param me   the deque to set the value of
  *
  * @return 0       if no error
  * @return -EINVAL if invalid argument

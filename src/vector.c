@@ -102,7 +102,7 @@ int vector_is_empty(vector me)
 
 /*
  * Sets the space of the buffer. Assumes that size is at least the same as the
- * amount of items currently in the vector.
+ * number of items currently in the vector.
  */
 static int vector_set_space(vector me, const int size)
 {

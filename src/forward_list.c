@@ -61,11 +61,11 @@ forward_list forward_list_init(const size_t data_size)
 }
 
 /**
- * Gets the amount of elements in the singly-linked list.
+ * Gets the number of elements in the singly-linked list.
  *
  * @param me the singly-linked list to check
  *
- * @return the amount of elements
+ * @return the number of elements
  */
 int forward_list_size(forward_list me)
 {
@@ -107,7 +107,7 @@ void forward_list_copy_to_array(void *const arr, forward_list me)
 }
 
 /*
- * Get the node at the specified index.
+ * Gets the node at the specified index.
  */
 static struct node *forward_list_get_node_at(forward_list me, const int index)
 {

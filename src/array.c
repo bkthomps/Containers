@@ -33,7 +33,7 @@ struct internal_array {
 /**
  * Initializes an array.
  *
- * @param element_count the amount of elements in the array; must not be
+ * @param element_count the number of elements in the array; must not be
  *                      negative
  * @param data_size     the size of each element in the array; must be positive
  *
@@ -149,7 +149,7 @@ int array_set(array me, const int index, void *const data)
 }
 
 /**
- * Copies the element at index of the array to data. The pointer to the data
+ * Copies the element at an index of the array to data. The pointer to the data
  * being obtained should point to the data type which this array holds. For
  * example, if this array holds integers, the data pointer should be a pointer
  * to an integer. Since this data is being copied from the array to the data
