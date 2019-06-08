@@ -312,7 +312,7 @@ int unordered_set_contains(unordered_set me, void *const key)
  * should be a pointer to an integer. Since the key is being copied, the pointer
  * only has to be valid when this function is called.
  *
- * @param me  the unordered set to remove an key from
+ * @param me  the unordered set to remove a key from
  * @param key the key to remove
  *
  * @return 1 if the unordered set contained the key, otherwise 0

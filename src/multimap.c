@@ -498,7 +498,7 @@ int multimap_get_next(void *const value, multimap me)
 }
 
 /**
- * Determines the amount of times the key appears in the multi-map. The pointer
+ * Determines the number of times the key appears in the multi-map. The pointer
  * to the key being passed in should point to the key type which this multi-map
  * holds. For example, if this multi-map holds key integers, the key pointer
  * should be a pointer to an integer. Since the key is being copied, the pointer
@@ -507,7 +507,7 @@ int multimap_get_next(void *const value, multimap me)
  * @param me  the multi-map to check for the key
  * @param key the key to check
  *
- * @return the amount of times the key appears in the multi-map
+ * @return the number of times the key appears in the multi-map
  */
 int multimap_count(multimap me, void *const key)
 {
@@ -736,7 +736,7 @@ static void multimap_remove_element(multimap me, struct node *const traverse)
  * Since the key and value are being copied, the pointer only has to be valid
  * when this function is called.
  *
- * @param me    the multi-map to remove an key from
+ * @param me    the multi-map to remove a key from
  * @param key   the key to remove
  * @param value the value to remove
  *
