@@ -140,11 +140,10 @@ static struct node *list_get_node_from_tail(list me, const int index)
  */
 static struct node *list_get_node_at(list me, const int index)
 {
-    if (index <= me->item_count / 2) {
+    if (index < me->item_count / 2) {
         return list_get_node_from_head(me, index);
-    } else {
-        return list_get_node_from_tail(me, index);
     }
+    return list_get_node_from_tail(me, index);
 }
 
 /**

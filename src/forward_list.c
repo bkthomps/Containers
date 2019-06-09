@@ -28,6 +28,7 @@ struct internal_forward_list {
     size_t bytes_per_item;
     int item_count;
     struct node *head;
+    struct node *tail;
 };
 
 struct node {
@@ -57,6 +58,7 @@ forward_list forward_list_init(const size_t data_size)
     init->bytes_per_item = data_size;
     init->item_count = 0;
     init->head = NULL;
+    init->tail = NULL;
     return init;
 }
 
@@ -113,8 +115,14 @@ static struct node *forward_list_get_node_at(forward_list me, const int index)
 {
     struct node *traverse = me->head;
     int i;
+    if (me->tail && index == me->item_count - 1) {
+        return me->tail;
+    }
     for (i = 0; i < index; i++) {
         traverse = traverse->next;
+    }
+    if (!traverse->next) {
+        me->tail = traverse;
     }
     return traverse;
 }
@@ -175,6 +183,9 @@ int forward_list_add_at(forward_list me, const int index, void *const data)
         struct node *const traverse = forward_list_get_node_at(me, index - 1);
         add->next = traverse->next;
         traverse->next = add;
+        if (!add->next) {
+            me->tail = add;
+        }
     }
     me->item_count++;
     return 0;
@@ -238,17 +249,15 @@ int forward_list_remove_at(forward_list me, const int index)
         me->head = temp->next;
         free(temp->data);
         free(temp);
-    } else if (index == me->item_count - 1) {
-        struct node *const traverse = forward_list_get_node_at(me, index - 1);
-        free(traverse->next->data);
-        free(traverse->next);
-        traverse->next = NULL;
     } else {
         struct node *const traverse = forward_list_get_node_at(me, index - 1);
         struct node *const backup = traverse->next;
         traverse->next = traverse->next->next;
         free(backup->data);
         free(backup);
+        if (!backup->next) {
+            me->tail = NULL;
+        }
     }
     me->item_count--;
     return 0;
