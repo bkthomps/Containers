@@ -163,7 +163,7 @@ static void test_add_back(void)
         if (i % 5 == 0) {
             forward_list_remove_last(me);
             forward_list_get_last(&get, me);
-            assert(get != i);
+            assert(get == i - 1);
         }
     }
     assert(!forward_list_destroy(me));
