@@ -179,15 +179,13 @@ int forward_list_add_at(forward_list me, const int index, void *const data)
     if (index == 0) {
         add->next = me->head;
         me->head = add;
-    } else if (index == me->item_count) {
-        struct node *const traverse = forward_list_get_node_at(me, index - 1);
-        add->next = traverse->next;
-        traverse->next = add;
-        me->tail = add;
     } else {
         struct node *const traverse = forward_list_get_node_at(me, index - 1);
         add->next = traverse->next;
         traverse->next = add;
+        if (!add->next) {
+            me->tail = add;
+        }
     }
     me->item_count++;
     return 0;
@@ -251,18 +249,15 @@ int forward_list_remove_at(forward_list me, const int index)
         me->head = temp->next;
         free(temp->data);
         free(temp);
-    } else if (index == me->item_count - 1) {
-        struct node *const traverse = forward_list_get_node_at(me, index - 1);
-        free(traverse->next->data);
-        free(traverse->next);
-        traverse->next = NULL;
-        me->tail = NULL;
     } else {
         struct node *const traverse = forward_list_get_node_at(me, index - 1);
         struct node *const backup = traverse->next;
         traverse->next = traverse->next->next;
         free(backup->data);
         free(backup);
+        if (!backup->next) {
+            me->tail = NULL;
+        }
     }
     me->item_count--;
     return 0;
