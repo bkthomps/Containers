@@ -155,11 +155,16 @@ static void test_add_back(void)
     int i;
     forward_list me = forward_list_init(sizeof(int));
     assert(me);
-    for (i = 0; i < 10000; i++) {
+    for (i = 1; i < 10000; i++) {
         int get = 0xdeadbeef;
         forward_list_add_last(me, &i);
         forward_list_get_last(&get, me);
         assert(get == i);
+        if (i % 5 == 0) {
+            forward_list_remove_last(me);
+            forward_list_get_last(&get, me);
+            assert(get != i);
+        }
     }
     assert(!forward_list_destroy(me));
 }
