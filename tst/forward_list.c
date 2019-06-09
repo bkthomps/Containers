@@ -150,6 +150,20 @@ static void test_basic(void)
     assert(!forward_list_destroy(me));
 }
 
+static void test_add_back(void)
+{
+    int i;
+    forward_list me = forward_list_init(sizeof(int));
+    assert(me);
+    for (i = 0; i < 10000; i++) {
+        int get = 0xdeadbeef;
+        forward_list_add_last(me, &i);
+        forward_list_get_last(&get, me);
+        assert(get == i);
+    }
+    assert(!forward_list_destroy(me));
+}
+
 static void test_init_out_of_memory(void)
 {
     fail_malloc = 1;
@@ -264,6 +278,7 @@ void test_forward_list(void)
 {
     test_invalid_init();
     test_basic();
+    test_add_back();
     test_init_out_of_memory();
     test_add_first_out_of_memory();
     test_add_at_out_of_memory();
