@@ -11,83 +11,16 @@ This library provides various containers. Each container has utility functions t
 Inspired by the C++ standard library; however, implemented using C with different function interfaces as the C++ standard library but with the same container names.
 
 ## Setup
-There are two types of library files which can be generated: dynamic and static. Both ways will be described below using clang. However, the steps are the same with gcc except `clang` is to be replaced with `gcc`.
+The `build.sh` script can be used to build either dynamic or static libraries. The script supports clang and gcc.
 
 The benefit of a dynamic library is that changing the `containers.so` library can be done without needing to recompile the codebase which is using the library. Nevertheless, it is slower than a static library.
 
 The benefit of a static library is that it is faster than a dynamic library. However, if the `containers.a` library is modified, the codebase which is using the library needs to be recompiled.
 
-### Dynamic Library
-
-1. Navigate to your C working directory
-
-2. Run:
-   ```
-   git clone ssh://git@github.com/bkthomps/Containers.git
-   cd Containers/src
-   ```
-
-3. To create a dynamic library, run:
-   ```
-   clang -shared -o containers.so -O3 -fPIC *.c
-   ```
-
-4. Now, you can copy and paste the `include` directory and `containers.so` to any project that you would like to use the dynamic library with.
-
-5. Thus, for an example program, the directory would look like this:
-    * containers.so
-    * include/
-      * array.h
-      * deque.h
-      * ...
-    * test.c
-
-6. The test.c file could then contain, for example:
-   ```
-   #include "include/vector.h"
-   ```
-
-7. And the project would be compiled with:
-   ```
-   clang test.c -o test containers.so -ldl
-   ```
-
-### Static Library
-
-1. Navigate to your C working directory
-
-2. Run:
-   ```
-   git clone ssh://git@github.com/bkthomps/Containers.git
-   cd Containers/src
-   ```
-
-3. To create a static library, run:
-   ```
-   clang *.c -c -O3 -fpic
-   ar rcs containers.a *.o
-   rm *.o
-   ```
-
-4. Now, you can copy and paste the `include` directory and `containers.a` to any project that you would like to use the static library with.
-
-5. Thus, for an example program, the directory would look like this:
-    * containers.a
-    * include/
-      * array.h
-      * deque.h
-      * ...
-    * test.c
-
-6. The test.c file could then contain, for example:
-   ```
-   #include "include/vector.h"
-   ```
-
-7. And the project would be compiled with:
-   ```
-   clang test.c -o test containers.a -ldl
-   ```
+The installation process is as follows:
+1. Clone this repository and navigate to it.
+2. Run the `build.sh` build script.
+3. Follow the instructions that the script prints.
 
 ## Container Types
 The container types that this library contains are described below.
