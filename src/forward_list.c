@@ -253,11 +253,11 @@ int forward_list_remove_at(forward_list me, const int index)
         struct node *const traverse = forward_list_get_node_at(me, index - 1);
         struct node *const backup = traverse->next;
         traverse->next = traverse->next->next;
-        free(backup->data);
-        free(backup);
-        if (!backup->next) {
+        if (!traverse->next) {
             me->tail = NULL;
         }
+        free(backup->data);
+        free(backup);
     }
     me->item_count--;
     return 0;
