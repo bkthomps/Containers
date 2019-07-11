@@ -23,7 +23,7 @@
 /*
  * The Containers library is hosted at: github.com/bkthomps/Containers
  * The author is: Bailey Thompson
- * This local version is: v1.1.0
+ * This local version is: v1.1.1
  */
 
 
