@@ -11,16 +11,15 @@ This library provides various containers. Each container has utility functions t
 Inspired by the C++ standard library; however, implemented using C with different function interfaces as the C++ standard library but with the same container names.
 
 ## Setup
-The `build.sh` script can be used to build either dynamic or static libraries. The script supports clang and gcc.
-
-The benefit of a dynamic library is that changing the `containers.so` library can be done without needing to recompile the codebase which is using the library. Nevertheless, it is slower than a static library.
-
-The benefit of a static library is that it is faster than a dynamic library. However, if the `containers.a` library is modified, the codebase which is using the library needs to be recompiled.
+It is possible to compile this library as either static `.a` or dynamic `.so`:
+1. A static library is slightly faster than a dynamic one, however, if the library is modified, the entire project codebase which uses it will need to be recompiled.
+2. A dynamic library can be changed without recompiling the codebase, assuming no function definitions have changed.
 
 The installation process is as follows:
 1. Clone this repository and navigate to it.
-2. Run the `build.sh` build script.
-3. Follow the instructions that the script prints.
+2. Run `make static_clang`/`make static_gcc` or `make dynamic_clang`/`make dynamic_gcc` for either a static or dynamic library.
+3. Then, you can copy-paste `containers.h` and `containers.a`/`containers.so` into your project to include the containers.
+4. Finally, you remember to link the library by including `containers.a -ldl`/`containers.so -ldl` as an argument.
 
 ## Container Types
 The container types that this library contains are described below.
