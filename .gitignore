@@ -1,4 +1,5 @@
 .idea/*
 cmake-build-debug/*
 docs/*
-
+containers.a
+containers.so

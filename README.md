@@ -17,9 +17,9 @@ It is possible to compile this library as either static `.a` or dynamic `.so`:
 
 The installation process is as follows:
 1. Clone this repository and navigate to it.
-2. Run `make static` or `make dynamic` for either a static or dynamic library.
-3. Then, you can copy-paste `containers.h` and `containers.a` into your project to include the containers.
-4. Finally, you remember to link the library by including `-lcontainers.a` as an argument.
+2. Run `make static_clang`/`make static_gcc` or `make dynamic_clang`/`make dynamic_gcc` for either a static or dynamic library.
+3. Then, you can copy-paste `containers.h` and `containers.a`/`containers.so` into your project to include the containers.
+4. Finally, you remember to link the library by including `containers.a -ldl`/`containers.so -ldl` as an argument.
 
 ## Container Types
 The container types that this library contains are described below.
