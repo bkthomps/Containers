@@ -146,6 +146,7 @@ static void test_trim(void)
 
 static void test_init_out_of_memory(void)
 {
+#if STUB_MALLOC
     fail_malloc = 1;
     assert(!deque_init(sizeof(int)));
     fail_malloc = 1;
@@ -154,10 +155,12 @@ static void test_init_out_of_memory(void)
     fail_malloc = 1;
     delay_fail_malloc = 2;
     assert(!deque_init(sizeof(int)));
+#endif
 }
 
 static void test_trim_out_of_memory(void)
 {
+#if STUB_MALLOC
     deque me = deque_init(sizeof(int));
     int i;
     for (i = 0; i < 32; i++) {
@@ -173,10 +176,12 @@ static void test_trim_out_of_memory(void)
     }
     assert(deque_size(me) == 32);
     assert(!deque_destroy(me));
+#endif
 }
 
 static void test_push_front_out_of_memory(void)
 {
+#if STUB_MALLOC
     deque me = deque_init(sizeof(int));
     int i;
     for (i = 0; i < 5; i++) {
@@ -198,10 +203,12 @@ static void test_push_front_out_of_memory(void)
         deque_get_at(&get, me, i);
     }
     assert(!deque_destroy(me));
+#endif
 }
 
 static void test_push_back_out_of_memory(void)
 {
+#if STUB_MALLOC
     deque me = deque_init(sizeof(int));
     int i;
     for (i = 0; i < 3; i++) {
@@ -223,10 +230,12 @@ static void test_push_back_out_of_memory(void)
         deque_get_at(&get, me, i);
     }
     assert(!deque_destroy(me));
+#endif
 }
 
 static void test_clear_out_of_memory(void)
 {
+#if STUB_MALLOC
     deque me = deque_init(sizeof(int));
     int i;
     for (i = 0; i < 32; i++) {
@@ -251,6 +260,7 @@ static void test_clear_out_of_memory(void)
     }
     assert(deque_size(me) == 32);
     assert(!deque_destroy(me));
+#endif
 }
 
 void test_single_full_block(void)
@@ -318,13 +328,11 @@ void test_deque(void)
     test_invalid_init();
     test_basic();
     test_trim();
-#ifdef STUB_MALLOC
     test_init_out_of_memory();
     test_trim_out_of_memory();
     test_push_front_out_of_memory();
     test_push_back_out_of_memory();
     test_clear_out_of_memory();
-#endif
     test_single_full_block();
     assert(test_puzzle(2, 5) == 4);
     assert(test_puzzle(2, 10) == 5);

@@ -305,6 +305,7 @@ static void test_bad_hash_collision(void)
 
 static void test_init_out_of_memory(void)
 {
+#if STUB_MALLOC
     fail_malloc = 1;
     assert(!unordered_multimap_init(sizeof(int), sizeof(int), hash_int,
                                     compare_int, compare_int));
@@ -315,10 +316,12 @@ static void test_init_out_of_memory(void)
     delay_fail_calloc = 1;
     assert(!unordered_multimap_init(sizeof(int), sizeof(int), hash_int,
                                     compare_int, compare_int));
+#endif
 }
 
 static void test_rehash_out_of_memory(void)
 {
+#if STUB_MALLOC
     int key = 5;
     int value = 7;
     unordered_multimap me = unordered_multimap_init(sizeof(int), sizeof(int),
@@ -333,10 +336,12 @@ static void test_rehash_out_of_memory(void)
     assert(unordered_multimap_size(me) == 1);
     assert(unordered_multimap_contains(me, &key));
     assert(!unordered_multimap_destroy(me));
+#endif
 }
 
 static void test_put_out_of_memory(void)
 {
+#if STUB_MALLOC
     int key = 5;
     int value = 7;
     unordered_multimap me = unordered_multimap_init(sizeof(int), sizeof(int),
@@ -362,10 +367,12 @@ static void test_put_out_of_memory(void)
     delay_fail_malloc = 2;
     assert(unordered_multimap_put(me, &key, &value) == -ENOMEM);
     assert(!unordered_multimap_destroy(me));
+#endif
 }
 
 static void test_resize_out_of_memory(void)
 {
+#if STUB_MALLOC
     int i;
     unordered_multimap me = unordered_multimap_init(sizeof(int), sizeof(int),
                                                     hash_int, compare_int,
@@ -382,10 +389,12 @@ static void test_resize_out_of_memory(void)
         assert(unordered_multimap_contains(me, &i));
     }
     assert(!unordered_multimap_destroy(me));
+#endif
 }
 
 static void test_clear_out_of_memory(void)
 {
+#if STUB_MALLOC
     int key = 5;
     int value = 7;
     unordered_multimap me = unordered_multimap_init(sizeof(int), sizeof(int),
@@ -400,6 +409,7 @@ static void test_clear_out_of_memory(void)
     assert(unordered_multimap_size(me) == 1);
     assert(unordered_multimap_contains(me, &key));
     assert(!unordered_multimap_destroy(me));
+#endif
 }
 
 void test_unordered_multimap(void)
@@ -409,11 +419,9 @@ void test_unordered_multimap(void)
     test_bad_hash();
     test_collision();
     test_bad_hash_collision();
-#ifdef STUB_MALLOC
     test_init_out_of_memory();
     test_rehash_out_of_memory();
     test_put_out_of_memory();
     test_resize_out_of_memory();
     test_clear_out_of_memory();
-#endif
 }

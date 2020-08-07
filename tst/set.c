@@ -463,42 +463,51 @@ static void test_unique_deletion_patterns(void)
 
 static void test_init_out_of_memory(void)
 {
+#if STUB_MALLOC
     fail_malloc = 1;
     assert(!set_init(sizeof(int), compare_int));
+#endif
 }
 
 static void test_put_root_out_of_memory(set me)
 {
+#if STUB_MALLOC
     int key = 2;
     fail_malloc = 1;
     assert(set_put(me, &key) == -ENOMEM);
     fail_malloc = 1;
     delay_fail_malloc = 1;
     assert(set_put(me, &key) == -ENOMEM);
+#endif
 }
 
 static void test_put_on_left_out_of_memory(set me)
 {
+#if STUB_MALLOC
     int key = 1;
     fail_malloc = 1;
     assert(set_put(me, &key) == -ENOMEM);
     fail_malloc = 1;
     delay_fail_malloc = 1;
     assert(set_put(me, &key) == -ENOMEM);
+#endif
 }
 
 static void test_put_on_right_out_of_memory(set me)
 {
+#if STUB_MALLOC
     int key = 3;
     fail_malloc = 1;
     assert(set_put(me, &key) == -ENOMEM);
     fail_malloc = 1;
     delay_fail_malloc = 1;
     assert(set_put(me, &key) == -ENOMEM);
+#endif
 }
 
 static void test_put_out_of_memory(void)
 {
+#if STUB_MALLOC
     int key = 2;
     set me = set_init(sizeof(int), compare_int);
     assert(me);
@@ -507,6 +516,7 @@ static void test_put_out_of_memory(void)
     test_put_on_left_out_of_memory(me);
     test_put_on_right_out_of_memory(me);
     assert(!set_destroy(me));
+#endif
 }
 
 void test_set(void)
@@ -519,8 +529,6 @@ void test_set(void)
     test_stress_add();
     test_stress_remove();
     test_unique_deletion_patterns();
-#ifdef STUB_MALLOC
     test_init_out_of_memory();
     test_put_out_of_memory();
-#endif
 }

@@ -7,7 +7,7 @@
 
 #define STUB_MALLOC 1
 
-#ifdef STUB_MALLOC
+#if STUB_MALLOC
 
 extern int fail_malloc;
 extern int fail_calloc;

@@ -136,6 +136,7 @@ static void test_basic(void)
 
 static void test_init_out_of_memory(void)
 {
+#if STUB_MALLOC
     fail_malloc = 1;
     assert(!priority_queue_init(sizeof(int), compare_int));
     fail_malloc = 1;
@@ -144,10 +145,12 @@ static void test_init_out_of_memory(void)
     fail_malloc = 1;
     delay_fail_malloc = 2;
     assert(!priority_queue_init(sizeof(int), compare_int));
+#endif
 }
 
 static void test_push_out_of_memory(void)
 {
+#if STUB_MALLOC
     int i;
     int get = 0xfacade;
     priority_queue me = priority_queue_init(sizeof(int), compare_int);
@@ -176,14 +179,13 @@ static void test_push_out_of_memory(void)
         assert(get == 10 - i);
     }
     assert(!priority_queue_destroy(me));
+#endif
 }
 
 void test_priority_queue(void)
 {
     test_invalid_init();
     test_basic();
-#ifdef STUB_MALLOC
     test_init_out_of_memory();
     test_push_out_of_memory();
-#endif
 }
