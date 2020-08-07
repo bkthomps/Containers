@@ -278,7 +278,10 @@ int list_remove_at(list me, const int index)
         return -EINVAL;
     }
     traverse = list_get_node_at(me, index);
-    if (index == 0) {
+    if (me->item_count == 1) {
+        me->head = NULL;
+        me->tail = NULL;
+    } else if (index == 0) {
         traverse->next->prev = NULL;
         me->head = traverse->next;
     } else if (index == me->item_count - 1) {
