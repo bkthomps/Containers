@@ -25,3 +25,7 @@ clean:
 
 header:
 	python3 compile_headers.py $(version)
+
+valgrind:
+	valgrind:
+        cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" . ; cmake --build . --target Containers -- -j 2 ; valgrind --leak-check=yes ./Containers
