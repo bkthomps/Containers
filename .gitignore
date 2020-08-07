@@ -3,3 +3,8 @@ cmake-build-debug/*
 docs/*
 containers.a
 containers.so
+CMakeCache.txt
+CMakeFiles/*
+Containers
+Containers.cbp
+cmake_install.cmake
