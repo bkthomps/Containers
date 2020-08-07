@@ -272,6 +272,47 @@ void test_single_full_block(void)
     deque_destroy(me);
 }
 
+struct pair {
+    int cur_node;
+    int cur_cost;
+};
+
+static int test_puzzle(int start_node, int dest_node)
+{
+    deque q = deque_init(sizeof(struct pair));
+    struct pair cur;
+    cur.cur_node = start_node;
+    cur.cur_cost = 0;
+    assert(deque_is_empty(q));
+    deque_push_back(q, &cur);
+    assert(deque_size(q) == 1);
+    while (!deque_is_empty(q)) {
+        int node;
+        int cost;
+        deque_pop_front(&cur, q);
+        node = cur.cur_node;
+        cost = cur.cur_cost;
+        if (node > 2 * dest_node || node < 1) {
+            continue;
+        }
+        if (node == dest_node) {
+            deque_destroy(q);
+            return cost;
+        }
+        cur.cur_cost = cost + 1;
+        cur.cur_node = node - 1;
+        deque_push_back(q, &cur);
+        assert(cur.cur_cost == cost + 1);
+        assert(cur.cur_node == node - 1);
+        cur.cur_node = 2 * node;
+        deque_push_back(q, &cur);
+        assert(cur.cur_cost == cost + 1);
+        assert(cur.cur_node == 2 * node);
+    }
+    deque_destroy(q);
+    return -1;
+}
+
 void test_deque(void)
 {
     test_invalid_init();
@@ -283,4 +324,6 @@ void test_deque(void)
     test_push_back_out_of_memory();
     test_clear_out_of_memory();
     test_single_full_block();
+    assert(test_puzzle(2, 5) == 4);
+    assert(test_puzzle(2, 10) == 5);
 }

@@ -114,6 +114,47 @@ static void test_init_out_of_memory(void)
     assert(!queue_init(sizeof(int)));
 }
 
+struct pair {
+    int cur_node;
+    int cur_cost;
+};
+
+static int test_puzzle(int start_node, int dest_node)
+{
+    queue q = queue_init(sizeof(struct pair));
+    struct pair cur;
+    cur.cur_node = start_node;
+    cur.cur_cost = 0;
+    assert(queue_is_empty(q));
+    queue_push(q, &cur);
+    assert(queue_size(q) == 1);
+    while (!queue_is_empty(q)) {
+        int node;
+        int cost;
+        queue_pop(&cur, q);
+        node = cur.cur_node;
+        cost = cur.cur_cost;
+        if (node > 2 * dest_node || node < 1) {
+            continue;
+        }
+        if (node == dest_node) {
+            queue_destroy(q);
+            return cost;
+        }
+        cur.cur_cost = cost + 1;
+        cur.cur_node = node - 1;
+        queue_push(q, &cur);
+        assert(cur.cur_cost == cost + 1);
+        assert(cur.cur_node == node - 1);
+        cur.cur_node = 2 * node;
+        queue_push(q, &cur);
+        assert(cur.cur_cost == cost + 1);
+        assert(cur.cur_node == 2 * node);
+    }
+    queue_destroy(q);
+    return -1;
+}
+
 void test_queue(void)
 {
     test_invalid_init();
@@ -121,4 +162,6 @@ void test_queue(void)
     test_large_alloc();
     test_automated_trim();
     test_init_out_of_memory();
+    assert(test_puzzle(2, 5) == 4);
+    assert(test_puzzle(2, 10) == 5);
 }
