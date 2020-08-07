@@ -3,7 +3,7 @@ project(Containers C)
 
 set(CMAKE_C_STANDARD 90)
 
-set(CMAKE_C_FLAGS "-Wall -Wextra -Werror -Wpedantic")
+set(CMAKE_C_FLAGS "-Wall -Wextra -Wpedantic -ldl -g -O0 -fprofile-arcs -ftest-coverage")
 
 add_executable(Containers tst/test.c tst/test.h
         src/array.c src/include/array.h tst/array.c
