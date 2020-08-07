@@ -24,6 +24,11 @@
 #include <errno.h>
 #include "include/array.h"
 
+const size_t book_keeping_size = sizeof(size_t);
+const size_t arr_size_offset = 0;
+const size_t data_size_offset = arr_size_offset + book_keeping_size;
+const size_t data_ptr_offset = data_size_offset + book_keeping_size;
+
 /**
  * Initializes an array. If the multiplication of the element count and the
  * data size overflows, it is undefined behavior.
@@ -42,13 +47,13 @@ array array_init(const size_t element_count, const size_t data_size)
     if (data_size == 0) {
         return NULL;
     }
-    init = malloc(2 * sizeof(size_t) + element_count * data_size);
+    init = malloc(data_ptr_offset + element_count * data_size);
     if (!init) {
         return NULL;
     }
-    memcpy(init, &element_count, sizeof(size_t));
-    memcpy(init + sizeof(size_t), &data_size, sizeof(size_t));
-    memset(init + 2 * sizeof(size_t), 0, element_count * data_size);
+    memcpy(init + arr_size_offset, &element_count, book_keeping_size);
+    memcpy(init + data_size_offset, &data_size, book_keeping_size);
+    memset(init + data_ptr_offset, 0, element_count * data_size);
     return init;
 }
 
@@ -62,7 +67,7 @@ array array_init(const size_t element_count, const size_t data_size)
 size_t array_size(array me)
 {
     size_t size;
-    memcpy(&size, me, sizeof(size_t));
+    memcpy(&size, me + arr_size_offset, book_keeping_size);
     return size;
 }
 
@@ -81,9 +86,9 @@ void array_copy_to_array(void *const arr, array me)
 {
     size_t element_count;
     size_t data_size;
-    memcpy(&element_count, me, sizeof(size_t));
-    memcpy(&data_size, me + sizeof(size_t), sizeof(size_t));
-    memcpy(arr, me + 2 * sizeof(size_t), element_count * data_size);
+    memcpy(&element_count, me + arr_size_offset, book_keeping_size);
+    memcpy(&data_size, me + data_size_offset, book_keeping_size);
+    memcpy(arr, me + data_ptr_offset, element_count * data_size);
 }
 
 /**
@@ -104,11 +109,11 @@ void array_copy_to_array(void *const arr, array me)
 void *array_get_data(array me)
 {
     size_t element_count;
-    memcpy(&element_count, me, sizeof(size_t));
+    memcpy(&element_count, me + arr_size_offset, book_keeping_size);
     if (element_count == 0) {
         return NULL;
     }
-    return me + 2 * sizeof(size_t);
+    return me + data_ptr_offset;
 }
 
 /**
@@ -129,12 +134,12 @@ int array_set(array me, const size_t index, void *const data)
 {
     size_t element_count;
     size_t data_size;
-    memcpy(&element_count, me, sizeof(size_t));
+    memcpy(&element_count, me + arr_size_offset, book_keeping_size);
     if (index >= element_count) {
         return -EINVAL;
     }
-    memcpy(&data_size, me + sizeof(size_t), sizeof(size_t));
-    memcpy(me + 2 * sizeof(size_t) + index * data_size, data, data_size);
+    memcpy(&data_size, me + data_size_offset, book_keeping_size);
+    memcpy(me + data_ptr_offset + index * data_size, data, data_size);
     return 0;
 }
 
@@ -157,12 +162,12 @@ int array_get(void *const data, array me, const size_t index)
 {
     size_t element_count;
     size_t data_size;
-    memcpy(&element_count, me, sizeof(size_t));
+    memcpy(&element_count, me + arr_size_offset, book_keeping_size);
     if (index >= element_count) {
         return -EINVAL;
     }
-    memcpy(&data_size, me + sizeof(size_t), sizeof(size_t));
-    memcpy(data, me + 2 * sizeof(size_t) + index * data_size, data_size);
+    memcpy(&data_size, me + data_size_offset, book_keeping_size);
+    memcpy(data, me + data_ptr_offset + index * data_size, data_size);
     return 0;
 }
 
