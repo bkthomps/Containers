@@ -260,6 +260,27 @@ static void test_add_last_out_of_memory(void)
     assert(!list_destroy(me));
 }
 
+void test_remove_all(void)
+{
+    int i;
+    list me = list_init(sizeof(int));
+    for (i = 0; i < 100; i++) {
+        list_add_first(me, &i);
+        assert(list_size(me) == i + 1);
+    }
+    for (i = 0; i < 100; i++) {
+        list_remove_first(me);
+        assert(list_size(me) == 100 - i - 1);
+    }
+    assert(list_is_empty(me));
+    for (i = 0; i < 100; i++) {
+        list_add_first(me, &i);
+        assert(list_size(me) == i + 1);
+    }
+    assert(list_size(me) == 100);
+    assert(!list_destroy(me));
+}
+
 struct pair {
     int cur_node;
     int cur_cost;
@@ -310,6 +331,7 @@ void test_list(void)
     test_add_first_out_of_memory();
     test_add_at_out_of_memory();
     test_add_last_out_of_memory();
+    test_remove_all();
     assert(test_puzzle(2, 5) == 4);
     assert(test_puzzle(2, 10) == 5);
 }
