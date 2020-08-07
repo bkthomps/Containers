@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2019 Bailey Thompson
+ * Copyright (c) 2017-2020 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,14 +24,9 @@
 #include <errno.h>
 #include "include/array.h"
 
-struct internal_array {
-    size_t bytes_per_item;
-    int item_count;
-    void *data;
-};
-
 /**
- * Initializes an array.
+ * Initializes an array. If the multiplication of the element count and the
+ * data size overflows, it is undefined behavior.
  *
  * @param element_count the number of elements in the array; must not be
  *                      negative
@@ -41,27 +36,19 @@ struct internal_array {
  *         initialized due to either invalid input arguments or memory
  *         allocation error
  */
-array array_init(const int element_count, const size_t data_size)
+array array_init(const size_t element_count, const size_t data_size)
 {
-    struct internal_array *init;
-    if (element_count < 0 || data_size == 0) {
+    char *init;
+    if (data_size == 0) {
         return NULL;
     }
-    init = malloc(sizeof(struct internal_array));
+    init = malloc(2 * sizeof(size_t) + element_count * data_size);
     if (!init) {
         return NULL;
     }
-    init->bytes_per_item = data_size;
-    init->item_count = element_count;
-    if (init->item_count == 0) {
-        init->data = NULL;
-        return init;
-    }
-    init->data = calloc((size_t) element_count, data_size);
-    if (!init->data) {
-        free(init);
-        return NULL;
-    }
+    memcpy(init, &element_count, sizeof(size_t));
+    memcpy(init + sizeof(size_t), &data_size, sizeof(size_t));
+    memset(init + 2 * sizeof(size_t), 0, element_count * data_size);
     return init;
 }
 
@@ -72,9 +59,11 @@ array array_init(const int element_count, const size_t data_size)
  *
  * @return the size of the array
  */
-int array_size(array me)
+size_t array_size(array me)
 {
-    return me->item_count;
+    size_t size;
+    memcpy(&size, me, sizeof(size_t));
+    return size;
 }
 
 /**
@@ -90,10 +79,11 @@ int array_size(array me)
  */
 void array_copy_to_array(void *const arr, array me)
 {
-    if (me->item_count == 0) {
-        return;
-    }
-    memcpy(arr, me->data, me->item_count * me->bytes_per_item);
+    size_t element_count;
+    size_t data_size;
+    memcpy(&element_count, me, sizeof(size_t));
+    memcpy(&data_size, me + sizeof(size_t), sizeof(size_t));
+    memcpy(arr, me + 2 * sizeof(size_t), element_count * data_size);
 }
 
 /**
@@ -113,15 +103,12 @@ void array_copy_to_array(void *const arr, array me)
  */
 void *array_get_data(array me)
 {
-    return me->data;
-}
-
-/*
- * Determines if the input is illegal.
- */
-static int array_is_illegal_input(array me, const int index)
-{
-    return index < 0 || index >= me->item_count;
+    size_t element_count;
+    memcpy(&element_count, me, sizeof(size_t));
+    if (element_count == 0) {
+        return NULL;
+    }
+    return me + 2 * sizeof(size_t);
 }
 
 /**
@@ -138,13 +125,16 @@ static int array_is_illegal_input(array me, const int index)
  * @return 0       if no error
  * @return -EINVAL if invalid argument
  */
-int array_set(array me, const int index, void *const data)
+int array_set(array me, const size_t index, void *const data)
 {
-    if (array_is_illegal_input(me, index)) {
+    size_t element_count;
+    size_t data_size;
+    memcpy(&element_count, me, sizeof(size_t));
+    if (index >= element_count) {
         return -EINVAL;
     }
-    memcpy((char *) me->data + index * me->bytes_per_item, data,
-           me->bytes_per_item);
+    memcpy(&data_size, me + sizeof(size_t), sizeof(size_t));
+    memcpy(me + 2 * sizeof(size_t) + index * data_size, data, data_size);
     return 0;
 }
 
@@ -163,13 +153,16 @@ int array_set(array me, const int index, void *const data)
  * @return 0       if no error
  * @return -EINVAL if invalid argument
  */
-int array_get(void *const data, array me, const int index)
+int array_get(void *const data, array me, const size_t index)
 {
-    if (array_is_illegal_input(me, index)) {
+    size_t element_count;
+    size_t data_size;
+    memcpy(&element_count, me, sizeof(size_t));
+    if (index >= element_count) {
         return -EINVAL;
     }
-    memcpy(data, (char *) me->data + index * me->bytes_per_item,
-           me->bytes_per_item);
+    memcpy(&data_size, me + sizeof(size_t), sizeof(size_t));
+    memcpy(data, me + 2 * sizeof(size_t) + index * data_size, data_size);
     return 0;
 }
 
@@ -183,7 +176,6 @@ int array_get(void *const data, array me, const int index)
  */
 array array_destroy(array me)
 {
-    free(me->data);
     free(me);
     return NULL;
 }
