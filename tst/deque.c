@@ -53,10 +53,10 @@ static void test_linear_operations(deque me)
     add = -1;
     deque_push_back(me, &add);
     assert(deque_size(me) == 6);
-    get = 0xdeadbeef;
+    get = 0xfacade;
     deque_get_first(&get, me);
     assert(get == 10);
-    get = 0xdeadbeef;
+    get = 0xfacade;
     deque_get_at(&get, me, 0);
     assert(get == 10);
     deque_get_at(&get, me, 1);
@@ -69,7 +69,7 @@ static void test_linear_operations(deque me)
     assert(get == -2);
     deque_get_at(&get, me, 5);
     assert(get == -1);
-    get = 0xdeadbeef;
+    get = 0xfacade;
     deque_get_last(&get, me);
     assert(get == -1);
     deque_pop_front(&get, me);
@@ -167,7 +167,7 @@ static void test_trim_out_of_memory(void)
     fail_malloc = 1;
     assert(deque_trim(me) == -ENOMEM);
     for (i = 0; i < 32; i++) {
-        int get = 0xdeadbeef;
+        int get = 0xfacade;
         deque_get_at(&get, me, i);
         assert(get == i);
     }
@@ -187,14 +187,14 @@ static void test_push_front_out_of_memory(void)
     assert(deque_push_front(me, &i) == -ENOMEM);
     assert(deque_size(me) == 5);
     for (i = 0; i < 5; i++) {
-        int get = 0xdeadbeef;
+        int get = 0xfacade;
         deque_get_at(&get, me, i);
     }
     fail_malloc = 1;
     assert(deque_push_front(me, &i) == -ENOMEM);
     assert(deque_size(me) == 5);
     for (i = 0; i < 5; i++) {
-        int get = 0xdeadbeef;
+        int get = 0xfacade;
         deque_get_at(&get, me, i);
     }
     assert(!deque_destroy(me));
@@ -212,14 +212,14 @@ static void test_push_back_out_of_memory(void)
     assert(deque_push_back(me, &i) == -ENOMEM);
     assert(deque_size(me) == 3);
     for (i = 0; i < 3; i++) {
-        int get = 0xdeadbeef;
+        int get = 0xfacade;
         deque_get_at(&get, me, i);
     }
     fail_malloc = 1;
     assert(deque_push_back(me, &i) == -ENOMEM);
     assert(deque_size(me) == 3);
     for (i = 0; i < 3; i++) {
-        int get = 0xdeadbeef;
+        int get = 0xfacade;
         deque_get_at(&get, me, i);
     }
     assert(!deque_destroy(me));
@@ -236,7 +236,7 @@ static void test_clear_out_of_memory(void)
     fail_malloc = 1;
     assert(deque_clear(me) == -ENOMEM);
     for (i = 0; i < 32; i++) {
-        int get = 0xdeadbeef;
+        int get = 0xfacade;
         deque_get_at(&get, me, i);
         assert(get == i);
     }
@@ -245,7 +245,7 @@ static void test_clear_out_of_memory(void)
     delay_fail_malloc = 1;
     assert(deque_clear(me) == -ENOMEM);
     for (i = 0; i < 32; i++) {
-        int get = 0xdeadbeef;
+        int get = 0xfacade;
         deque_get_at(&get, me, i);
         assert(get == i);
     }

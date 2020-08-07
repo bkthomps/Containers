@@ -71,9 +71,9 @@ static void test_basic(void)
     assert(me);
     assert(priority_queue_size(me) == 0);
     assert(priority_queue_is_empty(me));
-    item = 0xdeadbeef;
+    item = 0xfacade;
     assert(!priority_queue_pop(&item, me));
-    assert(item == 0xdeadbeef);
+    assert(item == 0xfacade);
     item = 5;
     stub_priority_queue_push(me, &item);
     item = 2;
@@ -108,14 +108,14 @@ static void test_basic(void)
     stub_priority_queue_push(me, &item);
     assert(priority_queue_size(me) == 16);
     assert(!priority_queue_is_empty(me));
-    item = 0xdeadbeef;
+    item = 0xfacade;
     priority_queue_front(&item, me);
     assert(item == 11);
-    item = 0xdeadbeef;
+    item = 0xfacade;
     stub_priority_queue_pop(&item, me);
     assert(item == 11);
     assert(priority_queue_size(me) == 15);
-    item = 0xdeadbeef;
+    item = 0xfacade;
     priority_queue_front(&item, me);
     assert(item == 9);
     latest = item;
@@ -127,9 +127,9 @@ static void test_basic(void)
     }
     priority_queue_clear(me);
     assert(priority_queue_is_empty(me));
-    item = 0xdeadbeef;
+    item = 0xfacade;
     assert(!priority_queue_front(&item, me));
-    assert(item == 0xdeadbeef);
+    assert(item == 0xfacade);
     assert(priority_queue_is_empty(me));
     assert(!priority_queue_destroy(me));
 }
@@ -149,7 +149,7 @@ static void test_init_out_of_memory(void)
 static void test_push_out_of_memory(void)
 {
     int i;
-    int get = 0xdeadbeef;
+    int get = 0xfacade;
     priority_queue me = priority_queue_init(sizeof(int), compare_int);
     for (i = 0; i < 16; i++) {
         assert(priority_queue_push(me, &i) == 0);
@@ -158,7 +158,7 @@ static void test_push_out_of_memory(void)
     fail_malloc = 1;
     assert(priority_queue_push(me, &get) == -ENOMEM);
     for (i = 0; i < 16; i++) {
-        get = 0xdeadbeef;
+        get = 0xfacade;
         assert(priority_queue_pop(&get, me));
         assert(get == 15 - i);
     }
@@ -171,7 +171,7 @@ static void test_push_out_of_memory(void)
     fail_realloc = 1;
     assert(priority_queue_push(me, &get) == -ENOMEM);
     for (i = 0; i < 11; i++) {
-        get = 0xdeadbeef;
+        get = 0xfacade;
         assert(priority_queue_pop(&get, me));
         assert(get == 10 - i);
     }

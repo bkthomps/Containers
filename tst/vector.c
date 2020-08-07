@@ -65,10 +65,10 @@ static void test_linear_operations(vector me)
     add = -2;
     vector_add_last(me, &add);
     assert(vector_size(me) == 6);
-    get = 0xdeadbeef;
+    get = 0xfacade;
     vector_get_first(&get, me);
     assert(get == 10);
-    get = 0xdeadbeef;
+    get = 0xfacade;
     vector_get_at(&get, me, 0);
     assert(get == 10);
     vector_get_at(&get, me, 1);
@@ -81,7 +81,7 @@ static void test_linear_operations(vector me)
     assert(get == 3);
     vector_get_at(&get, me, 5);
     assert(get == -2);
-    get = 0xdeadbeef;
+    get = 0xfacade;
     vector_get_last(&get, me);
     assert(get == -2);
     vector_remove_first(me);
@@ -176,7 +176,7 @@ static void test_vector_of_vectors(void)
         vector inner = NULL;
         vector_get_first(&inner, outer);
         for (j = 0; j < 10; j++) {
-            int num = 0xdeadbeef;
+            int num = 0xfacade;
             vector_get_at(&num, inner, j);
             assert(num == j + 1);
         }
@@ -239,7 +239,7 @@ static void test_set_space_out_of_memory(void)
     assert(vector_size(me) == 7);
     assert(vector_capacity(me) == 8);
     for (i = 0; i < 7; i++) {
-        int get = 0xdeadbeef;
+        int get = 0xfacade;
         vector_get_at(&get, me, i);
         assert(get == i);
     }
@@ -259,7 +259,7 @@ static void test_add_out_of_memory(void)
     assert(vector_size(me) == 7);
     assert(vector_capacity(me) == 8);
     for (i = 0; i < 7; i++) {
-        int get = 0xdeadbeef;
+        int get = 0xfacade;
         vector_get_at(&get, me, i);
         assert(get == i);
     }

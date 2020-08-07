@@ -1,7 +1,5 @@
 #include "test.h"
 
-#define _GNU_SOURCE
-
 #include <dlfcn.h>
 
 #ifndef RTLD_NEXT
@@ -23,7 +21,7 @@ static void *(*real_realloc)(void *, size_t);
 void *malloc(size_t size)
 {
     if (!real_malloc) {
-        real_malloc = dlsym(RTLD_NEXT, "malloc");
+        *(void **) (&real_malloc) = dlsym(RTLD_NEXT, "malloc");
     }
     if (delay_fail_malloc == 0 && fail_malloc == 1) {
         fail_malloc = 0;
@@ -38,7 +36,7 @@ void *malloc(size_t size)
 void *calloc(size_t count, size_t size)
 {
     if (!real_calloc) {
-        real_calloc = dlsym(RTLD_NEXT, "calloc");
+        *(void **) (&real_calloc) = dlsym(RTLD_NEXT, "calloc");
     }
     if (delay_fail_calloc == 0 && fail_calloc == 1) {
         fail_calloc = 0;
@@ -53,7 +51,7 @@ void *calloc(size_t count, size_t size)
 void *realloc(void *ptr, size_t new_size)
 {
     if (!real_realloc) {
-        real_realloc = dlsym(RTLD_NEXT, "realloc");
+        *(void **) (&real_realloc) = dlsym(RTLD_NEXT, "realloc");
     }
     if (delay_fail_realloc == 0 && fail_realloc == 1) {
         fail_realloc = 0;

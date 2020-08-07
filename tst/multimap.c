@@ -478,33 +478,33 @@ static void test_unique_deletion_patterns(void)
 static void test_override_value(void)
 {
     int key = 5;
-    int value = 0xdeadbeef;
+    int value = 0xfacade;
     multimap me = multimap_init(sizeof(int), sizeof(int), compare_int,
                                 compare_int);
     assert(me);
     multimap_get_start(me, &key);
     assert(!multimap_get_next(&value, me));
-    assert(value == 0xdeadbeef);
+    assert(value == 0xfacade);
     value = 17;
     multimap_put(me, &key, &value);
-    value = 0xdeadbeef;
+    value = 0xfacade;
     multimap_get_start(me, &key);
     assert(multimap_get_next(&value, me));
     assert(value == 17);
-    value = 0xdeadbeef;
+    value = 0xfacade;
     assert(!multimap_get_next(&value, me));
-    assert(value == 0xdeadbeef);
+    assert(value == 0xfacade);
     value = 97;
     multimap_put(me, &key, &value);
-    value = 0xdeadbeef;
+    value = 0xfacade;
     multimap_get_start(me, &key);
     assert(multimap_get_next(&value, me));
     assert(value == 17);
     assert(multimap_get_next(&value, me));
     assert(value == 97);
-    value = 0xdeadbeef;
+    value = 0xfacade;
     assert(!multimap_get_next(&value, me));
-    assert(value == 0xdeadbeef);
+    assert(value == 0xfacade);
     assert(multimap_size(me) == 2);
     assert(!multimap_destroy(me));
 }

@@ -131,11 +131,11 @@ static void test_multiple_values_one_key(unordered_multimap me)
     assert(unordered_multimap_count(me, &num) == 2);
     unordered_multimap_get_start(me, &num);
     count = 0;
-    val = 0xdeadbeef;
+    val = 0xfacade;
     while (unordered_multimap_get_next(&val, me)) {
         count++;
         assert(val == 123);
-        val = 0xdeadbeef;
+        val = 0xfacade;
     }
     assert(count == 2);
     assert(unordered_multimap_remove(me, &num, &value));
@@ -185,7 +185,7 @@ static void test_stress_clear(unordered_multimap me)
     unordered_multimap_rehash(me);
     assert(hash_count == 1000);
     unordered_multimap_clear(me);
-    key = 0xdeadbeef;
+    key = 0xfacade;
     assert(!unordered_multimap_remove(me, &key, &value));
     assert(unordered_multimap_size(me) == 0);
     assert(unordered_multimap_is_empty(me));

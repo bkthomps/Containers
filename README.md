@@ -51,4 +51,3 @@ Data structures which adapt other containers to enhance functionality.
 * stack - adapts a container to provide stack (last-in first-out)
 * queue - adapts a container to provide queue (first-in first-out)
 * priority_queue - adapts a container to provide priority queue
-
