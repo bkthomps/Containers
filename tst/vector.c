@@ -218,20 +218,20 @@ static void test_dynamic(void)
     assert(!vector_destroy(str_vector));
 }
 
+#if STUB_MALLOC
 static void test_init_out_of_memory(void)
 {
-#if STUB_MALLOC
     fail_malloc = 1;
     assert(!vector_init(sizeof(int)));
     fail_malloc = 1;
     delay_fail_malloc = 1;
     assert(!vector_init(sizeof(int)));
-#endif
 }
+#endif
 
+#if STUB_MALLOC
 static void test_set_space_out_of_memory(void)
 {
-#if STUB_MALLOC
     vector me = vector_init(sizeof(int));
     int i;
     for (i = 0; i < 7; i++) {
@@ -247,12 +247,12 @@ static void test_set_space_out_of_memory(void)
         assert(get == i);
     }
     assert(!vector_destroy(me));
-#endif
 }
+#endif
 
+#if STUB_MALLOC
 static void test_add_out_of_memory(void)
 {
-#if STUB_MALLOC
     vector me = vector_init(sizeof(int));
     int i;
     for (i = 0; i < 7; i++) {
@@ -269,8 +269,8 @@ static void test_add_out_of_memory(void)
         assert(get == i);
     }
     assert(!vector_destroy(me));
-#endif
 }
+#endif
 
 void test_vector(void)
 {
@@ -278,7 +278,9 @@ void test_vector(void)
     test_basic();
     test_vector_of_vectors();
     test_dynamic();
+#if STUB_MALLOC
     test_init_out_of_memory();
     test_set_space_out_of_memory();
     test_add_out_of_memory();
+#endif
 }

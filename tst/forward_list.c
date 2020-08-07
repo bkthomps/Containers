@@ -169,17 +169,17 @@ static void test_add_back(void)
     assert(!forward_list_destroy(me));
 }
 
+#if STUB_MALLOC
 static void test_init_out_of_memory(void)
 {
-#if STUB_MALLOC
     fail_malloc = 1;
     assert(!forward_list_init(sizeof(int)));
-#endif
 }
+#endif
 
+#if STUB_MALLOC
 static void test_add_first_out_of_memory(void)
 {
-#if STUB_MALLOC
     int i;
     forward_list me = forward_list_init(sizeof(int));
     assert(me);
@@ -205,12 +205,12 @@ static void test_add_first_out_of_memory(void)
         assert(get == 15 - i);
     }
     assert(!forward_list_destroy(me));
-#endif
 }
+#endif
 
+#if STUB_MALLOC
 static void test_add_at_out_of_memory(void)
 {
-#if STUB_MALLOC
     int get;
     int i;
     forward_list me = forward_list_init(sizeof(int));
@@ -253,12 +253,12 @@ static void test_add_at_out_of_memory(void)
     assert(forward_list_get_at(&get, me, 15) == 0);
     assert(get == 982);
     assert(!forward_list_destroy(me));
-#endif
 }
+#endif
 
+#if STUB_MALLOC
 static void test_add_last_out_of_memory(void)
 {
-#if STUB_MALLOC
     int i;
     forward_list me = forward_list_init(sizeof(int));
     assert(me);
@@ -284,16 +284,18 @@ static void test_add_last_out_of_memory(void)
         assert(get == i);
     }
     assert(!forward_list_destroy(me));
-#endif
 }
+#endif
 
 void test_forward_list(void)
 {
     test_invalid_init();
     test_basic();
     test_add_back();
+#if STUB_MALLOC
     test_init_out_of_memory();
     test_add_first_out_of_memory();
     test_add_at_out_of_memory();
     test_add_last_out_of_memory();
+#endif
 }

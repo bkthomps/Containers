@@ -241,19 +241,19 @@ static void test_collision(void)
     assert(!unordered_multiset_destroy(me));
 }
 
+#if STUB_MALLOC
 static void test_init_out_of_memory(void)
 {
-#if STUB_MALLOC
     fail_malloc = 1;
     assert(!unordered_multiset_init(sizeof(int), hash_int, compare_int));
     fail_calloc = 1;
     assert(!unordered_multiset_init(sizeof(int), hash_int, compare_int));
-#endif
 }
+#endif
 
+#if STUB_MALLOC
 static void test_rehash_out_of_memory(void)
 {
-#if STUB_MALLOC
     int key = 5;
     unordered_multiset me = unordered_multiset_init(sizeof(int), hash_int,
                                                     compare_int);
@@ -266,12 +266,12 @@ static void test_rehash_out_of_memory(void)
     assert(unordered_multiset_size(me) == 1);
     assert(unordered_multiset_contains(me, &key));
     assert(!unordered_multiset_destroy(me));
-#endif
 }
+#endif
 
+#if STUB_MALLOC
 static void test_put_out_of_memory(void)
 {
-#if STUB_MALLOC
     int key = 5;
     unordered_multiset me = unordered_multiset_init(sizeof(int), bad_hash_int,
                                                     compare_int);
@@ -289,12 +289,12 @@ static void test_put_out_of_memory(void)
     delay_fail_malloc = 1;
     assert(unordered_multiset_put(me, &key) == -ENOMEM);
     assert(!unordered_multiset_destroy(me));
-#endif
 }
+#endif
 
+#if STUB_MALLOC
 static void test_resize_out_of_memory(void)
 {
-#if STUB_MALLOC
     int i;
     unordered_multiset me = unordered_multiset_init(sizeof(int), hash_int,
                                                     compare_int);
@@ -310,12 +310,12 @@ static void test_resize_out_of_memory(void)
         assert(unordered_multiset_contains(me, &i));
     }
     assert(!unordered_multiset_destroy(me));
-#endif
 }
+#endif
 
+#if STUB_MALLOC
 static void test_clear_out_of_memory(void)
 {
-#if STUB_MALLOC
     int key = 5;
     unordered_multiset me = unordered_multiset_init(sizeof(int), hash_int,
                                                     compare_int);
@@ -328,8 +328,8 @@ static void test_clear_out_of_memory(void)
     assert(unordered_multiset_size(me) == 1);
     assert(unordered_multiset_contains(me, &key));
     assert(!unordered_multiset_destroy(me));
-#endif
 }
+#endif
 
 void test_unordered_multiset(void)
 {
@@ -337,9 +337,11 @@ void test_unordered_multiset(void)
     test_basic();
     test_bad_hash();
     test_collision();
+#if STUB_MALLOC
     test_init_out_of_memory();
     test_rehash_out_of_memory();
     test_put_out_of_memory();
     test_resize_out_of_memory();
     test_clear_out_of_memory();
+#endif
 }
