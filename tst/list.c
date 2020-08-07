@@ -327,10 +327,12 @@ void test_list(void)
 {
     test_invalid_init();
     test_basic();
+#ifdef STUB_MALLOC
     test_init_out_of_memory();
     test_add_first_out_of_memory();
     test_add_at_out_of_memory();
     test_add_last_out_of_memory();
+#endif
     test_remove_all();
     assert(test_puzzle(2, 5) == 4);
     assert(test_puzzle(2, 10) == 5);

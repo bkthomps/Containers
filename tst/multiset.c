@@ -542,6 +542,8 @@ void test_multiset(void)
     test_stress_remove();
     test_unique_deletion_patterns();
     test_multiple_operations();
+#ifdef STUB_MALLOC
     test_init_out_of_memory();
     test_put_out_of_memory();
+#endif
 }

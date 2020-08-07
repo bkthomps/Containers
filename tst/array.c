@@ -91,5 +91,7 @@ void test_array(void)
     test_invalid_init();
     test_empty_array();
     test_not_empty_array();
+#ifdef STUB_MALLOC
     test_init_out_of_memory();
+#endif
 }

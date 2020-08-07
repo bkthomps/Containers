@@ -623,6 +623,8 @@ void test_multimap(void)
     test_unique_deletion_patterns();
     test_override_value();
     test_multiple_operations();
+#ifdef STUB_MALLOC
     test_init_out_of_memory();
     test_put_out_of_memory();
+#endif
 }

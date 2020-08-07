@@ -519,6 +519,8 @@ void test_set(void)
     test_stress_add();
     test_stress_remove();
     test_unique_deletion_patterns();
+#ifdef STUB_MALLOC
     test_init_out_of_memory();
     test_put_out_of_memory();
+#endif
 }

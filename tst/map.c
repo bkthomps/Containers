@@ -560,6 +560,8 @@ void test_map(void)
     test_stress_remove();
     test_unique_deletion_patterns();
     test_override_value();
+#ifdef STUB_MALLOC
     test_init_out_of_memory();
     test_put_out_of_memory();
+#endif
 }

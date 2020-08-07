@@ -409,9 +409,11 @@ void test_unordered_multimap(void)
     test_bad_hash();
     test_collision();
     test_bad_hash_collision();
+#ifdef STUB_MALLOC
     test_init_out_of_memory();
     test_rehash_out_of_memory();
     test_put_out_of_memory();
     test_resize_out_of_memory();
     test_clear_out_of_memory();
+#endif
 }

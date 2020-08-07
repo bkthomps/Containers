@@ -161,7 +161,9 @@ void test_queue(void)
     test_basic();
     test_large_alloc();
     test_automated_trim();
+#ifdef STUB_MALLOC
     test_init_out_of_memory();
+#endif
     assert(test_puzzle(2, 5) == 4);
     assert(test_puzzle(2, 10) == 5);
 }

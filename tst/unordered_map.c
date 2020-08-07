@@ -298,9 +298,11 @@ void test_unordered_map(void)
     test_invalid_init();
     test_basic();
     test_bad_hash();
+#ifdef STUB_MALLOC
     test_init_out_of_memory();
     test_rehash_out_of_memory();
     test_put_out_of_memory();
     test_resize_out_of_memory();
     test_clear_out_of_memory();
+#endif
 }

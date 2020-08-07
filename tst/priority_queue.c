@@ -182,6 +182,8 @@ void test_priority_queue(void)
 {
     test_invalid_init();
     test_basic();
+#ifdef STUB_MALLOC
     test_init_out_of_memory();
     test_push_out_of_memory();
+#endif
 }

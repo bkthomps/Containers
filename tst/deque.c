@@ -318,11 +318,13 @@ void test_deque(void)
     test_invalid_init();
     test_basic();
     test_trim();
+#ifdef STUB_MALLOC
     test_init_out_of_memory();
     test_trim_out_of_memory();
     test_push_front_out_of_memory();
     test_push_back_out_of_memory();
     test_clear_out_of_memory();
+#endif
     test_single_full_block();
     assert(test_puzzle(2, 5) == 4);
     assert(test_puzzle(2, 10) == 5);

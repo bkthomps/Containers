@@ -272,7 +272,9 @@ void test_vector(void)
     test_basic();
     test_vector_of_vectors();
     test_dynamic();
+#ifdef STUB_MALLOC
     test_init_out_of_memory();
     test_set_space_out_of_memory();
     test_add_out_of_memory();
+#endif
 }
