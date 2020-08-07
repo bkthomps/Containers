@@ -22,3 +22,6 @@ dynamic_gcc:
 clean:
 	rm -f containers.a
 	rm -f containers.so
+
+header:
+	python3 compile_headers.py $(version)

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2019 Bailey Thompson
+ * Copyright (c) 2017-2020 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,7 @@
 /*
  * The Containers library is hosted at: github.com/bkthomps/Containers
  * The author is: Bailey Thompson
- * This local version is: v1.1.1
+ * This local version is: v1.1.2
  */
 
 
