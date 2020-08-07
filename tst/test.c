@@ -1,5 +1,4 @@
 #include "test.h"
-#define STUB_MALLOC 1
 
 #if STUB_MALLOC
 
