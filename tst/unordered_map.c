@@ -202,6 +202,7 @@ static void test_bad_hash(void)
     assert(!unordered_map_destroy(me));
 }
 
+#if STUB_MALLOC
 static void test_init_out_of_memory(void)
 {
     fail_malloc = 1;
@@ -211,7 +212,9 @@ static void test_init_out_of_memory(void)
     assert(!unordered_map_init(sizeof(int), sizeof(int), bad_hash_int,
                                compare_int));
 }
+#endif
 
+#if STUB_MALLOC
 static void test_rehash_out_of_memory(void)
 {
     int key = 5;
@@ -228,7 +231,9 @@ static void test_rehash_out_of_memory(void)
     assert(unordered_map_contains(me, &key));
     assert(!unordered_map_destroy(me));
 }
+#endif
 
+#if STUB_MALLOC
 static void test_put_out_of_memory(void)
 {
     int key = 5;
@@ -256,7 +261,9 @@ static void test_put_out_of_memory(void)
     assert(unordered_map_put(me, &key, &value) == -ENOMEM);
     assert(!unordered_map_destroy(me));
 }
+#endif
 
+#if STUB_MALLOC
 static void test_resize_out_of_memory(void)
 {
     int i;
@@ -275,7 +282,9 @@ static void test_resize_out_of_memory(void)
     }
     assert(!unordered_map_destroy(me));
 }
+#endif
 
+#if STUB_MALLOC
 static void test_clear_out_of_memory(void)
 {
     int key = 5;
@@ -292,15 +301,18 @@ static void test_clear_out_of_memory(void)
     assert(unordered_map_contains(me, &key));
     assert(!unordered_map_destroy(me));
 }
+#endif
 
 void test_unordered_map(void)
 {
     test_invalid_init();
     test_basic();
     test_bad_hash();
+#if STUB_MALLOC
     test_init_out_of_memory();
     test_rehash_out_of_memory();
     test_put_out_of_memory();
     test_resize_out_of_memory();
     test_clear_out_of_memory();
+#endif
 }

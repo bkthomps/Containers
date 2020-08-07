@@ -1,7 +1,8 @@
 #include "test.h"
 
-#define _GNU_SOURCE
+#if STUB_MALLOC
 
+#define _GNU_SOURCE
 #include <dlfcn.h>
 
 #ifndef RTLD_NEXT
@@ -64,6 +65,8 @@ void *realloc(void *ptr, size_t new_size)
     }
     return real_realloc(ptr, new_size);
 }
+
+#endif /* STUB_MALLOC */
 
 int main(void)
 {

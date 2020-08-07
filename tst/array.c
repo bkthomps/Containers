@@ -78,6 +78,7 @@ static void test_not_empty_array(void)
     assert(!me);
 }
 
+#if STUB_MALLOC
 static void test_init_out_of_memory(void)
 {
     fail_malloc = 1;
@@ -85,11 +86,14 @@ static void test_init_out_of_memory(void)
     fail_calloc = 1;
     assert(!array_init(10, sizeof(int)));
 }
+#endif
 
 void test_array(void)
 {
     test_invalid_init();
     test_empty_array();
     test_not_empty_array();
+#if STUB_MALLOC
     test_init_out_of_memory();
+#endif
 }

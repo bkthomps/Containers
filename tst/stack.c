@@ -67,6 +67,7 @@ static void test_automated_trim(void)
     assert(!stack_destroy(me));
 }
 
+#if STUB_MALLOC
 static void test_init_out_of_memory(void)
 {
     fail_malloc = 1;
@@ -81,11 +82,14 @@ static void test_init_out_of_memory(void)
     delay_fail_malloc = 3;
     assert(!stack_init(sizeof(int)));
 }
+#endif
 
 void test_stack(void)
 {
     test_invalid_init();
     test_basic();
     test_automated_trim();
+#if STUB_MALLOC
     test_init_out_of_memory();
+#endif
 }

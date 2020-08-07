@@ -150,12 +150,15 @@ static void test_basic(void)
     assert(!list_destroy(me));
 }
 
+#if STUB_MALLOC
 static void test_init_out_of_memory(void)
 {
     fail_malloc = 1;
     assert(!list_init(sizeof(int)));
 }
+#endif
 
+#if STUB_MALLOC
 static void test_add_first_out_of_memory(void)
 {
     int i;
@@ -184,7 +187,9 @@ static void test_add_first_out_of_memory(void)
     }
     assert(!list_destroy(me));
 }
+#endif
 
+#if STUB_MALLOC
 static void test_add_at_out_of_memory(void)
 {
     int get;
@@ -230,7 +235,9 @@ static void test_add_at_out_of_memory(void)
     assert(get == 982);
     assert(!list_destroy(me));
 }
+#endif
 
+#if STUB_MALLOC
 static void test_add_last_out_of_memory(void)
 {
     int i;
@@ -259,6 +266,7 @@ static void test_add_last_out_of_memory(void)
     }
     assert(!list_destroy(me));
 }
+#endif
 
 void test_remove_all(void)
 {
@@ -327,10 +335,12 @@ void test_list(void)
 {
     test_invalid_init();
     test_basic();
+#if STUB_MALLOC
     test_init_out_of_memory();
     test_add_first_out_of_memory();
     test_add_at_out_of_memory();
     test_add_last_out_of_memory();
+#endif
     test_remove_all();
     assert(test_puzzle(2, 5) == 4);
     assert(test_puzzle(2, 10) == 5);

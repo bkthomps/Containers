@@ -99,6 +99,7 @@ static void test_automated_trim(void)
     assert(!queue_destroy(me));
 }
 
+#if STUB_MALLOC
 static void test_init_out_of_memory(void)
 {
     fail_malloc = 1;
@@ -113,6 +114,7 @@ static void test_init_out_of_memory(void)
     delay_fail_malloc = 3;
     assert(!queue_init(sizeof(int)));
 }
+#endif
 
 struct pair {
     int cur_node;
@@ -161,7 +163,9 @@ void test_queue(void)
     test_basic();
     test_large_alloc();
     test_automated_trim();
+#if STUB_MALLOC
     test_init_out_of_memory();
+#endif
     assert(test_puzzle(2, 5) == 4);
     assert(test_puzzle(2, 10) == 5);
 }

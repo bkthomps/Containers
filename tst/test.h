@@ -5,6 +5,10 @@
 #include <errno.h>
 #include <assert.h>
 
+#define STUB_MALLOC 1
+
+#if STUB_MALLOC
+
 extern int fail_malloc;
 extern int fail_calloc;
 extern int fail_realloc;
@@ -12,6 +16,8 @@ extern int fail_realloc;
 extern int delay_fail_malloc;
 extern int delay_fail_calloc;
 extern int delay_fail_realloc;
+
+#endif /* STUB_MALLOC */
 
 void test_array(void);
 void test_vector(void);

@@ -492,12 +492,15 @@ static void test_override_value(void)
     assert(!map_destroy(me));
 }
 
+#if STUB_MALLOC
 static void test_init_out_of_memory(void)
 {
     fail_malloc = 1;
     assert(!map_init(sizeof(int), sizeof(int), compare_int));
 }
+#endif
 
+#if STUB_MALLOC
 static void test_put_root_out_of_memory(map me)
 {
     int key = 2;
@@ -510,7 +513,9 @@ static void test_put_root_out_of_memory(map me)
     delay_fail_malloc = 2;
     assert(map_put(me, &key, &key) == -ENOMEM);
 }
+#endif
 
+#if STUB_MALLOC
 static void test_put_on_left_out_of_memory(map me)
 {
     int key = 1;
@@ -523,7 +528,9 @@ static void test_put_on_left_out_of_memory(map me)
     delay_fail_malloc = 2;
     assert(map_put(me, &key, &key) == -ENOMEM);
 }
+#endif
 
+#if STUB_MALLOC
 static void test_put_on_right_out_of_memory(map me)
 {
     int key = 3;
@@ -536,7 +543,9 @@ static void test_put_on_right_out_of_memory(map me)
     delay_fail_malloc = 2;
     assert(map_put(me, &key, &key) == -ENOMEM);
 }
+#endif
 
+#if STUB_MALLOC
 static void test_put_out_of_memory(void)
 {
     int key = 2;
@@ -548,6 +557,7 @@ static void test_put_out_of_memory(void)
     test_put_on_right_out_of_memory(me);
     assert(!map_destroy(me));
 }
+#endif
 
 void test_map(void)
 {
@@ -560,6 +570,8 @@ void test_map(void)
     test_stress_remove();
     test_unique_deletion_patterns();
     test_override_value();
+#if STUB_MALLOC
     test_init_out_of_memory();
     test_put_out_of_memory();
+#endif
 }
