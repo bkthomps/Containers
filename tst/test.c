@@ -1,5 +1,7 @@
 #include "test.h"
 
+#define _GNU_SOURCE
+
 #include <dlfcn.h>
 
 #ifndef RTLD_NEXT
