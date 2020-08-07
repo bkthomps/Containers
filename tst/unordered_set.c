@@ -135,7 +135,7 @@ static void test_stress_remove(unordered_set me)
 static void test_stress_clear(unordered_set me)
 {
     int i;
-    int p = 0xdeadbeef;
+    int p = 0xfacade;
     for (i = 5000; i < 6000; i++) {
         unordered_set_put(me, &i);
         assert(unordered_set_contains(me, &i));

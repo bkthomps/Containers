@@ -57,10 +57,10 @@ static void test_linear_operations(forward_list me)
     add = -2;
     forward_list_add_last(me, &add);
     assert(forward_list_size(me) == 6);
-    get = 0xdeadbeef;
+    get = 0xfacade;
     forward_list_get_first(&get, me);
     assert(get == 10);
-    get = 0xdeadbeef;
+    get = 0xfacade;
     forward_list_get_at(&get, me, 0);
     assert(get == 10);
     forward_list_get_at(&get, me, 1);
@@ -73,7 +73,7 @@ static void test_linear_operations(forward_list me)
     assert(get == 3);
     forward_list_get_at(&get, me, 5);
     assert(get == -2);
-    get = 0xdeadbeef;
+    get = 0xfacade;
     forward_list_get_last(&get, me);
     assert(get == -2);
     forward_list_remove_first(me);
@@ -81,7 +81,7 @@ static void test_linear_operations(forward_list me)
     forward_list_remove_last(me);
     get = 34;
     forward_list_add_at(me, 0, &get);
-    first = 0xdeadbeef;
+    first = 0xfacade;
     forward_list_get_first(&first, me);
     assert(first == get);
     forward_list_remove_first(me);
@@ -123,7 +123,7 @@ static void test_array_copy(forward_list me)
 
 static void test_invalid_index(forward_list me)
 {
-    int set = 0xdeadbeef;
+    int set = 0xfacade;
     assert(forward_list_set_at(me, 4, &set) == -EINVAL);
     assert(forward_list_get_at(&set, me, 4) == -EINVAL);
     assert(forward_list_remove_at(me, 4) == -EINVAL);
@@ -156,7 +156,7 @@ static void test_add_back(void)
     forward_list me = forward_list_init(sizeof(int));
     assert(me);
     for (i = 1; i < 10000; i++) {
-        int get = 0xdeadbeef;
+        int get = 0xfacade;
         forward_list_add_last(me, &i);
         forward_list_get_last(&get, me);
         assert(get == i);
@@ -188,7 +188,7 @@ static void test_add_first_out_of_memory(void)
     assert(forward_list_add_first(me, &i) == -ENOMEM);
     assert(forward_list_size(me) == 16);
     for (i = 0; i < 16; i++) {
-        int get = 0xdeadbeef;
+        int get = 0xfacade;
         assert(forward_list_get_at(&get, me, i) == 0);
         assert(get == 15 - i);
     }
@@ -197,7 +197,7 @@ static void test_add_first_out_of_memory(void)
     assert(forward_list_add_first(me, &i) == -ENOMEM);
     assert(forward_list_size(me) == 16);
     for (i = 0; i < 16; i++) {
-        int get = 0xdeadbeef;
+        int get = 0xfacade;
         assert(forward_list_get_at(&get, me, i) == 0);
         assert(get == 15 - i);
     }
@@ -221,30 +221,30 @@ static void test_add_at_out_of_memory(void)
     fail_malloc = 1;
     assert(forward_list_add_at(me, 5, &i) == -ENOMEM);
     assert(forward_list_size(me) == 16);
-    get = 0xdeadbeef;
+    get = 0xfacade;
     assert(forward_list_get_at(&get, me, 0) == 0);
     assert(get == 157);
     for (i = 1; i < 15; i++) {
-        get = 0xdeadbeef;
+        get = 0xfacade;
         assert(forward_list_get_at(&get, me, i) == 0);
         assert(get == i);
     }
-    get = 0xdeadbeef;
+    get = 0xfacade;
     assert(forward_list_get_at(&get, me, 15) == 0);
     assert(get == 982);
     fail_malloc = 1;
     delay_fail_malloc = 1;
     assert(forward_list_add_at(me, 5, &i) == -ENOMEM);
     assert(forward_list_size(me) == 16);
-    get = 0xdeadbeef;
+    get = 0xfacade;
     assert(forward_list_get_at(&get, me, 0) == 0);
     assert(get == 157);
     for (i = 1; i < 15; i++) {
-        get = 0xdeadbeef;
+        get = 0xfacade;
         assert(forward_list_get_at(&get, me, i) == 0);
         assert(get == i);
     }
-    get = 0xdeadbeef;
+    get = 0xfacade;
     assert(forward_list_get_at(&get, me, 15) == 0);
     assert(get == 982);
     assert(!forward_list_destroy(me));
@@ -263,7 +263,7 @@ static void test_add_last_out_of_memory(void)
     assert(forward_list_add_last(me, &i) == -ENOMEM);
     assert(forward_list_size(me) == 16);
     for (i = 0; i < 16; i++) {
-        int get = 0xdeadbeef;
+        int get = 0xfacade;
         assert(forward_list_get_at(&get, me, i) == 0);
         assert(get == i);
     }
@@ -272,7 +272,7 @@ static void test_add_last_out_of_memory(void)
     assert(forward_list_add_last(me, &i) == -ENOMEM);
     assert(forward_list_size(me) == 16);
     for (i = 0; i < 16; i++) {
-        int get = 0xdeadbeef;
+        int get = 0xfacade;
         assert(forward_list_get_at(&get, me, i) == 0);
         assert(get == i);
     }

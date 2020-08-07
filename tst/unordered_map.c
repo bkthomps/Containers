@@ -49,7 +49,7 @@ static void test_put(unordered_map me)
     assert(unordered_map_size(me) == 1);
     assert(!unordered_map_is_empty(me));
     assert(unordered_map_contains(me, &key));
-    value = 0xdeadbeef;
+    value = 0xfacade;
     unordered_map_get(&value, me, &key);
     assert(value == 5);
     key = 7;
@@ -154,7 +154,7 @@ static void test_stress_clear(unordered_map me)
     unordered_map_rehash(me);
     assert(hash_count == 1000);
     unordered_map_clear(me);
-    key = 0xdeadbeef;
+    key = 0xfacade;
     assert(!unordered_map_remove(me, &key));
     assert(unordered_map_size(me) == 0);
     assert(unordered_map_is_empty(me));
@@ -196,9 +196,9 @@ static void test_bad_hash(void)
     unordered_map_rehash(me);
     assert(unordered_map_size(me) == 3);
     key = 5;
-    value = 0xdeadbeef;
+    value = 0xfacade;
     assert(!unordered_map_get(&value, me, &key));
-    assert(value == 0xdeadbeef);
+    assert(value == 0xfacade);
     assert(!unordered_map_destroy(me));
 }
 

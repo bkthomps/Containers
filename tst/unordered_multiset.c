@@ -157,7 +157,7 @@ static void test_stress_clear(unordered_multiset me)
     unordered_multiset_rehash(me);
     assert(hash_count == 1000);
     unordered_multiset_clear(me);
-    key = 0xdeadbeef;
+    key = 0xfacade;
     assert(!unordered_multiset_remove(me, &key));
     assert(unordered_multiset_size(me) == 0);
     assert(unordered_multiset_is_empty(me));

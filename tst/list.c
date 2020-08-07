@@ -57,10 +57,10 @@ static void test_linear_operations(list me)
     add = -2;
     list_add_last(me, &add);
     assert(list_size(me) == 6);
-    get = 0xdeadbeef;
+    get = 0xfacade;
     list_get_first(&get, me);
     assert(get == 10);
-    get = 0xdeadbeef;
+    get = 0xfacade;
     list_get_at(&get, me, 0);
     assert(get == 10);
     list_get_at(&get, me, 1);
@@ -73,7 +73,7 @@ static void test_linear_operations(list me)
     assert(get == 3);
     list_get_at(&get, me, 5);
     assert(get == -2);
-    get = 0xdeadbeef;
+    get = 0xfacade;
     list_get_last(&get, me);
     assert(get == -2);
     list_remove_first(me);
@@ -81,7 +81,7 @@ static void test_linear_operations(list me)
     list_remove_last(me);
     get = 34;
     list_add_at(me, 0, &get);
-    first = 0xdeadbeef;
+    first = 0xfacade;
     list_get_first(&first, me);
     assert(first == get);
     list_remove_first(me);
@@ -123,7 +123,7 @@ static void test_array_copy(list me)
 
 static void test_invalid_index(list me)
 {
-    int set = 0xdeadbeef;
+    int set = 0xfacade;
     assert(list_set_at(me, 4, &set) == -EINVAL);
     assert(list_get_at(&set, me, 4) == -EINVAL);
     assert(list_remove_at(me, 4) == -EINVAL);
@@ -169,7 +169,7 @@ static void test_add_first_out_of_memory(void)
     assert(list_add_first(me, &i) == -ENOMEM);
     assert(list_size(me) == 16);
     for (i = 0; i < 16; i++) {
-        int get = 0xdeadbeef;
+        int get = 0xfacade;
         assert(list_get_at(&get, me, i) == 0);
         assert(get == 15 - i);
     }
@@ -178,7 +178,7 @@ static void test_add_first_out_of_memory(void)
     assert(list_add_first(me, &i) == -ENOMEM);
     assert(list_size(me) == 16);
     for (i = 0; i < 16; i++) {
-        int get = 0xdeadbeef;
+        int get = 0xfacade;
         assert(list_get_at(&get, me, i) == 0);
         assert(get == 15 - i);
     }
@@ -202,30 +202,30 @@ static void test_add_at_out_of_memory(void)
     fail_malloc = 1;
     assert(list_add_at(me, 5, &i) == -ENOMEM);
     assert(list_size(me) == 16);
-    get = 0xdeadbeef;
+    get = 0xfacade;
     assert(list_get_at(&get, me, 0) == 0);
     assert(get == 157);
     for (i = 1; i < 15; i++) {
-        get = 0xdeadbeef;
+        get = 0xfacade;
         assert(list_get_at(&get, me, i) == 0);
         assert(get == i);
     }
-    get = 0xdeadbeef;
+    get = 0xfacade;
     assert(list_get_at(&get, me, 15) == 0);
     assert(get == 982);
     fail_malloc = 1;
     delay_fail_malloc = 1;
     assert(list_add_at(me, 5, &i) == -ENOMEM);
     assert(list_size(me) == 16);
-    get = 0xdeadbeef;
+    get = 0xfacade;
     assert(list_get_at(&get, me, 0) == 0);
     assert(get == 157);
     for (i = 1; i < 15; i++) {
-        get = 0xdeadbeef;
+        get = 0xfacade;
         assert(list_get_at(&get, me, i) == 0);
         assert(get == i);
     }
-    get = 0xdeadbeef;
+    get = 0xfacade;
     assert(list_get_at(&get, me, 15) == 0);
     assert(get == 982);
     assert(!list_destroy(me));
@@ -244,7 +244,7 @@ static void test_add_last_out_of_memory(void)
     assert(list_add_last(me, &i) == -ENOMEM);
     assert(list_size(me) == 16);
     for (i = 0; i < 16; i++) {
-        int get = 0xdeadbeef;
+        int get = 0xfacade;
         assert(list_get_at(&get, me, i) == 0);
         assert(get == i);
     }
@@ -253,7 +253,7 @@ static void test_add_last_out_of_memory(void)
     assert(list_add_last(me, &i) == -ENOMEM);
     assert(list_size(me) == 16);
     for (i = 0; i < 16; i++) {
-        int get = 0xdeadbeef;
+        int get = 0xfacade;
         assert(list_get_at(&get, me, i) == 0);
         assert(get == i);
     }

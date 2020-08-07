@@ -476,14 +476,14 @@ static void test_override_value(void)
     assert(value == 17);
     map_put(me, &key, &value);
     key = 5;
-    value = 0xdeafbeef;
+    value = 0xfacade;
     map_get(&value, me, &key);
     assert(key == 5);
     assert(value == 17);
     value = 97;
     map_put(me, &key, &value);
     key = 5;
-    value = 0xdeafbeef;
+    value = 0xfacade;
     map_get(&value, me, &key);
     assert(key == 5);
     assert(value != 17);
