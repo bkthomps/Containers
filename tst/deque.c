@@ -198,13 +198,9 @@ static void test_stress(void)
 #if STUB_MALLOC
 static void test_init_out_of_memory(void)
 {
-    fail_malloc = 1;
+    fail_calloc = 1;
     assert(!deque_init(sizeof(int)));
     fail_malloc = 1;
-    delay_fail_malloc = 1;
-    assert(!deque_init(sizeof(int)));
-    fail_malloc = 1;
-    delay_fail_malloc = 2;
     assert(!deque_init(sizeof(int)));
 }
 #endif
@@ -293,7 +289,7 @@ static void test_clear_out_of_memory(void)
         deque_push_back(me, &i);
     }
     assert(deque_size(me) == 32);
-    fail_malloc = 1;
+    fail_calloc = 1;
     assert(deque_clear(me) == -ENOMEM);
     for (i = 0; i < 32; i++) {
         int get = 0xfacade;
@@ -302,7 +298,6 @@ static void test_clear_out_of_memory(void)
     }
     assert(deque_size(me) == 32);
     fail_malloc = 1;
-    delay_fail_malloc = 1;
     assert(deque_clear(me) == -ENOMEM);
     for (i = 0; i < 32; i++) {
         int get = 0xfacade;
@@ -380,11 +375,11 @@ void test_deque(void)
     test_basic();
     test_trim();
     test_stress();
-#if 0 /* STUB_MALLOC */
+#if STUB_MALLOC
     test_init_out_of_memory();
     test_trim_out_of_memory();
-    test_push_front_out_of_memory();
-    test_push_back_out_of_memory();
+    //test_push_front_out_of_memory(); TODO: uncomment
+    //test_push_back_out_of_memory(); TODO: uncomment
     test_clear_out_of_memory();
 #endif
     test_single_full_block();
