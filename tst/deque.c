@@ -37,6 +37,9 @@ static void test_copy(deque me)
     deque_copy_to_array(trimmed, me);
     assert(deque_size(me) == 3);
     for (i = 0; i < 3; i++) {
+        get = 0xfacade;
+        deque_get_at(&get, me, i);
+        assert(get == 10 - i);
         assert(10 - i == trimmed[i]);
     }
 }

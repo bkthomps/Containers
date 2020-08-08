@@ -139,7 +139,7 @@ void deque_copy_to_array(void *const arr, deque me)
     const size_t end_inner_index = (me->end_index - 1) % BLOCK_SIZE;
     const size_t first_block_length = BLOCK_SIZE < deque_size(me)
                                       ? BLOCK_SIZE - start_inner_index
-                                      : deque_size(me) - start_inner_index;
+                                      : deque_size(me);
     if (deque_is_empty(me)) {
         return;
     }
