@@ -24,15 +24,16 @@
 #include <errno.h>
 #include "include/deque.h"
 
-static const size_t BLOCK_SIZE = 1024;
+static const size_t BLOCK_SIZE_FACTOR = 512;
 static const size_t INITIAL_BLOCK_COUNT = 8;
 static const double RESIZE_RATIO = 1.5;
 
 struct internal_deque {
     size_t data_size;
+    size_t block_size;
+    size_t block_count;
     size_t start_index;
     size_t end_index;
-    size_t block_count;
     char **data;
 };
 
@@ -57,21 +58,23 @@ deque deque_init(const size_t data_size)
         return NULL;
     }
     init->data_size = data_size;
-    init->start_index = BLOCK_SIZE * INITIAL_BLOCK_COUNT / 2;
-    init->end_index = init->start_index;
+    init->block_size = init->data_size * BLOCK_SIZE_FACTOR;
     init->block_count = INITIAL_BLOCK_COUNT;
+    init->start_index = init->block_size * init->block_count / 2;
+    init->end_index = init->start_index;
     init->data = calloc(init->block_count, sizeof(char *));
     if (!init->data) {
         free(init);
         return NULL;
     }
-    block = malloc(BLOCK_SIZE * init->data_size);
+    block = malloc(init->block_size * init->data_size);
     if (!block) {
         free(init->data);
         free(init);
         return NULL;
     }
-    memcpy(init->data + init->start_index / BLOCK_SIZE, &block, sizeof(char *));
+    memcpy(init->data + init->start_index / init->block_size, &block,
+           sizeof(char *));
     return init;
 }
 
@@ -112,9 +115,9 @@ int deque_is_empty(deque me)
  */
 int deque_trim(deque me)
 {
-    const size_t start_block_index = me->start_index / BLOCK_SIZE;
+    const size_t start_block_index = me->start_index / me->block_size;
     const size_t end_block_index = deque_is_empty(me) ? start_block_index :
-                                   (me->end_index - 1) / BLOCK_SIZE;
+                                   (me->end_index - 1) / me->block_size;
     const size_t updated_block_count = end_block_index - start_block_index + 1;
     char **updated_data = malloc(updated_block_count * sizeof(char *));
     if (!updated_data) {
@@ -123,9 +126,9 @@ int deque_trim(deque me)
     memcpy(updated_data, me->data + start_block_index,
            updated_block_count * sizeof(char *));
     free(me->data);
-    me->start_index -= start_block_index * BLOCK_SIZE;
-    me->end_index -= start_block_index * BLOCK_SIZE;
     me->block_count = updated_block_count;
+    me->start_index -= start_block_index * me->block_size;
+    me->end_index -= start_block_index * me->block_size;
     me->data = updated_data;
     return 0;
 }
@@ -146,13 +149,13 @@ void deque_copy_to_array(void *const arr, deque me)
     char *block;
     size_t i;
     size_t size_offset;
-    const size_t start_block_index = me->start_index / BLOCK_SIZE;
-    const size_t start_inner_index = me->start_index % BLOCK_SIZE;
-    const size_t end_block_index = (me->end_index - 1) / BLOCK_SIZE;
-    const size_t end_inner_index = (me->end_index - 1) % BLOCK_SIZE;
+    const size_t start_block_index = me->start_index / me->block_size;
+    const size_t start_inner_index = me->start_index % me->block_size;
+    const size_t end_block_index = (me->end_index - 1) / me->block_size;
+    const size_t end_inner_index = (me->end_index - 1) % me->block_size;
     const size_t first_block_length =
-            BLOCK_SIZE - start_inner_index < deque_size(me)
-            ? BLOCK_SIZE - start_inner_index : deque_size(me);
+            me->block_size - start_inner_index < deque_size(me)
+            ? me->block_size - start_inner_index : deque_size(me);
     if (deque_is_empty(me)) {
         return;
     }
@@ -161,8 +164,9 @@ void deque_copy_to_array(void *const arr, deque me)
     memcpy(arr, block + start_inner_index * me->data_size, size_offset);
     for (i = start_block_index + 1; i < end_block_index; i++) {
         memcpy(&block, me->data + i, sizeof(char *));
-        memcpy((char *) arr + size_offset, block, BLOCK_SIZE * me->data_size);
-        size_offset += BLOCK_SIZE * me->data_size;
+        memcpy((char *) arr + size_offset, block,
+               me->block_size * me->data_size);
+        size_offset += me->block_size * me->data_size;
     }
     if (end_block_index != start_block_index) {
         memcpy(&block, me->data + end_block_index, sizeof(char *));
@@ -198,17 +202,18 @@ int deque_push_front(deque me, void *const data)
         memset(temp, 0, added_blocks * sizeof(char *));
         me->data = temp;
         me->block_count += added_blocks;
-        me->start_index += added_blocks * BLOCK_SIZE;
-        me->end_index += added_blocks * BLOCK_SIZE;
+        me->start_index += added_blocks * me->block_size;
+        me->end_index += added_blocks * me->block_size;
     }
-    if (me->start_index % BLOCK_SIZE == 0) {
+    if (me->start_index % me->block_size == 0) {
         char *block;
-        const size_t previous_block_index = me->start_index / BLOCK_SIZE - 1;
+        const size_t previous_block_index =
+                me->start_index / me->block_size - 1;
         memcpy(&block, me->data + previous_block_index, sizeof(char *));
         if (block) {
             goto copy_element;
         }
-        block = malloc(BLOCK_SIZE * me->data_size);
+        block = malloc(me->block_size * me->data_size);
         if (!block) {
             return -ENOMEM;
         }
@@ -218,8 +223,8 @@ int deque_push_front(deque me, void *const data)
     me->start_index--;
     {
         char *block;
-        const size_t block_index = me->start_index / BLOCK_SIZE;
-        const size_t inner_index = me->start_index % BLOCK_SIZE;
+        const size_t block_index = me->start_index / me->block_size;
+        const size_t inner_index = me->start_index % me->block_size;
         memcpy(&block, me->data + block_index, sizeof(char *));
         memcpy(block + inner_index * me->data_size, data, me->data_size);
     }
@@ -241,7 +246,7 @@ int deque_push_front(deque me, void *const data)
  */
 int deque_push_back(deque me, void *const data)
 {
-    if (me->end_index == me->block_count * BLOCK_SIZE) {
+    if (me->end_index == me->block_count * me->block_size) {
         const size_t updated_block_count =
                 (size_t) (me->block_count * RESIZE_RATIO) + 1;
         const size_t added_blocks = updated_block_count - me->block_count;
@@ -250,17 +255,17 @@ int deque_push_back(deque me, void *const data)
             return -ENOMEM;
         }
         memset(temp + me->block_count, 0, added_blocks * sizeof(char *));
-        me->data = temp;
         me->block_count += added_blocks;
+        me->data = temp;
     }
-    if (me->end_index % BLOCK_SIZE == 0) {
+    if (me->end_index % me->block_size == 0) {
         char *block;
-        const size_t tentative_block_index = me->end_index / BLOCK_SIZE;
+        const size_t tentative_block_index = me->end_index / me->block_size;
         memcpy(&block, me->data + tentative_block_index, sizeof(char *));
         if (block) {
             goto copy_element;
         }
-        block = malloc(BLOCK_SIZE * me->data_size);
+        block = malloc(me->block_size * me->data_size);
         if (!block) {
             return -ENOMEM;
         }
@@ -269,8 +274,8 @@ int deque_push_back(deque me, void *const data)
     copy_element:
     {
         char *block;
-        const size_t block_index = me->end_index / BLOCK_SIZE;
-        const size_t inner_index = me->end_index % BLOCK_SIZE;
+        const size_t block_index = me->end_index / me->block_size;
+        const size_t inner_index = me->end_index % me->block_size;
         memcpy(&block, me->data + block_index, sizeof(char *));
         memcpy(block + inner_index * me->data_size, data, me->data_size);
     }
@@ -295,8 +300,8 @@ int deque_push_back(deque me, void *const data)
 int deque_pop_front(void *const data, deque me)
 {
     char *block;
-    const size_t block_index = me->start_index / BLOCK_SIZE;
-    const size_t inner_index = me->start_index % BLOCK_SIZE;
+    const size_t block_index = me->start_index / me->block_size;
+    const size_t inner_index = me->start_index % me->block_size;
     if (deque_is_empty(me)) {
         return -EINVAL;
     }
@@ -323,8 +328,8 @@ int deque_pop_front(void *const data, deque me)
 int deque_pop_back(void *const data, deque me)
 {
     char *block;
-    const size_t block_index = (me->end_index - 1) / BLOCK_SIZE;
-    const size_t inner_index = (me->end_index - 1) % BLOCK_SIZE;
+    const size_t block_index = (me->end_index - 1) / me->block_size;
+    const size_t inner_index = (me->end_index - 1) % me->block_size;
     if (deque_is_empty(me)) {
         return -EINVAL;
     }
@@ -369,8 +374,8 @@ int deque_set_first(deque me, void *const data)
 int deque_set_at(deque me, size_t index, void *const data)
 {
     char *block;
-    const size_t block_index = (index + me->start_index) / BLOCK_SIZE;
-    const size_t inner_index = (index + me->start_index) % BLOCK_SIZE;
+    const size_t block_index = (index + me->start_index) / me->block_size;
+    const size_t inner_index = (index + me->start_index) % me->block_size;
     if (index >= deque_size(me)) {
         return -EINVAL;
     }
@@ -432,8 +437,8 @@ int deque_get_first(void *const data, deque me)
 int deque_get_at(void *const data, deque me, size_t index)
 {
     char *block;
-    const size_t block_index = (index + me->start_index) / BLOCK_SIZE;
-    const size_t inner_index = (index + me->start_index) % BLOCK_SIZE;
+    const size_t block_index = (index + me->start_index) / me->block_size;
+    const size_t inner_index = (index + me->start_index) % me->block_size;
     if (index >= deque_size(me)) {
         return -EINVAL;
     }
@@ -476,7 +481,7 @@ int deque_clear(deque me)
     if (!updated_data) {
         return -ENOMEM;
     }
-    updated_block = malloc(BLOCK_SIZE * me->data_size);
+    updated_block = malloc(me->block_size * me->data_size);
     if (!updated_block) {
         free(updated_data);
         return -ENOMEM;
@@ -487,11 +492,11 @@ int deque_clear(deque me)
         free(block);
     }
     free(me->data);
-    me->start_index = BLOCK_SIZE * INITIAL_BLOCK_COUNT / 2;
-    me->end_index = me->start_index;
     me->block_count = INITIAL_BLOCK_COUNT;
+    me->start_index = me->block_size * me->block_count / 2;
+    me->end_index = me->start_index;
     me->data = updated_data;
-    memcpy(me->data + me->start_index / BLOCK_SIZE, &updated_block,
+    memcpy(me->data + me->start_index / me->block_size, &updated_block,
            sizeof(char *));
     return 0;
 }
