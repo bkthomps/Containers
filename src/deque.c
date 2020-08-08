@@ -457,8 +457,30 @@ int deque_get_last(void *const data, deque me)
  */
 int deque_clear(deque me)
 {
-    // TODO: implement
-    return -1;
+    size_t i;
+    char *updated_block;
+    char **updated_data = calloc(INITIAL_BLOCK_COUNT, sizeof(char *));
+    if (!updated_data) {
+        return -ENOMEM;
+    }
+    updated_block = malloc(BLOCK_SIZE * me->data_size);
+    if (!updated_block) {
+        free(updated_data);
+        return -ENOMEM;
+    }
+    for (i = 0; i < me->block_count; i++) {
+        char *block;
+        memcpy(&block, me->data + i, sizeof(char *));
+        free(block);
+    }
+    free(me->data);
+    me->start_index = BLOCK_SIZE * INITIAL_BLOCK_COUNT / 2;
+    me->end_index = me->start_index;
+    me->block_count = INITIAL_BLOCK_COUNT;
+    me->data = updated_data;
+    memcpy(me->data + me->start_index / BLOCK_SIZE, &updated_block,
+           sizeof(char *));
+    return 0;
 }
 
 /**
@@ -473,8 +495,8 @@ deque deque_destroy(deque me)
 {
     size_t i;
     for (i = 0; i < me->block_count; i++) {
-        char *block = NULL;
-        memcpy(block, me->data + i * sizeof(char *), sizeof(char *));
+        char *block;
+        memcpy(&block, me->data + i, sizeof(char *));
         free(block);
     }
     free(me->data);
