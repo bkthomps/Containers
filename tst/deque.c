@@ -195,12 +195,32 @@ static void test_stress(void)
     deque_destroy(me);
 }
 
+static void test_array_copy(void)
+{
+    int i = 0xfacade;
+    int arr[1500] = {0};
+    deque me = deque_init(sizeof(int));
+    deque_copy_to_array(&i, me);
+    assert(i == 0xfacade);
+    for (i = 0; i < 1500; i++) {
+        deque_push_back(me, &i);
+    }
+    deque_copy_to_array(&arr, me);
+    for (i = 0; i < 1500; i++) {
+        assert(arr[i] == i);
+    }
+    deque_destroy(me);
+}
+
 #if STUB_MALLOC
 static void test_init_out_of_memory(void)
 {
     fail_calloc = 1;
     assert(!deque_init(sizeof(int)));
     fail_malloc = 1;
+    assert(!deque_init(sizeof(int)));
+    fail_malloc = 1;
+    delay_fail_malloc = 1;
     assert(!deque_init(sizeof(int)));
 }
 #endif
@@ -375,6 +395,7 @@ void test_deque(void)
     test_basic();
     test_trim();
     test_stress();
+    test_array_copy();
 #if STUB_MALLOC
     test_init_out_of_memory();
     test_trim_out_of_memory();
