@@ -129,7 +129,32 @@ int deque_trim(deque me)
  */
 void deque_copy_to_array(void *const arr, deque me)
 {
-    // TODO: implement
+    char *block;
+    size_t i;
+    size_t size_offset;
+    const size_t start_block_index = me->start_index / BLOCK_SIZE;
+    const size_t start_inner_index = me->start_index % BLOCK_SIZE;
+    const size_t end_block_index = (me->end_index - 1) / BLOCK_SIZE;
+    const size_t end_inner_index = (me->end_index - 1) % BLOCK_SIZE;
+    const size_t first_block_length = BLOCK_SIZE < deque_size(me)
+                                      ? BLOCK_SIZE - start_inner_index
+                                      : deque_size(me) - start_inner_index;
+    if (deque_is_empty(me)) {
+        return;
+    }
+    size_offset = first_block_length * me->data_size;
+    memcpy(&block, me->data + start_block_index, sizeof(char *));
+    memcpy(arr, block + start_inner_index * me->data_size, size_offset);
+    for (i = start_block_index + 1; i < end_block_index; i++) {
+        memcpy(&block, me->data + i, sizeof(char *));
+        memcpy((char *) arr + size_offset, block, BLOCK_SIZE * me->data_size);
+        size_offset += BLOCK_SIZE * me->data_size;
+    }
+    if (end_block_index != start_block_index) {
+        memcpy(&block, me->data + end_block_index, sizeof(char *));
+        memcpy((char *) arr + size_offset, block,
+               (end_inner_index + 1) * me->data_size);
+    }
 }
 
 /**
@@ -155,9 +180,10 @@ int deque_push_front(deque me, void *const data)
         if (!temp) {
             return -ENOMEM;
         }
-        memmove(temp + added_blocks, temp, sizeof(char *));
+        memmove(temp + added_blocks, temp, me->block_count * sizeof(char *));
         memset(temp, 0, added_blocks * sizeof(char *));
         me->data = temp;
+        me->block_count += added_blocks;
         me->start_index += added_blocks * BLOCK_SIZE;
         me->end_index += added_blocks * BLOCK_SIZE;
     }
