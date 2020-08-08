@@ -214,11 +214,11 @@ static void test_array_copy(void)
     deque_copy_to_array(&i, me);
     assert(i == 0xfacade);
     for (i = 0; i < 3000; i++) {
-        deque_push_back(me, &i);
+        deque_push_front(me, &i);
     }
     deque_copy_to_array(&arr, me);
     for (i = 0; i < 3000; i++) {
-        assert(arr[i] == i);
+        assert(arr[i] == 2999 - i);
     }
 }
 
