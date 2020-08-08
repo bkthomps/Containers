@@ -198,18 +198,29 @@ static void test_stress(void)
 static void test_array_copy(void)
 {
     int i = 0xfacade;
-    int arr[1500] = {0};
+    int arr[3000] = {0};
     deque me = deque_init(sizeof(int));
     deque_copy_to_array(&i, me);
     assert(i == 0xfacade);
-    for (i = 0; i < 1500; i++) {
+    for (i = 0; i < 3000; i++) {
         deque_push_back(me, &i);
     }
     deque_copy_to_array(&arr, me);
-    for (i = 0; i < 1500; i++) {
+    for (i = 0; i < 3000; i++) {
         assert(arr[i] == i);
     }
     deque_destroy(me);
+    deque_clear(me);
+    i = 0xfacade;
+    deque_copy_to_array(&i, me);
+    assert(i == 0xfacade);
+    for (i = 0; i < 3000; i++) {
+        deque_push_back(me, &i);
+    }
+    deque_copy_to_array(&arr, me);
+    for (i = 0; i < 3000; i++) {
+        assert(arr[i] == i);
+    }
 }
 
 #if STUB_MALLOC
