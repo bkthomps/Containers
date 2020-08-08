@@ -24,8 +24,8 @@
 #include <errno.h>
 #include "include/deque.h"
 
-static const size_t BLOCK_SIZE = 8; /* TODO: change to 1024 after testing */
-static const size_t INITIAL_BLOCK_COUNT = 1; /* TODO: change to 8 after testing */
+static const size_t BLOCK_SIZE = 1024;
+static const size_t INITIAL_BLOCK_COUNT = 8;
 static const double RESIZE_RATIO = 1.5;
 
 struct internal_deque {
@@ -150,9 +150,9 @@ void deque_copy_to_array(void *const arr, deque me)
     const size_t start_inner_index = me->start_index % BLOCK_SIZE;
     const size_t end_block_index = (me->end_index - 1) / BLOCK_SIZE;
     const size_t end_inner_index = (me->end_index - 1) % BLOCK_SIZE;
-    const size_t first_block_length = BLOCK_SIZE < deque_size(me)
-                                      ? BLOCK_SIZE - start_inner_index
-                                      : deque_size(me);
+    const size_t first_block_length =
+            BLOCK_SIZE - start_inner_index < deque_size(me)
+            ? BLOCK_SIZE - start_inner_index : deque_size(me);
     if (deque_is_empty(me)) {
         return;
     }
