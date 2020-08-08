@@ -281,7 +281,16 @@ int deque_push_back(deque me, void *const data)
  */
 int deque_pop_front(void *const data, deque me)
 {
-    // TODO: implement
+    char *block;
+    const size_t block_index = me->start_index / BLOCK_SIZE;
+    const size_t inner_index = me->start_index % BLOCK_SIZE;
+    if (deque_is_empty(me)) {
+        return -EINVAL;
+    }
+    memcpy(&block, me->data + block_index, sizeof(char *));
+    memcpy(data, block + inner_index * me->data_size, me->data_size);
+    me->start_index++;
+    return 0;
 }
 
 /**
@@ -300,7 +309,16 @@ int deque_pop_front(void *const data, deque me)
  */
 int deque_pop_back(void *const data, deque me)
 {
-    // TODO: implement
+    char *block;
+    const size_t block_index = (me->end_index - 1) / BLOCK_SIZE;
+    const size_t inner_index = (me->end_index - 1) % BLOCK_SIZE;
+    if (deque_is_empty(me)) {
+        return -EINVAL;
+    }
+    memcpy(&block, me->data + block_index, sizeof(char *));
+    memcpy(data, block + inner_index * me->data_size, me->data_size);
+    me->end_index--;
+    return 0;
 }
 
 /**

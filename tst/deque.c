@@ -15,7 +15,7 @@ static void test_copy(deque me)
     int i;
     for (i = 0; i < 10; i++) {
         deque_push_front(me, &val[i]);
-        get = 0;
+        get = 0xfacade;
         deque_get_first(&get, me);
         assert(get == val[i]);
     }
@@ -23,12 +23,12 @@ static void test_copy(deque me)
     assert(!deque_is_empty(me));
     deque_copy_to_array(get_arr, me);
     for (i = 0; i < 10; i++) {
-        get = 0;
+        get = 0xfacade;
         deque_get_at(&get, me, i);
         assert(get == val[9 - i]);
         assert(get_arr[i] == val[9 - i]);
     }
-    get = 5;
+    get = 0xfacade;
     deque_trim(me);
     for (i = 0; i < 7; i++) {
         deque_pop_back(&get, me);
