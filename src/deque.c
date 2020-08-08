@@ -112,9 +112,22 @@ int deque_is_empty(deque me)
  */
 int deque_trim(deque me)
 {
-    // TODO: implement (code assumes current index is valid)
-    // TODO: trim at minimum to init. block count with one block being non-null
-    return -1;
+    const size_t start_block_index = me->start_index / BLOCK_SIZE;
+    const size_t end_block_index = deque_is_empty(me) ? start_block_index :
+                                   (me->end_index - 1) / BLOCK_SIZE;
+    const size_t updated_block_count = end_block_index - start_block_index + 1;
+    char **updated_data = malloc(updated_block_count * sizeof(char *));
+    if (!updated_data) {
+        return -ENOMEM;
+    }
+    memcpy(updated_data, me->data + start_block_index,
+           updated_block_count * sizeof(char *));
+    free(me->data);
+    me->start_index -= start_block_index * BLOCK_SIZE;
+    me->end_index -= start_block_index * BLOCK_SIZE;
+    me->block_count = updated_block_count;
+    me->data = updated_data;
+    return 0;
 }
 
 /**
