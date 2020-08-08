@@ -24,7 +24,7 @@
 #include <errno.h>
 #include "include/deque.h"
 
-static const size_t BLOCK_SIZE = 8;
+static const size_t BLOCK_SIZE = 8; /* TODO: change to 1024 after testing */
 static const size_t INITIAL_BLOCK_COUNT = 1;
 static const double RESIZE_RATIO = 1.5;
 
