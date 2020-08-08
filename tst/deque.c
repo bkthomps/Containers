@@ -139,11 +139,27 @@ static void test_trim(void)
 {
     deque me = deque_init(sizeof(int));
     int i;
+    assert(deque_is_empty(me));
+    deque_trim(me);
+    assert(deque_is_empty(me));
     for (i = 0; i < 100; i++) {
         int get;
         deque_push_back(me, &i);
         deque_pop_front(&get, me);
     }
+    assert(deque_is_empty(me));
+    deque_trim(me);
+    assert(deque_is_empty(me));
+    for (i = 0; i < 100; i++) {
+        deque_push_back(me, &i);
+    }
+    for (i = 0; i < 100; i++) {
+        int get = 0xfacade;
+        deque_get_at(&get, me, i);
+    }
+    assert(deque_size(me) == 100);
+    deque_trim(me);
+    assert(deque_size(me) == 100);
     deque_destroy(me);
 }
 
