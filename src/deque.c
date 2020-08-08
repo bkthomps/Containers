@@ -112,7 +112,8 @@ int deque_is_empty(deque me)
  */
 int deque_trim(deque me)
 {
-    // TODO: implement
+    // TODO: implement (code assumes current index is valid)
+    // TODO: trim at minimum to init. block count with one block being non-null
     return -1;
 }
 
@@ -188,13 +189,19 @@ int deque_push_front(deque me, void *const data)
         me->end_index += added_blocks * BLOCK_SIZE;
     }
     if (me->start_index % BLOCK_SIZE == 0) {
-        size_t previous_block_index = me->start_index / BLOCK_SIZE - 1;
-        char *block = malloc(BLOCK_SIZE * me->data_size);
+        char *block;
+        const size_t previous_block_index = me->start_index / BLOCK_SIZE - 1;
+        memcpy(&block, me->data + previous_block_index, sizeof(char *));
+        if (block) {
+            goto copy_element;
+        }
+        block = malloc(BLOCK_SIZE * me->data_size);
         if (!block) {
             return -ENOMEM;
         }
         memcpy(me->data + previous_block_index, &block, sizeof(char *));
     }
+    copy_element:
     me->start_index--;
     {
         char *block;
@@ -221,7 +228,41 @@ int deque_push_front(deque me, void *const data)
  */
 int deque_push_back(deque me, void *const data)
 {
-    // TODO: implement
+    if (me->end_index == me->block_count * BLOCK_SIZE) {
+        const size_t updated_block_count =
+                (size_t) (me->block_count * RESIZE_RATIO) + 1;
+        const size_t added_blocks = updated_block_count - me->block_count;
+        char **temp = realloc(me->data, updated_block_count * sizeof(char *));
+        if (!temp) {
+            return -ENOMEM;
+        }
+        memset(temp + me->block_count, 0, added_blocks * sizeof(char *));
+        me->data = temp;
+        me->block_count += added_blocks;
+    }
+    if (me->end_index % BLOCK_SIZE == 0) {
+        char *block;
+        const size_t tentative_block_index = me->end_index / BLOCK_SIZE;
+        memcpy(&block, me->data + tentative_block_index, sizeof(char *));
+        if (block) {
+            goto copy_element;
+        }
+        block = malloc(BLOCK_SIZE * me->data_size);
+        if (!block) {
+            return -ENOMEM;
+        }
+        memcpy(me->data + tentative_block_index, &block, sizeof(char *));
+    }
+    copy_element:
+    {
+        char *block;
+        const size_t block_index = me->end_index / BLOCK_SIZE;
+        const size_t inner_index = me->end_index % BLOCK_SIZE;
+        memcpy(&block, me->data + block_index, sizeof(char *));
+        memcpy(block + inner_index * me->data_size, data, me->data_size);
+    }
+    me->end_index++;
+    return 0;
 }
 
 /**

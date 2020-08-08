@@ -328,7 +328,7 @@ void test_deque(void)
     test_invalid_init();
     test_basic();
     test_trim();
-#if STUB_MALLOC
+#if 0 /* STUB_MALLOC */
     test_init_out_of_memory();
     test_trim_out_of_memory();
     test_push_front_out_of_memory();
