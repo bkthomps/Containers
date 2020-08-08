@@ -209,7 +209,6 @@ static void test_array_copy(void)
     for (i = 0; i < 3000; i++) {
         assert(arr[i] == i);
     }
-    deque_destroy(me);
     deque_clear(me);
     i = 0xfacade;
     deque_copy_to_array(&i, me);
@@ -410,8 +409,8 @@ void test_deque(void)
 #if STUB_MALLOC
     test_init_out_of_memory();
     test_trim_out_of_memory();
-    //test_push_front_out_of_memory(); TODO: uncomment
-    //test_push_back_out_of_memory(); TODO: uncomment
+    /* test_push_front_out_of_memory(); TODO: uncomment */
+    /* test_push_back_out_of_memory(); TODO: uncomment */
     test_clear_out_of_memory();
 #endif
     test_single_full_block();
