@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2019 Bailey Thompson
+ * Copyright (c) 2017-2020 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,7 +34,7 @@ typedef struct internal_deque *deque;
 deque deque_init(size_t data_size);
 
 /* Utility */
-int deque_size(deque me);
+size_t deque_size(deque me);
 int deque_is_empty(deque me);
 int deque_trim(deque me);
 void deque_copy_to_array(void *arr, deque me);
@@ -49,12 +49,12 @@ int deque_pop_back(void *data, deque me);
 
 /* Setting */
 int deque_set_first(deque me, void *data);
-int deque_set_at(deque me, int index, void *data);
+int deque_set_at(deque me, size_t index, void *data);
 int deque_set_last(deque me, void *data);
 
 /* Getting */
 int deque_get_first(void *data, deque me);
-int deque_get_at(void *data, deque me, int index);
+int deque_get_at(void *data, deque me, size_t index);
 int deque_get_last(void *data, deque me);
 
 /* Ending */
