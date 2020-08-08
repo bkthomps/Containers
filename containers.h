@@ -303,19 +303,19 @@ unordered_multimap unordered_multimap_destroy(unordered_multimap me);
 /**
  * The array data structure, which is a static contiguous array.
  */
-typedef struct internal_array *array;
+typedef char *array;
 
 /* Starting */
-array array_init(int element_count, size_t data_size);
+array array_init(size_t element_count, size_t data_size);
 
 /* Utility */
-int array_size(array me);
+size_t array_size(array me);
 void array_copy_to_array(void *arr, array me);
 void *array_get_data(array me);
 
 /* Accessing */
-int array_set(array me, int index, void *data);
-int array_get(void *data, array me, int index);
+int array_set(array me, size_t index, void *data);
+int array_get(void *data, array me, size_t index);
 
 /* Ending */
 array array_destroy(array me);

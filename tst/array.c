@@ -3,7 +3,6 @@
 
 static void test_invalid_init(void)
 {
-    assert(!array_init(-1, sizeof(int)));
     assert(!array_init(1, 0));
 }
 
@@ -82,8 +81,6 @@ static void test_not_empty_array(void)
 static void test_init_out_of_memory(void)
 {
     fail_malloc = 1;
-    assert(!array_init(10, sizeof(int)));
-    fail_calloc = 1;
     assert(!array_init(10, sizeof(int)));
 }
 #endif
