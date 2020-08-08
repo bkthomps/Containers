@@ -147,6 +147,38 @@ static void test_trim(void)
     deque_destroy(me);
 }
 
+static void test_stress(void)
+{
+    int i;
+    deque me = deque_init(sizeof(int));
+    for (i = -1000; i < 1000; i++) {
+        int val = 7 * i;
+        deque_push_back(me, &val);
+    }
+    assert(deque_size(me) == 2000);
+    for (i = -1000; i < 1000; i++) {
+        int get = 0xfacade;
+        deque_get_at(&get, me, i + 1000);
+        assert(get == 7 * i);
+    }
+    assert(deque_size(me) == 2000);
+    deque_clear(me);
+    assert(deque_size(me) == 0);
+    assert(deque_is_empty(me));
+    for (i = -1000; i < 1000; i++) {
+        int val = 7 * i;
+        deque_push_front(me, &val);
+    }
+    assert(deque_size(me) == 2000);
+    for (i = -1000; i < 1000; i++) {
+        int get = 0xfacade;
+        deque_get_at(&get, me, i + 1000);
+        assert(get == -7 * (i + 1));
+    }
+    assert(deque_size(me) == 2000);
+    deque_destroy(me);
+}
+
 #if STUB_MALLOC
 static void test_init_out_of_memory(void)
 {
@@ -331,6 +363,7 @@ void test_deque(void)
     test_invalid_init();
     test_basic();
     test_trim();
+    test_stress();
 #if 0 /* STUB_MALLOC */
     test_init_out_of_memory();
     test_trim_out_of_memory();

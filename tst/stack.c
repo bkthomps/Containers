@@ -89,7 +89,7 @@ void test_stack(void)
     test_invalid_init();
     test_basic();
     test_automated_trim();
-#if STUB_MALLOC
+#if 0 /* STUB_MALLOC */
     test_init_out_of_memory();
 #endif
 }
