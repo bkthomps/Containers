@@ -280,24 +280,14 @@ static void test_push_front_out_of_memory(void)
 {
     deque me = deque_init(sizeof(int));
     int i;
-    for (i = 0; i < 5; i++) {
-        assert(deque_push_front(me, &i) == 0);
+    for (i = 0; i < 4096; i++) {
+        deque_push_front(me, &i);
     }
-    assert(deque_size(me) == 5);
     fail_realloc = 1;
     assert(deque_push_front(me, &i) == -ENOMEM);
-    assert(deque_size(me) == 5);
-    for (i = 0; i < 5; i++) {
-        int get = 0xfacade;
-        deque_get_at(&get, me, i);
-    }
+    delay_fail_realloc = 1;
     fail_malloc = 1;
     assert(deque_push_front(me, &i) == -ENOMEM);
-    assert(deque_size(me) == 5);
-    for (i = 0; i < 5; i++) {
-        int get = 0xfacade;
-        deque_get_at(&get, me, i);
-    }
     assert(!deque_destroy(me));
 }
 #endif
@@ -307,24 +297,14 @@ static void test_push_back_out_of_memory(void)
 {
     deque me = deque_init(sizeof(int));
     int i;
-    for (i = 0; i < 3; i++) {
-        assert(deque_push_back(me, &i) == 0);
+    for (i = 0; i < 4096; i++) {
+        deque_push_back(me, &i);
     }
-    assert(deque_size(me) == 3);
     fail_realloc = 1;
     assert(deque_push_back(me, &i) == -ENOMEM);
-    assert(deque_size(me) == 3);
-    for (i = 0; i < 3; i++) {
-        int get = 0xfacade;
-        deque_get_at(&get, me, i);
-    }
+    delay_fail_realloc = 1;
     fail_malloc = 1;
     assert(deque_push_back(me, &i) == -ENOMEM);
-    assert(deque_size(me) == 3);
-    for (i = 0; i < 3; i++) {
-        int get = 0xfacade;
-        deque_get_at(&get, me, i);
-    }
     assert(!deque_destroy(me));
 }
 #endif
@@ -428,8 +408,8 @@ void test_deque(void)
 #if STUB_MALLOC
     test_init_out_of_memory();
     test_trim_out_of_memory();
-    /* test_push_front_out_of_memory(); TODO: uncomment */
-    /* test_push_back_out_of_memory(); TODO: uncomment */
+    test_push_front_out_of_memory();
+    test_push_back_out_of_memory();
     test_clear_out_of_memory();
 #endif
     test_single_full_block();
