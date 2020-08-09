@@ -103,16 +103,10 @@ static void test_automated_trim(void)
 static void test_init_out_of_memory(void)
 {
     fail_malloc = 1;
-    assert(!queue_init(sizeof(int)));
-    fail_malloc = 1;
+    assert(!stack_init(sizeof(int)));
     delay_fail_malloc = 1;
-    assert(!queue_init(sizeof(int)));
     fail_malloc = 1;
-    delay_fail_malloc = 2;
-    assert(!queue_init(sizeof(int)));
-    fail_malloc = 1;
-    delay_fail_malloc = 3;
-    assert(!queue_init(sizeof(int)));
+    assert(!stack_init(sizeof(int)));
 }
 #endif
 
@@ -163,7 +157,7 @@ void test_queue(void)
     test_basic();
     test_large_alloc();
     test_automated_trim();
-#if 0 /* STUB_MALLOC */
+#if STUB_MALLOC
     test_init_out_of_memory();
 #endif
     assert(test_puzzle(2, 5) == 4);
