@@ -15,7 +15,7 @@ static void test_copy(deque me)
     int i;
     for (i = 0; i < 10; i++) {
         deque_push_front(me, &val[i]);
-        get = 0;
+        get = 0xfacade;
         deque_get_first(&get, me);
         assert(get == val[i]);
     }
@@ -23,12 +23,12 @@ static void test_copy(deque me)
     assert(!deque_is_empty(me));
     deque_copy_to_array(get_arr, me);
     for (i = 0; i < 10; i++) {
-        get = 0;
+        get = 0xfacade;
         deque_get_at(&get, me, i);
         assert(get == val[9 - i]);
         assert(get_arr[i] == val[9 - i]);
     }
-    get = 5;
+    get = 0xfacade;
     deque_trim(me);
     for (i = 0; i < 7; i++) {
         deque_pop_back(&get, me);
@@ -37,6 +37,9 @@ static void test_copy(deque me)
     deque_copy_to_array(trimmed, me);
     assert(deque_size(me) == 3);
     for (i = 0; i < 3; i++) {
+        get = 0xfacade;
+        deque_get_at(&get, me, i);
+        assert(get == 10 - i);
         assert(10 - i == trimmed[i]);
     }
 }
@@ -136,10 +139,104 @@ static void test_trim(void)
 {
     deque me = deque_init(sizeof(int));
     int i;
+    assert(deque_is_empty(me));
+    deque_trim(me);
+    assert(deque_is_empty(me));
     for (i = 0; i < 100; i++) {
         int get;
         deque_push_back(me, &i);
         deque_pop_front(&get, me);
+    }
+    assert(deque_is_empty(me));
+    deque_trim(me);
+    assert(deque_is_empty(me));
+    for (i = 0; i < 100; i++) {
+        deque_push_back(me, &i);
+    }
+    for (i = 0; i < 100; i++) {
+        int get = 0xfacade;
+        deque_get_at(&get, me, i);
+    }
+    assert(deque_size(me) == 100);
+    deque_trim(me);
+    assert(deque_size(me) == 100);
+    deque_destroy(me);
+}
+
+static void test_stress(void)
+{
+    int i;
+    deque me = deque_init(sizeof(int));
+    for (i = -1000; i < 1000; i++) {
+        int val = 7 * i;
+        deque_push_back(me, &val);
+    }
+    assert(deque_size(me) == 2000);
+    for (i = -1000; i < 1000; i++) {
+        int get = 0xfacade;
+        deque_get_at(&get, me, i + 1000);
+        assert(get == 7 * i);
+    }
+    assert(deque_size(me) == 2000);
+    deque_clear(me);
+    assert(deque_size(me) == 0);
+    assert(deque_is_empty(me));
+    for (i = -1000; i < 1000; i++) {
+        int val = 7 * i;
+        deque_push_front(me, &val);
+    }
+    assert(deque_size(me) == 2000);
+    for (i = -1000; i < 1000; i++) {
+        int get = 0xfacade;
+        deque_get_at(&get, me, i + 1000);
+        assert(get == -7 * (i + 1));
+    }
+    assert(deque_size(me) == 2000);
+    deque_destroy(me);
+}
+
+static void test_array_copy(void)
+{
+    size_t i = 0xfacade;
+    size_t arr_sz = 9000;
+    size_t arr[9000] = {0};
+    deque me = deque_init(sizeof *arr);
+    assert(sizeof arr / sizeof *arr == arr_sz);
+    deque_copy_to_array(&i, me);
+    assert(i == 0xfacade);
+    for (i = 0; i < arr_sz; i++) {
+        deque_push_back(me, &i);
+    }
+    for (i = 0; i < arr_sz; i++) {
+        size_t get = 0xfacade;
+        deque_get_at(&get, me, i);
+        assert(get == i);
+    }
+    deque_copy_to_array(&arr, me);
+    for (i = 0; i < arr_sz; i++) {
+        assert(arr[i] == i);
+    }
+    deque_clear(me);
+    i = 0xfacade;
+    deque_copy_to_array(&i, me);
+    assert(i == 0xfacade);
+    for (i = 0; i < arr_sz; i++) {
+        deque_push_front(me, &i);
+    }
+    deque_copy_to_array(&arr, me);
+    for (i = 0; i < arr_sz; i++) {
+        assert(arr[i] == arr_sz - i - 1);
+    }
+    for (i = 0; i < arr_sz / 2; i++) {
+        size_t get = 0xfacade;
+        deque_pop_front(&get, me);
+        assert(get == arr_sz - i - 1);
+    }
+    for (i = 0; i < arr_sz / 2; i++) {
+        size_t get = 0xfacade;
+        deque_push_front(me, &i);
+        deque_get_first(&get, me);
+        assert(get == i);
     }
     deque_destroy(me);
 }
@@ -147,13 +244,12 @@ static void test_trim(void)
 #if STUB_MALLOC
 static void test_init_out_of_memory(void)
 {
+    fail_calloc = 1;
+    assert(!deque_init(sizeof(int)));
     fail_malloc = 1;
     assert(!deque_init(sizeof(int)));
     fail_malloc = 1;
     delay_fail_malloc = 1;
-    assert(!deque_init(sizeof(int)));
-    fail_malloc = 1;
-    delay_fail_malloc = 2;
     assert(!deque_init(sizeof(int)));
 }
 #endif
@@ -184,24 +280,14 @@ static void test_push_front_out_of_memory(void)
 {
     deque me = deque_init(sizeof(int));
     int i;
-    for (i = 0; i < 5; i++) {
-        assert(deque_push_front(me, &i) == 0);
+    for (i = 0; i < 4096; i++) {
+        deque_push_front(me, &i);
     }
-    assert(deque_size(me) == 5);
     fail_realloc = 1;
     assert(deque_push_front(me, &i) == -ENOMEM);
-    assert(deque_size(me) == 5);
-    for (i = 0; i < 5; i++) {
-        int get = 0xfacade;
-        deque_get_at(&get, me, i);
-    }
+    delay_fail_realloc = 1;
     fail_malloc = 1;
     assert(deque_push_front(me, &i) == -ENOMEM);
-    assert(deque_size(me) == 5);
-    for (i = 0; i < 5; i++) {
-        int get = 0xfacade;
-        deque_get_at(&get, me, i);
-    }
     assert(!deque_destroy(me));
 }
 #endif
@@ -211,24 +297,14 @@ static void test_push_back_out_of_memory(void)
 {
     deque me = deque_init(sizeof(int));
     int i;
-    for (i = 0; i < 3; i++) {
-        assert(deque_push_back(me, &i) == 0);
+    for (i = 0; i < 4096; i++) {
+        deque_push_back(me, &i);
     }
-    assert(deque_size(me) == 3);
     fail_realloc = 1;
     assert(deque_push_back(me, &i) == -ENOMEM);
-    assert(deque_size(me) == 3);
-    for (i = 0; i < 3; i++) {
-        int get = 0xfacade;
-        deque_get_at(&get, me, i);
-    }
+    delay_fail_realloc = 1;
     fail_malloc = 1;
     assert(deque_push_back(me, &i) == -ENOMEM);
-    assert(deque_size(me) == 3);
-    for (i = 0; i < 3; i++) {
-        int get = 0xfacade;
-        deque_get_at(&get, me, i);
-    }
     assert(!deque_destroy(me));
 }
 #endif
@@ -242,7 +318,7 @@ static void test_clear_out_of_memory(void)
         deque_push_back(me, &i);
     }
     assert(deque_size(me) == 32);
-    fail_malloc = 1;
+    fail_calloc = 1;
     assert(deque_clear(me) == -ENOMEM);
     for (i = 0; i < 32; i++) {
         int get = 0xfacade;
@@ -251,7 +327,6 @@ static void test_clear_out_of_memory(void)
     }
     assert(deque_size(me) == 32);
     fail_malloc = 1;
-    delay_fail_malloc = 1;
     assert(deque_clear(me) == -ENOMEM);
     for (i = 0; i < 32; i++) {
         int get = 0xfacade;
@@ -328,6 +403,8 @@ void test_deque(void)
     test_invalid_init();
     test_basic();
     test_trim();
+    test_stress();
+    test_array_copy();
 #if STUB_MALLOC
     test_init_out_of_memory();
     test_trim_out_of_memory();
