@@ -199,7 +199,7 @@ static void test_array_copy(void)
 {
     size_t i = 0xfacade;
     size_t arr_sz = 9000;
-    int arr[9000] = {0};
+    size_t arr[9000] = {0};
     deque me = deque_init(sizeof(int));
     deque_copy_to_array(&i, me);
     assert(i == 0xfacade);
@@ -207,7 +207,7 @@ static void test_array_copy(void)
         deque_push_back(me, &i);
     }
     for (i = 0; i < arr_sz; i++) {
-        int get = 0xfacade;
+        size_t get = 0xfacade;
         deque_get_at(&get, me, i);
         assert(get == i);
     }
