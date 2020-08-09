@@ -103,10 +103,10 @@ static void test_automated_trim(void)
 static void test_init_out_of_memory(void)
 {
     fail_malloc = 1;
-    assert(!stack_init(sizeof(int)));
+    assert(!queue_init(sizeof(int)));
     delay_fail_malloc = 1;
     fail_malloc = 1;
-    assert(!stack_init(sizeof(int)));
+    assert(!queue_init(sizeof(int)));
 }
 #endif
 
