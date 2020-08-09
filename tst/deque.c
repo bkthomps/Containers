@@ -406,6 +406,8 @@ void test_deque(void)
     test_stress();
     test_array_copy();
 #if STUB_MALLOC
+    /* These OOM tests rely on this being true. */
+    assert(sizeof(int) == 4);
     test_init_out_of_memory();
     test_trim_out_of_memory();
     test_push_front_out_of_memory();
