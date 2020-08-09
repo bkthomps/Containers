@@ -112,6 +112,7 @@ int deque_is_empty(deque me)
  */
 int deque_trim(deque me)
 {
+    size_t i;
     const size_t start_block_index = me->start_index / BLOCK_SIZE;
     const size_t end_block_index = deque_is_empty(me) ? start_block_index :
                                    (me->end_index - 1) / BLOCK_SIZE;
@@ -122,6 +123,16 @@ int deque_trim(deque me)
     }
     memcpy(updated_data, me->data + start_block_index,
            updated_block_count * sizeof(char *));
+    for (i = 0; i < start_block_index; i++) {
+        char *block;
+        memcpy(&block, me->data + i, sizeof(char *));
+        free(block);
+    }
+    for (i = end_block_index + 1; i < me->block_count; i++) {
+        char *block;
+        memcpy(&block, me->data + i, sizeof(char *));
+        free(block);
+    }
     free(me->data);
     me->start_index -= start_block_index * BLOCK_SIZE;
     me->end_index -= start_block_index * BLOCK_SIZE;
