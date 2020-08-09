@@ -227,6 +227,7 @@ static void test_array_copy(void)
     for (i = 0; i < arr_sz; i++) {
         assert(arr[i] == arr_sz - i - 1);
     }
+    deque_destroy(me);
 }
 
 #if STUB_MALLOC
