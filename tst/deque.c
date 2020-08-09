@@ -227,6 +227,17 @@ static void test_array_copy(void)
     for (i = 0; i < arr_sz; i++) {
         assert(arr[i] == arr_sz - i - 1);
     }
+    for (i = 0; i < arr_sz / 2; i++) {
+        size_t get = 0xfacade;
+        deque_pop_front(&get, me);
+        assert(get == arr_sz - i - 1);
+    }
+    for (i = 0; i < arr_sz / 2; i++) {
+        size_t get = 0xfacade;
+        deque_push_front(me, &i);
+        deque_get_first(&get, me);
+        assert(get == i);
+    }
     deque_destroy(me);
 }
 
