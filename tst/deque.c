@@ -197,28 +197,34 @@ static void test_stress(void)
 
 static void test_array_copy(void)
 {
-    int i = 0xfacade;
-    int arr[3000] = {0};
+    size_t i = 0xfacade;
+    size_t arr_sz = 9000;
+    int arr[9000] = {0};
     deque me = deque_init(sizeof(int));
     deque_copy_to_array(&i, me);
     assert(i == 0xfacade);
-    for (i = 0; i < 3000; i++) {
+    for (i = 0; i < arr_sz; i++) {
         deque_push_back(me, &i);
     }
+    for (i = 0; i < arr_sz; i++) {
+        int get = 0xfacade;
+        deque_get_at(&get, me, i);
+        assert(get == i);
+    }
     deque_copy_to_array(&arr, me);
-    for (i = 0; i < 3000; i++) {
+    for (i = 0; i < arr_sz; i++) {
         assert(arr[i] == i);
     }
     deque_clear(me);
     i = 0xfacade;
     deque_copy_to_array(&i, me);
     assert(i == 0xfacade);
-    for (i = 0; i < 3000; i++) {
+    for (i = 0; i < arr_sz; i++) {
         deque_push_front(me, &i);
     }
     deque_copy_to_array(&arr, me);
-    for (i = 0; i < 3000; i++) {
-        assert(arr[i] == 2999 - i);
+    for (i = 0; i < arr_sz; i++) {
+        assert(arr[i] == arr_sz - i - 1);
     }
 }
 
