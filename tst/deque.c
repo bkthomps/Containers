@@ -241,6 +241,28 @@ static void test_array_copy(void)
     deque_destroy(me);
 }
 
+struct large_data {
+    double data[100];
+};
+
+static void test_large_elements(void)
+{
+    int i;
+    struct large_data data = {0};
+    struct large_data get = {0};
+    deque me = deque_init(sizeof(struct large_data));
+    for (i = 0; i < 100; i++) {
+        data.data[i] = i + 0.5;
+    }
+    deque_push_back(me, &data);
+    deque_pop_back(&get, me);
+    for (i = 0; i < 100; i++) {
+        assert(data.data[i] > i + 0.4);
+        assert(data.data[i] < i + 0.6);
+    }
+    deque_destroy(me);
+}
+
 #if STUB_MALLOC
 static void test_init_out_of_memory(void)
 {
@@ -405,7 +427,10 @@ void test_deque(void)
     test_trim();
     test_stress();
     test_array_copy();
+    test_large_elements();
 #if STUB_MALLOC
+    /* These OOM tests rely on this being true. */
+    assert(sizeof(int) == 4);
     test_init_out_of_memory();
     test_trim_out_of_memory();
     test_push_front_out_of_memory();
