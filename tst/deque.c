@@ -200,7 +200,8 @@ static void test_array_copy(void)
     size_t i = 0xfacade;
     size_t arr_sz = 9000;
     size_t arr[9000] = {0};
-    deque me = deque_init(sizeof(int));
+    deque me = deque_init(sizeof *arr);
+    assert(sizeof arr / sizeof *arr == arr_sz);
     deque_copy_to_array(&i, me);
     assert(i == 0xfacade);
     for (i = 0; i < arr_sz; i++) {
