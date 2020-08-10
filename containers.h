@@ -189,7 +189,7 @@ priority_queue priority_queue_init(size_t data_size,
                                                      const void *const two));
 
 /* Utility */
-int priority_queue_size(priority_queue me);
+size_t priority_queue_size(priority_queue me);
 int priority_queue_is_empty(priority_queue me);
 
 /* Adding */
