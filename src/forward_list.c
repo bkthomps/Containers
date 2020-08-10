@@ -31,6 +31,7 @@ struct internal_forward_list {
     char *tail;
 };
 
+const size_t ptr_size = sizeof(char *);
 const size_t node_next_ptr_offset = 0;
 const size_t node_data_ptr_offset = sizeof(char *);
 
@@ -102,7 +103,7 @@ void forward_list_copy_to_array(void *const arr, forward_list me)
     while (traverse) {
         memcpy((char *) arr + offset, traverse + node_data_ptr_offset,
                me->bytes_per_item);
-        memcpy(&traverse, traverse + node_next_ptr_offset, sizeof(char *));
+        memcpy(&traverse, traverse + node_next_ptr_offset, ptr_size);
         offset += me->bytes_per_item;
     }
 }
@@ -119,9 +120,9 @@ static char *forward_list_get_node_at(forward_list me, const size_t index)
         return me->tail;
     }
     for (i = 0; i < index; i++) {
-        memcpy(&traverse, traverse + node_next_ptr_offset, sizeof(char *));
+        memcpy(&traverse, traverse + node_next_ptr_offset, ptr_size);
     }
-    memcpy(&traverse_next, traverse + node_next_ptr_offset, sizeof(char *));
+    memcpy(&traverse_next, traverse + node_next_ptr_offset, ptr_size);
     if (!traverse_next) {
         me->tail = traverse;
     }
@@ -167,21 +168,21 @@ int forward_list_add_at(forward_list me, const size_t index, void *const data)
     if (index > me->item_count) {
         return -EINVAL;
     }
-    node = malloc(sizeof(char *) + me->bytes_per_item);
+    node = malloc(ptr_size + me->bytes_per_item);
     if (!node) {
         return -ENOMEM;
     }
     memcpy(node + node_data_ptr_offset, data, me->bytes_per_item);
     if (index == 0) {
-        memcpy(node + node_next_ptr_offset, &me->head, sizeof(char *));
+        memcpy(node + node_next_ptr_offset, &me->head, ptr_size);
         me->head = node;
     } else {
         char *node_next;
         char *traverse = forward_list_get_node_at(me, index - 1);
         memcpy(node + node_next_ptr_offset, traverse + node_next_ptr_offset,
-               sizeof(char *));
-        memcpy(traverse + node_next_ptr_offset, &node, sizeof(char *));
-        memcpy(&node_next, node + node_next_ptr_offset, sizeof(char *));
+               ptr_size);
+        memcpy(traverse + node_next_ptr_offset, &node, ptr_size);
+        memcpy(&node_next, node + node_next_ptr_offset, ptr_size);
         if (!node_next) {
             me->tail = node;
         }
@@ -237,7 +238,7 @@ int forward_list_remove_at(forward_list me, const size_t index)
     }
     if (index == 0) {
         char *temp = me->head;
-        memcpy(&me->head, temp + node_next_ptr_offset, sizeof(char *));
+        memcpy(&me->head, temp + node_next_ptr_offset, ptr_size);
         if (!me->head) {
             me->tail = NULL;
         }
@@ -246,10 +247,10 @@ int forward_list_remove_at(forward_list me, const size_t index)
         char *traverse = forward_list_get_node_at(me, index - 1);
         char *backup;
         char *backup_next;
-        memcpy(&backup, traverse + node_next_ptr_offset, sizeof(char *));
+        memcpy(&backup, traverse + node_next_ptr_offset, ptr_size);
         memcpy(traverse + node_next_ptr_offset, backup + node_next_ptr_offset,
-               sizeof(char *));
-        memcpy(&backup_next, backup + node_next_ptr_offset, sizeof(char *));
+               ptr_size);
+        memcpy(&backup_next, backup + node_next_ptr_offset, ptr_size);
         if (!backup_next) {
             me->tail = NULL;
         }
@@ -407,7 +408,7 @@ void forward_list_clear(forward_list me)
     char *traverse = me->head;
     while (traverse) {
         char *temp = traverse;
-        memcpy(&traverse, traverse + node_next_ptr_offset, sizeof(char *));
+        memcpy(&traverse, traverse + node_next_ptr_offset, ptr_size);
         free(temp);
     }
     me->head = NULL;
