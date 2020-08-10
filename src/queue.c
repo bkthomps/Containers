@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2019 Bailey Thompson
+ * Copyright (c) 2017-2020 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,13 +23,6 @@
 #include "include/deque.h"
 #include "include/queue.h"
 
-static const double TRIM_RATIO = 1.5;
-
-struct internal_queue {
-    int trim_count;
-    deque deque_data;
-};
-
 /**
  * Initializes a queue.
  *
@@ -41,21 +34,7 @@ struct internal_queue {
  */
 queue queue_init(const size_t data_size)
 {
-    struct internal_queue *init;
-    if (data_size == 0) {
-        return NULL;
-    }
-    init = malloc(sizeof(struct internal_queue));
-    if (!init) {
-        return NULL;
-    }
-    init->trim_count = 0;
-    init->deque_data = deque_init(data_size);
-    if (!init->deque_data) {
-        free(init);
-        return NULL;
-    }
-    return init;
+    return deque_init(data_size);
 }
 
 /**
@@ -65,9 +44,9 @@ queue queue_init(const size_t data_size)
  *
  * @return the queue size
  */
-int queue_size(queue me)
+size_t queue_size(queue me)
 {
-    return deque_size(me->deque_data);
+    return deque_size(me);
 }
 
 /**
@@ -80,7 +59,7 @@ int queue_size(queue me)
  */
 int queue_is_empty(queue me)
 {
-    return deque_is_empty(me->deque_data);
+    return deque_is_empty(me);
 }
 
 /**
@@ -93,7 +72,7 @@ int queue_is_empty(queue me)
  */
 int queue_trim(queue me)
 {
-    return deque_trim(me->deque_data);
+    return deque_trim(me);
 }
 
 /**
@@ -107,7 +86,7 @@ int queue_trim(queue me)
  */
 void queue_copy_to_array(void *const arr, queue me)
 {
-    deque_copy_to_array(arr, me->deque_data);
+    deque_copy_to_array(arr, me);
 }
 
 /**
@@ -125,7 +104,7 @@ void queue_copy_to_array(void *const arr, queue me)
  */
 int queue_push(queue me, void *const data)
 {
-    return deque_push_back(me->deque_data, data);
+    return deque_push_back(me, data);
 }
 
 /**
@@ -142,12 +121,7 @@ int queue_push(queue me, void *const data)
  */
 int queue_pop(void *const data, queue me)
 {
-    me->trim_count++;
-    if (TRIM_RATIO * me->trim_count >= queue_size(me)) {
-        deque_trim(me->deque_data);
-        me->trim_count = 0;
-    }
-    return deque_pop_front(data, me->deque_data) == 0;
+    return deque_pop_front(data, me) == 0;
 }
 
 /**
@@ -164,7 +138,7 @@ int queue_pop(void *const data, queue me)
  */
 int queue_front(void *const data, queue me)
 {
-    return deque_get_first(data, me->deque_data) == 0;
+    return deque_get_first(data, me) == 0;
 }
 
 /**
@@ -181,7 +155,7 @@ int queue_front(void *const data, queue me)
  */
 int queue_back(void *const data, queue me)
 {
-    return deque_get_last(data, me->deque_data) == 0;
+    return deque_get_last(data, me) == 0;
 }
 
 /**
@@ -194,7 +168,7 @@ int queue_back(void *const data, queue me)
  */
 int queue_clear(queue me)
 {
-    return deque_clear(me->deque_data);
+    return deque_clear(me);
 }
 
 /**
@@ -207,7 +181,5 @@ int queue_clear(queue me)
  */
 queue queue_destroy(queue me)
 {
-    deque_destroy(me->deque_data);
-    free(me);
-    return NULL;
+    return deque_destroy(me);
 }
