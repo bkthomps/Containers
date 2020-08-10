@@ -26,16 +26,15 @@
 
 struct internal_list {
     size_t bytes_per_item;
-    int item_count;
-    struct node *head;
-    struct node *tail;
+    size_t item_count;
+    char *head;
+    char *tail;
 };
 
-struct node {
-    struct node *prev;
-    void *data;
-    struct node *next;
-};
+static const size_t ptr_size = sizeof(char *);
+static const size_t node_next_ptr_offset = 0;
+static const size_t node_prev_ptr_offset = sizeof(char *);
+static const size_t node_data_ptr_offset = 2 * sizeof(char *);
 
 /**
  * Initializes a doubly-linked list.
@@ -70,7 +69,7 @@ list list_init(const size_t data_size)
  *
  * @return the number of elements
  */
-int list_size(list me)
+size_t list_size(list me)
 {
     return me->item_count;
 }
@@ -100,24 +99,25 @@ int list_is_empty(list me)
  */
 void list_copy_to_array(void *const arr, list me)
 {
-    struct node *traverse = me->head;
-    int offset = 0;
+    char *traverse = me->head;
+    size_t offset = 0;
     while (traverse) {
-        memcpy((char *) arr + offset, traverse->data, me->bytes_per_item);
+        memcpy((char *) arr + offset, traverse + node_data_ptr_offset,
+               me->bytes_per_item);
+        memcpy(&traverse, traverse + node_next_ptr_offset, ptr_size);
         offset += me->bytes_per_item;
-        traverse = traverse->next;
     }
 }
 
 /*
  * Gets the node at index starting from the head.
  */
-static struct node *list_get_node_from_head(list me, const int index)
+static char *list_get_node_from_head(list me, const size_t index)
 {
-    struct node *traverse = me->head;
-    int i;
+    char *traverse = me->head;
+    size_t i;
     for (i = 0; i < index; i++) {
-        traverse = traverse->next;
+        memcpy(&traverse, traverse + node_next_ptr_offset, ptr_size);
     }
     return traverse;
 }
@@ -125,12 +125,12 @@ static struct node *list_get_node_from_head(list me, const int index)
 /*
  * Gets the node at index starting from the tail.
  */
-static struct node *list_get_node_from_tail(list me, const int index)
+static char *list_get_node_from_tail(list me, const size_t index)
 {
-    struct node *traverse = me->tail;
-    int i;
+    char *traverse = me->tail;
+    size_t i;
     for (i = me->item_count - 1; i > index; i--) {
-        traverse = traverse->prev;
+        memcpy(&traverse, traverse + node_prev_ptr_offset, ptr_size);
     }
     return traverse;
 }
@@ -138,7 +138,7 @@ static struct node *list_get_node_from_tail(list me, const int index)
 /*
  * Gets the node at the specified index.
  */
-static struct node *list_get_node_at(list me, const int index)
+static char *list_get_node_at(list me, const size_t index)
 {
     if (index < me->item_count / 2) {
         return list_get_node_from_head(me, index);
@@ -179,45 +179,42 @@ int list_add_first(list me, void *const data)
  * @return -ENOMEM if out of memory
  * @return -EINVAL if invalid argument
  */
-int list_add_at(list me, const int index, void *const data)
+int list_add_at(list me, const size_t index, void *const data)
 {
-    struct node *add;
-    if (index < 0 || index > me->item_count) {
+    char *node;
+    if (index > me->item_count) {
         return -EINVAL;
     }
-    add = malloc(sizeof(struct node));
-    if (!add) {
+    node = malloc(2 * ptr_size + me->bytes_per_item);
+    if (!node) {
         return -ENOMEM;
     }
-    add->data = malloc(me->bytes_per_item);
-    if (!add->data) {
-        free(add);
-        return -ENOMEM;
-    }
-    memcpy(add->data, data, me->bytes_per_item);
+    memcpy(node + node_data_ptr_offset, data, me->bytes_per_item);
     if (!me->head) {
-        add->prev = NULL;
-        add->next = NULL;
-        me->head = add;
-        me->tail = add;
+        /* Relies on next and prev being the first two blocks. */
+        memset(node, 0, 2 * ptr_size);
+        me->head = node;
+        me->tail = node;
     } else if (index == 0) {
-        struct node *const traverse = me->head;
-        traverse->prev = add;
-        add->prev = NULL;
-        add->next = traverse;
-        me->head = add;
+        char *traverse = me->head;
+        memcpy(traverse + node_prev_ptr_offset, &node, ptr_size);
+        memcpy(node + node_next_ptr_offset, &traverse, ptr_size);
+        memset(node + node_prev_ptr_offset, 0, ptr_size);
+        me->head = node;
     } else if (index == me->item_count) {
-        struct node *const traverse = me->tail;
-        traverse->next = add;
-        add->prev = traverse;
-        add->next = NULL;
-        me->tail = add;
+        char *traverse = me->tail;
+        memcpy(traverse + node_next_ptr_offset, &node, ptr_size);
+        memset(node + node_next_ptr_offset, 0, ptr_size);
+        memcpy(node + node_prev_ptr_offset, &traverse, ptr_size);
+        me->tail = node;
     } else {
-        struct node *const traverse = list_get_node_at(me, index);
-        add->prev = traverse->prev;
-        add->next = traverse;
-        traverse->prev->next = add;
-        traverse->prev = add;
+        char *traverse = list_get_node_at(me, index);
+        char *traverse_prev;
+        memcpy(&traverse_prev, traverse + node_prev_ptr_offset, ptr_size);
+        memcpy(node + node_prev_ptr_offset, &traverse_prev, ptr_size);
+        memcpy(node + node_next_ptr_offset, &traverse, ptr_size);
+        memcpy(traverse_prev + node_next_ptr_offset, &node, ptr_size);
+        memcpy(traverse + node_prev_ptr_offset, &node, ptr_size);
     }
     me->item_count++;
     return 0;
@@ -239,14 +236,6 @@ int list_add_at(list me, const int index, void *const data)
 int list_add_last(list me, void *const data)
 {
     return list_add_at(me, me->item_count, data);
-}
-
-/*
- * Determines if the input is illegal.
- */
-static int list_is_illegal_input(list me, const int index)
-{
-    return index < 0 || index >= me->item_count;
 }
 
 /**
@@ -271,10 +260,10 @@ int list_remove_first(list me)
  * @return 0       if no error
  * @return -EINVAL if invalid argument
  */
-int list_remove_at(list me, const int index)
+int list_remove_at(list me, const size_t index)
 {
-    struct node *traverse;
-    if (list_is_illegal_input(me, index)) {
+    char *traverse;
+    if (index >= me->item_count) {
         return -EINVAL;
     }
     traverse = list_get_node_at(me, index);
@@ -282,16 +271,23 @@ int list_remove_at(list me, const int index)
         me->head = NULL;
         me->tail = NULL;
     } else if (index == 0) {
-        traverse->next->prev = NULL;
-        me->head = traverse->next;
+        char *traverse_next;
+        memcpy(&traverse_next, traverse + node_next_ptr_offset, ptr_size);
+        memset(traverse_next + node_prev_ptr_offset, 0, ptr_size);
+        me->head = traverse_next;
     } else if (index == me->item_count - 1) {
-        traverse->prev->next = NULL;
-        me->tail = traverse->prev;
+        char *traverse_prev;
+        memcpy(&traverse_prev, traverse + node_prev_ptr_offset, ptr_size);
+        memset(traverse_prev + node_next_ptr_offset, 0, ptr_size);
+        me->tail = traverse_prev;
     } else {
-        traverse->prev->next = traverse->next;
-        traverse->next->prev = traverse->prev;
+        char *traverse_next;
+        char *traverse_prev;
+        memcpy(&traverse_next, traverse + node_next_ptr_offset, ptr_size);
+        memcpy(&traverse_prev, traverse + node_prev_ptr_offset, ptr_size);
+        memcpy(traverse_next + node_prev_ptr_offset, &traverse_prev, ptr_size);
+        memcpy(traverse_prev + node_next_ptr_offset, &traverse_next, ptr_size);
     }
-    free(traverse->data);
     free(traverse);
     me->item_count--;
     return 0;
@@ -342,14 +338,14 @@ int list_set_first(list me, void *const data)
  * @return 0       if no error
  * @return -EINVAL if invalid argument
  */
-int list_set_at(list me, const int index, void *const data)
+int list_set_at(list me, const size_t index, void *const data)
 {
-    struct node *traverse;
-    if (list_is_illegal_input(me, index)) {
+    char *traverse;
+    if (index >= me->item_count) {
         return -EINVAL;
     }
     traverse = list_get_node_at(me, index);
-    memcpy(traverse->data, data, me->bytes_per_item);
+    memcpy(traverse + node_data_ptr_offset, data, me->bytes_per_item);
     return 0;
 }
 
@@ -405,14 +401,14 @@ int list_get_first(void *const data, list me)
  * @return 0       if no error
  * @return -EINVAL if invalid argument
  */
-int list_get_at(void *const data, list me, const int index)
+int list_get_at(void *const data, list me, const size_t index)
 {
-    struct node *traverse;
-    if (list_is_illegal_input(me, index)) {
+    char *traverse;
+    if (index >= me->item_count) {
         return -EINVAL;
     }
     traverse = list_get_node_at(me, index);
-    memcpy(data, traverse->data, me->bytes_per_item);
+    memcpy(data, traverse + node_data_ptr_offset, me->bytes_per_item);
     return 0;
 }
 
@@ -442,15 +438,14 @@ int list_get_last(void *const data, list me)
  */
 void list_clear(list me)
 {
-    struct node *traverse = me->head;
+    char *traverse = me->head;
     while (traverse) {
-        struct node *const temp = traverse;
-        traverse = traverse->next;
-        free(temp->data);
+        char *temp = traverse;
+        memcpy(&traverse, traverse + node_next_ptr_offset, ptr_size);
         free(temp);
     }
-    me->head = NULL;
     me->item_count = 0;
+    me->head = NULL;
     me->tail = NULL;
 }
 
