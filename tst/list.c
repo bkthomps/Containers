@@ -261,7 +261,7 @@ struct pair {
     int cur_cost;
 };
 
-static int test_puzzle(int start_node, int dest_node)
+static int test_puzzle_forwards(int start_node, int dest_node)
 {
     list q = list_init(sizeof(struct pair));
     struct pair cur;
@@ -298,6 +298,43 @@ static int test_puzzle(int start_node, int dest_node)
     return -1;
 }
 
+static int test_puzzle_backwards(int start_node, int dest_node)
+{
+    list q = list_init(sizeof(struct pair));
+    struct pair cur;
+    cur.cur_node = start_node;
+    cur.cur_cost = 0;
+    assert(list_is_empty(q));
+    list_add_first(q, &cur);
+    assert(list_size(q) == 1);
+    while (!list_is_empty(q)) {
+        int node;
+        int cost;
+        list_get_last(&cur, q);
+        list_remove_last(q);
+        node = cur.cur_node;
+        cost = cur.cur_cost;
+        if (node > 2 * dest_node || node < 1) {
+            continue;
+        }
+        if (node == dest_node) {
+            list_destroy(q);
+            return cost;
+        }
+        cur.cur_cost = cost + 1;
+        cur.cur_node = node - 1;
+        list_add_first(q, &cur);
+        assert(cur.cur_cost == cost + 1);
+        assert(cur.cur_node == node - 1);
+        cur.cur_node = 2 * node;
+        list_add_first(q, &cur);
+        assert(cur.cur_cost == cost + 1);
+        assert(cur.cur_node == 2 * node);
+    }
+    list_destroy(q);
+    return -1;
+}
+
 void test_list(void)
 {
     test_invalid_init();
@@ -309,6 +346,8 @@ void test_list(void)
     test_add_last_out_of_memory();
 #endif
     test_remove_all();
-    assert(test_puzzle(2, 5) == 4);
-    assert(test_puzzle(2, 10) == 5);
+    assert(test_puzzle_forwards(2, 5) == 4);
+    assert(test_puzzle_forwards(2, 10) == 5);
+    assert(test_puzzle_backwards(2, 5) == 4);
+    assert(test_puzzle_backwards(2, 10) == 5);
 }
