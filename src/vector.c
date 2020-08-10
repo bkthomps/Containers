@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2019 Bailey Thompson
+ * Copyright (c) 2017-2020 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,10 +28,10 @@ static const int START_SPACE = 8;
 static const double RESIZE_RATIO = 1.5;
 
 struct internal_vector {
+    size_t item_count;
+    size_t item_capacity;
     size_t bytes_per_item;
-    int item_count;
-    int item_capacity;
-    void *data;
+    char *data;
 };
 
 /**
@@ -53,9 +53,9 @@ vector vector_init(const size_t data_size)
     if (!init) {
         return NULL;
     }
-    init->bytes_per_item = data_size;
     init->item_count = 0;
     init->item_capacity = START_SPACE;
+    init->bytes_per_item = data_size;
     init->data = malloc(init->item_capacity * init->bytes_per_item);
     if (!init->data) {
         free(init);
@@ -71,7 +71,7 @@ vector vector_init(const size_t data_size)
  *
  * @return the size being used by the vector
  */
-int vector_size(vector me)
+size_t vector_size(vector me)
 {
     return me->item_count;
 }
@@ -83,7 +83,7 @@ int vector_size(vector me)
  *
  * @return the capacity that the internal storage of the vector is using
  */
-int vector_capacity(vector me)
+size_t vector_capacity(vector me)
 {
     return me->item_capacity;
 }
@@ -106,12 +106,12 @@ int vector_is_empty(vector me)
  */
 static int vector_set_space(vector me, const int size)
 {
-    void *const temp = realloc(me->data, size * me->bytes_per_item);
+    char *const temp = realloc(me->data, size * me->bytes_per_item);
     if (!temp) {
         return -ENOMEM;
     }
-    me->data = temp;
     me->item_capacity = size;
+    me->data = temp;
     return 0;
 }
 
@@ -125,7 +125,7 @@ static int vector_set_space(vector me, const int size)
  * @return 0       if no error
  * @return -ENOMEM if out of memory
  */
-int vector_reserve(vector me, int size)
+int vector_reserve(vector me, size_t size)
 {
     if (me->item_capacity >= size) {
         return 0;
@@ -215,14 +215,14 @@ int vector_add_first(vector me, void *const data)
  * @return -ENOMEM if out of memory
  * @return -EINVAL if invalid argument
  */
-int vector_add_at(vector me, const int index, void *const data)
+int vector_add_at(vector me, const size_t index, void *const data)
 {
-    if (index < 0 || index > me->item_count) {
+    if (index > me->item_count) {
         return -EINVAL;
     }
     if (me->item_count + 1 >= me->item_capacity) {
         const int new_space = (int) (me->item_capacity * RESIZE_RATIO);
-        void *const temp = realloc(me->data, new_space * me->bytes_per_item);
+        char *const temp = realloc(me->data, new_space * me->bytes_per_item);
         if (!temp) {
             return -ENOMEM;
         }
@@ -230,12 +230,11 @@ int vector_add_at(vector me, const int index, void *const data)
         me->item_capacity = new_space;
     }
     if (index != me->item_count) {
-        memmove((char *) me->data + (index + 1) * me->bytes_per_item,
-                (char *) me->data + index * me->bytes_per_item,
+        memmove(me->data + (index + 1) * me->bytes_per_item,
+                me->data + index * me->bytes_per_item,
                 (me->item_count - index) * me->bytes_per_item);
     }
-    memcpy((char *) me->data + index * me->bytes_per_item, data,
-           me->bytes_per_item);
+    memcpy(me->data + index * me->bytes_per_item, data, me->bytes_per_item);
     me->item_count++;
     return 0;
 }
@@ -252,14 +251,6 @@ int vector_add_at(vector me, const int index, void *const data)
 int vector_add_last(vector me, void *const data)
 {
     return vector_add_at(me, me->item_count, data);
-}
-
-/*
- * Determines if the input is illegal.
- */
-static int vector_is_illegal_input(vector me, const int index)
-{
-    return index < 0 || index >= me->item_count;
 }
 
 /**
@@ -284,14 +275,14 @@ int vector_remove_first(vector me)
  * @return 0       if no error
  * @return -EINVAL if invalid argument
  */
-int vector_remove_at(vector me, const int index)
+int vector_remove_at(vector me, const size_t index)
 {
-    if (vector_is_illegal_input(me, index)) {
+    if (index >= me->item_count) {
         return -EINVAL;
     }
     me->item_count--;
-    memmove((char *) me->data + index * me->bytes_per_item,
-            (char *) me->data + (index + 1) * me->bytes_per_item,
+    memmove(me->data + index * me->bytes_per_item,
+            me->data + (index + 1) * me->bytes_per_item,
             (me->item_count - index) * me->bytes_per_item);
     return 0;
 }
@@ -345,13 +336,12 @@ int vector_set_first(vector me, void *const data)
  * @return 0       if no error
  * @return -EINVAL if invalid argument
  */
-int vector_set_at(vector me, const int index, void *const data)
+int vector_set_at(vector me, const size_t index, void *const data)
 {
-    if (vector_is_illegal_input(me, index)) {
+    if (index >= me->item_count) {
         return -EINVAL;
     }
-    memcpy((char *) me->data + index * me->bytes_per_item, data,
-           me->bytes_per_item);
+    memcpy(me->data + index * me->bytes_per_item, data, me->bytes_per_item);
     return 0;
 }
 
@@ -405,13 +395,12 @@ int vector_get_first(void *const data, vector me)
  * @return 0       if no error
  * @return -EINVAL if invalid argument
  */
-int vector_get_at(void *const data, vector me, const int index)
+int vector_get_at(void *const data, vector me, const size_t index)
 {
-    if (vector_is_illegal_input(me, index)) {
+    if (index >= me->item_count) {
         return -EINVAL;
     }
-    memcpy(data, (char *) me->data + index * me->bytes_per_item,
-           me->bytes_per_item);
+    memcpy(data, me->data + index * me->bytes_per_item, me->bytes_per_item);
     return 0;
 }
 
@@ -458,7 +447,6 @@ int vector_clear(vector me)
 vector vector_destroy(vector me)
 {
     free(me->data);
-    me->data = NULL;
     free(me);
     return NULL;
 }
