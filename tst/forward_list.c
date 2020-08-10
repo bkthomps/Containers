@@ -11,7 +11,7 @@ static void test_front(forward_list me)
     int val[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     int get_arr[10] = {0};
     int get;
-    int i;
+    size_t i;
     assert(forward_list_size(me) == 0);
     assert(forward_list_is_empty(me));
     for (i = 0; i < 10; i++) {
@@ -195,15 +195,6 @@ static void test_add_first_out_of_memory(void)
         assert(forward_list_get_at(&get, me, i) == 0);
         assert(get == 15 - i);
     }
-    fail_malloc = 1;
-    delay_fail_malloc = 1;
-    assert(forward_list_add_first(me, &i) == -ENOMEM);
-    assert(forward_list_size(me) == 16);
-    for (i = 0; i < 16; i++) {
-        int get = 0xfacade;
-        assert(forward_list_get_at(&get, me, i) == 0);
-        assert(get == 15 - i);
-    }
     assert(!forward_list_destroy(me));
 }
 #endif
@@ -234,12 +225,6 @@ static void test_add_at_out_of_memory(void)
         assert(forward_list_get_at(&get, me, i) == 0);
         assert(get == i);
     }
-    get = 0xfacade;
-    assert(forward_list_get_at(&get, me, 15) == 0);
-    assert(get == 982);
-    fail_malloc = 1;
-    delay_fail_malloc = 1;
-    assert(forward_list_add_at(me, 5, &i) == -ENOMEM);
     assert(forward_list_size(me) == 16);
     get = 0xfacade;
     assert(forward_list_get_at(&get, me, 0) == 0);
@@ -274,18 +259,88 @@ static void test_add_last_out_of_memory(void)
         assert(forward_list_get_at(&get, me, i) == 0);
         assert(get == i);
     }
-    fail_malloc = 1;
-    delay_fail_malloc = 1;
-    assert(forward_list_add_last(me, &i) == -ENOMEM);
-    assert(forward_list_size(me) == 16);
-    for (i = 0; i < 16; i++) {
-        int get = 0xfacade;
-        assert(forward_list_get_at(&get, me, i) == 0);
-        assert(get == i);
-    }
     assert(!forward_list_destroy(me));
 }
 #endif
+
+struct pair {
+    int cur_node;
+    int cur_cost;
+};
+
+static int test_puzzle_forwards(int start_node, int dest_node)
+{
+    forward_list q = forward_list_init(sizeof(struct pair));
+    struct pair cur;
+    cur.cur_node = start_node;
+    cur.cur_cost = 0;
+    assert(forward_list_is_empty(q));
+    forward_list_add_last(q, &cur);
+    assert(forward_list_size(q) == 1);
+    while (!forward_list_is_empty(q)) {
+        int node;
+        int cost;
+        forward_list_get_first(&cur, q);
+        forward_list_remove_first(q);
+        node = cur.cur_node;
+        cost = cur.cur_cost;
+        if (node > 2 * dest_node || node < 1) {
+            continue;
+        }
+        if (node == dest_node) {
+            forward_list_destroy(q);
+            return cost;
+        }
+        cur.cur_cost = cost + 1;
+        cur.cur_node = node - 1;
+        forward_list_add_last(q, &cur);
+        assert(cur.cur_cost == cost + 1);
+        assert(cur.cur_node == node - 1);
+        cur.cur_node = 2 * node;
+        forward_list_add_last(q, &cur);
+        assert(cur.cur_cost == cost + 1);
+        assert(cur.cur_node == 2 * node);
+    }
+    forward_list_destroy(q);
+    return -1;
+}
+
+static int test_puzzle_backwards(int start_node, int dest_node)
+{
+    forward_list q = forward_list_init(sizeof(struct pair));
+    struct pair cur;
+    cur.cur_node = start_node;
+    cur.cur_cost = 0;
+    assert(forward_list_is_empty(q));
+    forward_list_add_first(q, &cur);
+    assert(forward_list_size(q) == 1);
+    while (!forward_list_is_empty(q)) {
+        int node;
+        int cost;
+        forward_list_get_last(&cur, q);
+        forward_list_remove_last(q);
+        node = cur.cur_node;
+        cost = cur.cur_cost;
+        if (node > 2 * dest_node || node < 1) {
+            continue;
+        }
+        if (node == dest_node) {
+            forward_list_destroy(q);
+            return cost;
+        }
+        cur.cur_cost = cost + 1;
+        cur.cur_node = node - 1;
+        forward_list_add_first(q, &cur);
+        assert(cur.cur_cost == cost + 1);
+        assert(cur.cur_node == node - 1);
+        cur.cur_node = 2 * node;
+        forward_list_add_first(q, &cur);
+        assert(cur.cur_cost == cost + 1);
+        assert(cur.cur_node == 2 * node);
+    }
+    forward_list_destroy(q);
+    return -1;
+}
 
 void test_forward_list(void)
 {
@@ -298,4 +353,8 @@ void test_forward_list(void)
     test_add_at_out_of_memory();
     test_add_last_out_of_memory();
 #endif
+    assert(test_puzzle_forwards(2, 5) == 4);
+    assert(test_puzzle_forwards(2, 10) == 5);
+    assert(test_puzzle_backwards(2, 5) == 4);
+    assert(test_puzzle_backwards(2, 10) == 5);
 }
