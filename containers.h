@@ -574,13 +574,13 @@ vector vector_destroy(vector me);
  * The queue data structure, which adapts a container to provide a queue
  * (first-in first-out). Adapts the deque container.
  */
-typedef struct internal_queue *queue;
+typedef struct internal_deque *queue;
 
 /* Starting */
 queue queue_init(size_t data_size);
 
 /* Utility */
-int queue_size(queue me);
+size_t queue_size(queue me);
 int queue_is_empty(queue me);
 int queue_trim(queue me);
 void queue_copy_to_array(void *arr, queue me);
