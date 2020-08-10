@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2019 Bailey Thompson
+ * Copyright (c) 2017-2020 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,28 +34,28 @@ typedef struct internal_list *list;
 list list_init(size_t data_size);
 
 /* Utility */
-int list_size(list me);
+size_t list_size(list me);
 int list_is_empty(list me);
 void list_copy_to_array(void *arr, list me);
 
 /* Adding */
 int list_add_first(list me, void *data);
-int list_add_at(list me, int index, void *data);
+int list_add_at(list me, size_t index, void *data);
 int list_add_last(list me, void *data);
 
 /* Removing */
 int list_remove_first(list me);
-int list_remove_at(list me, int index);
+int list_remove_at(list me, size_t index);
 int list_remove_last(list me);
 
 /* Setting */
 int list_set_first(list me, void *data);
-int list_set_at(list me, int index, void *data);
+int list_set_at(list me, size_t index, void *data);
 int list_set_last(list me, void *data);
 
 /* Getting */
 int list_get_first(void *data, list me);
-int list_get_at(void *data, list me, int index);
+int list_get_at(void *data, list me, size_t index);
 int list_get_last(void *data, list me);
 
 /* Ending */

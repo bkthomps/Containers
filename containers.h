@@ -222,28 +222,28 @@ typedef struct internal_list *list;
 list list_init(size_t data_size);
 
 /* Utility */
-int list_size(list me);
+size_t list_size(list me);
 int list_is_empty(list me);
 void list_copy_to_array(void *arr, list me);
 
 /* Adding */
 int list_add_first(list me, void *data);
-int list_add_at(list me, int index, void *data);
+int list_add_at(list me, size_t index, void *data);
 int list_add_last(list me, void *data);
 
 /* Removing */
 int list_remove_first(list me);
-int list_remove_at(list me, int index);
+int list_remove_at(list me, size_t index);
 int list_remove_last(list me);
 
 /* Setting */
 int list_set_first(list me, void *data);
-int list_set_at(list me, int index, void *data);
+int list_set_at(list me, size_t index, void *data);
 int list_set_last(list me, void *data);
 
 /* Getting */
 int list_get_first(void *data, list me);
-int list_get_at(void *data, list me, int index);
+int list_get_at(void *data, list me, size_t index);
 int list_get_last(void *data, list me);
 
 /* Ending */
@@ -337,28 +337,28 @@ typedef struct internal_forward_list *forward_list;
 forward_list forward_list_init(size_t data_size);
 
 /* Utility */
-int forward_list_size(forward_list me);
+size_t forward_list_size(forward_list me);
 int forward_list_is_empty(forward_list me);
 void forward_list_copy_to_array(void *arr, forward_list me);
 
 /* Adding */
 int forward_list_add_first(forward_list me, void *data);
-int forward_list_add_at(forward_list me, int index, void *data);
+int forward_list_add_at(forward_list me, size_t index, void *data);
 int forward_list_add_last(forward_list me, void *data);
 
 /* Removing */
 int forward_list_remove_first(forward_list me);
-int forward_list_remove_at(forward_list me, int index);
+int forward_list_remove_at(forward_list me, size_t index);
 int forward_list_remove_last(forward_list me);
 
 /* Setting */
 int forward_list_set_first(forward_list me, void *data);
-int forward_list_set_at(forward_list me, int index, void *data);
+int forward_list_set_at(forward_list me, size_t index, void *data);
 int forward_list_set_last(forward_list me, void *data);
 
 /* Getting */
 int forward_list_get_first(void *data, forward_list me);
-int forward_list_get_at(void *data, forward_list me, int index);
+int forward_list_get_at(void *data, forward_list me, size_t index);
 int forward_list_get_last(void *data, forward_list me);
 
 /* Ending */

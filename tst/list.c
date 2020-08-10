@@ -11,7 +11,7 @@ static void test_front(list me)
     int val[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     int get_arr[10] = {0};
     int get;
-    int i;
+    size_t i;
     assert(list_size(me) == 0);
     assert(list_is_empty(me));
     for (i = 0; i < 10; i++) {
@@ -176,15 +176,6 @@ static void test_add_first_out_of_memory(void)
         assert(list_get_at(&get, me, i) == 0);
         assert(get == 15 - i);
     }
-    fail_malloc = 1;
-    delay_fail_malloc = 1;
-    assert(list_add_first(me, &i) == -ENOMEM);
-    assert(list_size(me) == 16);
-    for (i = 0; i < 16; i++) {
-        int get = 0xfacade;
-        assert(list_get_at(&get, me, i) == 0);
-        assert(get == 15 - i);
-    }
     assert(!list_destroy(me));
 }
 #endif
@@ -205,21 +196,6 @@ static void test_add_at_out_of_memory(void)
     }
     assert(list_size(me) == 16);
     fail_malloc = 1;
-    assert(list_add_at(me, 5, &i) == -ENOMEM);
-    assert(list_size(me) == 16);
-    get = 0xfacade;
-    assert(list_get_at(&get, me, 0) == 0);
-    assert(get == 157);
-    for (i = 1; i < 15; i++) {
-        get = 0xfacade;
-        assert(list_get_at(&get, me, i) == 0);
-        assert(get == i);
-    }
-    get = 0xfacade;
-    assert(list_get_at(&get, me, 15) == 0);
-    assert(get == 982);
-    fail_malloc = 1;
-    delay_fail_malloc = 1;
     assert(list_add_at(me, 5, &i) == -ENOMEM);
     assert(list_size(me) == 16);
     get = 0xfacade;
@@ -255,22 +231,13 @@ static void test_add_last_out_of_memory(void)
         assert(list_get_at(&get, me, i) == 0);
         assert(get == i);
     }
-    fail_malloc = 1;
-    delay_fail_malloc = 1;
-    assert(list_add_last(me, &i) == -ENOMEM);
-    assert(list_size(me) == 16);
-    for (i = 0; i < 16; i++) {
-        int get = 0xfacade;
-        assert(list_get_at(&get, me, i) == 0);
-        assert(get == i);
-    }
     assert(!list_destroy(me));
 }
 #endif
 
 void test_remove_all(void)
 {
-    int i;
+    size_t i;
     list me = list_init(sizeof(int));
     for (i = 0; i < 100; i++) {
         list_add_first(me, &i);
