@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2019 Bailey Thompson
+ * Copyright (c) 2017-2020 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,15 +26,13 @@
 
 struct internal_forward_list {
     size_t bytes_per_item;
-    int item_count;
-    struct node *head;
-    struct node *tail;
+    size_t item_count;
+    char *head;
+    char *tail;
 };
 
-struct node {
-    void *data;
-    struct node *next;
-};
+const size_t node_next_ptr_offset = 0;
+const size_t node_data_ptr_offset = sizeof(char *);
 
 /**
  * Initializes a singly-linked list.
@@ -69,7 +67,7 @@ forward_list forward_list_init(const size_t data_size)
  *
  * @return the number of elements
  */
-int forward_list_size(forward_list me)
+size_t forward_list_size(forward_list me)
 {
     return me->item_count;
 }
@@ -99,29 +97,32 @@ int forward_list_is_empty(forward_list me)
  */
 void forward_list_copy_to_array(void *const arr, forward_list me)
 {
-    struct node *traverse = me->head;
-    int offset = 0;
+    char *traverse = me->head;
+    size_t offset = 0;
     while (traverse) {
-        memcpy((char *) arr + offset, traverse->data, me->bytes_per_item);
+        memcpy((char *) arr + offset, traverse + node_data_ptr_offset,
+               me->bytes_per_item);
+        memcpy(&traverse, traverse + node_next_ptr_offset, sizeof(char *));
         offset += me->bytes_per_item;
-        traverse = traverse->next;
     }
 }
 
 /*
  * Gets the node at the specified index.
  */
-static struct node *forward_list_get_node_at(forward_list me, const int index)
+static char *forward_list_get_node_at(forward_list me, const size_t index)
 {
-    struct node *traverse = me->head;
-    int i;
+    char *traverse = me->head;
+    char *traverse_next;
+    size_t i;
     if (me->tail && index == me->item_count - 1) {
         return me->tail;
     }
     for (i = 0; i < index; i++) {
-        traverse = traverse->next;
+        memcpy(&traverse, traverse + node_next_ptr_offset, sizeof(char *));
     }
-    if (!traverse->next) {
+    memcpy(&traverse_next, traverse + node_next_ptr_offset, sizeof(char *));
+    if (!traverse_next) {
         me->tail = traverse;
     }
     return traverse;
@@ -160,31 +161,29 @@ int forward_list_add_first(forward_list me, void *const data)
  * @return -ENOMEM if out of memory
  * @return -EINVAL if invalid argument
  */
-int forward_list_add_at(forward_list me, const int index, void *const data)
+int forward_list_add_at(forward_list me, const size_t index, void *const data)
 {
-    struct node *add;
-    if (index < 0 || index > me->item_count) {
+    char *node;
+    if (index > me->item_count) {
         return -EINVAL;
     }
-    add = malloc(sizeof(struct node));
-    if (!add) {
+    node = malloc(sizeof(char *) + me->bytes_per_item);
+    if (!node) {
         return -ENOMEM;
     }
-    add->data = malloc(me->bytes_per_item);
-    if (!add->data) {
-        free(add);
-        return -ENOMEM;
-    }
-    memcpy(add->data, data, me->bytes_per_item);
+    memcpy(node + node_data_ptr_offset, data, me->bytes_per_item);
     if (index == 0) {
-        add->next = me->head;
-        me->head = add;
+        memcpy(node + node_next_ptr_offset, &me->head, sizeof(char *));
+        me->head = node;
     } else {
-        struct node *const traverse = forward_list_get_node_at(me, index - 1);
-        add->next = traverse->next;
-        traverse->next = add;
-        if (!add->next) {
-            me->tail = add;
+        char *node_next;
+        char *traverse = forward_list_get_node_at(me, index - 1);
+        memcpy(node + node_next_ptr_offset, traverse + node_next_ptr_offset,
+               sizeof(char *));
+        memcpy(traverse + node_next_ptr_offset, &node, sizeof(char *));
+        memcpy(&node_next, node + node_next_ptr_offset, sizeof(char *));
+        if (!node_next) {
+            me->tail = node;
         }
     }
     me->item_count++;
@@ -209,14 +208,6 @@ int forward_list_add_last(forward_list me, void *const data)
     return forward_list_add_at(me, me->item_count, data);
 }
 
-/*
- * Determines if the input is illegal.
- */
-static int forward_list_is_illegal_input(forward_list me, const int index)
-{
-    return index < 0 || index >= me->item_count;
-}
-
 /**
  * Removes the first piece of data from the singly-linked list.
  *
@@ -239,24 +230,26 @@ int forward_list_remove_first(forward_list me)
  * @return 0       if no error
  * @return -EINVAL if invalid argument
  */
-int forward_list_remove_at(forward_list me, const int index)
+int forward_list_remove_at(forward_list me, const size_t index)
 {
-    if (forward_list_is_illegal_input(me, index)) {
+    if (index >= me->item_count) {
         return -EINVAL;
     }
     if (index == 0) {
-        struct node *const temp = me->head;
-        me->head = temp->next;
-        free(temp->data);
+        char *temp = me->head;
+        memcpy(&me->head, temp + node_next_ptr_offset, sizeof(char *));
         free(temp);
     } else {
-        struct node *const traverse = forward_list_get_node_at(me, index - 1);
-        struct node *const backup = traverse->next;
-        traverse->next = traverse->next->next;
-        if (!traverse->next) {
+        char *traverse = forward_list_get_node_at(me, index - 1);
+        char *backup;
+        char *backup_next;
+        memcpy(&backup, traverse + node_next_ptr_offset, sizeof(char *));
+        memcpy(traverse + node_next_ptr_offset, backup + node_next_ptr_offset,
+               sizeof(char *));
+        memcpy(&backup_next, backup + node_next_ptr_offset, sizeof(char *));
+        if (!backup_next) {
             me->tail = NULL;
         }
-        free(backup->data);
         free(backup);
     }
     me->item_count--;
@@ -308,14 +301,14 @@ int forward_list_set_first(forward_list me, void *const data)
  * @return 0       if no error
  * @return -EINVAL if invalid argument
  */
-int forward_list_set_at(forward_list me, const int index, void *const data)
+int forward_list_set_at(forward_list me, const size_t index, void *const data)
 {
-    struct node *traverse;
-    if (forward_list_is_illegal_input(me, index)) {
+    char *traverse;
+    if (index >= me->item_count) {
         return -EINVAL;
     }
     traverse = forward_list_get_node_at(me, index);
-    memcpy(traverse->data, data, me->bytes_per_item);
+    memcpy(traverse + node_data_ptr_offset, data, me->bytes_per_item);
     return 0;
 }
 
@@ -371,14 +364,14 @@ int forward_list_get_first(void *const data, forward_list me)
  * @return 0       if no error
  * @return -EINVAL if invalid argument
  */
-int forward_list_get_at(void *const data, forward_list me, const int index)
+int forward_list_get_at(void *const data, forward_list me, const size_t index)
 {
-    struct node *traverse;
-    if (forward_list_is_illegal_input(me, index)) {
+    char *traverse;
+    if (index >= me->item_count) {
         return -EINVAL;
     }
     traverse = forward_list_get_node_at(me, index);
-    memcpy(data, traverse->data, me->bytes_per_item);
+    memcpy(data, traverse + node_data_ptr_offset, me->bytes_per_item);
     return 0;
 }
 
@@ -408,11 +401,10 @@ int forward_list_get_last(void *const data, forward_list me)
  */
 void forward_list_clear(forward_list me)
 {
-    struct node *traverse = me->head;
+    char *traverse = me->head;
     while (traverse) {
-        struct node *const temp = traverse;
-        traverse = traverse->next;
-        free(temp->data);
+        char *temp = traverse;
+        memcpy(&traverse, traverse + node_next_ptr_offset, sizeof(char *));
         free(temp);
     }
     me->head = NULL;
