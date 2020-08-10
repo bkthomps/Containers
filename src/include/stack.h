@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2019 Bailey Thompson
+ * Copyright (c) 2017-2020 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,13 +29,13 @@
  * The stack data structure, which adapts a container to provide a stack
  * (last-in first-out). Adapts the deque container.
  */
-typedef struct internal_stack *stack;
+typedef struct internal_deque *stack;
 
 /* Starting */
 stack stack_init(size_t data_size);
 
 /* Utility */
-int stack_size(stack me);
+size_t stack_size(stack me);
 int stack_is_empty(stack me);
 int stack_trim(stack me);
 void stack_copy_to_array(void *arr, stack me);
