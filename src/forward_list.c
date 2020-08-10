@@ -238,6 +238,9 @@ int forward_list_remove_at(forward_list me, const size_t index)
     if (index == 0) {
         char *temp = me->head;
         memcpy(&me->head, temp + node_next_ptr_offset, sizeof(char *));
+        if (!me->head) {
+            me->tail = NULL;
+        }
         free(temp);
     } else {
         char *traverse = forward_list_get_node_at(me, index - 1);
@@ -408,6 +411,7 @@ void forward_list_clear(forward_list me)
         free(temp);
     }
     me->head = NULL;
+    me->tail = NULL;
     me->item_count = 0;
 }
 
