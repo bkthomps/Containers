@@ -6,9 +6,9 @@
  * Include this for the stubs.
  */
 struct internal_priority_queue {
-    vector data;
     size_t data_size;
     int (*comparator)(const void *const one, const void *const two);
+    vector data;
 };
 
 static void priority_queue_verify(priority_queue me)
@@ -66,7 +66,7 @@ static void test_basic(void)
 {
     int item;
     int latest;
-    int i;
+    size_t i;
     priority_queue me = priority_queue_init(sizeof(int), compare_int);
     assert(me);
     assert(priority_queue_size(me) == 0);

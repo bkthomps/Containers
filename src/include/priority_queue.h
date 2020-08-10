@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2019 Bailey Thompson
+ * Copyright (c) 2017-2020 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,7 +37,7 @@ priority_queue priority_queue_init(size_t data_size,
                                                      const void *const two));
 
 /* Utility */
-int priority_queue_size(priority_queue me);
+size_t priority_queue_size(priority_queue me);
 int priority_queue_is_empty(priority_queue me);
 
 /* Adding */
