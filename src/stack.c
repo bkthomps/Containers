@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2019 Bailey Thompson
+ * Copyright (c) 2017-2020 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,10 +23,6 @@
 #include "include/deque.h"
 #include "include/stack.h"
 
-struct internal_stack {
-    deque deque_data;
-};
-
 /**
  * Initializes a stack.
  *
@@ -39,20 +35,7 @@ struct internal_stack {
  */
 stack stack_init(const size_t data_size)
 {
-    struct internal_stack *init;
-    if (data_size == 0) {
-        return NULL;
-    }
-    init = malloc(sizeof(struct internal_stack));
-    if (!init) {
-        return NULL;
-    }
-    init->deque_data = deque_init(data_size);
-    if (!init->deque_data) {
-        free(init);
-        return NULL;
-    }
-    return init;
+    return deque_init(data_size);
 }
 
 /**
@@ -62,9 +45,9 @@ stack stack_init(const size_t data_size)
  *
  * @return the size of the stack
  */
-int stack_size(stack me)
+size_t stack_size(stack me)
 {
-    return deque_size(me->deque_data);
+    return deque_size(me);
 }
 
 /**
@@ -76,7 +59,7 @@ int stack_size(stack me)
  */
 int stack_is_empty(stack me)
 {
-    return deque_is_empty(me->deque_data);
+    return deque_is_empty(me);
 }
 
 /**
@@ -89,7 +72,7 @@ int stack_is_empty(stack me)
  */
 int stack_trim(stack me)
 {
-    return deque_trim(me->deque_data);
+    return deque_trim(me);
 }
 
 /**
@@ -103,7 +86,7 @@ int stack_trim(stack me)
  */
 void stack_copy_to_array(void *const arr, stack me)
 {
-    deque_copy_to_array(arr, me->deque_data);
+    deque_copy_to_array(arr, me);
 }
 
 /**
@@ -121,7 +104,7 @@ void stack_copy_to_array(void *const arr, stack me)
  */
 int stack_push(stack me, void *const data)
 {
-    return deque_push_back(me->deque_data, data);
+    return deque_push_back(me, data);
 }
 
 /**
@@ -139,7 +122,7 @@ int stack_push(stack me, void *const data)
  */
 int stack_pop(void *const data, stack me)
 {
-    return deque_pop_back(data, me->deque_data) == 0;
+    return deque_pop_back(data, me) == 0;
 }
 
 /**
@@ -156,7 +139,7 @@ int stack_pop(void *const data, stack me)
  */
 int stack_top(void *const data, stack me)
 {
-    return deque_get_last(data, me->deque_data) == 0;
+    return deque_get_last(data, me) == 0;
 }
 
 /**
@@ -169,7 +152,7 @@ int stack_top(void *const data, stack me)
  */
 int stack_clear(stack me)
 {
-    return deque_clear(me->deque_data);
+    return deque_clear(me);
 }
 
 /**
@@ -182,7 +165,5 @@ int stack_clear(stack me)
  */
 stack stack_destroy(stack me)
 {
-    deque_destroy(me->deque_data);
-    free(me);
-    return NULL;
+    return deque_destroy(me);
 }
