@@ -106,7 +106,7 @@ int vector_is_empty(vector me)
  */
 static int vector_set_space(vector me, const int size)
 {
-    void *const temp = realloc(me->data, size * me->bytes_per_item);
+    char *const temp = realloc(me->data, size * me->bytes_per_item);
     if (!temp) {
         return -ENOMEM;
     }
