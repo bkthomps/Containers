@@ -66,7 +66,7 @@ static void test_basic(void)
 {
     int item;
     int latest;
-    int i;
+    size_t i;
     priority_queue me = priority_queue_init(sizeof(int), compare_int);
     assert(me);
     assert(priority_queue_size(me) == 0);
