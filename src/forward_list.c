@@ -31,9 +31,9 @@ struct internal_forward_list {
     char *tail;
 };
 
-const size_t ptr_size = sizeof(char *);
-const size_t node_next_ptr_offset = 0;
-const size_t node_data_ptr_offset = sizeof(char *);
+static const size_t ptr_size = sizeof(char *);
+static const size_t node_next_ptr_offset = 0;
+static const size_t node_data_ptr_offset = sizeof(char *);
 
 /**
  * Initializes a singly-linked list.

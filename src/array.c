@@ -24,10 +24,10 @@
 #include <errno.h>
 #include "include/array.h"
 
-const size_t book_keeping_size = sizeof(size_t);
-const size_t arr_size_offset = 0;
-const size_t data_size_offset = sizeof(size_t);
-const size_t data_ptr_offset = 2 * sizeof(size_t);
+static const size_t book_keeping_size = sizeof(size_t);
+static const size_t arr_size_offset = 0;
+static const size_t data_size_offset = sizeof(size_t);
+static const size_t data_ptr_offset = 2 * sizeof(size_t);
 
 /**
  * Initializes an array. If the multiplication of the element count and the
