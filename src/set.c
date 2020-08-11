@@ -343,7 +343,7 @@ int set_put(set me, void *const key)
         int compare;
         char *traverse_key;
         memcpy(&traverse_key, traverse + node_key_offset, me->key_size);
-        compare = me->comparator(key, traverse_key);
+        compare = me->comparator(key, &traverse_key);
         if (compare < 0) {
             char *traverse_left;
             memcpy(&traverse_left, traverse + node_left_child_offset, ptr_size);
@@ -393,7 +393,7 @@ static char *set_equal_match(set me, const void *const key)
         int compare;
         char *traverse_key;
         memcpy(&traverse_key, traverse + node_key_offset, me->key_size);
-        compare = me->comparator(key, traverse_key);
+        compare = me->comparator(key, &traverse_key);
         if (compare < 0) {
             char *traverse_left;
             memcpy(&traverse_left, traverse + node_left_child_offset, ptr_size);
