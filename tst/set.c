@@ -1,73 +1,7 @@
 #include "test.h"
 #include "../src/include/set.h"
 
-/*
- * Include this struct to verify the tree.
- */
-struct internal_set {
-    size_t key_size;
-    int (*comparator)(const void *const one, const void *const two);
-    size_t size;
-    char *root;
-};
-
-/*
- * Include this struct to verify the tree.
- */
-struct node {
-    struct node *parent;
-    int balance;
-    void *key;
-    struct node *left;
-    struct node *right;
-};
-
-/*
- * Verifies that the AVL tree rules are followed. The balance factor of an item
- * must be the right height minus the left height. Also, the left key must be
- * less than the right key.
- */
-static int set_verify_recursive(struct node *const item)
-{
-    int left;
-    int right;
-    int max;
-    if (!item) {
-        return 0;
-    }
-    left = set_verify_recursive(item->left);
-    right = set_verify_recursive(item->right);
-    max = left > right ? left : right;
-    assert(right - left == item->balance);
-    if (item->left && item->right) {
-        const int left_val = *(int *) item->left->key;
-        const int right_val = *(int *) item->right->key;
-        assert(left_val < right_val);
-    }
-    if (item->left) {
-        assert(item->left->parent == item);
-        assert(item->left->parent->key == item->key);
-    }
-    if (item->right) {
-        assert(item->right->parent == item);
-        assert(item->right->parent->key == item->key);
-    }
-    return max + 1;
-}
-
-static size_t set_compute_size(struct node *const item)
-{
-    if (!item) {
-        return 0;
-    }
-    return 1 + set_compute_size(item->left) + set_compute_size(item->right);
-}
-
-static void set_verify(set me)
-{
-    set_verify_recursive(me->root);
-    assert(set_compute_size(me->root) == set_size(me));
-}
+/* TODO: add AVL invariant check */
 
 static int compare_int(const void *const one, const void *const two)
 {
@@ -99,7 +33,6 @@ static void mutation_order(set me, const int *const arr, const int size)
         }
     }
     assert(set_size(me) == actual_size);
-    set_verify(me);
 }
 
 /*
