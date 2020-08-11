@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2019 Bailey Thompson
+ * Copyright (c) 2017-2020 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,17 +27,18 @@
 struct internal_set {
     size_t key_size;
     int (*comparator)(const void *const one, const void *const two);
-    int size;
-    struct node *root;
+    size_t size;
+    char *root;
 };
 
-struct node {
-    struct node *parent;
-    int balance;
-    void *key;
-    struct node *left;
-    struct node *right;
-};
+static const size_t int_size = sizeof(int);
+static const size_t ptr_size = sizeof(char *);
+static const size_t header_size = sizeof(int) + 3 * sizeof(char *);
+static const size_t node_balance_offset = 0;
+static const size_t node_key_offset = sizeof(int);
+static const size_t node_parent_offset = sizeof(int) + sizeof(char *);
+static const size_t node_left_child_offset = sizeof(int) + 2 * sizeof(char *);
+static const size_t node_right_child_offset = sizeof(int) + 3 * sizeof(char *);
 
 /**
  * Initializes a set.
@@ -75,7 +76,7 @@ set set_init(const size_t key_size,
  *
  * @return the size of the set
  */
-int set_size(set me)
+size_t set_size(set me)
 {
     return me->size;
 }
@@ -95,70 +96,70 @@ int set_is_empty(set me)
 /*
  * Resets the parent reference.
  */
-static void set_reference_parent(set me,
-                                 struct node *const parent,
-                                 struct node *const child)
+static void set_reference_parent(set me, char *const parent, char *const child)
 {
-    child->parent = parent->parent;
-    if (!parent->parent) {
+    char *grand_parent;
+    char *left_parent;
+    memcpy(&grand_parent, parent + node_parent_offset, ptr_size);
+    memcpy(&left_parent, grand_parent + node_left_child_offset, ptr_size);
+    memcpy(child + node_parent_offset, &grand_parent, ptr_size);
+    if (!grand_parent) {
         me->root = child;
-    } else if (parent->parent->left == parent) {
-        parent->parent->left = child;
+    } else if (left_parent == parent) {
+        memcpy(grand_parent + node_left_child_offset, &child, ptr_size);
     } else {
-        parent->parent->right = child;
+        memcpy(grand_parent + node_right_child_offset, &child, ptr_size);
     }
 }
 
 /*
  * Rotates the AVL tree to the left.
  */
-static void set_rotate_left(set me,
-                            struct node *const parent,
-                            struct node *const child)
+static void set_rotate_left(set me, char *const parent, char *const child)
 {
-    struct node *grand_child;
+    char *grand_child;
     set_reference_parent(me, parent, child);
-    grand_child = child->left;
+    memcpy(&grand_child, child + node_left_child_offset, ptr_size);
     if (grand_child) {
-        grand_child->parent = parent;
+        memcpy(grand_child + node_parent_offset, &parent, ptr_size);
     }
-    parent->parent = child;
-    parent->right = grand_child;
-    child->left = parent;
+    memcpy(parent + node_parent_offset, &child, ptr_size);
+    memcpy(parent + node_right_child_offset, &grand_child, ptr_size);
+    memcpy(child + node_left_child_offset, &parent, ptr_size);
 }
 
 /*
  * Rotates the AVL tree to the right.
  */
-static void set_rotate_right(set me,
-                             struct node *const parent,
-                             struct node *const child)
+static void set_rotate_right(set me, char *const parent, char *const child)
 {
-    struct node *grand_child;
+    char *grand_child;
     set_reference_parent(me, parent, child);
-    grand_child = child->right;
+    memcpy(&grand_child, child + node_right_child_offset, ptr_size);
     if (grand_child) {
-        grand_child->parent = parent;
+        memcpy(grand_child + node_parent_offset, &parent, ptr_size);
     }
-    parent->parent = child;
-    parent->left = grand_child;
-    child->right = parent;
+    memcpy(parent + node_parent_offset, &child, ptr_size);
+    memcpy(parent + node_left_child_offset, &grand_child, ptr_size);
+    memcpy(child + node_right_child_offset, &parent, ptr_size);
 }
 
 /*
  * Performs a left repair.
  */
-static struct node *set_repair_left(set me,
-                                    struct node *const parent,
-                                    struct node *const child)
+static char *set_repair_left(set me, char *const parent, char *const child)
 {
+    int child_balance;
     set_rotate_left(me, parent, child);
-    if (child->balance == 0) {
-        parent->balance = 1;
-        child->balance = -1;
+    memcpy(&child_balance, child + node_balance_offset, int_size);
+    if (child_balance == 0) {
+        int number = 1;
+        memcpy(parent + node_balance_offset, &number, int_size);
+        number = -1;
+        memcpy(child + node_balance_offset, &number, int_size);
     } else {
-        parent->balance = 0;
-        child->balance = 0;
+        memset(parent + node_balance_offset, 0, int_size);
+        memset(child + node_balance_offset, 0, int_size);
     }
     return child;
 }
@@ -166,17 +167,19 @@ static struct node *set_repair_left(set me,
 /*
  * Performs a right repair.
  */
-static struct node *set_repair_right(set me,
-                                     struct node *const parent,
-                                     struct node *const child)
+static char *set_repair_right(set me, char *const parent, char *const child)
 {
+    int child_balance;
     set_rotate_right(me, parent, child);
-    if (child->balance == 0) {
-        parent->balance = -1;
-        child->balance = 1;
+    memcpy(&child_balance, child + node_balance_offset, int_size);
+    if (child_balance == 0) {
+        int number = -1;
+        memcpy(parent + node_balance_offset, &number, int_size);
+        number = 1;
+        memcpy(child + node_balance_offset, &number, int_size);
     } else {
-        parent->balance = 0;
-        child->balance = 0;
+        memset(parent + node_balance_offset, 0, int_size);
+        memset(child + node_balance_offset, 0, int_size);
     }
     return child;
 }
@@ -184,48 +187,52 @@ static struct node *set_repair_right(set me,
 /*
  * Performs a left-right repair.
  */
-static struct node *set_repair_left_right(set me,
-                                          struct node *const parent,
-                                          struct node *const child,
-                                          struct node *const grand_child)
+static char *set_repair_left_right(set me, char *const parent,
+                                   char *const child, char *const grand_child)
 {
+    int grand_child_balance;
     set_rotate_left(me, child, grand_child);
     set_rotate_right(me, parent, grand_child);
-    if (grand_child->balance == 1) {
-        parent->balance = 0;
-        child->balance = -1;
-    } else if (grand_child->balance == 0) {
-        parent->balance = 0;
-        child->balance = 0;
+    memcpy(&grand_child_balance, grand_child + node_balance_offset, int_size);
+    if (grand_child_balance == 1) {
+        const int number = -1;
+        memset(parent + node_balance_offset, 0, int_size);
+        memcpy(child + node_balance_offset, &number, int_size);
+    } else if (grand_child_balance == 0) {
+        memset(parent + node_balance_offset, 0, int_size);
+        memset(child + node_balance_offset, 0, int_size);
     } else {
-        parent->balance = 1;
-        child->balance = 0;
+        const int number = 1;
+        memcpy(parent + node_balance_offset, &number, int_size);
+        memset(child + node_balance_offset, 0, int_size);
     }
-    grand_child->balance = 0;
+    memset(grand_child + node_balance_offset, 0, int_size);
     return grand_child;
 }
 
 /*
  * Performs a right-left repair.
  */
-static struct node *set_repair_right_left(set me,
-                                          struct node *const parent,
-                                          struct node *const child,
-                                          struct node *const grand_child)
+static char *set_repair_right_left(set me, char *const parent,
+                                   char *const child, char *const grand_child)
 {
+    int grand_child_balance;
     set_rotate_right(me, child, grand_child);
     set_rotate_left(me, parent, grand_child);
-    if (grand_child->balance == 1) {
-        parent->balance = -1;
-        child->balance = 0;
-    } else if (grand_child->balance == 0) {
-        parent->balance = 0;
-        child->balance = 0;
+    memcpy(&grand_child_balance, grand_child + node_balance_offset, int_size);
+    if (grand_child_balance == 1) {
+        const int number = -1;
+        memcpy(parent + node_balance_offset, &number, int_size);
+        memset(child + node_balance_offset, 0, int_size);
+    } else if (grand_child_balance == 0) {
+        memset(parent + node_balance_offset, 0, int_size);
+        memset(child + node_balance_offset, 0, int_size);
     } else {
-        parent->balance = 0;
-        child->balance = 1;
+        const int number = 1;
+        memset(parent + node_balance_offset, 0, int_size);
+        memcpy(child + node_balance_offset, &number, int_size);
     }
-    grand_child->balance = 0;
+    memset(grand_child + node_balance_offset, 0, int_size);
     return grand_child;
 }
 
@@ -233,18 +240,20 @@ static struct node *set_repair_right_left(set me,
  * Repairs the AVL tree on insert. The only possible values of parent->balance
  * are {-2, 2} and the only possible values of child->balance are {-1, 0, 1}.
  */
-static struct node *set_repair(set me,
-                               struct node *const parent,
-                               struct node *const child,
-                               struct node *const grand_child)
+static char *set_repair(set me, char *const parent, char *const child,
+                        char *const grand_child)
 {
-    if (parent->balance == 2) {
-        if (child->balance == -1) {
+    int parent_balance;
+    int child_balance;
+    memcpy(&parent_balance, parent + node_balance_offset, int_size);
+    memcpy(&child_balance, child + node_balance_offset, int_size);
+    if (parent_balance == 2) {
+        if (child_balance == -1) {
             return set_repair_right_left(me, parent, child, grand_child);
         }
         return set_repair_left(me, parent, child);
     }
-    if (child->balance == 1) {
+    if (child_balance == 1) {
         return set_repair_left_right(me, parent, child, grand_child);
     }
     return set_repair_right(me, parent, child);
@@ -253,54 +262,53 @@ static struct node *set_repair(set me,
 /*
  * Balances the AVL tree on insert.
  */
-static void set_insert_balance(set me, struct node *const item)
+static void set_insert_balance(set me, char *const item)
 {
-    struct node *grand_child = NULL;
-    struct node *child = item;
-    struct node *parent = item->parent;
+    char *grand_child = NULL;
+    char *child = item;
+    char *parent;
+    memcpy(&parent, child + node_parent_offset, ptr_size);
     while (parent) {
-        if (parent->left == child) {
-            parent->balance--;
+        int parent_balance;
+        char *parent_left;
+        memcpy(&parent_left, parent + node_left_child_offset, ptr_size);
+        memcpy(&parent_balance, parent + node_balance_offset, int_size);
+        if (parent_left == child) {
+            parent_balance--;
         } else {
-            parent->balance++;
+            parent_balance++;
         }
+        memcpy(parent + parent_balance, &parent_balance, int_size);
         /* If balance is zero after modification, then the tree is balanced. */
-        if (parent->balance == 0) {
+        if (parent_balance == 0) {
             return;
         }
         /* Must re-balance if not in {-1, 0, 1} */
-        if (parent->balance > 1 || parent->balance < -1) {
+        if (parent_balance > 1 || parent_balance < -1) {
             /* After one repair, the tree is balanced. */
             set_repair(me, parent, child, grand_child);
             return;
         }
         grand_child = child;
         child = parent;
-        parent = parent->parent;
+        memcpy(&parent, parent + node_parent_offset, ptr_size);
     }
 }
 
 /*
  * Creates and allocates a node.
  */
-static struct node *set_create_node(set me,
-                                    const void *const data,
-                                    struct node *const parent)
+static char *set_create_node(set me, const void *const data, char *const parent)
 {
-    struct node *const insert = malloc(sizeof(struct node));
+    char *insert = malloc(header_size);
     if (!insert) {
         return NULL;
     }
-    insert->parent = parent;
-    insert->balance = 0;
-    insert->key = malloc(me->key_size);
-    if (!insert->key) {
-        free(insert);
-        return NULL;
-    }
-    memcpy(insert->key, data, me->key_size);
-    insert->left = NULL;
-    insert->right = NULL;
+    memset(insert + node_balance_offset, 0, int_size);
+    memcpy(insert + node_key_offset, data, ptr_size);
+    memcpy(insert + node_parent_offset, &parent, ptr_size);
+    /* Assumes right child is right after left child. */
+    memset(insert + node_left_child_offset, 0, 2 * ptr_size);
     me->size++;
     return insert;
 }
@@ -320,9 +328,9 @@ static struct node *set_create_node(set me,
  */
 int set_put(set me, void *const key)
 {
-    struct node *traverse;
+    char *traverse;
     if (!me->root) {
-        struct node *insert = set_create_node(me, key, NULL);
+        char *insert = set_create_node(me, key, NULL);
         if (!insert) {
             return -ENOMEM;
         }
@@ -330,29 +338,38 @@ int set_put(set me, void *const key)
         return 0;
     }
     traverse = me->root;
+    /* TODO: re-write */
     for (;;) {
-        const int compare = me->comparator(key, traverse->key);
+        int compare;
+        char *traverse_key;
+        memcpy(&traverse_key, traverse + node_key_offset, ptr_size);
+        compare = me->comparator(key, traverse_key);
         if (compare < 0) {
-            if (traverse->left) {
-                traverse = traverse->left;
+            char *traverse_left;
+            memcpy(&traverse_left, traverse + node_left_child_offset, ptr_size);
+            if (traverse_left) {
+                traverse = traverse_left;
             } else {
-                struct node *insert = set_create_node(me, key, traverse);
+                char *insert = set_create_node(me, key, traverse);
                 if (!insert) {
                     return -ENOMEM;
                 }
-                traverse->left = insert;
+                memcpy(traverse + node_left_child_offset, &insert, ptr_size);
                 set_insert_balance(me, insert);
                 return 0;
             }
         } else if (compare > 0) {
-            if (traverse->right) {
-                traverse = traverse->right;
+            char *traverse_right;
+            memcpy(&traverse_right, traverse + node_right_child_offset,
+                   ptr_size);
+            if (traverse_right) {
+                traverse = traverse_right;
             } else {
-                struct node *insert = set_create_node(me, key, traverse);
+                char *insert = set_create_node(me, key, traverse);
                 if (!insert) {
                     return -ENOMEM;
                 }
-                traverse->right = insert;
+                memcpy(traverse + node_right_child_offset, &insert, ptr_size);
                 set_insert_balance(me, insert);
                 return 0;
             }
@@ -365,23 +382,32 @@ int set_put(set me, void *const key)
 /*
  * If a match occurs, returns the match. Else, returns NULL.
  */
-static struct node *set_equal_match(set me, const void *const key)
+static char *set_equal_match(set me, const void *const key)
 {
-    struct node *traverse = me->root;
+    char *traverse = me->root;
     if (!traverse) {
         return NULL;
     }
+    /* TODO: re-write */
     for (;;) {
-        const int compare = me->comparator(key, traverse->key);
+        int compare;
+        char *traverse_key;
+        memcpy(&traverse_key, traverse + node_key_offset, ptr_size);
+        compare = me->comparator(key, traverse_key);
         if (compare < 0) {
-            if (traverse->left) {
-                traverse = traverse->left;
+            char *traverse_left;
+            memcpy(&traverse_left, traverse + node_left_child_offset, ptr_size);
+            if (traverse_left) {
+                traverse = traverse_left;
             } else {
                 return NULL;
             }
         } else if (compare > 0) {
-            if (traverse->right) {
-                traverse = traverse->right;
+            char *traverse_right;
+            memcpy(&traverse_right, traverse + node_right_child_offset,
+                   ptr_size);
+            if (traverse_right) {
+                traverse = traverse_right;
             } else {
                 return NULL;
             }
@@ -411,45 +437,62 @@ int set_contains(set me, void *const key)
 /*
  * Repairs the AVL tree by pivoting on an item.
  */
-static struct node *set_repair_pivot(set me,
-                                     struct node *const item,
-                                     const int is_left_pivot)
+static char *set_repair_pivot(set me, char *const item, const int is_left_pivot)
 {
-    struct node *const child = is_left_pivot ? item->right : item->left;
-    struct node *const grand_child =
-            child->balance == 1 ? child->right : child->left;
+    char *child;
+    int child_balance;
+    char *grand_child;
+    if (is_left_pivot) {
+        memcpy(&child, item + node_right_child_offset, ptr_size);
+    } else {
+        memcpy(&child, item + node_left_child_offset, ptr_size);
+    }
+    memcpy(&child_balance, item + node_balance_offset, int_size);
+    if (child_balance == 1) {
+        memcpy(&grand_child, child + node_right_child_offset, ptr_size);
+    } else {
+        memcpy(&grand_child, child + node_left_child_offset, ptr_size);
+    }
     return set_repair(me, item, child, grand_child);
 }
 
 /*
  * Goes back up the tree repairing it along the way.
  */
-static void set_trace_ancestors(set me, struct node *item)
+static void set_trace_ancestors(set me, char *item)
 {
-    struct node *child = item;
-    struct node *parent = item->parent;
+    char *child = item;
+    char *parent;
+    memcpy(&parent, item + node_parent_offset, ptr_size);
     while (parent) {
-        if (parent->left == child) {
-            parent->balance++;
+        char *parent_left;
+        int parent_balance;
+        memcpy(&parent_left, parent + node_left_child_offset, ptr_size);
+        memcpy(&parent_balance, parent + node_balance_offset, int_size);
+        if (parent_left == child) {
+            parent_balance++;
         } else {
-            parent->balance--;
+            parent_balance--;
         }
+        memcpy(parent + node_balance_offset, &parent_balance, int_size);
         /* The tree is balanced if balance is -1 or +1 after modification. */
-        if (parent->balance == -1 || parent->balance == 1) {
+        if (parent_balance == -1 || parent_balance == 1) {
             return;
         }
         /* Must re-balance if not in {-1, 0, 1} */
-        if (parent->balance > 1 || parent->balance < -1) {
-            child = set_repair_pivot(me, parent, parent->left == child);
-            parent = child->parent;
-            /* If balance is -1 or +1 after modification or the parent is */
-            /* NULL, then the tree is balanced. */
-            if (!parent || child->balance == -1 || child->balance == 1) {
+        if (parent_balance > 1 || parent_balance < -1) {
+            int child_balance;
+            memcpy(&child_balance, child + node_balance_offset, int_size);
+            child = set_repair_pivot(me, parent, parent_left == child);
+            memcpy(&parent, child + node_parent_offset, ptr_size);
+            /* If balance is -1 or +1 after modification or   */
+            /* the parent is NULL, then the tree is balanced. */
+            if (!parent || child_balance == -1 || child_balance == 1) {
                 return;
             }
         } else {
             child = parent;
-            parent = parent->parent;
+            memcpy(&parent, parent + node_parent_offset, ptr_size);
         }
     }
 }
@@ -457,23 +500,27 @@ static void set_trace_ancestors(set me, struct node *item)
 /*
  * Balances the AVL tree on deletion.
  */
-static void set_delete_balance(set me,
-                               struct node *item,
-                               const int is_left_deleted)
+static void set_delete_balance(set me, char *item, const int is_left_deleted)
 {
+    int balance;
+    memcpy(&balance, item + node_balance_offset, int_size);
     if (is_left_deleted) {
-        item->balance++;
+        balance++;
     } else {
-        item->balance--;
+        balance--;
     }
+    memcpy(item + node_balance_offset, &balance, int_size);
     /* If balance is -1 or +1 after modification, then the tree is balanced. */
-    if (item->balance == -1 || item->balance == 1) {
+    if (balance == -1 || balance == 1) {
         return;
     }
     /* Must re-balance if not in {-1, 0, 1} */
-    if (item->balance > 1 || item->balance < -1) {
+    if (balance > 1 || balance < -1) {
+        char *parent;
         item = set_repair_pivot(me, item, is_left_deleted);
-        if (!item->parent || item->balance == -1 || item->balance == 1) {
+        memcpy(item + node_balance_offset, &balance, int_size);
+        memcpy(&parent, item + node_parent_offset, ptr_size);
+        if (!parent || balance == -1 || balance == 1) {
             return;
         }
     }
@@ -483,20 +530,23 @@ static void set_delete_balance(set me,
 /*
  * Removes traverse when it has no children.
  */
-static void set_remove_no_children(set me, const struct node *const traverse)
+static void set_remove_no_children(set me, const char *const traverse)
 {
-    struct node *const parent = traverse->parent;
+    char *parent;
+    char *parent_left;
+    memcpy(&parent, traverse + node_parent_offset, ptr_size);
     /* If no parent and no children, then the only node is traverse. */
     if (!parent) {
         me->root = NULL;
         return;
     }
+    memcpy(&parent_left, parent + node_left_child_offset, ptr_size);
     /* No re-reference needed since traverse has no children. */
-    if (parent->left == traverse) {
-        parent->left = NULL;
+    if (parent_left == traverse) {
+        memset(parent + node_left_child_offset, 0, ptr_size);
         set_delete_balance(me, parent, 1);
     } else {
-        parent->right = NULL;
+        memset(parent + node_right_child_offset, 0, ptr_size);
         set_delete_balance(me, parent, 0);
     }
 }
@@ -504,37 +554,42 @@ static void set_remove_no_children(set me, const struct node *const traverse)
 /*
  * Removes traverse when it has one child.
  */
-static void set_remove_one_child(set me, const struct node *const traverse)
+static void set_remove_one_child(set me, const char *const traverse)
 {
-    struct node *const parent = traverse->parent;
+    char *parent;
+    char *traverse_left;
+    char *traverse_right;
+    memcpy(&parent, traverse + node_parent_offset, ptr_size);
+    memcpy(&traverse_left, traverse + node_left_child_offset, ptr_size);
+    memcpy(&traverse_right, traverse + node_right_child_offset, ptr_size);
     /* If no parent, make the child of traverse the new root. */
     if (!parent) {
-        if (traverse->left) {
-            traverse->left->parent = NULL;
-            me->root = traverse->left;
+        if (traverse_left) {
+            memset(traverse_left + node_parent_offset, 0, ptr_size);
+            me->root = traverse_left;
         } else {
-            traverse->right->parent = NULL;
-            me->root = traverse->right;
+            memset(traverse_right + node_parent_offset, 0, ptr_size);
+            me->root = traverse_right;
         }
         return;
     }
     /* The parent of traverse now references the child of traverse. */
-    if (parent->left == traverse) {
-        if (traverse->left) {
-            parent->left = traverse->left;
-            traverse->left->parent = parent;
+    if (traverse_left == traverse) {
+        if (traverse_left) {
+            memcpy(parent + node_left_child_offset, &traverse_left, ptr_size);
+            memcpy(traverse_left + node_parent_offset, &parent, ptr_size);
         } else {
-            parent->left = traverse->right;
-            traverse->right->parent = parent;
+            memcpy(parent + node_left_child_offset, &traverse_right, ptr_size);
+            memcpy(traverse_right + node_parent_offset, &parent, ptr_size);
         }
         set_delete_balance(me, parent, 1);
     } else {
-        if (traverse->left) {
-            parent->right = traverse->left;
-            traverse->left->parent = parent;
+        if (traverse_left) {
+            memcpy(parent + node_right_child_offset, &traverse_left, ptr_size);
+            memcpy(traverse_left + node_parent_offset, &parent, ptr_size);
         } else {
-            parent->right = traverse->right;
-            traverse->right->parent = parent;
+            memcpy(parent + node_right_child_offset, &traverse_right, ptr_size);
+            memcpy(traverse_right + node_parent_offset, &parent, ptr_size);
         }
         set_delete_balance(me, parent, 0);
     }
@@ -543,58 +598,91 @@ static void set_remove_one_child(set me, const struct node *const traverse)
 /*
  * Removes traverse when it has two children.
  */
-static void set_remove_two_children(set me, const struct node *const traverse)
+static void set_remove_two_children(set me, const char *const traverse)
 {
-    struct node *item;
-    struct node *parent;
-    const int is_left_deleted = traverse->right->left != NULL;
+    char *item;
+    char *item_parent;
+    char *traverse_parent;
+    char *traverse_parent_left;
+    char *traverse_right;
+    char *traverse_right_left;
+    int is_left_deleted;
+    memcpy(&traverse_right, traverse + node_right_child_offset, ptr_size);
+    memcpy(&traverse_right_left, traverse_right + node_left_child_offset,
+           ptr_size);
+    is_left_deleted = traverse_right_left != NULL;
     if (!is_left_deleted) {
-        item = traverse->right;
-        parent = item;
-        item->balance = traverse->balance;
-        item->parent = traverse->parent;
-        item->left = traverse->left;
-        item->left->parent = item;
+        char *item_left;
+        item = traverse_right;
+        item_parent = item;
+        memcpy(item + node_balance_offset, traverse + node_balance_offset,
+               int_size);
+        memcpy(item + node_parent_offset, traverse + node_parent_offset,
+               ptr_size);
+        memcpy(item + node_left_child_offset, traverse + node_left_child_offset,
+               ptr_size);
+        memcpy(&item_left, item + node_left_child_offset, ptr_size);
+        memcpy(item_left + node_parent_offset, &item, ptr_size);
     } else {
-        item = traverse->right->left;
-        while (item->left) {
-            item = item->left;
+        char *item_left;
+        char *item_right;
+        item = traverse_right_left;
+        memcpy(&item_left, item + node_left_child_offset, ptr_size);
+        while (item_left) {
+            item = item_left;
+            memcpy(&item_left, item + node_left_child_offset, ptr_size);
         }
-        parent = item->parent;
-        item->balance = traverse->balance;
-        item->parent->left = item->right;
-        if (item->right) {
-            item->right->parent = item->parent;
+        memcpy(&item_parent, item + node_parent_offset, ptr_size);
+        memcpy(item + node_balance_offset, traverse + node_balance_offset,
+               int_size);
+        memcpy(item_parent + node_left_child_offset,
+               item + node_right_child_offset, ptr_size);
+        memcpy(&item_right, item + node_right_child_offset, ptr_size);
+        if (item_right) {
+            memcpy(item_right + node_parent_offset, item + node_parent_offset,
+                   ptr_size);
         }
-        item->left = traverse->left;
-        item->left->parent = item;
-        item->right = traverse->right;
-        item->right->parent = item;
-        item->parent = traverse->parent;
+        memcpy(item + node_left_child_offset, traverse + node_left_child_offset,
+               ptr_size);
+        memcpy(&item_left, item + node_left_child_offset, ptr_size);
+        memcpy(item_left + node_parent_offset, &item, ptr_size);
+        memcpy(item + node_right_child_offset,
+               traverse + node_right_child_offset, ptr_size);
+        memcpy(&item_right, item + node_right_child_offset, ptr_size);
+        memcpy(item_right + node_parent_offset, &item, ptr_size);
+        memcpy(item + node_parent_offset, traverse + node_parent_offset,
+               ptr_size);
     }
-    if (!traverse->parent) {
+    memcpy(&traverse_parent, traverse + node_parent_offset, ptr_size);
+    memcpy(&traverse_parent_left, traverse_parent + node_left_child_offset,
+           ptr_size);
+    memcpy(&item_parent, item + node_parent_offset, ptr_size);
+    if (!traverse_parent) {
         me->root = item;
-    } else if (traverse->parent->left == traverse) {
-        item->parent->left = item;
+    } else if (traverse_parent_left == traverse) {
+        memcpy(item_parent + node_left_child_offset, &item, ptr_size);
     } else {
-        item->parent->right = item;
+        memcpy(item_parent + node_right_child_offset, &item, ptr_size);
     }
-    set_delete_balance(me, parent, is_left_deleted);
+    set_delete_balance(me, item_parent, is_left_deleted);
 }
 
 /*
  * Removes the element from the set.
  */
-static void set_remove_element(set me, struct node *const traverse)
+static void set_remove_element(set me, char *const traverse)
 {
-    if (!traverse->left && !traverse->right) {
+    char *traverse_left;
+    char *traverse_right;
+    memcpy(&traverse_left, traverse + node_left_child_offset, ptr_size);
+    memcpy(&traverse_right, traverse + node_right_child_offset, ptr_size);
+    if (!traverse_left && !traverse_right) {
         set_remove_no_children(me, traverse);
-    } else if (!traverse->left || !traverse->right) {
+    } else if (!traverse_left || !traverse_right) {
         set_remove_one_child(me, traverse);
     } else {
         set_remove_two_children(me, traverse);
     }
-    free(traverse->key);
     free(traverse);
     me->size--;
 }
@@ -613,7 +701,7 @@ static void set_remove_element(set me, struct node *const traverse)
  */
 int set_remove(set me, void *const key)
 {
-    struct node *const traverse = set_equal_match(me, key);
+    char *const traverse = set_equal_match(me, key);
     if (!traverse) {
         return 0;
     }

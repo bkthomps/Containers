@@ -617,7 +617,7 @@ set set_init(size_t key_size,
              int (*comparator)(const void *const one, const void *const two));
 
 /* Capacity */
-int set_size(set me);
+size_t set_size(set me);
 int set_is_empty(set me);
 
 /* Accessing */
