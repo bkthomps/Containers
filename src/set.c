@@ -35,10 +35,10 @@ static const size_t int_size = sizeof(int);
 static const size_t ptr_size = sizeof(char *);
 static const size_t header_size = sizeof(int) + 3 * sizeof(char *);
 static const size_t node_balance_offset = 0;
-static const size_t node_key_offset = sizeof(int);
-static const size_t node_parent_offset = sizeof(int) + sizeof(char *);
-static const size_t node_left_child_offset = sizeof(int) + 2 * sizeof(char *);
-static const size_t node_right_child_offset = sizeof(int) + 3 * sizeof(char *);
+static const size_t node_parent_offset = sizeof(int);
+static const size_t node_left_child_offset = sizeof(int) + sizeof(char *);
+static const size_t node_right_child_offset = sizeof(int) + 2 * sizeof(char *);
+static const size_t node_key_offset = sizeof(int) + 3 * sizeof(char *);
 
 /**
  * Initializes a set.
@@ -305,10 +305,10 @@ static char *set_create_node(set me, const void *const data, char *const parent)
         return NULL;
     }
     memset(insert + node_balance_offset, 0, int_size);
-    memcpy(insert + node_key_offset, data, ptr_size);
     memcpy(insert + node_parent_offset, &parent, ptr_size);
-    /* Assumes right child is right after left child. */
-    memset(insert + node_left_child_offset, 0, 2 * ptr_size);
+    memset(insert + node_left_child_offset, 0, ptr_size);
+    memset(insert + node_right_child_offset, 0, ptr_size);
+    memcpy(insert + node_key_offset, data, me->key_size);
     me->size++;
     return insert;
 }
@@ -342,7 +342,7 @@ int set_put(set me, void *const key)
     for (;;) {
         int compare;
         char *traverse_key;
-        memcpy(&traverse_key, traverse + node_key_offset, ptr_size);
+        memcpy(&traverse_key, traverse + node_key_offset, me->key_size);
         compare = me->comparator(key, traverse_key);
         if (compare < 0) {
             char *traverse_left;
@@ -392,7 +392,7 @@ static char *set_equal_match(set me, const void *const key)
     for (;;) {
         int compare;
         char *traverse_key;
-        memcpy(&traverse_key, traverse + node_key_offset, ptr_size);
+        memcpy(&traverse_key, traverse + node_key_offset, me->key_size);
         compare = me->comparator(key, traverse_key);
         if (compare < 0) {
             char *traverse_left;
