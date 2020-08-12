@@ -1,12 +1,12 @@
 [![CircleCI](https://circleci.com/gh/bkthomps/Containers/tree/master.svg?style=shield)](https://circleci.com/gh/bkthomps/Containers/tree/master)
 [![Documentation](https://codedocs.xyz/bkthomps/Containers.svg)](https://codedocs.xyz/bkthomps/Containers/)
 [![Codecov](https://codecov.io/gh/bkthomps/Containers/branch/master/graph/badge.svg)](https://codecov.io/gh/bkthomps/Containers)
-[![Codacy](https://api.codacy.com/project/badge/Grade/be77f904a65b4bd0b991df85e6cb37f0)](https://www.codacy.com/app/bkthomps/Containers?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=bkthomps/Containers&amp;utm_campaign=Badge_Grade)
+[![CodeQuality](https://www.code-inspector.com/project/12167/score/svg)](https://frontend.code-inspector.com/project/12167/dashboard)
 [![Language](https://img.shields.io/badge/language-C89+-orange.svg)](https://en.wikipedia.org/wiki/C_(programming_language))
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/bkthomps/Containers/blob/master/LICENSE)
 
 # Containers
-This library provides various containers. Each container has utility functions to manipulate the data it holds. This is an abstraction as to not have to manually manage and reallocate memory. 
+This library provides various containers. Each container has utility functions to manipulate the data it holds. This is an abstraction as to not have to manually manage and reallocate memory.
 
 Inspired by the C++ standard library; however, implemented using C with different function interfaces as the C++ standard library but with the same container names.
 
