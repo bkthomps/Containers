@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2019 Bailey Thompson
+ * Copyright (c) 2017-2020 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,16 +24,16 @@
 #include <errno.h>
 #include "include/unordered_set.h"
 
-static const int STARTING_BUCKETS = 8;
+static const int STARTING_BUCKETS = 16;
 static const double RESIZE_AT = 0.75;
-static const double RESIZE_RATIO = 1.5;
+static const double RESIZE_RATIO = 2;
 
 struct internal_unordered_set {
     size_t key_size;
+    size_t size;
+    size_t capacity;
     unsigned long (*hash)(const void *const key);
     int (*comparator)(const void *const one, const void *const two);
-    int size;
-    int capacity;
     struct node **buckets;
 };
 
@@ -125,7 +125,7 @@ static void unordered_set_add_item(unordered_set me, struct node *const add)
  */
 int unordered_set_rehash(unordered_set me)
 {
-    int i;
+    size_t i;
     struct node **old_buckets = me->buckets;
     me->buckets = calloc((size_t) me->capacity, sizeof(struct node *));
     if (!me->buckets) {
@@ -152,7 +152,7 @@ int unordered_set_rehash(unordered_set me)
  *
  * @return the size of the unordered set
  */
-int unordered_set_size(unordered_set me)
+size_t unordered_set_size(unordered_set me)
 {
     return me->size;
 }
@@ -247,7 +247,7 @@ int unordered_set_put(unordered_set me, void *const key)
 {
     const unsigned long hash = unordered_set_hash(me, key);
     int index;
-    if (me->size + 1 >= RESIZE_AT * me->capacity) {
+    if (me->size + 1 >= (size_t) (RESIZE_AT * me->capacity)) {
         const int rc = unordered_set_resize(me);
         if (rc != 0) {
             return rc;
@@ -357,7 +357,7 @@ int unordered_set_remove(unordered_set me, void *const key)
  */
 int unordered_set_clear(unordered_set me)
 {
-    int i;
+    size_t i;
     struct node **temp =
             calloc((size_t) STARTING_BUCKETS, sizeof(struct node *));
     if (!temp) {

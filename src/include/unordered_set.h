@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2019 Bailey Thompson
+ * Copyright (c) 2017-2020 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,7 +39,7 @@ unordered_set unordered_set_init(size_t key_size,
 
 /* Utility */
 int unordered_set_rehash(unordered_set me);
-int unordered_set_size(unordered_set me);
+size_t unordered_set_size(unordered_set me);
 int unordered_set_is_empty(unordered_set me);
 
 /* Accessing */
