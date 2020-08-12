@@ -29,7 +29,7 @@ test_optimized:
 	@gcc src/*.c tst/*.c -Wall -Wextra -Wpedantic -Werror -std=c89 -O3 -ldl -o ContainersTestOptimized
 
 test_coverage:
-	@gcc src/*.c tst/*.c -Wall -Wextra -Wpedantic -std=c89 -O0 -ldl -g -fprofile-arcs -ftest-coverage -o ContainersTestCoverage
+	@gcc src/*.c tst/*.c -Wall -Wextra -Wpedantic -Werror -std=c89 -O0 -ldl -g -coverage -o ContainersTestCoverage
 
 valgrind:
 	@sed -i 's/STUB_MALLOC 1/STUB_MALLOC 0/g' tst/test.h
