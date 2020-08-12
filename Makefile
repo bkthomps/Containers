@@ -32,7 +32,7 @@ test_coverage:
 	@clang src/*.c tst/*.c -Wall -Wextra -Wpedantic -std=c89 -O0 -ldl -g -fprofile-arcs -ftest-coverage -o ContainersTestCoverage
 
 valgrind:
-	find tst/test.h -type f -exec sed -i "" "s/STUB_MALLOC 1/STUB_MALLOC 0/g" {} \;
-	@clang src/*.c tst/*.c -Wall -Wextra -Wpedantic -Werror -std=c89 -O0 -ldl -o ContainersTestValgrind
-	find tst/test.h -type f -exec sed -i "" "s/STUB_MALLOC 0/STUB_MALLOC 1/g" {} \;
+	@sed -i 's/STUB_MALLOC 1/STUB_MALLOC 0/g' tst/test.h
+	@clang src/*.c tst/*.c -Wall -Wextra -Wpedantic -Werror -std=c89 -O0 -o ContainersTestValgrind
+	@sed -i 's/STUB_MALLOC 0/STUB_MALLOC 1/g' tst/test.h
 	@valgrind --leak-check=full ./ContainersTestValgrind
