@@ -1,7 +1,6 @@
-[![CircleCI](https://circleci.com/gh/bkthomps/Containers/tree/master.svg?style=shield)](https://circleci.com/gh/bkthomps/Containers/tree/master)
+[![GitHubBuild](https://github.com/bkthomps/Containers/workflows/build/badge.svg)](https://github.com/bkthomps/Containers)
 [![Documentation](https://codedocs.xyz/bkthomps/Containers.svg)](https://codedocs.xyz/bkthomps/Containers/)
 [![Codecov](https://codecov.io/gh/bkthomps/Containers/branch/master/graph/badge.svg)](https://codecov.io/gh/bkthomps/Containers)
-[![CodeQuality](https://www.code-inspector.com/project/12167/score/svg?dummy=unused)](https://frontend.code-inspector.com/project/12167/dashboard)
 [![Language](https://img.shields.io/badge/language-C89+-orange.svg)](https://en.wikipedia.org/wiki/C_(programming_language))
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/bkthomps/Containers/blob/master/LICENSE)
 

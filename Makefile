@@ -23,13 +23,16 @@ header:
 	python3 compile_headers.py $(version)
 
 test_debug:
-	@clang src/*.c tst/*.c -Wall -Wextra -Wpedantic -Werror -O0 -o ContainersTestDebug
+	@gcc src/*.c tst/*.c -Wall -Wextra -Wpedantic -Werror -std=c89 -O0 -ldl -o ContainersTestDebug
 
 test_optimized:
-	@clang src/*.c tst/*.c -Wall -Wextra -Wpedantic -Werror -O3 -o ContainersTestOptimized
+	@gcc src/*.c tst/*.c -Wall -Wextra -Wpedantic -Werror -std=c89 -O3 -ldl -o ContainersTestOptimized
 
 test_coverage:
-	@clang src/*.c tst/*.c -Wall -Wextra -Wpedantic -ldl -g -O0 -fprofile-arcs -ftest-coverage -o ContainersTestCoverage
+	@gcc src/*.c tst/*.c -Wall -Wextra -Wpedantic -Werror -std=c89 -O0 -ldl -g -coverage -o ContainersTestCoverage
 
 valgrind:
-	@valgrind --leak-check=yes ./ContainersTestDebug
+	@sed -i 's/STUB_MALLOC 1/STUB_MALLOC 0/g' tst/test.h
+	@gcc src/*.c tst/*.c -Wall -Wextra -Wpedantic -Werror -std=c89 -O0 -o ContainersTestValgrind
+	@sed -i 's/STUB_MALLOC 0/STUB_MALLOC 1/g' tst/test.h
+	@valgrind --leak-check=full ./ContainersTestValgrind
