@@ -6,10 +6,10 @@ import sys
 github_location = "github.com/bkthomps/Containers"
 
 if len(sys.argv) != 2:
-    exit("Format: python3 compile_headers.py <version_number>")
+    sys.exit("Format: python3 compile_headers.py <version_number>")
 version = str(sys.argv[1])
 if not re.match(r"v[0-9]+\.[0-9]+\.[0-9]+", version):
-    exit("Error: version format must be: vi.j.k")
+    sys.exit("Error: version format must be: vi.j.k")
 
 license_list = []
 license_file = open("LICENSE", "r")
