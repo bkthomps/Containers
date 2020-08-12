@@ -18,6 +18,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - run: make test_coverage
+    - run: ./ContainersTestCoverage
     - run: bash <(curl -s https://codecov.io/bash)
   valgrind:
     runs-on: ubuntu-latest
