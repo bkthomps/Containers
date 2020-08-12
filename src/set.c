@@ -267,7 +267,7 @@ static void set_insert_balance(set me, char *const item)
     char *grand_child = NULL;
     char *child = item;
     char *parent;
-    memcpy(&parent, child + node_parent_offset, ptr_size);
+    memcpy(&parent, item + node_parent_offset, ptr_size);
     while (parent) {
         int parent_balance;
         char *parent_left;
@@ -343,7 +343,7 @@ int set_put(set me, void *const key)
         int compare;
         char *traverse_key;
         memcpy(&traverse_key, traverse + node_key_offset, me->key_size);
-        compare = me->comparator(key, &traverse_key);
+        compare = me->comparator(key, traverse_key);
         if (compare < 0) {
             char *traverse_left;
             memcpy(&traverse_left, traverse + node_left_child_offset, ptr_size);
@@ -393,7 +393,7 @@ static char *set_equal_match(set me, const void *const key)
         int compare;
         char *traverse_key;
         memcpy(&traverse_key, traverse + node_key_offset, me->key_size);
-        compare = me->comparator(key, &traverse_key);
+        compare = me->comparator(key, traverse_key);
         if (compare < 0) {
             char *traverse_left;
             memcpy(&traverse_left, traverse + node_left_child_offset, ptr_size);
@@ -482,8 +482,8 @@ static void set_trace_ancestors(set me, char *item)
         /* Must re-balance if not in {-1, 0, 1} */
         if (parent_balance > 1 || parent_balance < -1) {
             int child_balance;
-            memcpy(&child_balance, child + node_balance_offset, int_size);
             child = set_repair_pivot(me, parent, parent_left == child);
+            memcpy(&child_balance, child + node_balance_offset, int_size);
             memcpy(&parent, child + node_parent_offset, ptr_size);
             /* If balance is -1 or +1 after modification or   */
             /* the parent is NULL, then the tree is balanced. */
@@ -518,7 +518,7 @@ static void set_delete_balance(set me, char *item, const int is_left_deleted)
     if (balance > 1 || balance < -1) {
         char *parent;
         item = set_repair_pivot(me, item, is_left_deleted);
-        memcpy(item + node_balance_offset, &balance, int_size);
+        memcpy(&balance, item + node_balance_offset, int_size);
         memcpy(&parent, item + node_parent_offset, ptr_size);
         if (!parent || balance == -1 || balance == 1) {
             return;
