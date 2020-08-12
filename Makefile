@@ -32,4 +32,4 @@ test_coverage:
 	@clang src/*.c tst/*.c -Wall -Wextra -Wpedantic -std=c89 -O0 -ldl -g -fprofile-arcs -ftest-coverage -o ContainersTestCoverage
 
 valgrind:
-	@valgrind --leak-check=yes ./ContainersTestDebug
+	@valgrind --leak-check=full ./ContainersTestDebug
