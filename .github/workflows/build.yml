@@ -18,7 +18,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - run: make test_coverage
-    - run: bash <(curl -s https://codecov.io/bash)
+    - uses: codecov/codecov-action@v1
   valgrind:
     runs-on: ubuntu-latest
     steps:
