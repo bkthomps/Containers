@@ -6,5 +6,8 @@ containers.so
 CMakeCache.txt
 CMakeFiles/*
 Containers
+ContainersTestDebug
+ContainersTestOptimized
+ContainersTestCoverage
 Containers.cbp
 cmake_install.cmake

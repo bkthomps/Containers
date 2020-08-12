@@ -19,12 +19,20 @@ static_gcc:
 dynamic_gcc:
 	gcc -shared -o containers.so -O3 -fPIC src/*.c
 
-clean:
-	rm -f containers.a
-	rm -f containers.so
-
 header:
 	python3 compile_headers.py $(version)
 
+test_debug:
+	@gcc src/*.c tst/*.c -Wall -Wextra -Wpedantic -Werror -std=c89 -O0 -ldl -o ContainersTestDebug
+
+test_optimized:
+	@gcc src/*.c tst/*.c -Wall -Wextra -Wpedantic -Werror -std=c89 -O3 -ldl -o ContainersTestOptimized
+
+test_coverage:
+	@gcc src/*.c tst/*.c -Wall -Wextra -Wpedantic -Werror -std=c89 -O0 -ldl -g -coverage -o ContainersTestCoverage
+
 valgrind:
-	cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" . ; cmake --build . --target Containers -- -j 2 ; valgrind --leak-check=yes ./Containers
+	@sed -i 's/STUB_MALLOC 1/STUB_MALLOC 0/g' tst/test.h
+	@gcc src/*.c tst/*.c -Wall -Wextra -Wpedantic -Werror -std=c89 -O0 -o ContainersTestValgrind
+	@sed -i 's/STUB_MALLOC 0/STUB_MALLOC 1/g' tst/test.h
+	@valgrind --leak-check=full ./ContainersTestValgrind
