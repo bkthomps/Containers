@@ -32,4 +32,5 @@ jobs:
       with:
         name: ContainersTestDebug
     - run: sudo apt install -y valgrind
+    - run: chmod +x ./ContainersTestDebug
     - run: make valgrind
