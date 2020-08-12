@@ -1,0 +1,21 @@
+name: build
+on: [push]
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - run: make test_debug
+    - run: ./ContainersTestDebug
+  optimized:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - run: make test_optimized
+    - run: ./ContainersTestOptimized
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - run: make test_coverage
+    - run: bash <(curl -s https://codecov.io/bash)
