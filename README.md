@@ -1,4 +1,4 @@
-[![GitHubBuild](https://github.com/bkthomps/Containers/workflows/build-master/badge.svg)](https://github.com/bkthomps/Containers/actions?query=workflow%3Abuild-master)
+[![GitHubBuild](https://github.com/bkthomps/Containers/workflows/build/badge.svg)](https://github.com/bkthomps/Containers)
 [![Documentation](https://codedocs.xyz/bkthomps/Containers.svg)](https://codedocs.xyz/bkthomps/Containers/)
 [![Codecov](https://codecov.io/gh/bkthomps/Containers/branch/master/graph/badge.svg)](https://codecov.io/gh/bkthomps/Containers)
 [![Language](https://img.shields.io/badge/language-C89+-orange.svg)](https://en.wikipedia.org/wiki/C_(programming_language))
