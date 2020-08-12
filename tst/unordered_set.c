@@ -241,15 +241,15 @@ static void test_resize_out_of_memory(void)
 {
     int i;
     unordered_set me = unordered_set_init(sizeof(int), hash_int, compare_int);
-    for (i = 0; i < 5; i++) {
+    for (i = 0; i < 11; i++) {
         assert(unordered_set_put(me, &i) == 0);
     }
-    assert(unordered_set_size(me) == 5);
+    assert(unordered_set_size(me) == 11);
     i++;
     fail_calloc = 1;
     assert(unordered_set_put(me, &i) == -ENOMEM);
-    assert(unordered_set_size(me) == 5);
-    for (i = 0; i < 5; i++) {
+    assert(unordered_set_size(me) == 11);
+    for (i = 0; i < 11; i++) {
         assert(unordered_set_contains(me, &i));
     }
     assert(!unordered_set_destroy(me));
