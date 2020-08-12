@@ -30,6 +30,7 @@ test_optimized:
 
 test_coverage:
 	@gcc src/*.c tst/*.c -Wall -Wextra -Wpedantic -std=c89 -O0 -ldl -g -coverage -o ContainersTestCoverage
+	@./ContainersTestCoverage
 	@gcov *.gcno
 
 valgrind:
