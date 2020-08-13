@@ -24,9 +24,9 @@
 #include <errno.h>
 #include "include/unordered_set.h"
 
-static const int STARTING_BUCKETS = 16;
-static const double RESIZE_AT = 0.75;
-static const double RESIZE_RATIO = 2;
+#define STARTING_BUCKETS 16
+#define RESIZE_AT 0.75
+#define RESIZE_RATIO 2
 
 struct internal_unordered_set {
     size_t key_size;
@@ -187,7 +187,7 @@ static int unordered_set_resize(unordered_set me)
 {
     size_t i;
     const size_t old_capacity = me->capacity;
-    const size_t new_capacity = (size_t) (me->capacity * RESIZE_RATIO);
+    const size_t new_capacity = me->capacity * RESIZE_RATIO;
     char **old_buckets = me->buckets;
     me->buckets = calloc(new_capacity, ptr_size);
     if (!me->buckets) {
