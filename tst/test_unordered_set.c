@@ -223,14 +223,12 @@ static void test_put_out_of_memory(void)
     fail_malloc = 1;
     assert(unordered_set_put(me, &key) == -ENOMEM);
     fail_malloc = 1;
-    delay_fail_malloc = 1;
     assert(unordered_set_put(me, &key) == -ENOMEM);
     assert(unordered_set_put(me, &key) == 0);
     key = 7;
     fail_malloc = 1;
     assert(unordered_set_put(me, &key) == -ENOMEM);
     fail_malloc = 1;
-    delay_fail_malloc = 1;
     assert(unordered_set_put(me, &key) == -ENOMEM);
     assert(!unordered_set_destroy(me));
 }
