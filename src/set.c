@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2019 Bailey Thompson
+ * Copyright (c) 2017-2020 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,9 +25,9 @@
 #include "include/set.h"
 
 struct internal_set {
+    size_t size;
     size_t key_size;
     int (*comparator)(const void *const one, const void *const two);
-    int size;
     struct node *root;
 };
 
@@ -75,7 +75,7 @@ set set_init(const size_t key_size,
  *
  * @return the size of the set
  */
-int set_size(set me)
+size_t set_size(set me)
 {
     return me->size;
 }

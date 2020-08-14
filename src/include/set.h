@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2019 Bailey Thompson
+ * Copyright (c) 2017-2020 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,7 +35,7 @@ set set_init(size_t key_size,
              int (*comparator)(const void *const one, const void *const two));
 
 /* Capacity */
-int set_size(set me);
+size_t set_size(set me);
 int set_is_empty(set me);
 
 /* Accessing */
