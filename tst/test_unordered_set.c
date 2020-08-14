@@ -163,6 +163,7 @@ static void test_basic(void)
 
 static void test_bad_hash(void)
 {
+    int i;
     int num;
     unordered_set me = unordered_set_init(sizeof(int), bad_hash_int,
                                           compare_int);
@@ -183,6 +184,9 @@ static void test_bad_hash(void)
     assert(unordered_set_size(me) == 3);
     unordered_set_rehash(me);
     assert(unordered_set_size(me) == 3);
+    for (i = 2; i > 0; i--) {
+        assert(unordered_set_remove(me, &i));
+    }
     assert(!unordered_set_destroy(me));
 }
 

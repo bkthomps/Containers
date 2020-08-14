@@ -187,6 +187,7 @@ static void test_basic(void)
 
 static void test_bad_hash(void)
 {
+    int i;
     int num;
     unordered_multiset me = unordered_multiset_init(sizeof(int), bad_hash_int,
                                                     compare_int);
@@ -208,6 +209,9 @@ static void test_bad_hash(void)
     assert(unordered_multiset_size(me) == 4);
     unordered_multiset_rehash(me);
     assert(unordered_multiset_size(me) == 4);
+    for (i = 3; i > 0; i--) {
+        assert(unordered_multiset_remove(me, &i));
+    }
     assert(!unordered_multiset_destroy(me));
 }
 
