@@ -47,7 +47,7 @@ unordered_map unordered_map_init(size_t key_size,
 
 /* Utility */
 int unordered_map_rehash(unordered_map me);
-int unordered_map_size(unordered_map me);
+size_t unordered_map_size(unordered_map me);
 int unordered_map_is_empty(unordered_map me);
 
 /* Accessing */
@@ -116,12 +116,12 @@ unordered_multiset_init(size_t key_size,
 
 /* Utility */
 int unordered_multiset_rehash(unordered_multiset me);
-int unordered_multiset_size(unordered_multiset me);
+size_t unordered_multiset_size(unordered_multiset me);
 int unordered_multiset_is_empty(unordered_multiset me);
 
 /* Accessing */
 int unordered_multiset_put(unordered_multiset me, void *key);
-int unordered_multiset_count(unordered_multiset me, void *key);
+size_t unordered_multiset_count(unordered_multiset me, void *key);
 int unordered_multiset_contains(unordered_multiset me, void *key);
 int unordered_multiset_remove(unordered_multiset me, void *key);
 int unordered_multiset_remove_all(unordered_multiset me, void *key);

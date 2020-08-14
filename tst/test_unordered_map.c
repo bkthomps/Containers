@@ -243,21 +243,9 @@ static void test_put_out_of_memory(void)
     assert(me);
     fail_malloc = 1;
     assert(unordered_map_put(me, &key, &value) == -ENOMEM);
-    fail_malloc = 1;
-    delay_fail_malloc = 1;
-    assert(unordered_map_put(me, &key, &value) == -ENOMEM);
-    fail_malloc = 1;
-    delay_fail_malloc = 2;
-    assert(unordered_map_put(me, &key, &value) == -ENOMEM);
     assert(unordered_map_put(me, &key, &value) == 0);
     key = 7;
     fail_malloc = 1;
-    assert(unordered_map_put(me, &key, &value) == -ENOMEM);
-    fail_malloc = 1;
-    delay_fail_malloc = 1;
-    assert(unordered_map_put(me, &key, &value) == -ENOMEM);
-    fail_malloc = 1;
-    delay_fail_malloc = 2;
     assert(unordered_map_put(me, &key, &value) == -ENOMEM);
     assert(!unordered_map_destroy(me));
 }
@@ -269,15 +257,15 @@ static void test_resize_out_of_memory(void)
     int i;
     unordered_map me = unordered_map_init(sizeof(int), sizeof(int), hash_int,
                                           compare_int);
-    for (i = 0; i < 5; i++) {
+    for (i = 0; i < 11; i++) {
         assert(unordered_map_put(me, &i, &i) == 0);
     }
-    assert(unordered_map_size(me) == 5);
+    assert(unordered_map_size(me) == 11);
     i++;
     fail_calloc = 1;
     assert(unordered_map_put(me, &i, &i) == -ENOMEM);
-    assert(unordered_map_size(me) == 5);
-    for (i = 0; i < 5; i++) {
+    assert(unordered_map_size(me) == 11);
+    for (i = 0; i < 11; i++) {
         assert(unordered_map_contains(me, &i));
     }
     assert(!unordered_map_destroy(me));

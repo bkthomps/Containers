@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2019 Bailey Thompson
+ * Copyright (c) 2017-2020 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,26 +24,26 @@
 #include <errno.h>
 #include "include/unordered_map.h"
 
-static const int STARTING_BUCKETS = 8;
-static const double RESIZE_AT = 0.75;
-static const double RESIZE_RATIO = 1.5;
+#define STARTING_BUCKETS 16
+#define RESIZE_AT 0.75
+#define RESIZE_RATIO 2
 
 struct internal_unordered_map {
     size_t key_size;
     size_t value_size;
+    size_t size;
+    size_t capacity;
     unsigned long (*hash)(const void *const key);
     int (*comparator)(const void *const one, const void *const two);
-    int size;
-    int capacity;
-    struct node **buckets;
+    char **buckets;
 };
 
-struct node {
-    void *key;
-    void *value;
-    unsigned long hash;
-    struct node *next;
-};
+static const size_t ptr_size = sizeof(char *);
+static const size_t hash_size = sizeof(unsigned long);
+static const size_t node_next_offset = 0;
+static const size_t node_hash_offset = sizeof(char *);
+static const size_t node_key_offset = sizeof(char *) + sizeof(unsigned long);
+/* Assume the value starts right after the key ends. */
 
 /*
  * Gets the hash by first calling the user-defined hash, and then using a
@@ -94,7 +94,7 @@ unordered_map unordered_map_init(const size_t key_size,
     init->comparator = comparator;
     init->size = 0;
     init->capacity = STARTING_BUCKETS;
-    init->buckets = calloc(STARTING_BUCKETS, sizeof(struct node *));
+    init->buckets = calloc(STARTING_BUCKETS, ptr_size);
     if (!init->buckets) {
         free(init);
         return NULL;
@@ -105,20 +105,26 @@ unordered_map unordered_map_init(const size_t key_size,
 /*
  * Adds the specified node to the map.
  */
-static void unordered_map_add_item(unordered_map me, struct node *const add)
+static void unordered_map_add_item(unordered_map me, char *const add)
 {
-    struct node *traverse;
-    const int index = (int) (add->hash % me->capacity);
-    add->next = NULL;
+    char *traverse;
+    char *traverse_next;
+    unsigned long hash;
+    size_t index;
+    memcpy(&hash, add + node_hash_offset, hash_size);
+    index = hash % me->capacity;
+    memset(add + node_next_offset, 0, ptr_size);
     if (!me->buckets[index]) {
         me->buckets[index] = add;
         return;
     }
     traverse = me->buckets[index];
-    while (traverse->next) {
-        traverse = traverse->next;
+    memcpy(&traverse_next, traverse + node_next_offset, ptr_size);
+    while (traverse_next) {
+        traverse = traverse_next;
+        memcpy(&traverse_next, traverse + node_next_offset, ptr_size);
     }
-    traverse->next = add;
+    memcpy(traverse + node_next_offset, &add, ptr_size);
 }
 
 /**
@@ -132,18 +138,21 @@ static void unordered_map_add_item(unordered_map me, struct node *const add)
  */
 int unordered_map_rehash(unordered_map me)
 {
-    int i;
-    struct node **old_buckets = me->buckets;
-    me->buckets = calloc((size_t) me->capacity, sizeof(struct node *));
+    size_t i;
+    char **old_buckets = me->buckets;
+    me->buckets = calloc(me->capacity, ptr_size);
     if (!me->buckets) {
         me->buckets = old_buckets;
         return -ENOMEM;
     }
     for (i = 0; i < me->capacity; i++) {
-        struct node *traverse = old_buckets[i];
+        char *traverse = old_buckets[i];
         while (traverse) {
-            struct node *const backup = traverse->next;
-            traverse->hash = unordered_map_hash(me, traverse->key);
+            char *backup;
+            unsigned long hash;
+            memcpy(&backup, traverse + node_next_offset, ptr_size);
+            hash = unordered_map_hash(me, traverse + node_key_offset);
+            memcpy(traverse + node_hash_offset, &hash, hash_size);
             unordered_map_add_item(me, traverse);
             traverse = backup;
         }
@@ -159,7 +168,7 @@ int unordered_map_rehash(unordered_map me)
  *
  * @return the size of the unordered map
  */
-int unordered_map_size(unordered_map me)
+size_t unordered_map_size(unordered_map me)
 {
     return me->size;
 }
@@ -181,20 +190,21 @@ int unordered_map_is_empty(unordered_map me)
  */
 static int unordered_map_resize(unordered_map me)
 {
-    int i;
-    const int old_capacity = me->capacity;
-    const int new_capacity = (int) (me->capacity * RESIZE_RATIO);
-    struct node **old_buckets = me->buckets;
-    me->buckets = calloc((size_t) new_capacity, sizeof(struct node *));
+    size_t i;
+    const size_t old_capacity = me->capacity;
+    const size_t new_capacity = me->capacity * RESIZE_RATIO;
+    char **old_buckets = me->buckets;
+    me->buckets = calloc(new_capacity, ptr_size);
     if (!me->buckets) {
         me->buckets = old_buckets;
         return -ENOMEM;
     }
     me->capacity = new_capacity;
     for (i = 0; i < old_capacity; i++) {
-        struct node *traverse = old_buckets[i];
+        char *traverse = old_buckets[i];
         while (traverse) {
-            struct node *const backup = traverse->next;
+            char *backup;
+            memcpy(&backup, traverse + node_next_offset, ptr_size);
             unordered_map_add_item(me, traverse);
             traverse = backup;
         }
@@ -206,41 +216,32 @@ static int unordered_map_resize(unordered_map me)
 /*
  * Determines if an element is equal to the key.
  */
-static int unordered_map_is_equal(unordered_map me,
-                                  const struct node *const item,
+static int unordered_map_is_equal(unordered_map me, char *const item,
                                   const unsigned long hash,
                                   const void *const key)
 {
-    return item->hash == hash && me->comparator(item->key, key) == 0;
+    unsigned long item_hash;
+    memcpy(&item_hash, item + node_hash_offset, hash_size);
+    return item_hash == hash &&
+           me->comparator(item + node_key_offset, key) == 0;
 }
 
 /*
  * Creates an element to add.
  */
-static struct node *unordered_map_create_element(unordered_map me,
-                                                 const unsigned long hash,
-                                                 const void *const key,
-                                                 const void *const value)
+static char *unordered_map_create_element(unordered_map me,
+                                          const unsigned long hash,
+                                          const void *const key,
+                                          const void *const value)
 {
-    struct node *const init = malloc(sizeof(struct node));
+    char *init = malloc(ptr_size + hash_size + me->key_size);
     if (!init) {
         return NULL;
     }
-    init->key = malloc(me->key_size);
-    if (!init->key) {
-        free(init);
-        return NULL;
-    }
-    memcpy(init->key, key, me->key_size);
-    init->value = malloc(me->value_size);
-    if (!init->value) {
-        free(init->key);
-        free(init);
-        return NULL;
-    }
-    memcpy(init->value, value, me->value_size);
-    init->hash = hash;
-    init->next = NULL;
+    memset(init + node_next_offset, 0, ptr_size);
+    memcpy(init + node_hash_offset, &hash, hash_size);
+    memcpy(init + node_key_offset, key, me->key_size);
+    memcpy(init + node_key_offset + me->key_size, value, me->value_size);
     return init;
 }
 
@@ -264,35 +265,41 @@ int unordered_map_put(unordered_map me, void *const key, void *const value)
 {
     const unsigned long hash = unordered_map_hash(me, key);
     int index;
-    if (me->size + 1 >= RESIZE_AT * me->capacity) {
+    if (me->size + 1 >= (size_t) (RESIZE_AT * me->capacity)) {
         const int rc = unordered_map_resize(me);
         if (rc != 0) {
             return rc;
         }
     }
-    index = (int) (hash % me->capacity);
+    index = (size_t) (hash % me->capacity);
     if (!me->buckets[index]) {
         me->buckets[index] = unordered_map_create_element(me, hash, key, value);
         if (!me->buckets[index]) {
             return -ENOMEM;
         }
     } else {
-        struct node *traverse = me->buckets[index];
+        char *traverse = me->buckets[index];
+        char *traverse_next;
         if (unordered_map_is_equal(me, traverse, hash, key)) {
-            memcpy(traverse->value, value, me->value_size);
+            memcpy(traverse + node_key_offset + me->key_size, value,
+                   me->value_size);
             return 0;
         }
-        while (traverse->next) {
-            traverse = traverse->next;
+        memcpy(&traverse_next, traverse + node_next_offset, ptr_size);
+        while (traverse_next) {
+            traverse = traverse_next;
+            memcpy(&traverse_next, traverse + node_next_offset, ptr_size);
             if (unordered_map_is_equal(me, traverse, hash, key)) {
-                memcpy(traverse->value, value, me->value_size);
+                memcpy(traverse + node_key_offset + me->key_size, value,
+                       me->value_size);
                 return 0;
             }
         }
-        traverse->next = unordered_map_create_element(me, hash, key, value);
-        if (!traverse->next) {
+        traverse_next = unordered_map_create_element(me, hash, key, value);
+        if (!traverse_next) {
             return -ENOMEM;
         }
+        memcpy(traverse + node_next_offset, &traverse_next, ptr_size);
     }
     me->size++;
     return 0;
@@ -315,14 +322,14 @@ int unordered_map_put(unordered_map me, void *const key, void *const value)
 int unordered_map_get(void *const value, unordered_map me, void *const key)
 {
     const unsigned long hash = unordered_map_hash(me, key);
-    const int index = (int) (hash % me->capacity);
-    struct node *traverse = me->buckets[index];
+    char *traverse = me->buckets[hash % me->capacity];
     while (traverse) {
         if (unordered_map_is_equal(me, traverse, hash, key)) {
-            memcpy(value, traverse->value, me->value_size);
+            memcpy(value, traverse + node_key_offset + me->key_size,
+                   me->value_size);
             return 1;
         }
-        traverse = traverse->next;
+        memcpy(&traverse, traverse + node_next_offset, ptr_size);
     }
     return 0;
 }
@@ -342,13 +349,12 @@ int unordered_map_get(void *const value, unordered_map me, void *const key)
 int unordered_map_contains(unordered_map me, void *const key)
 {
     const unsigned long hash = unordered_map_hash(me, key);
-    const int index = (int) (hash % me->capacity);
-    const struct node *traverse = me->buckets[index];
+    char *traverse = me->buckets[hash % me->capacity];
     while (traverse) {
         if (unordered_map_is_equal(me, traverse, hash, key)) {
             return 1;
         }
-        traverse = traverse->next;
+        memcpy(&traverse, traverse + node_next_offset, ptr_size);
     }
     return 0;
 }
@@ -367,32 +373,31 @@ int unordered_map_contains(unordered_map me, void *const key)
  */
 int unordered_map_remove(unordered_map me, void *const key)
 {
-    struct node *traverse;
+    char *traverse;
+    char *traverse_next;
     const unsigned long hash = unordered_map_hash(me, key);
-    const int index = (int) (hash % me->capacity);
+    const size_t index = hash % me->capacity;
     if (!me->buckets[index]) {
         return 0;
     }
     traverse = me->buckets[index];
     if (unordered_map_is_equal(me, traverse, hash, key)) {
-        me->buckets[index] = traverse->next;
-        free(traverse->key);
-        free(traverse->value);
+        memcpy(me->buckets + index, traverse + node_next_offset, ptr_size);
         free(traverse);
         me->size--;
         return 1;
     }
-    while (traverse->next) {
-        if (unordered_map_is_equal(me, traverse->next, hash, key)) {
-            struct node *const backup = traverse->next;
-            traverse->next = traverse->next->next;
-            free(backup->key);
-            free(backup->value);
-            free(backup);
+    memcpy(&traverse_next, traverse + node_next_offset, ptr_size);
+    while (traverse_next) {
+        if (unordered_map_is_equal(me, traverse_next, hash, key)) {
+            memcpy(traverse + node_next_offset,
+                   traverse_next + node_next_offset, ptr_size);
+            free(traverse_next);
             me->size--;
             return 1;
         }
-        traverse = traverse->next;
+        traverse = traverse_next;
+        memcpy(&traverse_next, traverse + node_next_offset, ptr_size);
     }
     return 0;
 }
@@ -407,27 +412,22 @@ int unordered_map_remove(unordered_map me, void *const key)
  */
 int unordered_map_clear(unordered_map me)
 {
-    int i;
-    struct node **temp =
-            calloc((size_t) STARTING_BUCKETS, sizeof(struct node *));
-    if (!temp) {
+    size_t i;
+    char **updated_buckets = calloc(STARTING_BUCKETS, ptr_size);
+    if (!updated_buckets) {
         return -ENOMEM;
     }
     for (i = 0; i < me->capacity; i++) {
-        struct node *traverse = me->buckets[i];
+        char *traverse = me->buckets[i];
         while (traverse) {
-            struct node *const backup = traverse;
-            traverse = traverse->next;
-            free(backup->key);
-            free(backup->value);
+            char *backup = traverse;
+            memcpy(&traverse, traverse + node_next_offset, ptr_size);
             free(backup);
         }
-        me->buckets[i] = NULL;
     }
     me->size = 0;
     me->capacity = STARTING_BUCKETS;
-    free(me->buckets);
-    me->buckets = temp;
+    me->buckets = updated_buckets;
     return 0;
 }
 
