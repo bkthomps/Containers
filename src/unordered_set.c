@@ -87,7 +87,7 @@ unordered_set unordered_set_init(const size_t key_size,
     init->comparator = comparator;
     init->size = 0;
     init->capacity = STARTING_BUCKETS;
-    init->buckets = calloc(STARTING_BUCKETS, sizeof(struct node *));
+    init->buckets = calloc(STARTING_BUCKETS, ptr_size);
     if (!init->buckets) {
         free(init);
         return NULL;
