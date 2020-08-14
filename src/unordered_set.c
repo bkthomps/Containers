@@ -142,11 +142,9 @@ int unordered_set_rehash(unordered_set me)
         char *traverse = old_buckets[i];
         while (traverse) {
             char *backup;
-            char *key;
             unsigned long hash;
             memcpy(&backup, traverse + node_next_offset, ptr_size);
-            key = traverse + node_key_offset;
-            hash = unordered_set_hash(me, key);
+            hash = unordered_set_hash(me, traverse + node_key_offset);
             memcpy(traverse + node_hash_offset, &hash, hash_size);
             unordered_set_add_item(me, traverse);
             traverse = backup;
@@ -340,8 +338,7 @@ int unordered_set_remove(unordered_set me, void *const key)
     }
     traverse = me->buckets[index];
     if (unordered_set_is_equal(me, traverse, hash, key)) {
-        memcpy(&traverse_next, traverse + node_next_offset, ptr_size);
-        me->buckets[index] = traverse_next;
+        memcpy(me->buckets + index, traverse + node_next_offset, ptr_size);
         free(traverse);
         me->size--;
         return 1;
@@ -349,11 +346,9 @@ int unordered_set_remove(unordered_set me, void *const key)
     memcpy(&traverse_next, traverse + node_next_offset, ptr_size);
     while (traverse_next) {
         if (unordered_set_is_equal(me, traverse_next, hash, key)) {
-            char *backup = traverse_next;
-            char *backup_next;
-            memcpy(&backup_next, backup + node_next_offset, ptr_size);
-            memcpy(traverse + node_next_offset, &backup_next, ptr_size);
-            free(backup);
+            memcpy(traverse + node_next_offset,
+                   traverse_next + node_next_offset, ptr_size);
+            free(traverse_next);
             me->size--;
             return 1;
         }
