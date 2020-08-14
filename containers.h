@@ -276,7 +276,7 @@ unordered_multimap_init(size_t key_size,
 
 /* Utility */
 int unordered_multimap_rehash(unordered_multimap me);
-int unordered_multimap_size(unordered_multimap me);
+size_t unordered_multimap_size(unordered_multimap me);
 int unordered_multimap_is_empty(unordered_multimap me);
 
 /* Accessing */

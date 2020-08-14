@@ -292,6 +292,7 @@ static void test_bad_hash_collision(void)
     value = 13;
     unordered_multimap_put(me, &key, &value);
     unordered_multimap_get_start(me, &key);
+    key = 0xfacade;
     value = 20;
     unordered_multimap_get_next(&value, me);
     assert(value == 12);
@@ -350,21 +351,9 @@ static void test_put_out_of_memory(void)
     assert(me);
     fail_malloc = 1;
     assert(unordered_multimap_put(me, &key, &value) == -ENOMEM);
-    fail_malloc = 1;
-    delay_fail_malloc = 1;
-    assert(unordered_multimap_put(me, &key, &value) == -ENOMEM);
-    fail_malloc = 1;
-    delay_fail_malloc = 2;
-    assert(unordered_multimap_put(me, &key, &value) == -ENOMEM);
     assert(unordered_multimap_put(me, &key, &value) == 0);
     key = 7;
     fail_malloc = 1;
-    assert(unordered_multimap_put(me, &key, &value) == -ENOMEM);
-    fail_malloc = 1;
-    delay_fail_malloc = 1;
-    assert(unordered_multimap_put(me, &key, &value) == -ENOMEM);
-    fail_malloc = 1;
-    delay_fail_malloc = 2;
     assert(unordered_multimap_put(me, &key, &value) == -ENOMEM);
     assert(!unordered_multimap_destroy(me));
 }
@@ -377,15 +366,15 @@ static void test_resize_out_of_memory(void)
     unordered_multimap me = unordered_multimap_init(sizeof(int), sizeof(int),
                                                     hash_int, compare_int,
                                                     compare_int);
-    for (i = 0; i < 5; i++) {
+    for (i = 0; i < 11; i++) {
         assert(unordered_multimap_put(me, &i, &i) == 0);
     }
-    assert(unordered_multimap_size(me) == 5);
+    assert(unordered_multimap_size(me) == 11);
     i++;
     fail_calloc = 1;
     assert(unordered_multimap_put(me, &i, &i) == -ENOMEM);
-    assert(unordered_multimap_size(me) == 5);
-    for (i = 0; i < 5; i++) {
+    assert(unordered_multimap_size(me) == 11);
+    for (i = 0; i < 11; i++) {
         assert(unordered_multimap_contains(me, &i));
     }
     assert(!unordered_multimap_destroy(me));
