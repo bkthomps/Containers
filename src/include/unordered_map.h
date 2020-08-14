@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2019 Bailey Thompson
+ * Copyright (c) 2017-2020 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -40,7 +40,7 @@ unordered_map unordered_map_init(size_t key_size,
 
 /* Utility */
 int unordered_map_rehash(unordered_map me);
-int unordered_map_size(unordered_map me);
+size_t unordered_map_size(unordered_map me);
 int unordered_map_is_empty(unordered_map me);
 
 /* Accessing */
