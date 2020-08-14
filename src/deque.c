@@ -24,10 +24,10 @@
 #include <errno.h>
 #include "include/deque.h"
 
-static const size_t MAX_BLOCK_BYTE_SIZE = 4096;
-static const size_t MIN_BLOCK_ELEMENT_SIZE = 16;
-static const size_t INITIAL_BLOCK_COUNT = 8;
-static const double RESIZE_RATIO = 1.5;
+#define MAX_BLOCK_BYTE_SIZE 4096
+#define MIN_BLOCK_ELEMENT_SIZE 16
+#define INITIAL_BLOCK_COUNT 8
+#define RESIZE_RATIO 1.5
 
 struct internal_deque {
     size_t data_size;
@@ -225,16 +225,14 @@ int deque_push_front(deque me, void *const data)
         const size_t previous_block_index =
                 me->start_index / me->block_size - 1;
         memcpy(&block, me->data + previous_block_index, sizeof(char *));
-        if (block) {
-            goto copy_element;
-        }
-        block = malloc(me->block_size * me->data_size);
         if (!block) {
-            return -ENOMEM;
+            block = malloc(me->block_size * me->data_size);
+            if (!block) {
+                return -ENOMEM;
+            }
+            memcpy(me->data + previous_block_index, &block, sizeof(char *));
         }
-        memcpy(me->data + previous_block_index, &block, sizeof(char *));
     }
-    copy_element:
     me->start_index--;
     {
         char *block;
@@ -277,16 +275,14 @@ int deque_push_back(deque me, void *const data)
         char *block;
         const size_t tentative_block_index = me->end_index / me->block_size;
         memcpy(&block, me->data + tentative_block_index, sizeof(char *));
-        if (block) {
-            goto copy_element;
-        }
-        block = malloc(me->block_size * me->data_size);
         if (!block) {
-            return -ENOMEM;
+            block = malloc(me->block_size * me->data_size);
+            if (!block) {
+                return -ENOMEM;
+            }
+            memcpy(me->data + tentative_block_index, &block, sizeof(char *));
         }
-        memcpy(me->data + tentative_block_index, &block, sizeof(char *));
     }
-    copy_element:
     {
         char *block;
         const size_t block_index = me->end_index / me->block_size;
