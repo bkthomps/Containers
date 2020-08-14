@@ -55,7 +55,7 @@ static int set_verify_recursive(struct node *const item)
     return max + 1;
 }
 
-static int set_compute_size(struct node *const item)
+static size_t set_compute_size(struct node *const item)
 {
     if (!item) {
         return 0;
@@ -85,7 +85,7 @@ static void test_invalid_init(void)
 static void mutation_order(set me, const int *const arr, const int size)
 {
     int i;
-    int actual_size = 0;
+    size_t actual_size = 0;
     assert(set_is_empty(me));
     for (i = 0; i < size; i++) {
         int num = arr[i];
@@ -370,7 +370,7 @@ static void test_contains(void)
 
 static void test_stress_add(void)
 {
-    int count = 0;
+    size_t count = 0;
     int flip = 0;
     int i;
     set me = set_init(sizeof(int), compare_int);
