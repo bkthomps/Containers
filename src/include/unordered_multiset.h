@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2019 Bailey Thompson
+ * Copyright (c) 2017-2020 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -40,12 +40,12 @@ unordered_multiset_init(size_t key_size,
 
 /* Utility */
 int unordered_multiset_rehash(unordered_multiset me);
-int unordered_multiset_size(unordered_multiset me);
+size_t unordered_multiset_size(unordered_multiset me);
 int unordered_multiset_is_empty(unordered_multiset me);
 
 /* Accessing */
 int unordered_multiset_put(unordered_multiset me, void *key);
-int unordered_multiset_count(unordered_multiset me, void *key);
+size_t unordered_multiset_count(unordered_multiset me, void *key);
 int unordered_multiset_contains(unordered_multiset me, void *key);
 int unordered_multiset_remove(unordered_multiset me, void *key);
 int unordered_multiset_remove_all(unordered_multiset me, void *key);
