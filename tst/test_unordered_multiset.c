@@ -128,12 +128,12 @@ static void test_remove(unordered_multiset me)
 static void test_stress_remove(unordered_multiset me)
 {
     int i;
-    for (i = 5000; i < 6000; i++) {
+    for (i = 4000; i < 6000; i++) {
         unordered_multiset_put(me, &i);
         assert(unordered_multiset_contains(me, &i));
     }
-    assert(unordered_multiset_size(me) == 1000);
-    for (i = 5000; i < 6000; i++) {
+    assert(unordered_multiset_size(me) == 2000);
+    for (i = 4000; i < 6000; i++) {
         unordered_multiset_remove(me, &i);
         assert(!unordered_multiset_contains(me, &i));
     }
