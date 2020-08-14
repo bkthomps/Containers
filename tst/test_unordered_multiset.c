@@ -128,12 +128,12 @@ static void test_remove(unordered_multiset me)
 static void test_stress_remove(unordered_multiset me)
 {
     int i;
-    for (i = 5000; i < 6000; i++) {
+    for (i = 4000; i < 6000; i++) {
         unordered_multiset_put(me, &i);
         assert(unordered_multiset_contains(me, &i));
     }
-    assert(unordered_multiset_size(me) == 1000);
-    for (i = 5000; i < 6000; i++) {
+    assert(unordered_multiset_size(me) == 2000);
+    for (i = 4000; i < 6000; i++) {
         unordered_multiset_remove(me, &i);
         assert(!unordered_multiset_contains(me, &i));
     }
@@ -279,14 +279,12 @@ static void test_put_out_of_memory(void)
     fail_malloc = 1;
     assert(unordered_multiset_put(me, &key) == -ENOMEM);
     fail_malloc = 1;
-    delay_fail_malloc = 1;
     assert(unordered_multiset_put(me, &key) == -ENOMEM);
     assert(unordered_multiset_put(me, &key) == 0);
     key = 7;
     fail_malloc = 1;
     assert(unordered_multiset_put(me, &key) == -ENOMEM);
     fail_malloc = 1;
-    delay_fail_malloc = 1;
     assert(unordered_multiset_put(me, &key) == -ENOMEM);
     assert(!unordered_multiset_destroy(me));
 }
@@ -298,15 +296,15 @@ static void test_resize_out_of_memory(void)
     int i;
     unordered_multiset me = unordered_multiset_init(sizeof(int), hash_int,
                                                     compare_int);
-    for (i = 0; i < 5; i++) {
+    for (i = 0; i < 11; i++) {
         assert(unordered_multiset_put(me, &i) == 0);
     }
-    assert(unordered_multiset_size(me) == 5);
+    assert(unordered_multiset_size(me) == 11);
     i++;
     fail_calloc = 1;
     assert(unordered_multiset_put(me, &i) == -ENOMEM);
-    assert(unordered_multiset_size(me) == 5);
-    for (i = 0; i < 5; i++) {
+    assert(unordered_multiset_size(me) == 11);
+    for (i = 0; i < 11; i++) {
         assert(unordered_multiset_contains(me, &i));
     }
     assert(!unordered_multiset_destroy(me));
