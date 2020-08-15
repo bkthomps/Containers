@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2019 Bailey Thompson
+ * Copyright (c) 2017-2020 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,12 +32,11 @@
 typedef struct internal_map *map;
 
 /* Starting */
-map map_init(size_t key_size,
-             size_t value_size,
+map map_init(size_t key_size, size_t value_size,
              int (*comparator)(const void *const one, const void *const two));
 
 /* Capacity */
-int map_size(map me);
+size_t map_size(map me);
 int map_is_empty(map me);
 
 /* Accessing */
