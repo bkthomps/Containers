@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2019 Bailey Thompson
+ * Copyright (c) 2017-2020 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -63,8 +63,7 @@ struct value_node {
  *         initialized due to either invalid input arguments or memory
  *         allocation error
  */
-multimap multimap_init(const size_t key_size,
-                       const size_t value_size,
+multimap multimap_init(const size_t key_size, const size_t value_size,
                        int (*const key_comparator)(const void *const,
                                                    const void *const),
                        int (*const value_comparator)(const void *const,
@@ -96,7 +95,7 @@ multimap multimap_init(const size_t key_size,
  *
  * @return the size of the multi-map
  */
-int multimap_size(multimap me)
+size_t multimap_size(multimap me)
 {
     return me->size;
 }
@@ -509,7 +508,7 @@ int multimap_get_next(void *const value, multimap me)
  *
  * @return the number of times the key appears in the multi-map
  */
-int multimap_count(multimap me, void *const key)
+size_t multimap_count(multimap me, void *const key)
 {
     struct node *const traverse = multimap_equal_match(me, key);
     if (!traverse) {

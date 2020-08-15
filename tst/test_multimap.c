@@ -2,7 +2,7 @@
 #include "../src/include/multimap.h"
 
 /*
- * Include this struct to verify the tree.
+ * Include this to verify the tree.
  */
 struct internal_multimap {
     size_t key_size;
@@ -15,7 +15,7 @@ struct internal_multimap {
 };
 
 /*
- * Include this struct to verify the tree.
+ * Include this to verify the tree.
  */
 struct node {
     struct node *parent;
@@ -60,7 +60,7 @@ static int multimap_verify_recursive(struct node *const item)
     return max + 1;
 }
 
-static int multimap_compute_size(struct node *const item)
+static size_t multimap_compute_size(struct node *const item)
 {
     if (!item) {
         return 0;
@@ -93,7 +93,7 @@ static void test_invalid_init(void)
 static void mutation_order(multimap me, const int *const arr, const int size)
 {
     int i;
-    int actual_size = 0;
+    size_t actual_size = 0;
     assert(multimap_is_empty(me));
     for (i = 0; i < size; i++) {
         int num = arr[i];
@@ -385,7 +385,7 @@ static void test_contains(void)
 
 static void test_stress_add(void)
 {
-    int count = 0;
+    size_t count = 0;
     int flip = 0;
     int i;
     multimap me = multimap_init(sizeof(int), sizeof(int), compare_int,
