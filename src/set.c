@@ -98,13 +98,15 @@ static void set_reference_parent(set me, char *const parent, char *const child)
 {
     char *grand_parent;
     char *grand_parent_left_child;
-    memcpy(&grand_parent, parent + node_parent_offset, ptr_size);
     memcpy(child + node_parent_offset, parent + node_parent_offset, ptr_size);
-    memcpy(&grand_parent_left_child, grand_parent + node_left_child_offset,
-           ptr_size);
+    memcpy(&grand_parent, parent + node_parent_offset, ptr_size);
     if (!grand_parent) {
         me->root = child;
-    } else if (grand_parent_left_child == parent) {
+        return;
+    }
+    memcpy(&grand_parent_left_child, grand_parent + node_left_child_offset,
+           ptr_size);
+    if (grand_parent_left_child == parent) {
         memcpy(grand_parent + node_left_child_offset, &child, ptr_size);
     } else {
         memcpy(grand_parent + node_right_child_offset, &child, ptr_size);
@@ -573,7 +575,6 @@ static void set_remove_two_children(set me, const char *const traverse)
     char *item_parent;
     char *parent;
     char *traverse_parent;
-    char *traverse_parent_left;
     char *traverse_right;
     char *traverse_right_left;
     int is_left_deleted;
@@ -583,7 +584,7 @@ static void set_remove_two_children(set me, const char *const traverse)
     is_left_deleted = traverse_right_left != NULL;
     if (!is_left_deleted) {
         char *item_left;
-        item = traverse_right;
+        memcpy(&item, traverse + node_right_child_offset, ptr_size);
         parent = item;
         item[0] = traverse[0];
         memcpy(item + node_parent_offset, traverse + node_parent_offset,
@@ -613,6 +614,7 @@ static void set_remove_two_children(set me, const char *const traverse)
         }
         memcpy(item + node_left_child_offset, traverse + node_left_child_offset,
                ptr_size);
+        memcpy(&item_left, item + node_left_child_offset, ptr_size);
         memcpy(item_left + node_parent_offset, &item, ptr_size);
         memcpy(item + node_right_child_offset,
                traverse + node_right_child_offset, ptr_size);
@@ -621,16 +623,19 @@ static void set_remove_two_children(set me, const char *const traverse)
         memcpy(item + node_parent_offset, traverse + node_parent_offset,
                ptr_size);
     }
-    memcpy(&item_parent, item + node_parent_offset, ptr_size);
     memcpy(&traverse_parent, traverse + node_parent_offset, ptr_size);
-    memcpy(&traverse_parent_left, traverse_parent + node_left_child_offset,
-           ptr_size);
     if (!traverse_parent) {
         me->root = item;
-    } else if (traverse_parent_left == traverse) {
-        memcpy(item_parent + node_left_child_offset, &item, ptr_size);
     } else {
-        memcpy(item_parent + node_right_child_offset, &item, ptr_size);
+        char *traverse_parent_left;
+        memcpy(&traverse_parent_left, traverse_parent + node_left_child_offset,
+               ptr_size);
+        memcpy(&item_parent, item + node_parent_offset, ptr_size);
+        if (traverse_parent_left == traverse) {
+            memcpy(item_parent + node_left_child_offset, &item, ptr_size);
+        } else {
+            memcpy(item_parent + node_right_child_offset, &item, ptr_size);
+        }
     }
     set_delete_balance(me, parent, is_left_deleted);
 }
