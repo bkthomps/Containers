@@ -3,7 +3,7 @@
 #include "../src/include/set.h"
 
 /*
- * Include this struct to verify the tree.
+ * Include this to verify the tree.
  */
 struct internal_set {
     size_t size;
@@ -13,7 +13,7 @@ struct internal_set {
 };
 
 /*
- * Include this struct to verify the tree.
+ * Include this to verify the tree.
  */
 static const size_t ptr_size = sizeof(char *);
 /* Node balance is always the first byte (at index 0). */

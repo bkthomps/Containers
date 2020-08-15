@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2019 Bailey Thompson
+ * Copyright (c) 2017-2020 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,20 +25,22 @@
 #include "include/multiset.h"
 
 struct internal_multiset {
+    size_t size;
     size_t key_size;
     int (*comparator)(const void *const one, const void *const two);
-    int size;
-    struct node *root;
+    char *root;
 };
 
-struct node {
-    int count;
-    struct node *parent;
-    int balance;
-    void *key;
-    struct node *left;
-    struct node *right;
-};
+static const size_t ptr_size = sizeof(char *);
+static const size_t count_size = sizeof(size_t);
+/* Node balance is always the first byte (at index 0). */
+static const size_t node_count_offset = sizeof(signed char);
+static const size_t node_parent_offset = 1 + sizeof(size_t);
+static const size_t node_left_child_offset =
+        1 + sizeof(size_t) + sizeof(char *);
+static const size_t node_right_child_offset =
+        1 + sizeof(size_t) + 2 * sizeof(char *);
+static const size_t node_key_offset = 1 + sizeof(size_t) + 3 * sizeof(char *);
 
 /**
  * Initializes a multi-set.
@@ -64,9 +66,9 @@ multiset multiset_init(const size_t key_size,
     if (!init) {
         return NULL;
     }
+    init->size = 0;
     init->key_size = key_size;
     init->comparator = comparator;
-    init->size = 0;
     init->root = NULL;
     return init;
 }
@@ -78,7 +80,7 @@ multiset multiset_init(const size_t key_size,
  *
  * @return the size of the multi-set
  */
-int multiset_size(multiset me)
+size_t multiset_size(multiset me)
 {
     return me->size;
 }
@@ -98,70 +100,73 @@ int multiset_is_empty(multiset me)
 /*
  * Resets the parent reference.
  */
-static void multiset_reference_parent(multiset me,
-                                      struct node *const parent,
-                                      struct node *const child)
+static void multiset_reference_parent(multiset me, char *const parent,
+                                      char *const child)
 {
-    child->parent = parent->parent;
-    if (!parent->parent) {
+    char *grand_parent;
+    char *grand_parent_left_child;
+    memcpy(child + node_parent_offset, parent + node_parent_offset, ptr_size);
+    memcpy(&grand_parent, parent + node_parent_offset, ptr_size);
+    if (!grand_parent) {
         me->root = child;
-    } else if (parent->parent->left == parent) {
-        parent->parent->left = child;
+        return;
+    }
+    memcpy(&grand_parent_left_child, grand_parent + node_left_child_offset,
+           ptr_size);
+    if (grand_parent_left_child == parent) {
+        memcpy(grand_parent + node_left_child_offset, &child, ptr_size);
     } else {
-        parent->parent->right = child;
+        memcpy(grand_parent + node_right_child_offset, &child, ptr_size);
     }
 }
 
 /*
  * Rotates the AVL tree to the left.
  */
-static void multiset_rotate_left(multiset me,
-                                 struct node *const parent,
-                                 struct node *const child)
+static void multiset_rotate_left(multiset me, char *const parent,
+                                 char *const child)
 {
-    struct node *grand_child;
+    char *left_grand_child;
     multiset_reference_parent(me, parent, child);
-    grand_child = child->left;
-    if (grand_child) {
-        grand_child->parent = parent;
+    memcpy(&left_grand_child, child + node_left_child_offset, ptr_size);
+    if (left_grand_child) {
+        memcpy(left_grand_child + node_parent_offset, &parent, ptr_size);
     }
-    parent->parent = child;
-    parent->right = grand_child;
-    child->left = parent;
+    memcpy(parent + node_parent_offset, &child, ptr_size);
+    memcpy(parent + node_right_child_offset, &left_grand_child, ptr_size);
+    memcpy(child + node_left_child_offset, &parent, ptr_size);
 }
 
 /*
  * Rotates the AVL tree to the right.
  */
-static void multiset_rotate_right(multiset me,
-                                  struct node *const parent,
-                                  struct node *const child)
+static void multiset_rotate_right(multiset me, char *const parent,
+                                  char *const child)
 {
-    struct node *grand_child;
+    char *right_grand_child;
     multiset_reference_parent(me, parent, child);
-    grand_child = child->right;
-    if (grand_child) {
-        grand_child->parent = parent;
+    memcpy(&right_grand_child, child + node_right_child_offset, ptr_size);
+    if (right_grand_child) {
+        memcpy(right_grand_child + node_parent_offset, &parent, ptr_size);
     }
-    parent->parent = child;
-    parent->left = grand_child;
-    child->right = parent;
+    memcpy(parent + node_parent_offset, &child, ptr_size);
+    memcpy(parent + node_left_child_offset, &right_grand_child, ptr_size);
+    memcpy(child + node_right_child_offset, &parent, ptr_size);
 }
 
 /*
  * Performs a left repair.
  */
-static struct node *multiset_repair_left(multiset me,
-                                         struct node *const parent,
-                                         struct node *const child)
+static char *multiset_repair_left(multiset me, char *const parent,
+                                  char *const child)
 {
     multiset_rotate_left(me, parent, child);
-    if (child->balance == 0) {
-        parent->balance = 1;
-        child->balance = -1;
+    if (child[0] == 0) {
+        parent[0] = 1;
+        child[0] = -1;
     } else {
-        parent->balance = 0;
-        child->balance = 0;
+        parent[0] = 0;
+        child[0] = 0;
     }
     return child;
 }
@@ -169,17 +174,16 @@ static struct node *multiset_repair_left(multiset me,
 /*
  * Performs a right repair.
  */
-static struct node *multiset_repair_right(multiset me,
-                                          struct node *const parent,
-                                          struct node *const child)
+static char *multiset_repair_right(multiset me, char *const parent,
+                                   char *const child)
 {
     multiset_rotate_right(me, parent, child);
-    if (child->balance == 0) {
-        parent->balance = -1;
-        child->balance = 1;
+    if (child[0] == 0) {
+        parent[0] = -1;
+        child[0] = 1;
     } else {
-        parent->balance = 0;
-        child->balance = 0;
+        parent[0] = 0;
+        child[0] = 0;
     }
     return child;
 }
@@ -187,48 +191,46 @@ static struct node *multiset_repair_right(multiset me,
 /*
  * Performs a left-right repair.
  */
-static struct node *multiset_repair_left_right(multiset me,
-                                               struct node *const parent,
-                                               struct node *const child,
-                                               struct node *const grand_child)
+static char *multiset_repair_left_right(multiset me, char *const parent,
+                                        char *const child,
+                                        char *const grand_child)
 {
     multiset_rotate_left(me, child, grand_child);
     multiset_rotate_right(me, parent, grand_child);
-    if (grand_child->balance == 1) {
-        parent->balance = 0;
-        child->balance = -1;
-    } else if (grand_child->balance == 0) {
-        parent->balance = 0;
-        child->balance = 0;
+    if (grand_child[0] == 1) {
+        parent[0] = 0;
+        child[0] = -1;
+    } else if (grand_child[0] == 0) {
+        parent[0] = 0;
+        child[0] = 0;
     } else {
-        parent->balance = 1;
-        child->balance = 0;
+        parent[0] = 1;
+        child[0] = 0;
     }
-    grand_child->balance = 0;
+    grand_child[0] = 0;
     return grand_child;
 }
 
 /*
  * Performs a right-left repair.
  */
-static struct node *multiset_repair_right_left(multiset me,
-                                               struct node *const parent,
-                                               struct node *const child,
-                                               struct node *const grand_child)
+static char *multiset_repair_right_left(multiset me, char *const parent,
+                                        char *const child,
+                                        char *const grand_child)
 {
     multiset_rotate_right(me, child, grand_child);
     multiset_rotate_left(me, parent, grand_child);
-    if (grand_child->balance == 1) {
-        parent->balance = -1;
-        child->balance = 0;
-    } else if (grand_child->balance == 0) {
-        parent->balance = 0;
-        child->balance = 0;
+    if (grand_child[0] == 1) {
+        parent[0] = -1;
+        child[0] = 0;
+    } else if (grand_child[0] == 0) {
+        parent[0] = 0;
+        child[0] = 0;
     } else {
-        parent->balance = 0;
-        child->balance = 1;
+        parent[0] = 0;
+        child[0] = 1;
     }
-    grand_child->balance = 0;
+    grand_child[0] = 0;
     return grand_child;
 }
 
@@ -236,18 +238,16 @@ static struct node *multiset_repair_right_left(multiset me,
  * Repairs the AVL tree on insert. The only possible values of parent->balance
  * are {-2, 2} and the only possible values of child->balance are {-1, 0, 1}.
  */
-static struct node *multiset_repair(multiset me,
-                                    struct node *const parent,
-                                    struct node *const child,
-                                    struct node *const grand_child)
+static char *multiset_repair(multiset me, char *const parent,
+                             char *const child, char *const grand_child)
 {
-    if (parent->balance == 2) {
-        if (child->balance == -1) {
+    if (parent[0] == 2) {
+        if (child[0] == -1) {
             return multiset_repair_right_left(me, parent, child, grand_child);
         }
         return multiset_repair_left(me, parent, child);
     }
-    if (child->balance == 1) {
+    if (child[0] == 1) {
         return multiset_repair_left_right(me, parent, child, grand_child);
     }
     return multiset_repair_right(me, parent, child);
@@ -256,55 +256,53 @@ static struct node *multiset_repair(multiset me,
 /*
  * Balances the AVL tree on insert.
  */
-static void multiset_insert_balance(multiset me, struct node *const item)
+static void multiset_insert_balance(multiset me, char *const item)
 {
-    struct node *grand_child = NULL;
-    struct node *child = item;
-    struct node *parent = item->parent;
+    char *grand_child = NULL;
+    char *child = item;
+    char *parent;
+    memcpy(&parent, item + node_parent_offset, ptr_size);
     while (parent) {
-        if (parent->left == child) {
-            parent->balance--;
+        char *parent_left;
+        memcpy(&parent_left, parent + node_left_child_offset, ptr_size);
+        if (parent_left == child) {
+            parent[0]--;
         } else {
-            parent->balance++;
+            parent[0]++;
         }
         /* If balance is zero after modification, then the tree is balanced. */
-        if (parent->balance == 0) {
+        if (parent[0] == 0) {
             return;
         }
         /* Must re-balance if not in {-1, 0, 1} */
-        if (parent->balance > 1 || parent->balance < -1) {
+        if (parent[0] > 1 || parent[0] < -1) {
             /* After one repair, the tree is balanced. */
             multiset_repair(me, parent, child, grand_child);
             return;
         }
         grand_child = child;
         child = parent;
-        parent = parent->parent;
+        memcpy(&parent, parent + node_parent_offset, ptr_size);
     }
 }
 
 /*
  * Creates and allocates a node.
  */
-static struct node *multiset_create_node(multiset me,
-                                         const void *const data,
-                                         struct node *const parent)
+static char *multiset_create_node(multiset me, const void *const data,
+                                  char *const parent)
 {
-    struct node *const insert = malloc(sizeof(struct node));
+    char *insert = malloc(1 + count_size + 3 * ptr_size + me->key_size);
+    const size_t one = 1;
     if (!insert) {
         return NULL;
     }
-    insert->count = 1;
-    insert->parent = parent;
-    insert->balance = 0;
-    insert->key = malloc(me->key_size);
-    if (!insert->key) {
-        free(insert);
-        return NULL;
-    }
-    memcpy(insert->key, data, me->key_size);
-    insert->left = NULL;
-    insert->right = NULL;
+    insert[0] = 0;
+    memcpy(insert + node_count_offset, &one, count_size);
+    memcpy(insert + node_parent_offset, &parent, ptr_size);
+    memset(insert + node_left_child_offset, 0, ptr_size);
+    memset(insert + node_right_child_offset, 0, ptr_size);
+    memcpy(insert + node_key_offset, data, me->key_size);
     me->size++;
     return insert;
 }
@@ -324,9 +322,9 @@ static struct node *multiset_create_node(multiset me,
  */
 int multiset_put(multiset me, void *const key)
 {
-    struct node *traverse;
+    char *traverse;
     if (!me->root) {
-        struct node *insert = multiset_create_node(me, key, NULL);
+        char *insert = multiset_create_node(me, key, NULL);
         if (!insert) {
             return -ENOMEM;
         }
@@ -335,33 +333,41 @@ int multiset_put(multiset me, void *const key)
     }
     traverse = me->root;
     for (;;) {
-        const int compare = me->comparator(key, traverse->key);
+        const int compare = me->comparator(key, traverse + node_key_offset);
         if (compare < 0) {
-            if (traverse->left) {
-                traverse = traverse->left;
+            char *traverse_left;
+            memcpy(&traverse_left, traverse + node_left_child_offset, ptr_size);
+            if (traverse_left) {
+                traverse = traverse_left;
             } else {
-                struct node *insert = multiset_create_node(me, key, traverse);
+                char *insert = multiset_create_node(me, key, traverse);
                 if (!insert) {
                     return -ENOMEM;
                 }
-                traverse->left = insert;
+                memcpy(traverse + node_left_child_offset, &insert, ptr_size);
                 multiset_insert_balance(me, insert);
                 return 0;
             }
         } else if (compare > 0) {
-            if (traverse->right) {
-                traverse = traverse->right;
+            char *traverse_right;
+            memcpy(&traverse_right, traverse + node_right_child_offset,
+                   ptr_size);
+            if (traverse_right) {
+                traverse = traverse_right;
             } else {
-                struct node *insert = multiset_create_node(me, key, traverse);
+                char *insert = multiset_create_node(me, key, traverse);
                 if (!insert) {
                     return -ENOMEM;
                 }
-                traverse->right = insert;
+                memcpy(traverse + node_right_child_offset, &insert, ptr_size);
                 multiset_insert_balance(me, insert);
                 return 0;
             }
         } else {
-            traverse->count++;
+            size_t count;
+            memcpy(&count, traverse + node_count_offset, count_size);
+            count++;
+            memcpy(traverse + node_count_offset, &count, count_size);
             me->size++;
             return 0;
         }
@@ -371,23 +377,28 @@ int multiset_put(multiset me, void *const key)
 /*
  * If a match occurs, returns the match. Else, returns NULL.
  */
-static struct node *multiset_equal_match(multiset me, const void *const key)
+static char *multiset_equal_match(multiset me, const void *const key)
 {
-    struct node *traverse = me->root;
+    char *traverse = me->root;
     if (!traverse) {
-        return 0;
+        return NULL;
     }
     for (;;) {
-        const int compare = me->comparator(key, traverse->key);
+        const int compare = me->comparator(key, traverse + node_key_offset);
         if (compare < 0) {
-            if (traverse->left) {
-                traverse = traverse->left;
+            char *traverse_left;
+            memcpy(&traverse_left, traverse + node_left_child_offset, ptr_size);
+            if (traverse_left) {
+                traverse = traverse_left;
             } else {
                 return NULL;
             }
         } else if (compare > 0) {
-            if (traverse->right) {
-                traverse = traverse->right;
+            char *traverse_right;
+            memcpy(&traverse_right, traverse + node_right_child_offset,
+                   ptr_size);
+            if (traverse_right) {
+                traverse = traverse_right;
             } else {
                 return NULL;
             }
@@ -409,13 +420,15 @@ static struct node *multiset_equal_match(multiset me, const void *const key)
  *
  * @return the count of a specific key in the multi-set
  */
-int multiset_count(multiset me, void *const key)
+size_t multiset_count(multiset me, void *const key)
 {
-    const struct node *const item = multiset_equal_match(me, key);
+    const char *const item = multiset_equal_match(me, key);
+    size_t item_count;
     if (!item) {
         return 0;
     }
-    return item->count;
+    memcpy(&item_count, item + node_count_offset, count_size);
+    return item_count;
 }
 
 /**
@@ -438,45 +451,56 @@ int multiset_contains(multiset me, void *const key)
 /*
  * Repairs the AVL tree by pivoting on an item.
  */
-static struct node *multiset_repair_pivot(multiset me,
-                                          struct node *const item,
-                                          const int is_left_pivot)
+static char *multiset_repair_pivot(multiset me, char *const item,
+                                   const int is_left_pivot)
 {
-    struct node *const child = is_left_pivot ? item->right : item->left;
-    struct node *const grand_child =
-            child->balance == 1 ? child->right : child->left;
+    char *child;
+    char *grand_child;
+    char *item_right;
+    char *item_left;
+    char *child_right;
+    char *child_left;
+    memcpy(&item_right, item + node_right_child_offset, ptr_size);
+    memcpy(&item_left, item + node_left_child_offset, ptr_size);
+    child = is_left_pivot ? item_right : item_left;
+    memcpy(&child_right, child + node_right_child_offset, ptr_size);
+    memcpy(&child_left, child + node_left_child_offset, ptr_size);
+    grand_child = child[0] == 1 ? child_right : child_left;
     return multiset_repair(me, item, child, grand_child);
 }
 
 /*
  * Goes back up the tree repairing it along the way.
  */
-static void multiset_trace_ancestors(multiset me, struct node *item)
+static void multiset_trace_ancestors(multiset me, char *item)
 {
-    struct node *child = item;
-    struct node *parent = item->parent;
+    char *child = item;
+    char *parent;
+    memcpy(&parent, item + node_parent_offset, ptr_size);
     while (parent) {
-        if (parent->left == child) {
-            parent->balance++;
+        char *parent_left;
+        memcpy(&parent_left, parent + node_left_child_offset, ptr_size);
+        if (parent_left == child) {
+            parent[0]++;
         } else {
-            parent->balance--;
+            parent[0]--;
         }
         /* The tree is balanced if balance is -1 or +1 after modification. */
-        if (parent->balance == -1 || parent->balance == 1) {
+        if (parent[0] == -1 || parent[0] == 1) {
             return;
         }
         /* Must re-balance if not in {-1, 0, 1} */
-        if (parent->balance > 1 || parent->balance < -1) {
-            child = multiset_repair_pivot(me, parent, parent->left == child);
-            parent = child->parent;
-            /* If balance is -1 or +1 after modification or the parent is */
-            /* NULL, then the tree is balanced. */
-            if (!parent || child->balance == -1 || child->balance == 1) {
+        if (parent[0] > 1 || parent[0] < -1) {
+            child = multiset_repair_pivot(me, parent, parent_left == child);
+            memcpy(&parent, child + node_parent_offset, ptr_size);
+            /* If balance is -1 or +1 after modification or   */
+            /* the parent is NULL, then the tree is balanced. */
+            if (!parent || child[0] == -1 || child[0] == 1) {
                 return;
             }
         } else {
             child = parent;
-            parent = parent->parent;
+            memcpy(&parent, parent + node_parent_offset, ptr_size);
         }
     }
 }
@@ -484,23 +508,24 @@ static void multiset_trace_ancestors(multiset me, struct node *item)
 /*
  * Balances the AVL tree on deletion.
  */
-static void multiset_delete_balance(multiset me,
-                                    struct node *item,
+static void multiset_delete_balance(multiset me, char *item,
                                     const int is_left_deleted)
 {
     if (is_left_deleted) {
-        item->balance++;
+        item[0]++;
     } else {
-        item->balance--;
+        item[0]--;
     }
     /* If balance is -1 or +1 after modification, then the tree is balanced. */
-    if (item->balance == -1 || item->balance == 1) {
+    if (item[0] == -1 || item[0] == 1) {
         return;
     }
     /* Must re-balance if not in {-1, 0, 1} */
-    if (item->balance > 1 || item->balance < -1) {
+    if (item[0] > 1 || item[0] < -1) {
+        char *item_parent;
         item = multiset_repair_pivot(me, item, is_left_deleted);
-        if (!item->parent || item->balance == -1 || item->balance == 1) {
+        memcpy(&item_parent, item + node_parent_offset, ptr_size);
+        if (!item_parent || item[0] == -1 || item[0] == 1) {
             return;
         }
     }
@@ -510,62 +535,80 @@ static void multiset_delete_balance(multiset me,
 /*
  * Removes traverse when it has no children.
  */
-static void multiset_remove_no_children(multiset me,
-                                        const struct node *const traverse)
+static void multiset_remove_no_children(multiset me, const char *const traverse)
 {
-    struct node *const parent = traverse->parent;
+    char *traverse_parent;
+    char *traverse_parent_left;
+    memcpy(&traverse_parent, traverse + node_parent_offset, ptr_size);
     /* If no parent and no children, then the only node is traverse. */
-    if (!parent) {
+    if (!traverse_parent) {
         me->root = NULL;
         return;
     }
+    memcpy(&traverse_parent_left, traverse_parent + node_left_child_offset,
+           ptr_size);
     /* No re-reference needed since traverse has no children. */
-    if (parent->left == traverse) {
-        parent->left = NULL;
-        multiset_delete_balance(me, parent, 1);
+    if (traverse_parent_left == traverse) {
+        memset(traverse_parent + node_left_child_offset, 0, ptr_size);
+        multiset_delete_balance(me, traverse_parent, 1);
     } else {
-        parent->right = NULL;
-        multiset_delete_balance(me, parent, 0);
+        memset(traverse_parent + node_right_child_offset, 0, ptr_size);
+        multiset_delete_balance(me, traverse_parent, 0);
     }
 }
 
 /*
  * Removes traverse when it has one child.
  */
-static void multiset_remove_one_child(multiset me,
-                                      const struct node *const traverse)
+static void multiset_remove_one_child(multiset me, const char *const traverse)
 {
-    struct node *const parent = traverse->parent;
+    char *traverse_parent;
+    char *traverse_left;
+    char *traverse_right;
+    char *traverse_parent_left;
+    memcpy(&traverse_parent, traverse + node_parent_offset, ptr_size);
+    memcpy(&traverse_left, traverse + node_left_child_offset, ptr_size);
+    memcpy(&traverse_right, traverse + node_right_child_offset, ptr_size);
     /* If no parent, make the child of traverse the new root. */
-    if (!parent) {
-        if (traverse->left) {
-            traverse->left->parent = NULL;
-            me->root = traverse->left;
+    if (!traverse_parent) {
+        if (traverse_left) {
+            memset(traverse_left + node_parent_offset, 0, ptr_size);
+            me->root = traverse_left;
         } else {
-            traverse->right->parent = NULL;
-            me->root = traverse->right;
+            memset(traverse_right + node_parent_offset, 0, ptr_size);
+            me->root = traverse_right;
         }
         return;
     }
+    memcpy(&traverse_parent_left, traverse_parent + node_left_child_offset,
+           ptr_size);
     /* The parent of traverse now references the child of traverse. */
-    if (parent->left == traverse) {
-        if (traverse->left) {
-            parent->left = traverse->left;
-            traverse->left->parent = parent;
+    if (traverse_parent_left == traverse) {
+        if (traverse_left) {
+            memcpy(traverse_parent + node_left_child_offset, &traverse_left,
+                   ptr_size);
+            memcpy(traverse_left + node_parent_offset, &traverse_parent,
+                   ptr_size);
         } else {
-            parent->left = traverse->right;
-            traverse->right->parent = parent;
+            memcpy(traverse_parent + node_left_child_offset, &traverse_right,
+                   ptr_size);
+            memcpy(traverse_right + node_parent_offset, &traverse_parent,
+                   ptr_size);
         }
-        multiset_delete_balance(me, parent, 1);
+        multiset_delete_balance(me, traverse_parent, 1);
     } else {
-        if (traverse->left) {
-            parent->right = traverse->left;
-            traverse->left->parent = parent;
+        if (traverse_left) {
+            memcpy(traverse_parent + node_right_child_offset, &traverse_left,
+                   ptr_size);
+            memcpy(traverse_left + node_parent_offset, &traverse_parent,
+                   ptr_size);
         } else {
-            parent->right = traverse->right;
-            traverse->right->parent = parent;
+            memcpy(traverse_parent + node_right_child_offset, &traverse_right,
+                   ptr_size);
+            memcpy(traverse_right + node_parent_offset, &traverse_parent,
+                   ptr_size);
         }
-        multiset_delete_balance(me, parent, 0);
+        multiset_delete_balance(me, traverse_parent, 0);
     }
 }
 
@@ -573,41 +616,73 @@ static void multiset_remove_one_child(multiset me,
  * Removes traverse when it has two children.
  */
 static void multiset_remove_two_children(multiset me,
-                                         const struct node *const traverse)
+                                         const char *const traverse)
 {
-    struct node *item;
-    struct node *parent;
-    const int is_left_deleted = traverse->right->left != NULL;
+    char *item;
+    char *item_parent;
+    char *parent;
+    char *traverse_parent;
+    char *traverse_right;
+    char *traverse_right_left;
+    int is_left_deleted;
+    memcpy(&traverse_right, traverse + node_right_child_offset, ptr_size);
+    memcpy(&traverse_right_left, traverse_right + node_left_child_offset,
+           ptr_size);
+    is_left_deleted = traverse_right_left != NULL;
     if (!is_left_deleted) {
-        item = traverse->right;
+        char *item_left;
+        memcpy(&item, traverse + node_right_child_offset, ptr_size);
         parent = item;
-        item->balance = traverse->balance;
-        item->parent = traverse->parent;
-        item->left = traverse->left;
-        item->left->parent = item;
+        item[0] = traverse[0];
+        memcpy(item + node_parent_offset, traverse + node_parent_offset,
+               ptr_size);
+        memcpy(item + node_left_child_offset, traverse + node_left_child_offset,
+               ptr_size);
+        memcpy(&item_left, item + node_left_child_offset, ptr_size);
+        memcpy(item_left + node_parent_offset, &item, ptr_size);
     } else {
-        item = traverse->right->left;
-        while (item->left) {
-            item = item->left;
+        char *item_left;
+        char *item_right;
+        item = traverse_right_left;
+        memcpy(&item_left, item + node_left_child_offset, ptr_size);
+        while (item_left) {
+            item = item_left;
+            memcpy(&item_left, item + node_left_child_offset, ptr_size);
         }
-        parent = item->parent;
-        item->balance = traverse->balance;
-        item->parent->left = item->right;
-        if (item->right) {
-            item->right->parent = item->parent;
+        memcpy(&parent, item + node_parent_offset, ptr_size);
+        item[0] = traverse[0];
+        memcpy(&item_parent, item + node_parent_offset, ptr_size);
+        memcpy(item_parent + node_left_child_offset,
+               item + node_right_child_offset, ptr_size);
+        memcpy(&item_right, item + node_right_child_offset, ptr_size);
+        if (item_right) {
+            memcpy(item_right + node_parent_offset, item + node_parent_offset,
+                   ptr_size);
         }
-        item->left = traverse->left;
-        item->left->parent = item;
-        item->right = traverse->right;
-        item->right->parent = item;
-        item->parent = traverse->parent;
+        memcpy(item + node_left_child_offset, traverse + node_left_child_offset,
+               ptr_size);
+        memcpy(&item_left, item + node_left_child_offset, ptr_size);
+        memcpy(item_left + node_parent_offset, &item, ptr_size);
+        memcpy(item + node_right_child_offset,
+               traverse + node_right_child_offset, ptr_size);
+        memcpy(&item_right, item + node_right_child_offset, ptr_size);
+        memcpy(item_right + node_parent_offset, &item, ptr_size);
+        memcpy(item + node_parent_offset, traverse + node_parent_offset,
+               ptr_size);
     }
-    if (!traverse->parent) {
+    memcpy(&traverse_parent, traverse + node_parent_offset, ptr_size);
+    if (!traverse_parent) {
         me->root = item;
-    } else if (traverse->parent->left == traverse) {
-        item->parent->left = item;
     } else {
-        item->parent->right = item;
+        char *traverse_parent_left;
+        memcpy(&traverse_parent_left, traverse_parent + node_left_child_offset,
+               ptr_size);
+        memcpy(&item_parent, item + node_parent_offset, ptr_size);
+        if (traverse_parent_left == traverse) {
+            memcpy(item_parent + node_left_child_offset, &item, ptr_size);
+        } else {
+            memcpy(item_parent + node_right_child_offset, &item, ptr_size);
+        }
     }
     multiset_delete_balance(me, parent, is_left_deleted);
 }
@@ -615,16 +690,19 @@ static void multiset_remove_two_children(multiset me,
 /*
  * Removes the element from the set.
  */
-static void multiset_remove_element(multiset me, struct node *const traverse)
+static void multiset_remove_element(multiset me, char *const traverse)
 {
-    if (!traverse->left && !traverse->right) {
+    char *traverse_left;
+    char *traverse_right;
+    memcpy(&traverse_left, traverse + node_left_child_offset, ptr_size);
+    memcpy(&traverse_right, traverse + node_right_child_offset, ptr_size);
+    if (!traverse_left && !traverse_right) {
         multiset_remove_no_children(me, traverse);
-    } else if (!traverse->left || !traverse->right) {
+    } else if (!traverse_left || !traverse_right) {
         multiset_remove_one_child(me, traverse);
     } else {
         multiset_remove_two_children(me, traverse);
     }
-    free(traverse->key);
     free(traverse);
 }
 
@@ -642,13 +720,17 @@ static void multiset_remove_element(multiset me, struct node *const traverse)
  */
 int multiset_remove(multiset me, void *const key)
 {
-    struct node *const traverse = multiset_equal_match(me, key);
+    char *const traverse = multiset_equal_match(me, key);
+    size_t traverse_count;
     if (!traverse) {
         return 0;
     }
-    traverse->count--;
-    if (traverse->count == 0) {
+    memcpy(&traverse_count, traverse + node_count_offset, count_size);
+    if (traverse_count == 1) {
         multiset_remove_element(me, traverse);
+    } else {
+        traverse_count--;
+        memcpy(traverse + node_count_offset, &traverse_count, count_size);
     }
     me->size--;
     return 1;
@@ -668,11 +750,13 @@ int multiset_remove(multiset me, void *const key)
  */
 int multiset_remove_all(multiset me, void *const key)
 {
-    struct node *const traverse = multiset_equal_match(me, key);
+    char *const traverse = multiset_equal_match(me, key);
+    size_t traverse_count;
     if (!traverse) {
         return 0;
     }
-    me->size -= traverse->count;
+    memcpy(&traverse_count, traverse + node_count_offset, count_size);
+    me->size -= traverse_count;
     multiset_remove_element(me, traverse);
     return 1;
 }

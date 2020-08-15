@@ -385,12 +385,12 @@ multiset multiset_init(size_t key_size,
                                          const void *const two));
 
 /* Capacity */
-int multiset_size(multiset me);
+size_t multiset_size(multiset me);
 int multiset_is_empty(multiset me);
 
 /* Accessing */
 int multiset_put(multiset me, void *key);
-int multiset_count(multiset me, void *key);
+size_t multiset_count(multiset me, void *key);
 int multiset_contains(multiset me, void *key);
 int multiset_remove(multiset me, void *key);
 int multiset_remove_all(multiset me, void *key);
