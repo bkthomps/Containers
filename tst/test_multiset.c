@@ -489,6 +489,13 @@ static void test_multiple_operations(void)
     assert(multiset_count(me, &key) == 1);
     key = 5;
     assert(multiset_count(me, &key) == 2);
+    assert(multiset_size(me) == 3);
+    assert(multiset_remove(me, &key));
+    assert(multiset_count(me, &key) == 1);
+    assert(multiset_size(me) == 2);
+    assert(multiset_remove(me, &key));
+    assert(multiset_count(me, &key) == 0);
+    assert(multiset_size(me) == 1);
     multiset_remove_all(me, &key);
     assert(multiset_size(me) == 1);
     key = 7;
