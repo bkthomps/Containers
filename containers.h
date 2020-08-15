@@ -75,12 +75,11 @@ unordered_map unordered_map_destroy(unordered_map me);
 typedef struct internal_map *map;
 
 /* Starting */
-map map_init(size_t key_size,
-             size_t value_size,
+map map_init(size_t key_size, size_t value_size,
              int (*comparator)(const void *const one, const void *const two));
 
 /* Capacity */
-int map_size(map me);
+size_t map_size(map me);
 int map_is_empty(map me);
 
 /* Accessing */
