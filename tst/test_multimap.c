@@ -1,72 +1,86 @@
+#include <memory.h>
 #include "test.h"
 #include "../src/include/multimap.h"
 
 /*
- * Include this struct to verify the tree.
+ * Include this to verify the tree.
  */
 struct internal_multimap {
+    size_t size;
     size_t key_size;
     size_t value_size;
     int (*key_comparator)(const void *const one, const void *const two);
     int (*value_comparator)(const void *const one, const void *const two);
-    int size;
-    struct node *root;
-    struct value_node *iterate_get;
+    char *root;
+    char *iterate_get;
 };
 
 /*
- * Include this struct to verify the tree.
+ * Include this to verify the tree.
  */
-struct node {
-    struct node *parent;
-    int balance;
-    void *key;
-    int value_count;
-    struct value_node *head;
-    struct node *left;
-    struct node *right;
-};
+static const size_t ptr_size = sizeof(char *);
+/* static const size_t count_size = sizeof(size_t); */
+/* Node balance is always the first byte (at index 0). */
+/* static const size_t node_value_count_offset = sizeof(signed char); */
+/* static const size_t node_value_head_offset = 1 + sizeof(size_t); */
+static const size_t node_parent_offset = 1 + sizeof(size_t) + sizeof(char *);
+static const size_t node_left_child_offset =
+        1 + sizeof(size_t) + 2 * sizeof(char *);
+static const size_t node_right_child_offset =
+        1 + sizeof(size_t) + 3 * sizeof(char *);
+static const size_t node_key_offset = 1 + sizeof(size_t) + 4 * sizeof(char *);
 
 /*
  * Verifies that the AVL tree rules are followed. The balance factor of an item
  * must be the right height minus the left height. Also, the left key must be
  * less than the right key.
  */
-static int multimap_verify_recursive(struct node *const item)
+static int multimap_verify_recursive(char *const item)
 {
     int left;
     int right;
     int max;
+    char *item_left;
+    char *item_right;
     if (!item) {
         return 0;
     }
-    left = multimap_verify_recursive(item->left);
-    right = multimap_verify_recursive(item->right);
+    memcpy(&item_left, item + node_left_child_offset, ptr_size);
+    memcpy(&item_right, item + node_right_child_offset, ptr_size);
+    left = multimap_verify_recursive(item_left);
+    right = multimap_verify_recursive(item_right);
     max = left > right ? left : right;
-    assert(right - left == item->balance);
-    if (item->left && item->right) {
-        const int left_val = *(int *) item->left->key;
-        const int right_val = *(int *) item->right->key;
+    assert(right - left == item[0]);
+    if (item_left && item_right) {
+        const int left_val = *(int *) (item_left + node_key_offset);
+        const int right_val = *(int *) (item_right + node_key_offset);
         assert(left_val < right_val);
     }
-    if (item->left) {
-        assert(item->left->parent == item);
-        assert(item->left->parent->key == item->key);
+    if (item_left) {
+        char *item_left_parent;
+        memcpy(&item_left_parent, item_left + node_parent_offset, ptr_size);
+        assert(item_left_parent == item);
+        assert(item_left_parent + node_key_offset == item + node_key_offset);
     }
-    if (item->right) {
-        assert(item->right->parent == item);
-        assert(item->right->parent->key == item->key);
+    if (item_right) {
+        char *item_right_parent;
+        memcpy(&item_right_parent, item_right + node_parent_offset, ptr_size);
+        assert(item_right_parent == item);
+        assert(item_right_parent + node_key_offset == item + node_key_offset);
     }
     return max + 1;
 }
 
-static int multimap_compute_size(struct node *const item)
+static size_t multimap_compute_size(char *const item)
 {
+    char *left;
+    char *right;
     if (!item) {
         return 0;
     }
-    return 1 + multimap_compute_size(item->left) +
-           multimap_compute_size(item->right);
+    memcpy(&left, item + node_left_child_offset, ptr_size);
+    memcpy(&right, item + node_right_child_offset, ptr_size);
+    return 1 + multimap_compute_size(left) + multimap_compute_size(right);
 }
 
 static void multimap_verify(multimap me)
@@ -93,7 +107,7 @@ static void test_invalid_init(void)
 static void mutation_order(multimap me, const int *const arr, const int size)
 {
     int i;
-    int actual_size = 0;
+    size_t actual_size = 0;
     assert(multimap_is_empty(me));
     for (i = 0; i < size; i++) {
         int num = arr[i];
@@ -385,7 +399,7 @@ static void test_contains(void)
 
 static void test_stress_add(void)
 {
-    int count = 0;
+    size_t count = 0;
     int flip = 0;
     int i;
     multimap me = multimap_init(sizeof(int), sizeof(int), compare_int,
@@ -561,12 +575,6 @@ static void test_put_root_out_of_memory(multimap me)
     fail_malloc = 1;
     delay_fail_malloc = 1;
     assert(multimap_put(me, &key, &key) == -ENOMEM);
-    fail_malloc = 1;
-    delay_fail_malloc = 2;
-    assert(multimap_put(me, &key, &key) == -ENOMEM);
-    fail_malloc = 1;
-    delay_fail_malloc = 3;
-    assert(multimap_put(me, &key, &key) == -ENOMEM);
 }
 #endif
 
@@ -579,12 +587,6 @@ static void test_put_on_left_out_of_memory(multimap me)
     fail_malloc = 1;
     delay_fail_malloc = 1;
     assert(multimap_put(me, &key, &key) == -ENOMEM);
-    fail_malloc = 1;
-    delay_fail_malloc = 2;
-    assert(multimap_put(me, &key, &key) == -ENOMEM);
-    fail_malloc = 1;
-    delay_fail_malloc = 3;
-    assert(multimap_put(me, &key, &key) == -ENOMEM);
 }
 #endif
 
@@ -596,12 +598,6 @@ static void test_put_on_right_out_of_memory(multimap me)
     assert(multimap_put(me, &key, &key) == -ENOMEM);
     fail_malloc = 1;
     delay_fail_malloc = 1;
-    assert(multimap_put(me, &key, &key) == -ENOMEM);
-    fail_malloc = 1;
-    delay_fail_malloc = 2;
-    assert(multimap_put(me, &key, &key) == -ENOMEM);
-    fail_malloc = 1;
-    delay_fail_malloc = 3;
     assert(multimap_put(me, &key, &key) == -ENOMEM);
 }
 #endif

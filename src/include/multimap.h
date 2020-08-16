@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2019 Bailey Thompson
+ * Copyright (c) 2017-2020 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,22 +32,21 @@
 typedef struct internal_multimap *multimap;
 
 /* Starting */
-multimap multimap_init(size_t key_size,
-                       size_t value_size,
+multimap multimap_init(size_t key_size, size_t value_size,
                        int (*key_comparator)(const void *const one,
                                              const void *const two),
                        int (*value_comparator)(const void *const one,
                                                const void *const two));
 
 /* Capacity */
-int multimap_size(multimap me);
+size_t multimap_size(multimap me);
 int multimap_is_empty(multimap me);
 
 /* Accessing */
 int multimap_put(multimap me, void *key, void *value);
 void multimap_get_start(multimap me, void *key);
 int multimap_get_next(void *value, multimap me);
-int multimap_count(multimap me, void *key);
+size_t multimap_count(multimap me, void *key);
 int multimap_contains(multimap me, void *key);
 int multimap_remove(multimap me, void *key, void *value);
 int multimap_remove_all(multimap me, void *key);

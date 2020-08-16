@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2019 Bailey Thompson
+ * Copyright (c) 2017-2020 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,29 +25,29 @@
 #include "include/multimap.h"
 
 struct internal_multimap {
+    size_t size;
     size_t key_size;
     size_t value_size;
     int (*key_comparator)(const void *const one, const void *const two);
     int (*value_comparator)(const void *const one, const void *const two);
-    int size;
-    struct node *root;
-    struct value_node *iterate_get;
+    char *root;
+    char *iterate_get;
 };
 
-struct node {
-    struct node *parent;
-    int balance;
-    void *key;
-    int value_count;
-    struct value_node *head;
-    struct node *left;
-    struct node *right;
-};
+static const size_t ptr_size = sizeof(char *);
+static const size_t count_size = sizeof(size_t);
+/* Node balance is always the first byte (at index 0). */
+static const size_t node_value_count_offset = sizeof(signed char);
+static const size_t node_value_head_offset = 1 + sizeof(size_t);
+static const size_t node_parent_offset = 1 + sizeof(size_t) + sizeof(char *);
+static const size_t node_left_child_offset =
+        1 + sizeof(size_t) + 2 * sizeof(char *);
+static const size_t node_right_child_offset =
+        1 + sizeof(size_t) + 3 * sizeof(char *);
+static const size_t node_key_offset = 1 + sizeof(size_t) + 4 * sizeof(char *);
 
-struct value_node {
-    void *value;
-    struct value_node *next;
-};
+static const size_t value_node_next_offset = 0;
+static const size_t value_node_value_offset = sizeof(char *);
 
 /**
  * Initializes a multi-map.
@@ -63,8 +63,7 @@ struct value_node {
  *         initialized due to either invalid input arguments or memory
  *         allocation error
  */
-multimap multimap_init(const size_t key_size,
-                       const size_t value_size,
+multimap multimap_init(const size_t key_size, const size_t value_size,
                        int (*const key_comparator)(const void *const,
                                                    const void *const),
                        int (*const value_comparator)(const void *const,
@@ -79,11 +78,11 @@ multimap multimap_init(const size_t key_size,
     if (!init) {
         return NULL;
     }
+    init->size = 0;
     init->key_size = key_size;
     init->value_size = value_size;
     init->key_comparator = key_comparator;
     init->value_comparator = value_comparator;
-    init->size = 0;
     init->root = NULL;
     init->iterate_get = NULL;
     return init;
@@ -96,7 +95,7 @@ multimap multimap_init(const size_t key_size,
  *
  * @return the size of the multi-map
  */
-int multimap_size(multimap me)
+size_t multimap_size(multimap me)
 {
     return me->size;
 }
@@ -116,70 +115,73 @@ int multimap_is_empty(multimap me)
 /*
  * Resets the parent reference.
  */
-static void multimap_reference_parent(multimap me,
-                                      struct node *const parent,
-                                      struct node *const child)
+static void multimap_reference_parent(multimap me, char *const parent,
+                                      char *const child)
 {
-    child->parent = parent->parent;
-    if (!parent->parent) {
+    char *grand_parent;
+    char *grand_parent_left_child;
+    memcpy(child + node_parent_offset, parent + node_parent_offset, ptr_size);
+    memcpy(&grand_parent, parent + node_parent_offset, ptr_size);
+    if (!grand_parent) {
         me->root = child;
-    } else if (parent->parent->left == parent) {
-        parent->parent->left = child;
+        return;
+    }
+    memcpy(&grand_parent_left_child, grand_parent + node_left_child_offset,
+           ptr_size);
+    if (grand_parent_left_child == parent) {
+        memcpy(grand_parent + node_left_child_offset, &child, ptr_size);
     } else {
-        parent->parent->right = child;
+        memcpy(grand_parent + node_right_child_offset, &child, ptr_size);
     }
 }
 
 /*
  * Rotates the AVL tree to the left.
  */
-static void multimap_rotate_left(multimap me,
-                                 struct node *const parent,
-                                 struct node *const child)
+static void multimap_rotate_left(multimap me, char *const parent,
+                                 char *const child)
 {
-    struct node *grand_child;
+    char *left_grand_child;
     multimap_reference_parent(me, parent, child);
-    grand_child = child->left;
-    if (grand_child) {
-        grand_child->parent = parent;
+    memcpy(&left_grand_child, child + node_left_child_offset, ptr_size);
+    if (left_grand_child) {
+        memcpy(left_grand_child + node_parent_offset, &parent, ptr_size);
     }
-    parent->parent = child;
-    parent->right = grand_child;
-    child->left = parent;
+    memcpy(parent + node_parent_offset, &child, ptr_size);
+    memcpy(parent + node_right_child_offset, &left_grand_child, ptr_size);
+    memcpy(child + node_left_child_offset, &parent, ptr_size);
 }
 
 /*
  * Rotates the AVL tree to the right.
  */
-static void multimap_rotate_right(multimap me,
-                                  struct node *const parent,
-                                  struct node *const child)
+static void multimap_rotate_right(multimap me, char *const parent,
+                                  char *const child)
 {
-    struct node *grand_child;
+    char *right_grand_child;
     multimap_reference_parent(me, parent, child);
-    grand_child = child->right;
-    if (grand_child) {
-        grand_child->parent = parent;
+    memcpy(&right_grand_child, child + node_right_child_offset, ptr_size);
+    if (right_grand_child) {
+        memcpy(right_grand_child + node_parent_offset, &parent, ptr_size);
     }
-    parent->parent = child;
-    parent->left = grand_child;
-    child->right = parent;
+    memcpy(parent + node_parent_offset, &child, ptr_size);
+    memcpy(parent + node_left_child_offset, &right_grand_child, ptr_size);
+    memcpy(child + node_right_child_offset, &parent, ptr_size);
 }
 
 /*
  * Performs a left repair.
  */
-static struct node *multimap_repair_left(multimap me,
-                                         struct node *const parent,
-                                         struct node *const child)
+static char *multimap_repair_left(multimap me, char *const parent,
+                                  char *const child)
 {
     multimap_rotate_left(me, parent, child);
-    if (child->balance == 0) {
-        parent->balance = 1;
-        child->balance = -1;
+    if (child[0] == 0) {
+        parent[0] = 1;
+        child[0] = -1;
     } else {
-        parent->balance = 0;
-        child->balance = 0;
+        parent[0] = 0;
+        child[0] = 0;
     }
     return child;
 }
@@ -187,17 +189,16 @@ static struct node *multimap_repair_left(multimap me,
 /*
  * Performs a right repair.
  */
-static struct node *multimap_repair_right(multimap me,
-                                          struct node *const parent,
-                                          struct node *const child)
+static char *multimap_repair_right(multimap me, char *const parent,
+                                   char *const child)
 {
     multimap_rotate_right(me, parent, child);
-    if (child->balance == 0) {
-        parent->balance = -1;
-        child->balance = 1;
+    if (child[0] == 0) {
+        parent[0] = -1;
+        child[0] = 1;
     } else {
-        parent->balance = 0;
-        child->balance = 0;
+        parent[0] = 0;
+        child[0] = 0;
     }
     return child;
 }
@@ -205,48 +206,46 @@ static struct node *multimap_repair_right(multimap me,
 /*
  * Performs a left-right repair.
  */
-static struct node *multimap_repair_left_right(multimap me,
-                                               struct node *const parent,
-                                               struct node *const child,
-                                               struct node *const grand_child)
+static char *multimap_repair_left_right(multimap me, char *const parent,
+                                        char *const child,
+                                        char *const grand_child)
 {
     multimap_rotate_left(me, child, grand_child);
     multimap_rotate_right(me, parent, grand_child);
-    if (grand_child->balance == 1) {
-        parent->balance = 0;
-        child->balance = -1;
-    } else if (grand_child->balance == 0) {
-        parent->balance = 0;
-        child->balance = 0;
+    if (grand_child[0] == 1) {
+        parent[0] = 0;
+        child[0] = -1;
+    } else if (grand_child[0] == 0) {
+        parent[0] = 0;
+        child[0] = 0;
     } else {
-        parent->balance = 1;
-        child->balance = 0;
+        parent[0] = 1;
+        child[0] = 0;
     }
-    grand_child->balance = 0;
+    grand_child[0] = 0;
     return grand_child;
 }
 
 /*
  * Performs a right-left repair.
  */
-static struct node *multimap_repair_right_left(multimap me,
-                                               struct node *const parent,
-                                               struct node *const child,
-                                               struct node *const grand_child)
+static char *multimap_repair_right_left(multimap me, char *const parent,
+                                        char *const child,
+                                        char *const grand_child)
 {
     multimap_rotate_right(me, child, grand_child);
     multimap_rotate_left(me, parent, grand_child);
-    if (grand_child->balance == 1) {
-        parent->balance = -1;
-        child->balance = 0;
-    } else if (grand_child->balance == 0) {
-        parent->balance = 0;
-        child->balance = 0;
+    if (grand_child[0] == 1) {
+        parent[0] = -1;
+        child[0] = 0;
+    } else if (grand_child[0] == 0) {
+        parent[0] = 0;
+        child[0] = 0;
     } else {
-        parent->balance = 0;
-        child->balance = 1;
+        parent[0] = 0;
+        child[0] = 1;
     }
-    grand_child->balance = 0;
+    grand_child[0] = 0;
     return grand_child;
 }
 
@@ -254,18 +253,16 @@ static struct node *multimap_repair_right_left(multimap me,
  * Repairs the AVL tree on insert. The only possible values of parent->balance
  * are {-2, 2} and the only possible values of child->balance are {-1, 0, 1}.
  */
-static struct node *multimap_repair(multimap me,
-                                    struct node *const parent,
-                                    struct node *const child,
-                                    struct node *const grand_child)
+static char *multimap_repair(multimap me, char *const parent,
+                             char *const child, char *const grand_child)
 {
-    if (parent->balance == 2) {
-        if (child->balance == -1) {
+    if (parent[0] == 2) {
+        if (child[0] == -1) {
             return multimap_repair_right_left(me, parent, child, grand_child);
         }
         return multimap_repair_left(me, parent, child);
     }
-    if (child->balance == 1) {
+    if (child[0] == 1) {
         return multimap_repair_left_right(me, parent, child, grand_child);
     }
     return multimap_repair_right(me, parent, child);
@@ -274,82 +271,75 @@ static struct node *multimap_repair(multimap me,
 /*
  * Balances the AVL tree on insert.
  */
-static void multimap_insert_balance(multimap me, struct node *const item)
+static void multimap_insert_balance(multimap me, char *const item)
 {
-    struct node *grand_child = NULL;
-    struct node *child = item;
-    struct node *parent = item->parent;
+    char *grand_child = NULL;
+    char *child = item;
+    char *parent;
+    memcpy(&parent, item + node_parent_offset, ptr_size);
     while (parent) {
-        if (parent->left == child) {
-            parent->balance--;
+        char *parent_left;
+        memcpy(&parent_left, parent + node_left_child_offset, ptr_size);
+        if (parent_left == child) {
+            parent[0]--;
         } else {
-            parent->balance++;
+            parent[0]++;
         }
         /* If balance is zero after modification, then the tree is balanced. */
-        if (parent->balance == 0) {
+        if (parent[0] == 0) {
             return;
         }
         /* Must re-balance if not in {-1, 0, 1} */
-        if (parent->balance > 1 || parent->balance < -1) {
+        if (parent[0] > 1 || parent[0] < -1) {
             /* After one repair, the tree is balanced. */
             multimap_repair(me, parent, child, grand_child);
             return;
         }
         grand_child = child;
         child = parent;
-        parent = parent->parent;
+        memcpy(&parent, parent + node_parent_offset, ptr_size);
     }
 }
 
 /*
  * Creates and allocates a value node.
  */
-static struct value_node *multimap_create_value_node(multimap me,
-                                                     const void *const value)
+static char *multimap_create_value_node(multimap me, const void *const value)
 {
-    struct value_node *const add = malloc(sizeof(struct value_node));
+    char *const add = malloc(sizeof(char *) + me->value_size);
     if (!add) {
         return NULL;
     }
-    add->value = malloc(me->value_size);
-    if (!add->value) {
-        free(add);
-        return NULL;
-    }
-    memcpy(add->value, value, me->value_size);
-    add->next = NULL;
+    memset(add + value_node_next_offset, 0, ptr_size);
+    memcpy(add + value_node_value_offset, value, me->value_size);
     return add;
 }
 
 /*
  * Creates and allocates a node.
  */
-static struct node *multimap_create_node(multimap me,
-                                         const void *const key,
-                                         const void *const value,
-                                         struct node *const parent)
+static char *multimap_create_node(multimap me, const void *const key,
+                                  const void *const value, char *const parent)
 {
-    struct node *const insert = malloc(sizeof(struct node));
+    const size_t size = 1 + sizeof(size_t) + 4 * sizeof(char *) + me->key_size;
+    char *const insert = malloc(size);
+    const size_t one = 1;
+    char *value_node;
     if (!insert) {
         return NULL;
     }
-    insert->parent = parent;
-    insert->balance = 0;
-    insert->key = malloc(me->key_size);
-    if (!insert->key) {
+    value_node = multimap_create_value_node(me, value);
+    if (!value_node) {
         free(insert);
         return NULL;
     }
-    memcpy(insert->key, key, me->key_size);
-    insert->value_count = 1;
-    insert->head = multimap_create_value_node(me, value);
-    if (!insert->head) {
-        free(insert->key);
-        free(insert);
-        return NULL;
-    }
-    insert->left = NULL;
-    insert->right = NULL;
+    insert[0] = 0;
+    memcpy(insert + node_value_count_offset, &one, count_size);
+    memcpy(insert + node_value_head_offset, &value_node, ptr_size);
+    memcpy(insert + node_parent_offset, &parent, ptr_size);
+    memset(insert + node_left_child_offset, 0, ptr_size);
+    memset(insert + node_right_child_offset, 0, ptr_size);
+    memcpy(insert + node_key_offset, key, me->key_size);
     me->size++;
     return insert;
 }
@@ -372,9 +362,9 @@ static struct node *multimap_create_node(multimap me,
  */
 int multimap_put(multimap me, void *const key, void *const value)
 {
-    struct node *traverse;
+    char *traverse;
     if (!me->root) {
-        struct node *insert = multimap_create_node(me, key, value, NULL);
+        char *insert = multimap_create_node(me, key, value, NULL);
         if (!insert) {
             return -ENOMEM;
         }
@@ -383,40 +373,56 @@ int multimap_put(multimap me, void *const key, void *const value)
     }
     traverse = me->root;
     for (;;) {
-        const int compare = me->key_comparator(key, traverse->key);
+        const int compare = me->key_comparator(key, traverse + node_key_offset);
         if (compare < 0) {
-            if (traverse->left) {
-                traverse = traverse->left;
+            char *traverse_left;
+            memcpy(&traverse_left, traverse + node_left_child_offset, ptr_size);
+            if (traverse_left) {
+                traverse = traverse_left;
             } else {
-                struct node *insert =
-                        multimap_create_node(me, key, value, traverse);
+                char *insert = multimap_create_node(me, key, value, traverse);
                 if (!insert) {
                     return -ENOMEM;
                 }
-                traverse->left = insert;
+                memcpy(traverse + node_left_child_offset, &insert, ptr_size);
                 multimap_insert_balance(me, insert);
                 return 0;
             }
         } else if (compare > 0) {
-            if (traverse->right) {
-                traverse = traverse->right;
+            char *traverse_right;
+            memcpy(&traverse_right, traverse + node_right_child_offset,
+                   ptr_size);
+            if (traverse_right) {
+                traverse = traverse_right;
             } else {
-                struct node *insert =
-                        multimap_create_node(me, key, value, traverse);
+                char *insert = multimap_create_node(me, key, value, traverse);
                 if (!insert) {
                     return -ENOMEM;
                 }
-                traverse->right = insert;
+                memcpy(traverse + node_right_child_offset, &insert, ptr_size);
                 multimap_insert_balance(me, insert);
                 return 0;
             }
         } else {
-            struct value_node *value_traverse = traverse->head;
-            while (value_traverse->next) {
-                value_traverse = value_traverse->next;
+            char *value_traverse;
+            char *value_traverse_next;
+            char *value_node;
+            size_t count;
+            memcpy(&value_traverse, traverse + node_value_head_offset,
+                   ptr_size);
+            memcpy(&value_traverse_next,
+                   value_traverse + value_node_next_offset, ptr_size);
+            while (value_traverse_next) {
+                value_traverse = value_traverse_next;
+                memcpy(&value_traverse_next,
+                       value_traverse + value_node_next_offset, ptr_size);
             }
-            value_traverse->next = multimap_create_value_node(me, value);
-            traverse->value_count++;
+            value_node = multimap_create_value_node(me, value);
+            memcpy(value_traverse + value_node_next_offset, &value_node,
+                   ptr_size);
+            memcpy(&count, traverse + node_value_count_offset, count_size);
+            count++;
+            memcpy(traverse + node_value_count_offset, &count, count_size);
             me->size++;
             return 0;
         }
@@ -426,23 +432,28 @@ int multimap_put(multimap me, void *const key, void *const value)
 /*
  * If a match occurs, returns the match. Else, returns NULL.
  */
-static struct node *multimap_equal_match(multimap me, const void *const key)
+static char *multimap_equal_match(multimap me, const void *const key)
 {
-    struct node *traverse = me->root;
+    char *traverse = me->root;
     if (!traverse) {
-        return 0;
+        return NULL;
     }
     for (;;) {
-        const int compare = me->key_comparator(key, traverse->key);
+        const int compare = me->key_comparator(key, traverse + node_key_offset);
         if (compare < 0) {
-            if (traverse->left) {
-                traverse = traverse->left;
+            char *traverse_left;
+            memcpy(&traverse_left, traverse + node_left_child_offset, ptr_size);
+            if (traverse_left) {
+                traverse = traverse_left;
             } else {
                 return NULL;
             }
         } else if (compare > 0) {
-            if (traverse->right) {
-                traverse = traverse->right;
+            char *traverse_right;
+            memcpy(&traverse_right, traverse + node_right_child_offset,
+                   ptr_size);
+            if (traverse_right) {
+                traverse = traverse_right;
             } else {
                 return NULL;
             }
@@ -465,9 +476,11 @@ static struct node *multimap_equal_match(multimap me, const void *const key)
  */
 void multimap_get_start(multimap me, void *const key)
 {
-    const struct node *const traverse = multimap_equal_match(me, key);
+    const char *const traverse = multimap_equal_match(me, key);
     if (traverse) {
-        me->iterate_get = traverse->head;
+        char *head;
+        memcpy(&head, traverse + node_value_head_offset, ptr_size);
+        me->iterate_get = head;
     }
 }
 
@@ -487,13 +500,15 @@ void multimap_get_start(multimap me, void *const key)
  */
 int multimap_get_next(void *const value, multimap me)
 {
-    const struct value_node *item;
+    char *item;
+    char *next;
     if (!me->iterate_get) {
         return 0;
     }
     item = me->iterate_get;
-    memcpy(value, item->value, me->value_size);
-    me->iterate_get = item->next;
+    memcpy(value, item + value_node_value_offset, me->value_size);
+    memcpy(&next, item + value_node_next_offset, ptr_size);
+    me->iterate_get = next;
     return 1;
 }
 
@@ -509,13 +524,15 @@ int multimap_get_next(void *const value, multimap me)
  *
  * @return the number of times the key appears in the multi-map
  */
-int multimap_count(multimap me, void *const key)
+size_t multimap_count(multimap me, void *const key)
 {
-    struct node *const traverse = multimap_equal_match(me, key);
+    char *const traverse = multimap_equal_match(me, key);
+    size_t count;
     if (!traverse) {
         return 0;
     }
-    return traverse->value_count;
+    memcpy(&count, traverse + node_value_count_offset, count_size);
+    return count;
 }
 
 /**
@@ -538,45 +555,56 @@ int multimap_contains(multimap me, void *const key)
 /*
  * Repairs the AVL tree by pivoting on an item.
  */
-static struct node *multimap_repair_pivot(multimap me,
-                                          struct node *const item,
-                                          const int is_left_pivot)
+static char *multimap_repair_pivot(multimap me, char *const item,
+                                   const int is_left_pivot)
 {
-    struct node *const child = is_left_pivot ? item->right : item->left;
-    struct node *const grand_child =
-            child->balance == 1 ? child->right : child->left;
+    char *child;
+    char *grand_child;
+    char *item_right;
+    char *item_left;
+    char *child_right;
+    char *child_left;
+    memcpy(&item_right, item + node_right_child_offset, ptr_size);
+    memcpy(&item_left, item + node_left_child_offset, ptr_size);
+    child = is_left_pivot ? item_right : item_left;
+    memcpy(&child_right, child + node_right_child_offset, ptr_size);
+    memcpy(&child_left, child + node_left_child_offset, ptr_size);
+    grand_child = child[0] == 1 ? child_right : child_left;
     return multimap_repair(me, item, child, grand_child);
 }
 
 /*
  * Goes back up the tree repairing it along the way.
  */
-static void multimap_trace_ancestors(multimap me, struct node *item)
+static void multimap_trace_ancestors(multimap me, char *item)
 {
-    struct node *child = item;
-    struct node *parent = item->parent;
+    char *child = item;
+    char *parent;
+    memcpy(&parent, item + node_parent_offset, ptr_size);
     while (parent) {
-        if (parent->left == child) {
-            parent->balance++;
+        char *parent_left;
+        memcpy(&parent_left, parent + node_left_child_offset, ptr_size);
+        if (parent_left == child) {
+            parent[0]++;
         } else {
-            parent->balance--;
+            parent[0]--;
         }
         /* The tree is balanced if balance is -1 or +1 after modification. */
-        if (parent->balance == -1 || parent->balance == 1) {
+        if (parent[0] == -1 || parent[0] == 1) {
             return;
         }
         /* Must re-balance if not in {-1, 0, 1} */
-        if (parent->balance > 1 || parent->balance < -1) {
-            child = multimap_repair_pivot(me, parent, parent->left == child);
-            parent = child->parent;
-            /* If balance is -1 or +1 after modification or the parent is */
-            /* NULL, then the tree is balanced. */
-            if (!parent || child->balance == -1 || child->balance == 1) {
+        if (parent[0] > 1 || parent[0] < -1) {
+            child = multimap_repair_pivot(me, parent, parent_left == child);
+            memcpy(&parent, child + node_parent_offset, ptr_size);
+            /* If balance is -1 or +1 after modification or   */
+            /* the parent is NULL, then the tree is balanced. */
+            if (!parent || child[0] == -1 || child[0] == 1) {
                 return;
             }
         } else {
             child = parent;
-            parent = parent->parent;
+            memcpy(&parent, parent + node_parent_offset, ptr_size);
         }
     }
 }
@@ -584,23 +612,24 @@ static void multimap_trace_ancestors(multimap me, struct node *item)
 /*
  * Balances the AVL tree on deletion.
  */
-static void multimap_delete_balance(multimap me,
-                                    struct node *item,
+static void multimap_delete_balance(multimap me, char *item,
                                     const int is_left_deleted)
 {
     if (is_left_deleted) {
-        item->balance++;
+        item[0]++;
     } else {
-        item->balance--;
+        item[0]--;
     }
     /* If balance is -1 or +1 after modification, then the tree is balanced. */
-    if (item->balance == -1 || item->balance == 1) {
+    if (item[0] == -1 || item[0] == 1) {
         return;
     }
     /* Must re-balance if not in {-1, 0, 1} */
-    if (item->balance > 1 || item->balance < -1) {
+    if (item[0] > 1 || item[0] < -1) {
+        char *item_parent;
         item = multimap_repair_pivot(me, item, is_left_deleted);
-        if (!item->parent || item->balance == -1 || item->balance == 1) {
+        memcpy(&item_parent, item + node_parent_offset, ptr_size);
+        if (!item_parent || item[0] == -1 || item[0] == 1) {
             return;
         }
     }
@@ -610,62 +639,80 @@ static void multimap_delete_balance(multimap me,
 /*
  * Removes traverse when it has no children.
  */
-static void multimap_remove_no_children(multimap me,
-                                        const struct node *const traverse)
+static void multimap_remove_no_children(multimap me, const char *const traverse)
 {
-    struct node *const parent = traverse->parent;
+    char *traverse_parent;
+    char *traverse_parent_left;
+    memcpy(&traverse_parent, traverse + node_parent_offset, ptr_size);
     /* If no parent and no children, then the only node is traverse. */
-    if (!parent) {
+    if (!traverse_parent) {
         me->root = NULL;
         return;
     }
+    memcpy(&traverse_parent_left, traverse_parent + node_left_child_offset,
+           ptr_size);
     /* No re-reference needed since traverse has no children. */
-    if (parent->left == traverse) {
-        parent->left = NULL;
-        multimap_delete_balance(me, parent, 1);
+    if (traverse_parent_left == traverse) {
+        memset(traverse_parent + node_left_child_offset, 0, ptr_size);
+        multimap_delete_balance(me, traverse_parent, 1);
     } else {
-        parent->right = NULL;
-        multimap_delete_balance(me, parent, 0);
+        memset(traverse_parent + node_right_child_offset, 0, ptr_size);
+        multimap_delete_balance(me, traverse_parent, 0);
     }
 }
 
 /*
  * Removes traverse when it has one child.
  */
-static void multimap_remove_one_child(multimap me,
-                                      const struct node *const traverse)
+static void multimap_remove_one_child(multimap me, const char *const traverse)
 {
-    struct node *const parent = traverse->parent;
+    char *traverse_parent;
+    char *traverse_left;
+    char *traverse_right;
+    char *traverse_parent_left;
+    memcpy(&traverse_parent, traverse + node_parent_offset, ptr_size);
+    memcpy(&traverse_left, traverse + node_left_child_offset, ptr_size);
+    memcpy(&traverse_right, traverse + node_right_child_offset, ptr_size);
     /* If no parent, make the child of traverse the new root. */
-    if (!parent) {
-        if (traverse->left) {
-            traverse->left->parent = NULL;
-            me->root = traverse->left;
+    if (!traverse_parent) {
+        if (traverse_left) {
+            memset(traverse_left + node_parent_offset, 0, ptr_size);
+            me->root = traverse_left;
         } else {
-            traverse->right->parent = NULL;
-            me->root = traverse->right;
+            memset(traverse_right + node_parent_offset, 0, ptr_size);
+            me->root = traverse_right;
         }
         return;
     }
+    memcpy(&traverse_parent_left, traverse_parent + node_left_child_offset,
+           ptr_size);
     /* The parent of traverse now references the child of traverse. */
-    if (parent->left == traverse) {
-        if (traverse->left) {
-            parent->left = traverse->left;
-            traverse->left->parent = parent;
+    if (traverse_parent_left == traverse) {
+        if (traverse_left) {
+            memcpy(traverse_parent + node_left_child_offset, &traverse_left,
+                   ptr_size);
+            memcpy(traverse_left + node_parent_offset, &traverse_parent,
+                   ptr_size);
         } else {
-            parent->left = traverse->right;
-            traverse->right->parent = parent;
+            memcpy(traverse_parent + node_left_child_offset, &traverse_right,
+                   ptr_size);
+            memcpy(traverse_right + node_parent_offset, &traverse_parent,
+                   ptr_size);
         }
-        multimap_delete_balance(me, parent, 1);
+        multimap_delete_balance(me, traverse_parent, 1);
     } else {
-        if (traverse->left) {
-            parent->right = traverse->left;
-            traverse->left->parent = parent;
+        if (traverse_left) {
+            memcpy(traverse_parent + node_right_child_offset, &traverse_left,
+                   ptr_size);
+            memcpy(traverse_left + node_parent_offset, &traverse_parent,
+                   ptr_size);
         } else {
-            parent->right = traverse->right;
-            traverse->right->parent = parent;
+            memcpy(traverse_parent + node_right_child_offset, &traverse_right,
+                   ptr_size);
+            memcpy(traverse_right + node_parent_offset, &traverse_parent,
+                   ptr_size);
         }
-        multimap_delete_balance(me, parent, 0);
+        multimap_delete_balance(me, traverse_parent, 0);
     }
 }
 
@@ -673,41 +720,73 @@ static void multimap_remove_one_child(multimap me,
  * Removes traverse when it has two children.
  */
 static void multimap_remove_two_children(multimap me,
-                                         const struct node *const traverse)
+                                         const char *const traverse)
 {
-    struct node *item;
-    struct node *parent;
-    const int is_left_deleted = traverse->right->left != NULL;
+    char *item;
+    char *item_parent;
+    char *parent;
+    char *traverse_parent;
+    char *traverse_right;
+    char *traverse_right_left;
+    int is_left_deleted;
+    memcpy(&traverse_right, traverse + node_right_child_offset, ptr_size);
+    memcpy(&traverse_right_left, traverse_right + node_left_child_offset,
+           ptr_size);
+    is_left_deleted = traverse_right_left != NULL;
     if (!is_left_deleted) {
-        item = traverse->right;
+        char *item_left;
+        memcpy(&item, traverse + node_right_child_offset, ptr_size);
         parent = item;
-        item->balance = traverse->balance;
-        item->parent = traverse->parent;
-        item->left = traverse->left;
-        item->left->parent = item;
+        item[0] = traverse[0];
+        memcpy(item + node_parent_offset, traverse + node_parent_offset,
+               ptr_size);
+        memcpy(item + node_left_child_offset, traverse + node_left_child_offset,
+               ptr_size);
+        memcpy(&item_left, item + node_left_child_offset, ptr_size);
+        memcpy(item_left + node_parent_offset, &item, ptr_size);
     } else {
-        item = traverse->right->left;
-        while (item->left) {
-            item = item->left;
+        char *item_left;
+        char *item_right;
+        item = traverse_right_left;
+        memcpy(&item_left, item + node_left_child_offset, ptr_size);
+        while (item_left) {
+            item = item_left;
+            memcpy(&item_left, item + node_left_child_offset, ptr_size);
         }
-        parent = item->parent;
-        item->balance = traverse->balance;
-        item->parent->left = item->right;
-        if (item->right) {
-            item->right->parent = item->parent;
+        memcpy(&parent, item + node_parent_offset, ptr_size);
+        item[0] = traverse[0];
+        memcpy(&item_parent, item + node_parent_offset, ptr_size);
+        memcpy(item_parent + node_left_child_offset,
+               item + node_right_child_offset, ptr_size);
+        memcpy(&item_right, item + node_right_child_offset, ptr_size);
+        if (item_right) {
+            memcpy(item_right + node_parent_offset, item + node_parent_offset,
+                   ptr_size);
         }
-        item->left = traverse->left;
-        item->left->parent = item;
-        item->right = traverse->right;
-        item->right->parent = item;
-        item->parent = traverse->parent;
+        memcpy(item + node_left_child_offset, traverse + node_left_child_offset,
+               ptr_size);
+        memcpy(&item_left, item + node_left_child_offset, ptr_size);
+        memcpy(item_left + node_parent_offset, &item, ptr_size);
+        memcpy(item + node_right_child_offset,
+               traverse + node_right_child_offset, ptr_size);
+        memcpy(&item_right, item + node_right_child_offset, ptr_size);
+        memcpy(item_right + node_parent_offset, &item, ptr_size);
+        memcpy(item + node_parent_offset, traverse + node_parent_offset,
+               ptr_size);
     }
-    if (!traverse->parent) {
+    memcpy(&traverse_parent, traverse + node_parent_offset, ptr_size);
+    if (!traverse_parent) {
         me->root = item;
-    } else if (traverse->parent->left == traverse) {
-        item->parent->left = item;
     } else {
-        item->parent->right = item;
+        char *traverse_parent_left;
+        memcpy(&traverse_parent_left, traverse_parent + node_left_child_offset,
+               ptr_size);
+        memcpy(&item_parent, item + node_parent_offset, ptr_size);
+        if (traverse_parent_left == traverse) {
+            memcpy(item_parent + node_left_child_offset, &item, ptr_size);
+        } else {
+            memcpy(item_parent + node_right_child_offset, &item, ptr_size);
+        }
     }
     multimap_delete_balance(me, parent, is_left_deleted);
 }
@@ -715,16 +794,19 @@ static void multimap_remove_two_children(multimap me,
 /*
  * Removes the element from the map.
  */
-static void multimap_remove_element(multimap me, struct node *const traverse)
+static void multimap_remove_element(multimap me, char *const traverse)
 {
-    if (!traverse->left && !traverse->right) {
+    char *traverse_left;
+    char *traverse_right;
+    memcpy(&traverse_left, traverse + node_left_child_offset, ptr_size);
+    memcpy(&traverse_right, traverse + node_right_child_offset, ptr_size);
+    if (!traverse_left && !traverse_right) {
         multimap_remove_no_children(me, traverse);
-    } else if (!traverse->left || !traverse->right) {
+    } else if (!traverse_left || !traverse_right) {
         multimap_remove_one_child(me, traverse);
     } else {
         multimap_remove_two_children(me, traverse);
     }
-    free(traverse->key);
     free(traverse);
 }
 
@@ -744,31 +826,40 @@ static void multimap_remove_element(multimap me, struct node *const traverse)
  */
 int multimap_remove(multimap me, void *const key, void *const value)
 {
-    struct value_node *current;
-    struct node *const traverse = multimap_equal_match(me, key);
+    char *current_value_node;
+    char *const traverse = multimap_equal_match(me, key);
+    size_t count;
     if (!traverse) {
         return 0;
     }
-    current = traverse->head;
-    if (me->value_comparator(current->value, value) == 0) {
-        traverse->head = current->next;
+    memcpy(&current_value_node, traverse + node_value_head_offset, ptr_size);
+    if (me->value_comparator(current_value_node + value_node_value_offset,
+                             value) == 0) {
+        memcpy(traverse + node_value_head_offset,
+               current_value_node + node_value_head_offset, ptr_size);
     } else {
-        struct value_node *previous = current;
-        current = current->next;
-        while (current && me->value_comparator(current->value, value) != 0) {
-            previous = current;
-            current = current->next;
+        char *previous_value_node = current_value_node;
+        memcpy(&current_value_node, current_value_node + value_node_next_offset,
+               ptr_size);
+        while (current_value_node && me->value_comparator(
+                current_value_node + value_node_value_offset, value) != 0) {
+            previous_value_node = current_value_node;
+            memcpy(&current_value_node,
+                   current_value_node + value_node_next_offset, ptr_size);
         }
-        if (!current) {
+        if (!current_value_node) {
             return 0;
         }
-        previous->next = current->next;
+        memcpy(previous_value_node + value_node_next_offset,
+               current_value_node + value_node_next_offset, ptr_size);
     }
-    free(current->value);
-    free(current);
-    traverse->value_count--;
-    if (traverse->value_count == 0) {
+    free(current_value_node);
+    memcpy(&count, traverse + node_value_count_offset, count_size);
+    if (count == 1) {
         multimap_remove_element(me, traverse);
+    } else {
+        count--;
+        memcpy(traverse + node_value_count_offset, &count, count_size);
     }
     me->size--;
     return 1;
@@ -777,17 +868,19 @@ int multimap_remove(multimap me, void *const key, void *const value)
 /*
  * Removes all values associated with a key.
  */
-static void multimap_remove_all_element(multimap me,
-                                        struct node *const traverse)
+static void multimap_remove_all_elements(multimap me, char *const traverse)
 {
-    struct value_node *value_traverse = traverse->head;
+    char *value_traverse;
+    size_t value_count;
+    memcpy(&value_traverse, traverse + node_value_head_offset, ptr_size);
     while (value_traverse) {
-        struct value_node *temp = value_traverse;
-        value_traverse = value_traverse->next;
-        free(temp->value);
+        char *const temp = value_traverse;
+        memcpy(&value_traverse, value_traverse + value_node_next_offset,
+               ptr_size);
         free(temp);
     }
-    me->size -= traverse->value_count;
+    memcpy(&value_count, traverse + node_value_count_offset, count_size);
+    me->size -= value_count;
     multimap_remove_element(me, traverse);
 }
 
@@ -805,11 +898,11 @@ static void multimap_remove_all_element(multimap me,
  */
 int multimap_remove_all(multimap me, void *const key)
 {
-    struct node *const traverse = multimap_equal_match(me, key);
+    char *const traverse = multimap_equal_match(me, key);
     if (!traverse) {
         return 0;
     }
-    multimap_remove_all_element(me, traverse);
+    multimap_remove_all_elements(me, traverse);
     return 1;
 }
 
@@ -821,7 +914,7 @@ int multimap_remove_all(multimap me, void *const key)
 void multimap_clear(multimap me)
 {
     while (me->root) {
-        multimap_remove_all_element(me, me->root);
+        multimap_remove_all_elements(me, me->root);
     }
 }
 
