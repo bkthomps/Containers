@@ -234,7 +234,7 @@ static char *unordered_map_create_element(unordered_map me,
                                           const void *const key,
                                           const void *const value)
 {
-    char *init = malloc(ptr_size + hash_size + me->value_size);
+    char *init = malloc(ptr_size + hash_size + me->key_size + me->value_size);
     if (!init) {
         return NULL;
     }
