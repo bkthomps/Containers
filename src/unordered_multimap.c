@@ -356,7 +356,7 @@ void unordered_multimap_get_start(unordered_multimap me, void *const key)
  * @param value the value to be copied to from iteration
  * @param me    the unordered multi-map to iterate over
  *
- * @return 1 if there exist no more values for the key which is being iterated
+ * @return 1 if there exist more values for the key which is being iterated
  *         over, otherwise 0
  */
 int unordered_multimap_get_next(void *const value, unordered_multimap me)
