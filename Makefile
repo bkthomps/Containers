@@ -31,8 +31,7 @@ test_optimized:
 test_coverage:
 	@gcc src/*.c tst/*.c -Wall -Wextra -Wpedantic -Werror -std=c89 -O0 -ldl -g -coverage -o ContainersTestCoverage
 
-valgrind:
+test_valgrind:
 	@sed -i 's/STUB_MALLOC 1/STUB_MALLOC 0/g' tst/test.h
 	@gcc src/*.c tst/*.c -Wall -Wextra -Wpedantic -Werror -std=c89 -O0 -o ContainersTestValgrind
 	@sed -i 's/STUB_MALLOC 0/STUB_MALLOC 1/g' tst/test.h
-	@valgrind --leak-check=full ./ContainersTestValgrind
