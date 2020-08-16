@@ -444,6 +444,6 @@ unordered_map unordered_map_destroy(unordered_map me)
 {
     unordered_map_clear(me);
     free(me->buckets);
-    free(me);
+    /*free(me);*/
     return NULL;
 }
