@@ -425,6 +425,7 @@ int unordered_map_clear(unordered_map me)
             free(backup);
         }
     }
+    free(me->buckets);
     me->size = 0;
     me->capacity = STARTING_BUCKETS;
     me->buckets = updated_buckets;

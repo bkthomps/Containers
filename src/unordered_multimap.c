@@ -559,6 +559,7 @@ int unordered_multimap_clear(unordered_multimap me)
             free(backup);
         }
     }
+    free(me->buckets);
     me->size = 0;
     me->capacity = STARTING_BUCKETS;
     me->buckets = updated_buckets;
