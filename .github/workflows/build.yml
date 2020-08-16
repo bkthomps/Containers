@@ -26,4 +26,4 @@ jobs:
     - uses: actions/checkout@v2
     - run: sudo apt install -y valgrind
     - run: make test_valgrind
-    - run: valgrind --leak-check=full ./ContainersTestValgrind | grep -q "ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)" || exit 1
+    - run: valgrind --leak-check=full ./ContainersTestValgrind | grep -q "ERROR SUMMARY:: 0 errors from 0 contexts (suppressed:: 0 from 0)" || exit 1
