@@ -1,3 +1,4 @@
+#include <limits.h>
 #include <string.h>
 #include "test.h"
 #include "../src/include/vector.h"
@@ -272,6 +273,46 @@ static void test_add_out_of_memory(void)
 }
 #endif
 
+struct big_object {
+    int n;
+    double d;
+    signed char c[8];
+};
+
+static void test_big_object(void)
+{
+    int i;
+    vector me = vector_init(sizeof(struct big_object));
+    assert(me);
+    for (i = 0; i < 16; i++) {
+        int j;
+        struct big_object b;
+        b.n = INT_MIN + i;
+        b.d = i + 0.5;
+        for (j = 0; j < 8; j++) {
+            b.c[j] = (signed char) (SCHAR_MIN + i + j);
+        }
+        assert(vector_add_first(me, &b) == 0);
+        b.n = -1;
+        b.d = -1;
+        for (j = 0; j < 8; j++) {
+            b.c[j] = -1;
+        }
+    }
+    for (i = 0; i < 16; i++) {
+        int j;
+        struct big_object b;
+        assert(vector_get_last(&b, me) == 0);
+        assert(vector_remove_last(me) == 0);
+        assert(b.n == INT_MIN + i);
+        assert(b.d == i + 0.5);
+        for (j = 0; j < 8; j++) {
+            assert(b.c[j] == SCHAR_MIN + i + j);
+        }
+    }
+    assert(!vector_destroy(me));
+}
+
 void test_vector(void)
 {
     test_invalid_init();
@@ -283,4 +324,5 @@ void test_vector(void)
     test_set_space_out_of_memory();
     test_add_out_of_memory();
 #endif
+    test_big_object();
 }

@@ -1,3 +1,4 @@
+#include <limits.h>
 #include "test.h"
 #include "../src/include/array.h"
 
@@ -85,6 +86,45 @@ static void test_init_out_of_memory(void)
 }
 #endif
 
+struct big_object {
+    int n;
+    double d;
+    signed char c[8];
+};
+
+static void test_big_object(void)
+{
+    int i;
+    array me = array_init(16, sizeof(struct big_object));
+    assert(me);
+    for (i = 0; i < 16; i++) {
+        int j;
+        struct big_object b;
+        b.n = INT_MIN + i;
+        b.d = i + 0.5;
+        for (j = 0; j < 8; j++) {
+            b.c[j] = (signed char) (SCHAR_MIN + i + j);
+        }
+        assert(array_set(me, i, &b) == 0);
+        b.n = -1;
+        b.d = -1;
+        for (j = 0; j < 8; j++) {
+            b.c[j] = -1;
+        }
+    }
+    for (i = 0; i < 16; i++) {
+        int j;
+        struct big_object b;
+        assert(array_get(&b, me, i) == 0);
+        assert(b.n == INT_MIN + i);
+        assert(b.d == i + 0.5);
+        for (j = 0; j < 8; j++) {
+            assert(b.c[j] == SCHAR_MIN + i + j);
+        }
+    }
+    assert(!array_destroy(me));
+}
+
 void test_array(void)
 {
     test_invalid_init();
@@ -93,4 +133,5 @@ void test_array(void)
 #if STUB_MALLOC
     test_init_out_of_memory();
 #endif
+    test_big_object();
 }

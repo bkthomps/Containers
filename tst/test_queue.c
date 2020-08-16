@@ -1,3 +1,4 @@
+#include <limits.h>
 #include "test.h"
 #include "../src/include/queue.h"
 
@@ -140,6 +141,45 @@ static int test_puzzle(int start_node, int dest_node)
     return -1;
 }
 
+struct big_object {
+    int n;
+    double d;
+    signed char c[8];
+};
+
+static void test_big_object(void)
+{
+    int i;
+    queue me = queue_init(sizeof(struct big_object));
+    assert(me);
+    for (i = 0; i < 16; i++) {
+        int j;
+        struct big_object b;
+        b.n = INT_MIN + i;
+        b.d = i + 0.5;
+        for (j = 0; j < 8; j++) {
+            b.c[j] = (signed char) (SCHAR_MIN + i + j);
+        }
+        assert(queue_push(me, &b) == 0);
+        b.n = -1;
+        b.d = -1;
+        for (j = 0; j < 8; j++) {
+            b.c[j] = -1;
+        }
+    }
+    for (i = 0; i < 16; i++) {
+        int j;
+        struct big_object b;
+        assert(queue_pop(&b, me) == 1);
+        assert(b.n == INT_MIN + i);
+        assert(b.d == i + 0.5);
+        for (j = 0; j < 8; j++) {
+            assert(b.c[j] == SCHAR_MIN + i + j);
+        }
+    }
+    assert(!queue_destroy(me));
+}
+
 void test_queue(void)
 {
     test_invalid_init();
@@ -148,4 +188,5 @@ void test_queue(void)
     test_automated_trim();
     assert(test_puzzle(2, 5) == 4);
     assert(test_puzzle(2, 10) == 5);
+    test_big_object();
 }

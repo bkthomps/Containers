@@ -1,3 +1,4 @@
+#include <limits.h>
 #include "test.h"
 #include "../src/include/list.h"
 
@@ -335,6 +336,46 @@ static int test_puzzle_backwards(int start_node, int dest_node)
     return -1;
 }
 
+struct big_object {
+    int n;
+    double d;
+    signed char c[8];
+};
+
+static void test_big_object(void)
+{
+    int i;
+    list me = list_init(sizeof(struct big_object));
+    assert(me);
+    for (i = 0; i < 16; i++) {
+        int j;
+        struct big_object b;
+        b.n = INT_MIN + i;
+        b.d = i + 0.5;
+        for (j = 0; j < 8; j++) {
+            b.c[j] = (signed char) (SCHAR_MIN + i + j);
+        }
+        assert(list_add_first(me, &b) == 0);
+        b.n = -1;
+        b.d = -1;
+        for (j = 0; j < 8; j++) {
+            b.c[j] = -1;
+        }
+    }
+    for (i = 0; i < 16; i++) {
+        int j;
+        struct big_object b;
+        assert(list_get_last(&b, me) == 0);
+        assert(list_remove_last(me) == 0);
+        assert(b.n == INT_MIN + i);
+        assert(b.d == i + 0.5);
+        for (j = 0; j < 8; j++) {
+            assert(b.c[j] == SCHAR_MIN + i + j);
+        }
+    }
+    assert(!list_destroy(me));
+}
+
 void test_list(void)
 {
     test_invalid_init();
@@ -350,4 +391,5 @@ void test_list(void)
     assert(test_puzzle_forwards(2, 10) == 5);
     assert(test_puzzle_backwards(2, 5) == 4);
     assert(test_puzzle_backwards(2, 10) == 5);
+    test_big_object();
 }

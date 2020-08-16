@@ -1,3 +1,4 @@
+#include <limits.h>
 #include <memory.h>
 #include "test.h"
 #include "../src/include/set.h"
@@ -522,6 +523,57 @@ static void test_put_out_of_memory(void)
 }
 #endif
 
+struct big_object {
+    int n;
+    double d;
+    signed char c[8];
+};
+
+static int compare_big_object(const void *const one, const void *const two)
+{
+    const struct big_object *const a = one;
+    const struct big_object *const b = two;
+    return a->n - b->n;
+}
+
+static void test_big_object(void)
+{
+    int i;
+    set me = set_init(sizeof(struct big_object), compare_big_object);
+    assert(me);
+    for (i = 0; i < 16; i++) {
+        int j;
+        struct big_object b;
+        b.n = INT_MIN + i;
+        b.d = i + 0.5;
+        for (j = 0; j < 8; j++) {
+            b.c[j] = (signed char) (SCHAR_MIN + i + j);
+        }
+        assert(set_put(me, &b) == 0);
+        b.n = -1;
+        b.d = -1;
+        for (j = 0; j < 8; j++) {
+            b.c[j] = -1;
+        }
+    }
+    for (i = 0; i < 16; i++) {
+        int j;
+        struct big_object b;
+        b.n = INT_MIN + i;
+        b.d = i + 0.5;
+        for (j = 0; j < 8; j++) {
+            b.c[j] = (signed char) (SCHAR_MIN + i + j);
+        }
+        assert(set_contains(me, &b) == 1);
+        assert(b.n == INT_MIN + i);
+        assert(b.d == i + 0.5);
+        for (j = 0; j < 8; j++) {
+            assert(b.c[j] == SCHAR_MIN + i + j);
+        }
+    }
+    assert(!set_destroy(me));
+}
+
 void test_set(void)
 {
     test_invalid_init();
@@ -536,4 +588,5 @@ void test_set(void)
     test_init_out_of_memory();
     test_put_out_of_memory();
 #endif
+    test_big_object();
 }

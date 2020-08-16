@@ -1,3 +1,4 @@
+#include <limits.h>
 #include "test.h"
 #include "../src/include/stack.h"
 
@@ -67,9 +68,49 @@ static void test_automated_trim(void)
     assert(!stack_destroy(me));
 }
 
+struct big_object {
+    int n;
+    double d;
+    signed char c[8];
+};
+
+static void test_big_object(void)
+{
+    int i;
+    stack me = stack_init(sizeof(struct big_object));
+    assert(me);
+    for (i = 0; i < 16; i++) {
+        int j;
+        struct big_object b;
+        b.n = INT_MIN + i;
+        b.d = i + 0.5;
+        for (j = 0; j < 8; j++) {
+            b.c[j] = (signed char) (SCHAR_MIN + i + j);
+        }
+        assert(stack_push(me, &b) == 0);
+        b.n = -1;
+        b.d = -1;
+        for (j = 0; j < 8; j++) {
+            b.c[j] = -1;
+        }
+    }
+    for (i = 15; i >= 0; i--) {
+        int j;
+        struct big_object b;
+        assert(stack_pop(&b, me) == 1);
+        assert(b.n == INT_MIN + i);
+        assert(b.d == i + 0.5);
+        for (j = 0; j < 8; j++) {
+            assert(b.c[j] == SCHAR_MIN + i + j);
+        }
+    }
+    assert(!stack_destroy(me));
+}
+
 void test_stack(void)
 {
     test_invalid_init();
     test_basic();
     test_automated_trim();
+    test_big_object();
 }
