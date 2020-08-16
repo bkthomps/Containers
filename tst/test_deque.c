@@ -1,3 +1,4 @@
+#include <limits.h>
 #include "test.h"
 #include "../src/include/deque.h"
 
@@ -420,6 +421,45 @@ static int test_puzzle(int start_node, int dest_node)
     return -1;
 }
 
+struct big_object {
+    int n;
+    double d;
+    signed char c[8];
+};
+
+static void test_big_object(void)
+{
+    int i;
+    deque me = deque_init(sizeof(struct big_object));
+    assert(me);
+    for (i = 0; i < 16; i++) {
+        int j;
+        struct big_object b;
+        b.n = INT_MIN + i;
+        b.d = i + 0.5;
+        for (j = 0; j < 8; j++) {
+            b.c[j] = (signed char) (SCHAR_MIN + i + j);
+        }
+        assert(deque_push_front(me, &b) == 0);
+        b.n = -1;
+        b.d = -1;
+        for (j = 0; j < 8; j++) {
+            b.c[j] = -1;
+        }
+    }
+    for (i = 0; i < 16; i++) {
+        int j;
+        struct big_object b;
+        assert(deque_pop_back(&b, me) == 0);
+        assert(b.n == INT_MIN + i);
+        assert(b.d == i + 0.5);
+        for (j = 0; j < 8; j++) {
+            assert(b.c[j] == SCHAR_MIN + i + j);
+        }
+    }
+    assert(!deque_destroy(me));
+}
+
 void test_deque(void)
 {
     test_invalid_init();
@@ -440,4 +480,5 @@ void test_deque(void)
     test_single_full_block();
     assert(test_puzzle(2, 5) == 4);
     assert(test_puzzle(2, 10) == 5);
+    test_big_object();
 }

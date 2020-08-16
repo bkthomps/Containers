@@ -483,6 +483,7 @@ int unordered_multiset_clear(unordered_multiset me)
             free(backup);
         }
     }
+    free(me->buckets);
     me->size = 0;
     me->capacity = STARTING_BUCKETS;
     me->used = 0;

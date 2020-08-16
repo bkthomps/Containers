@@ -253,7 +253,7 @@ static char *unordered_multimap_create_element(unordered_multimap me,
                                                const void *const key,
                                                const void *const value)
 {
-    char *init = malloc(ptr_size + hash_size + me->key_size);
+    char *init = malloc(ptr_size + hash_size + me->key_size + me->value_size);
     if (!init) {
         return NULL;
     }
@@ -356,7 +356,7 @@ void unordered_multimap_get_start(unordered_multimap me, void *const key)
  * @param value the value to be copied to from iteration
  * @param me    the unordered multi-map to iterate over
  *
- * @return 1 if there exist no more values for the key which is being iterated
+ * @return 1 if there exist more values for the key which is being iterated
  *         over, otherwise 0
  */
 int unordered_multimap_get_next(void *const value, unordered_multimap me)
@@ -559,6 +559,7 @@ int unordered_multimap_clear(unordered_multimap me)
             free(backup);
         }
     }
+    free(me->buckets);
     me->size = 0;
     me->capacity = STARTING_BUCKETS;
     me->buckets = updated_buckets;

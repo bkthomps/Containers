@@ -234,7 +234,7 @@ static char *unordered_map_create_element(unordered_map me,
                                           const void *const key,
                                           const void *const value)
 {
-    char *init = malloc(ptr_size + hash_size + me->key_size);
+    char *init = malloc(ptr_size + hash_size + me->key_size + me->value_size);
     if (!init) {
         return NULL;
     }
@@ -425,6 +425,7 @@ int unordered_map_clear(unordered_map me)
             free(backup);
         }
     }
+    free(me->buckets);
     me->size = 0;
     me->capacity = STARTING_BUCKETS;
     me->buckets = updated_buckets;

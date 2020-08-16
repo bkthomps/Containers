@@ -306,7 +306,7 @@ static void multimap_insert_balance(multimap me, char *const item)
  */
 static char *multimap_create_value_node(multimap me, const void *const value)
 {
-    char *const add = malloc(sizeof(char *) + me->value_size);
+    char *const add = malloc(ptr_size + me->value_size);
     if (!add) {
         return NULL;
     }
@@ -321,8 +321,7 @@ static char *multimap_create_value_node(multimap me, const void *const value)
 static char *multimap_create_node(multimap me, const void *const key,
                                   const void *const value, char *const parent)
 {
-    const size_t size = 1 + sizeof(size_t) + 4 * sizeof(char *) + me->key_size;
-    char *const insert = malloc(size);
+    char *const insert = malloc(1 + count_size + 4 * ptr_size + me->key_size);
     const size_t one = 1;
     char *value_node;
     if (!insert) {
@@ -495,7 +494,7 @@ void multimap_get_start(multimap me, void *const key)
  * @param value the value to be copied to from iteration
  * @param me    the multi-map to iterate over
  *
- * @return 1 if there exist no more values for the key which is being iterated
+ * @return 1 if there exist more values for the key which is being iterated
  *         over, otherwise 0
  */
 int multimap_get_next(void *const value, multimap me)
@@ -836,7 +835,7 @@ int multimap_remove(multimap me, void *const key, void *const value)
     if (me->value_comparator(current_value_node + value_node_value_offset,
                              value) == 0) {
         memcpy(traverse + node_value_head_offset,
-               current_value_node + node_value_head_offset, ptr_size);
+               current_value_node + value_node_next_offset, ptr_size);
     } else {
         char *previous_value_node = current_value_node;
         memcpy(&current_value_node, current_value_node + value_node_next_offset,
