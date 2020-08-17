@@ -21,7 +21,6 @@
  */
 
 #include <string.h>
-#include <errno.h>
 #include "include/unordered_multimap.h"
 
 #define BKTHOMPS_U_MULTIMAP_STARTING_BUCKETS 16
@@ -152,17 +151,17 @@ static void unordered_multimap_add_item(unordered_multimap me, char *const add)
  *
  * @param me the unordered multi-map to rehash
  *
- * @return 0       if no error
- * @return -ENOMEM if out of memory
+ * @return  BK_OK     if no error
+ * @return -BK_ENOMEM if out of memory
  */
-int unordered_multimap_rehash(unordered_multimap me)
+bk_err unordered_multimap_rehash(unordered_multimap me)
 {
     size_t i;
     char **old_buckets = me->buckets;
     me->buckets = calloc(me->capacity, ptr_size);
     if (!me->buckets) {
         me->buckets = old_buckets;
-        return -ENOMEM;
+        return -BK_ENOMEM;
     }
     for (i = 0; i < me->capacity; i++) {
         char *traverse = old_buckets[i];
@@ -177,7 +176,7 @@ int unordered_multimap_rehash(unordered_multimap me)
         }
     }
     free(old_buckets);
-    return 0;
+    return BK_OK;
 }
 
 /**
@@ -197,9 +196,9 @@ size_t unordered_multimap_size(unordered_multimap me)
  *
  * @param me the unordered multi-map to check
  *
- * @return 1 if the unordered multi-map is empty, otherwise 0
+ * @return BK_TRUE if the unordered multi-map is empty, otherwise BK_FALSE
  */
-int unordered_multimap_is_empty(unordered_multimap me)
+bk_bool unordered_multimap_is_empty(unordered_multimap me)
 {
     return unordered_multimap_size(me) == 0;
 }
@@ -207,7 +206,7 @@ int unordered_multimap_is_empty(unordered_multimap me)
 /*
  * Increases the size of the multi-map and redistributes the nodes.
  */
-static int unordered_multimap_resize(unordered_multimap me)
+static bk_err unordered_multimap_resize(unordered_multimap me)
 {
     size_t i;
     const size_t old_capacity = me->capacity;
@@ -216,7 +215,7 @@ static int unordered_multimap_resize(unordered_multimap me)
     me->buckets = calloc(new_capacity, ptr_size);
     if (!me->buckets) {
         me->buckets = old_buckets;
-        return -ENOMEM;
+        return -BK_ENOMEM;
     }
     me->capacity = new_capacity;
     for (i = 0; i < old_capacity; i++) {
@@ -229,15 +228,16 @@ static int unordered_multimap_resize(unordered_multimap me)
         }
     }
     free(old_buckets);
-    return 0;
+    return BK_OK;
 }
 
 /*
  * Determines if an element is equal to the key.
  */
-static int unordered_multimap_is_equal(unordered_multimap me, char *const item,
-                                       const unsigned long hash,
-                                       const void *const key)
+static bk_bool unordered_multimap_is_equal(unordered_multimap me,
+                                           char *const item,
+                                           const unsigned long hash,
+                                           const void *const key)
 {
     unsigned long item_hash;
     memcpy(&item_hash, item + node_hash_offset, hash_size);
@@ -276,28 +276,27 @@ static char *unordered_multimap_create_element(unordered_multimap me,
  * @param key   the key to add
  * @param value the value to add
  *
- * @return 0       if no error
- * @return -ENOMEM if out of memory
+ * @return  BK_OK     if no error
+ * @return -BK_ENOMEM if out of memory
  */
-int unordered_multimap_put(unordered_multimap me,
-                           void *const key,
-                           void *const value)
+bk_err unordered_multimap_put(unordered_multimap me, void *const key,
+                              void *const value)
 {
     const unsigned long hash = unordered_multimap_hash(me, key);
-    int index;
+    size_t index;
     if (me->size + 1 >=
         (size_t) (BKTHOMPS_U_MULTIMAP_RESIZE_AT * me->capacity)) {
-        const int rc = unordered_multimap_resize(me);
-        if (rc != 0) {
+        const bk_err rc = unordered_multimap_resize(me);
+        if (rc != BK_OK) {
             return rc;
         }
     }
-    index = (size_t) (hash % me->capacity);
+    index = hash % me->capacity;
     if (!me->buckets[index]) {
         me->buckets[index] = unordered_multimap_create_element(me, hash, key,
                                                                value);
         if (!me->buckets[index]) {
-            return -ENOMEM;
+            return -BK_ENOMEM;
         }
     } else {
         char *traverse = me->buckets[index];
@@ -309,12 +308,12 @@ int unordered_multimap_put(unordered_multimap me,
         }
         traverse_next = unordered_multimap_create_element(me, hash, key, value);
         if (!traverse_next) {
-            return -ENOMEM;
+            return -BK_ENOMEM;
         }
         memcpy(traverse + node_next_offset, &traverse_next, ptr_size);
     }
     me->size++;
-    return 0;
+    return BK_OK;
 }
 
 /**
@@ -357,15 +356,15 @@ void unordered_multimap_get_start(unordered_multimap me, void *const key)
  * @param value the value to be copied to from iteration
  * @param me    the unordered multi-map to iterate over
  *
- * @return 1 if there exist more values for the key which is being iterated
- *         over, otherwise 0
+ * @return BK_TRUE if there exist more values for the key which is being
+ *         iterated over, otherwise BK_FALSE
  */
-int unordered_multimap_get_next(void *const value, unordered_multimap me)
+bk_bool unordered_multimap_get_next(void *const value, unordered_multimap me)
 {
     char *item;
     char *traverse;
     if (!me->iterate_element) {
-        return 0;
+        return BK_FALSE;
     }
     item = me->iterate_element;
     memcpy(&traverse, item + node_next_offset, ptr_size);
@@ -375,13 +374,13 @@ int unordered_multimap_get_next(void *const value, unordered_multimap me)
             me->iterate_element = traverse;
             memcpy(value, item + node_key_offset + me->key_size,
                    me->value_size);
-            return 1;
+            return BK_TRUE;
         }
         memcpy(&traverse, traverse + node_next_offset, ptr_size);
     }
     me->iterate_element = NULL;
     memcpy(value, item + node_key_offset + me->key_size, me->value_size);
-    return 1;
+    return BK_TRUE;
 }
 
 /**
@@ -397,9 +396,9 @@ int unordered_multimap_get_next(void *const value, unordered_multimap me)
  *
  * @return the number of times the key appears in the unordered multi-map
  */
-int unordered_multimap_count(unordered_multimap me, void *const key)
+size_t unordered_multimap_count(unordered_multimap me, void *const key)
 {
-    int count = 0;
+    size_t count = 0;
     const unsigned long hash = unordered_multimap_hash(me, key);
     char *traverse = me->buckets[hash % me->capacity];
     while (traverse) {
@@ -421,19 +420,20 @@ int unordered_multimap_count(unordered_multimap me, void *const key)
  * @param me  the unordered multi-map to check for the key
  * @param key the key to check
  *
- * @return 1 if the unordered multi-map contained the key, otherwise 0
+ * @return BK_TRUE if the unordered multi-map contained the key,
+ *         otherwise BK_FALSE
  */
-int unordered_multimap_contains(unordered_multimap me, void *const key)
+bk_bool unordered_multimap_contains(unordered_multimap me, void *const key)
 {
     const unsigned long hash = unordered_multimap_hash(me, key);
     char *traverse = me->buckets[hash % me->capacity];
     while (traverse) {
         if (unordered_multimap_is_equal(me, traverse, hash, key)) {
-            return 1;
+            return BK_TRUE;
         }
         memcpy(&traverse, traverse + node_next_offset, ptr_size);
     }
-    return 0;
+    return BK_FALSE;
 }
 
 /**
@@ -448,18 +448,18 @@ int unordered_multimap_contains(unordered_multimap me, void *const key)
  * @param key   the key to remove
  * @param value the value to remove
  *
- * @return 1 if the unordered multi-map contained the key, otherwise 0
+ * @return BK_TRUE if the unordered multi-map contained the key,
+ *         otherwise BK_FALSE
  */
-int unordered_multimap_remove(unordered_multimap me,
-                              void *const key,
-                              void *const value)
+bk_bool unordered_multimap_remove(unordered_multimap me, void *const key,
+                                  void *const value)
 {
     char *traverse;
     char *traverse_next;
     const unsigned long hash = unordered_multimap_hash(me, key);
     const size_t index = hash % me->capacity;
     if (!me->buckets[index]) {
-        return 0;
+        return BK_FALSE;
     }
     traverse = me->buckets[index];
     if (unordered_multimap_is_equal(me, traverse, hash, key)
@@ -468,7 +468,7 @@ int unordered_multimap_remove(unordered_multimap me,
         memcpy(me->buckets + index, traverse + node_next_offset, ptr_size);
         free(traverse);
         me->size--;
-        return 1;
+        return BK_TRUE;
     }
     memcpy(&traverse_next, traverse + node_next_offset, ptr_size);
     while (traverse_next) {
@@ -479,12 +479,12 @@ int unordered_multimap_remove(unordered_multimap me,
                    traverse_next + node_next_offset, ptr_size);
             free(traverse_next);
             me->size--;
-            return 1;
+            return BK_TRUE;
         }
         traverse = traverse_next;
         memcpy(&traverse_next, traverse + node_next_offset, ptr_size);
     }
-    return 0;
+    return BK_FALSE;
 }
 
 /**
@@ -498,13 +498,14 @@ int unordered_multimap_remove(unordered_multimap me,
  * @param me  the unordered multi-map to remove a key-value pair from
  * @param key the key to remove
  *
- * @return 1 if the unordered multi-map contained the key, otherwise 0
+ * @return BK_TRUE if the unordered multi-map contained the key,
+ *         otherwise BK_FALSE
  */
-int unordered_multimap_remove_all(unordered_multimap me, void *const key)
+bk_bool unordered_multimap_remove_all(unordered_multimap me, void *const key)
 {
     const unsigned long hash = unordered_multimap_hash(me, key);
-    const int index = (int) (hash % me->capacity);
-    int was_modified = 0;
+    const size_t index = (size_t) (hash % me->capacity);
+    bk_bool was_modified = BK_FALSE;
     for (;;) {
         char *traverse = me->buckets[index];
         char *traverse_next;
@@ -516,7 +517,7 @@ int unordered_multimap_remove_all(unordered_multimap me, void *const key)
             me->buckets[index] = traverse_next;
             free(traverse);
             me->size--;
-            was_modified = 1;
+            was_modified = BK_TRUE;
             continue;
         }
         while (traverse_next) {
@@ -525,7 +526,7 @@ int unordered_multimap_remove_all(unordered_multimap me, void *const key)
                        traverse_next + node_next_offset, ptr_size);
                 free(traverse_next);
                 me->size--;
-                was_modified = 1;
+                was_modified = BK_TRUE;
                 memcpy(&traverse_next, traverse + node_next_offset, ptr_size);
                 continue;
             }
@@ -542,16 +543,16 @@ int unordered_multimap_remove_all(unordered_multimap me, void *const key)
  *
  * @param me the unordered multi-map to clear
  *
- * @return 0       if no error
- * @return -ENOMEM if out of memory
+ * @return  BK_OK     if no error
+ * @return -BK_ENOMEM if out of memory
  */
-int unordered_multimap_clear(unordered_multimap me)
+bk_err unordered_multimap_clear(unordered_multimap me)
 {
     size_t i;
     char **updated_buckets = calloc(BKTHOMPS_U_MULTIMAP_STARTING_BUCKETS,
                                     ptr_size);
     if (!updated_buckets) {
-        return -ENOMEM;
+        return -BK_ENOMEM;
     }
     for (i = 0; i < me->capacity; i++) {
         char *traverse = me->buckets[i];
@@ -565,7 +566,7 @@ int unordered_multimap_clear(unordered_multimap me)
     me->size = 0;
     me->capacity = BKTHOMPS_U_MULTIMAP_STARTING_BUCKETS;
     me->buckets = updated_buckets;
-    return 0;
+    return BK_OK;
 }
 
 /**

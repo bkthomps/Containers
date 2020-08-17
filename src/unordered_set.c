@@ -21,7 +21,6 @@
  */
 
 #include <string.h>
-#include <errno.h>
 #include "include/unordered_set.h"
 
 #define BKTHOMPS_U_SET_STARTING_BUCKETS 16
@@ -126,17 +125,17 @@ static void unordered_set_add_item(unordered_set me, char *const add)
  *
  * @param me the unordered set to rehash
  *
- * @return 0       if no error
- * @return -ENOMEM if out of memory
+ * @return  BK_OK     if no error
+ * @return -BK_ENOMEM if out of memory
  */
-int unordered_set_rehash(unordered_set me)
+bk_err unordered_set_rehash(unordered_set me)
 {
     size_t i;
     char **old_buckets = me->buckets;
     me->buckets = calloc(me->capacity, ptr_size);
     if (!me->buckets) {
         me->buckets = old_buckets;
-        return -ENOMEM;
+        return -BK_ENOMEM;
     }
     for (i = 0; i < me->capacity; i++) {
         char *traverse = old_buckets[i];
@@ -151,7 +150,7 @@ int unordered_set_rehash(unordered_set me)
         }
     }
     free(old_buckets);
-    return 0;
+    return BK_OK;
 }
 
 /**
@@ -171,9 +170,9 @@ size_t unordered_set_size(unordered_set me)
  *
  * @param me the unordered set to check
  *
- * @return 1 if the unordered set is empty, otherwise 0
+ * @return BK_TRUE if the unordered set is empty, otherwise BK_FALSE
  */
-int unordered_set_is_empty(unordered_set me)
+bk_bool unordered_set_is_empty(unordered_set me)
 {
     return unordered_set_size(me) == 0;
 }
@@ -181,7 +180,7 @@ int unordered_set_is_empty(unordered_set me)
 /*
  * Increases the size of the set and redistributes the nodes.
  */
-static int unordered_set_resize(unordered_set me)
+static bk_err unordered_set_resize(unordered_set me)
 {
     size_t i;
     const size_t old_capacity = me->capacity;
@@ -190,7 +189,7 @@ static int unordered_set_resize(unordered_set me)
     me->buckets = calloc(new_capacity, ptr_size);
     if (!me->buckets) {
         me->buckets = old_buckets;
-        return -ENOMEM;
+        return -BK_ENOMEM;
     }
     me->capacity = new_capacity;
     for (i = 0; i < old_capacity; i++) {
@@ -203,15 +202,15 @@ static int unordered_set_resize(unordered_set me)
         }
     }
     free(old_buckets);
-    return 0;
+    return BK_OK;
 }
 
 /*
  * Determines if an element is equal to the key.
  */
-static int unordered_set_is_equal(unordered_set me, char *const item,
-                                  const unsigned long hash,
-                                  const void *const key)
+static bk_bool unordered_set_is_equal(unordered_set me, char *const item,
+                                      const unsigned long hash,
+                                      const void *const key)
 {
     unsigned long item_hash;
     memcpy(&item_hash, item + node_hash_offset, hash_size);
@@ -247,16 +246,16 @@ static char *unordered_set_create_element(unordered_set me,
  * @param me  the unordered set to add to
  * @param key the element to add
  *
- * @return 0       if no error
- * @return -ENOMEM if out of memory
+ * @return  BK_OK     if no error
+ * @return -BK_ENOMEM if out of memory
  */
 int unordered_set_put(unordered_set me, void *const key)
 {
     const unsigned long hash = unordered_set_hash(me, key);
     int index;
     if (me->size + 1 >= (size_t) (BKTHOMPS_U_SET_RESIZE_AT * me->capacity)) {
-        const int rc = unordered_set_resize(me);
-        if (rc != 0) {
+        const bk_err rc = unordered_set_resize(me);
+        if (rc != BK_OK) {
             return rc;
         }
     }
@@ -264,30 +263,30 @@ int unordered_set_put(unordered_set me, void *const key)
     if (!me->buckets[index]) {
         me->buckets[index] = unordered_set_create_element(me, hash, key);
         if (!me->buckets[index]) {
-            return -ENOMEM;
+            return -BK_ENOMEM;
         }
     } else {
         char *traverse = me->buckets[index];
         char *traverse_next;
         if (unordered_set_is_equal(me, traverse, hash, key)) {
-            return 0;
+            return BK_OK;
         }
         memcpy(&traverse_next, traverse + node_next_offset, ptr_size);
         while (traverse_next) {
             traverse = traverse_next;
             memcpy(&traverse_next, traverse + node_next_offset, ptr_size);
             if (unordered_set_is_equal(me, traverse, hash, key)) {
-                return 0;
+                return BK_OK;
             }
         }
         traverse_next = unordered_set_create_element(me, hash, key);
         if (!traverse_next) {
-            return -ENOMEM;
+            return -BK_ENOMEM;
         }
         memcpy(traverse + node_next_offset, &traverse_next, ptr_size);
     }
     me->size++;
-    return 0;
+    return BK_OK;
 }
 
 /**
@@ -300,7 +299,8 @@ int unordered_set_put(unordered_set me, void *const key)
  * @param me  the unordered set to check for the element
  * @param key the element to check
  *
- * @return 1 if the unordered set contained the element, otherwise 0
+ * @return BK_TRUE if the unordered set contained the element,
+ *         otherwise BK_FALSE
  */
 int unordered_set_contains(unordered_set me, void *const key)
 {
@@ -308,11 +308,11 @@ int unordered_set_contains(unordered_set me, void *const key)
     char *traverse = me->buckets[hash % me->capacity];
     while (traverse) {
         if (unordered_set_is_equal(me, traverse, hash, key)) {
-            return 1;
+            return BK_TRUE;
         }
         memcpy(&traverse, traverse + node_next_offset, ptr_size);
     }
-    return 0;
+    return BK_FALSE;
 }
 
 /**
@@ -325,7 +325,7 @@ int unordered_set_contains(unordered_set me, void *const key)
  * @param me  the unordered set to remove a key from
  * @param key the key to remove
  *
- * @return 1 if the unordered set contained the key, otherwise 0
+ * @return BK_TRUE if the unordered set contained the key, otherwise BK_FALSE
  */
 int unordered_set_remove(unordered_set me, void *const key)
 {
@@ -334,14 +334,14 @@ int unordered_set_remove(unordered_set me, void *const key)
     const unsigned long hash = unordered_set_hash(me, key);
     const size_t index = hash % me->capacity;
     if (!me->buckets[index]) {
-        return 0;
+        return BK_FALSE;
     }
     traverse = me->buckets[index];
     if (unordered_set_is_equal(me, traverse, hash, key)) {
         memcpy(me->buckets + index, traverse + node_next_offset, ptr_size);
         free(traverse);
         me->size--;
-        return 1;
+        return BK_TRUE;
     }
     memcpy(&traverse_next, traverse + node_next_offset, ptr_size);
     while (traverse_next) {
@@ -350,12 +350,12 @@ int unordered_set_remove(unordered_set me, void *const key)
                    traverse_next + node_next_offset, ptr_size);
             free(traverse_next);
             me->size--;
-            return 1;
+            return BK_TRUE;
         }
         traverse = traverse_next;
         memcpy(&traverse_next, traverse + node_next_offset, ptr_size);
     }
-    return 0;
+    return BK_FALSE;
 }
 
 /**
@@ -363,15 +363,15 @@ int unordered_set_remove(unordered_set me, void *const key)
  *
  * @param me the unordered set to clear
  *
- * @return 0       if no error
- * @return -ENOMEM if out of memory
+ * @return  BK_OK     if no error
+ * @return -BK_ENOMEM if out of memory
  */
 int unordered_set_clear(unordered_set me)
 {
     size_t i;
     char **updated_buckets = calloc(BKTHOMPS_U_SET_STARTING_BUCKETS, ptr_size);
     if (!updated_buckets) {
-        return -ENOMEM;
+        return -BK_ENOMEM;
     }
     for (i = 0; i < me->capacity; i++) {
         char *traverse = me->buckets[i];
@@ -385,7 +385,7 @@ int unordered_set_clear(unordered_set me)
     me->size = 0;
     me->capacity = BKTHOMPS_U_SET_STARTING_BUCKETS;
     me->buckets = updated_buckets;
-    return 0;
+    return BK_OK;
 }
 
 /**

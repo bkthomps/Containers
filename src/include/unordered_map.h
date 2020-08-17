@@ -23,7 +23,7 @@
 #ifndef BKTHOMPS_CONTAINERS_UNORDERED_MAP_H
 #define BKTHOMPS_CONTAINERS_UNORDERED_MAP_H
 
-#include <stdlib.h>
+#include "all.h"
 
 /**
  * The unordered_map data structure, which is a collection of key-value pairs,
@@ -39,18 +39,18 @@ unordered_map unordered_map_init(size_t key_size,
                                                    const void *const two));
 
 /* Utility */
-int unordered_map_rehash(unordered_map me);
+bk_err unordered_map_rehash(unordered_map me);
 size_t unordered_map_size(unordered_map me);
-int unordered_map_is_empty(unordered_map me);
+bk_bool unordered_map_is_empty(unordered_map me);
 
 /* Accessing */
-int unordered_map_put(unordered_map me, void *key, void *value);
-int unordered_map_get(void *value, unordered_map me, void *key);
-int unordered_map_contains(unordered_map me, void *key);
-int unordered_map_remove(unordered_map me, void *key);
+bk_err unordered_map_put(unordered_map me, void *key, void *value);
+bk_bool unordered_map_get(void *value, unordered_map me, void *key);
+bk_bool unordered_map_contains(unordered_map me, void *key);
+bk_bool unordered_map_remove(unordered_map me, void *key);
 
 /* Ending */
-int unordered_map_clear(unordered_map me);
+bk_err unordered_map_clear(unordered_map me);
 unordered_map unordered_map_destroy(unordered_map me);
 
 #endif /* BKTHOMPS_CONTAINERS_UNORDERED_MAP_H */

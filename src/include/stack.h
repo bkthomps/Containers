@@ -23,7 +23,7 @@
 #ifndef BKTHOMPS_CONTAINERS_STACK_H
 #define BKTHOMPS_CONTAINERS_STACK_H
 
-#include <stdlib.h>
+#include "all.h"
 
 /**
  * The stack data structure, which adapts a container to provide a stack
@@ -36,21 +36,21 @@ stack stack_init(size_t data_size);
 
 /* Utility */
 size_t stack_size(stack me);
-int stack_is_empty(stack me);
-int stack_trim(stack me);
+bk_bool stack_is_empty(stack me);
+bk_err stack_trim(stack me);
 void stack_copy_to_array(void *arr, stack me);
 
 /* Adding */
-int stack_push(stack me, void *data);
+bk_err stack_push(stack me, void *data);
 
 /* Removing */
-int stack_pop(void *data, stack me);
+bk_bool stack_pop(void *data, stack me);
 
 /* Getting */
-int stack_top(void *data, stack me);
+bk_bool stack_top(void *data, stack me);
 
 /* Ending */
-int stack_clear(stack me);
+bk_err stack_clear(stack me);
 stack stack_destroy(stack me);
 
 #endif /* BKTHOMPS_CONTAINERS_STACK_H */

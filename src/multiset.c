@@ -90,9 +90,9 @@ size_t multiset_size(multiset me)
  *
  * @param me the multi-set to check
  *
- * @return 1 if the multi-set is empty, otherwise 0
+ * @return BK_TRUE if the multi-set is empty, otherwise BK_FALSE
  */
-int multiset_is_empty(multiset me)
+bk_bool multiset_is_empty(multiset me)
 {
     return multiset_size(me) == 0;
 }
@@ -317,10 +317,10 @@ static char *multiset_create_node(multiset me, const void *const data,
  * @param me  the multi-set to add to
  * @param key the key to add
  *
- * @return 0       if no error
- * @return -ENOMEM if out of memory
+ * @return  BK_OK     if no error
+ * @return -BK_ENOMEM if out of memory
  */
-int multiset_put(multiset me, void *const key)
+bk_bool multiset_put(multiset me, void *const key)
 {
     char *traverse;
     if (!me->root) {
@@ -441,9 +441,9 @@ size_t multiset_count(multiset me, void *const key)
  * @param me  the multi-set to check for the key
  * @param key the key to check
  *
- * @return 1 if the multiset contained the key, otherwise 0
+ * @return BK_TRUE if the multiset contained the key, otherwise BK_FALSE
  */
-int multiset_contains(multiset me, void *const key)
+bk_bool multiset_contains(multiset me, void *const key)
 {
     return multiset_equal_match(me, key) != NULL;
 }
@@ -716,14 +716,14 @@ static void multiset_remove_element(multiset me, char *const traverse)
  * @param me  the multi-set to remove a key from
  * @param key the key to remove
  *
- * @return 1 if the multi-set contained the key, otherwise 0
+ * @return BK_TRUE if the multi-set contained the key, otherwise BK_FALSE
  */
-int multiset_remove(multiset me, void *const key)
+bk_bool multiset_remove(multiset me, void *const key)
 {
     char *const traverse = multiset_equal_match(me, key);
     size_t traverse_count;
     if (!traverse) {
-        return 0;
+        return BK_FALSE;
     }
     memcpy(&traverse_count, traverse + node_count_offset, count_size);
     if (traverse_count == 1) {
@@ -733,7 +733,7 @@ int multiset_remove(multiset me, void *const key)
         memcpy(traverse + node_count_offset, &traverse_count, count_size);
     }
     me->size--;
-    return 1;
+    return BK_TRUE;
 }
 
 /**
@@ -746,19 +746,19 @@ int multiset_remove(multiset me, void *const key)
  * @param me  the multi-set to remove a key from
  * @param key the key to remove
  *
- * @return 1 if the multi-set contained the key, otherwise 0
+ * @return BK_TRUE if the multi-set contained the key, otherwise BK_FALSE
  */
-int multiset_remove_all(multiset me, void *const key)
+bk_bool multiset_remove_all(multiset me, void *const key)
 {
     char *const traverse = multiset_equal_match(me, key);
     size_t traverse_count;
     if (!traverse) {
-        return 0;
+        return BK_FALSE;
     }
     memcpy(&traverse_count, traverse + node_count_offset, count_size);
     me->size -= traverse_count;
     multiset_remove_element(me, traverse);
-    return 1;
+    return BK_TRUE;
 }
 
 /**

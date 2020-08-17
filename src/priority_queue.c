@@ -21,7 +21,6 @@
  */
 
 #include <string.h>
-#include <errno.h>
 #include "include/vector.h"
 #include "include/priority_queue.h"
 
@@ -81,9 +80,9 @@ size_t priority_queue_size(priority_queue me)
  *
  * @param me the priority queue to check
  *
- * @return 1 if the priority queue is empty, otherwise 0
+ * @return BK_TRUE if the priority queue is empty, otherwise BK_FALSE
  */
-int priority_queue_is_empty(priority_queue me)
+bk_bool priority_queue_is_empty(priority_queue me)
 {
     return vector_is_empty(me->data);
 }
@@ -98,12 +97,12 @@ int priority_queue_is_empty(priority_queue me)
  * @param me   the priority queue to add an element to
  * @param data the data to add to the queue
  *
- * @return 0       if no error
- * @return -ENOMEM if out of memory
+ * @return  BK_OK     if no error
+ * @return -BK_ENOMEM if out of memory
  */
-int priority_queue_push(priority_queue me, void *const data)
+bk_err priority_queue_push(priority_queue me, void *const data)
 {
-    int rc;
+    bk_err rc;
     char *vector_storage;
     size_t index;
     size_t parent_index;
@@ -111,10 +110,10 @@ int priority_queue_push(priority_queue me, void *const data)
     char *data_parent_index;
     char *const temp = malloc(me->data_size);
     if (!temp) {
-        return -ENOMEM;
+        return -BK_ENOMEM;
     }
     rc = vector_add_last(me->data, data);
-    if (rc != 0) {
+    if (rc != BK_OK) {
         free(temp);
         return rc;
     }
@@ -133,7 +132,7 @@ int priority_queue_push(priority_queue me, void *const data)
         data_parent_index = vector_storage + parent_index * me->data_size;
     }
     free(temp);
-    return 0;
+    return BK_OK;
 }
 
 /**
@@ -147,9 +146,9 @@ int priority_queue_push(priority_queue me, void *const data)
  * @param data the data to have copied from the priority queue
  * @param me   the priority queue to pop the next element from
  *
- * @return 1 if the priority queue contained elements, otherwise 0
+ * @return BK_TRUE if the priority queue contained elements, otherwise BK_FALSE
  */
-int priority_queue_pop(void *const data, priority_queue me)
+bk_bool priority_queue_pop(void *const data, priority_queue me)
 {
     char *vector_storage;
     size_t size;
@@ -160,9 +159,9 @@ int priority_queue_pop(void *const data, priority_queue me)
     char *data_index;
     char *data_left_index;
     char *data_right_index;
-    const int rc = vector_get_first(data, me->data);
-    if (rc != 0) {
-        return 0;
+    const bk_err rc = vector_get_first(data, me->data);
+    if (rc != BK_OK) {
+        return BK_FALSE;
     }
     vector_storage = vector_get_data(me->data);
     size = vector_size(me->data) - 1;
@@ -199,7 +198,7 @@ int priority_queue_pop(void *const data, priority_queue me)
         data_right_index = vector_storage + right_index * me->data_size;
     }
     vector_remove_last(me->data);
-    return 1;
+    return BK_TRUE;
 }
 
 /**
@@ -214,9 +213,9 @@ int priority_queue_pop(void *const data, priority_queue me)
  *             queue
  * @param me   the priority queue to copy from
  *
- * @return 1 if the priority queue contained elements, otherwise 0
+ * @return BK_TRUE if the priority queue contained elements, otherwise BK_FALSE
  */
-int priority_queue_front(void *const data, priority_queue me)
+bk_bool priority_queue_front(void *const data, priority_queue me)
 {
     return vector_get_first(data, me->data) == 0;
 }
@@ -226,10 +225,10 @@ int priority_queue_front(void *const data, priority_queue me)
  *
  * @param me the priority queue to clear
  *
- * @return 0       if no error
- * @return -ENOMEM if out of memory
+ * @return  BK_OK     if no error
+ * @return -BK_ENOMEM if out of memory
  */
-int priority_queue_clear(priority_queue me)
+bk_err priority_queue_clear(priority_queue me)
 {
     return vector_clear(me->data);
 }

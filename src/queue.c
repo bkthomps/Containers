@@ -55,9 +55,9 @@ size_t queue_size(queue me)
  *
  * @param me the queue to check if empty
  *
- * @return 1 if the queue is empty, otherwise 0
+ * @return BK_TRUE if the queue is empty, otherwise BK_FALSE
  */
-int queue_is_empty(queue me)
+bk_bool queue_is_empty(queue me)
 {
     return deque_is_empty(me);
 }
@@ -67,10 +67,10 @@ int queue_is_empty(queue me)
  *
  * @param me the queue to trim
  *
- * @return 0       if no error
- * @return -ENOMEM if out of memory
+ * @return  BK_OK     if no error
+ * @return -BK_ENOMEM if out of memory
  */
-int queue_trim(queue me)
+bk_err queue_trim(queue me)
 {
     return deque_trim(me);
 }
@@ -99,10 +99,10 @@ void queue_copy_to_array(void *const arr, queue me)
  * @param me   the queue to add an element to
  * @param data the data to add to the queue
  *
- * @return 0       if no error
- * @return -ENOMEM if out of memory
+ * @return  BK_OK     if no error
+ * @return -BK_ENOMEM if out of memory
  */
-int queue_push(queue me, void *const data)
+bk_err queue_push(queue me, void *const data)
 {
     return deque_push_back(me, data);
 }
@@ -117,9 +117,9 @@ int queue_push(queue me, void *const data)
  * @param data the data to have copied from the queue
  * @param me   the queue to pop the next element from
  *
- * @return 1 if the queue contained elements, otherwise 0
+ * @return BK_TRUE if the queue contained elements, otherwise BK_FALSE
  */
-int queue_pop(void *const data, queue me)
+bk_bool queue_pop(void *const data, queue me)
 {
     return deque_pop_front(data, me) == 0;
 }
@@ -134,9 +134,9 @@ int queue_pop(void *const data, queue me)
  * @param data the copy of the front element of the queue
  * @param me   the queue to copy from
  *
- * @return 1 if the queue contained elements, otherwise 0
+ * @return BK_TRUE if the queue contained elements, otherwise BK_FALSE
  */
-int queue_front(void *const data, queue me)
+bk_bool queue_front(void *const data, queue me)
 {
     return deque_get_first(data, me) == 0;
 }
@@ -151,9 +151,9 @@ int queue_front(void *const data, queue me)
  * @param data the copy of the back element of the queue
  * @param me   the queue to copy from
  *
- * @return 1 if the queue contained elements, otherwise 0
+ * @return BK_TRUE if the queue contained elements, otherwise BK_FALSE
  */
-int queue_back(void *const data, queue me)
+bk_bool queue_back(void *const data, queue me)
 {
     return deque_get_last(data, me) == 0;
 }
@@ -163,10 +163,10 @@ int queue_back(void *const data, queue me)
  *
  * @param me the queue to clear
  *
- * @return 0       if no error
- * @return -ENOMEM if out of memory
+ * @return  BK_OK     if no error
+ * @return -BK_ENOMEM if out of memory
  */
-int queue_clear(queue me)
+bk_err queue_clear(queue me)
 {
     return deque_clear(me);
 }

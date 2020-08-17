@@ -23,7 +23,7 @@
 #ifndef BKTHOMPS_CONTAINERS_ARRAY_H
 #define BKTHOMPS_CONTAINERS_ARRAY_H
 
-#include <stdlib.h>
+#include "all.h"
 
 /**
  * The array data structure, which is a static contiguous array.
@@ -39,8 +39,8 @@ void array_copy_to_array(void *arr, array me);
 void *array_get_data(array me);
 
 /* Accessing */
-int array_set(array me, size_t index, void *data);
-int array_get(void *data, array me, size_t index);
+bk_err array_set(array me, size_t index, void *data);
+bk_err array_get(void *data, array me, size_t index);
 
 /* Ending */
 array array_destroy(array me);

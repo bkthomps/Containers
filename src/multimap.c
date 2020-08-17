@@ -21,7 +21,6 @@
  */
 
 #include <string.h>
-#include <errno.h>
 #include "include/multimap.h"
 
 struct internal_multimap {
@@ -105,9 +104,9 @@ size_t multimap_size(multimap me)
  *
  * @param me the multi-map to check
  *
- * @return 1 if the multi-map is empty, otherwise 0
+ * @return BK_TRUE if the multi-map is empty, otherwise BK_FALSE
  */
-int multimap_is_empty(multimap me)
+bk_bool multimap_is_empty(multimap me)
 {
     return multimap_size(me) == 0;
 }
@@ -356,19 +355,19 @@ static char *multimap_create_node(multimap me, const void *const key,
  * @param key   the key to add
  * @param value the value to add
  *
- * @return 0       if no error
- * @return -ENOMEM if out of memory
+ * @return  BK_OK     if no error
+ * @return -BK_ENOMEM if out of memory
  */
-int multimap_put(multimap me, void *const key, void *const value)
+bk_err multimap_put(multimap me, void *const key, void *const value)
 {
     char *traverse;
     if (!me->root) {
         char *insert = multimap_create_node(me, key, value, NULL);
         if (!insert) {
-            return -ENOMEM;
+            return -BK_ENOMEM;
         }
         me->root = insert;
-        return 0;
+        return BK_OK;
     }
     traverse = me->root;
     for (;;) {
@@ -381,11 +380,11 @@ int multimap_put(multimap me, void *const key, void *const value)
             } else {
                 char *insert = multimap_create_node(me, key, value, traverse);
                 if (!insert) {
-                    return -ENOMEM;
+                    return -BK_ENOMEM;
                 }
                 memcpy(traverse + node_left_child_offset, &insert, ptr_size);
                 multimap_insert_balance(me, insert);
-                return 0;
+                return BK_OK;
             }
         } else if (compare > 0) {
             char *traverse_right;
@@ -396,11 +395,11 @@ int multimap_put(multimap me, void *const key, void *const value)
             } else {
                 char *insert = multimap_create_node(me, key, value, traverse);
                 if (!insert) {
-                    return -ENOMEM;
+                    return -BK_ENOMEM;
                 }
                 memcpy(traverse + node_right_child_offset, &insert, ptr_size);
                 multimap_insert_balance(me, insert);
-                return 0;
+                return BK_OK;
             }
         } else {
             char *value_traverse;
@@ -423,7 +422,7 @@ int multimap_put(multimap me, void *const key, void *const value)
             count++;
             memcpy(traverse + node_value_count_offset, &count, count_size);
             me->size++;
-            return 0;
+            return BK_OK;
         }
     }
 }
@@ -494,21 +493,21 @@ void multimap_get_start(multimap me, void *const key)
  * @param value the value to be copied to from iteration
  * @param me    the multi-map to iterate over
  *
- * @return 1 if there exist more values for the key which is being iterated
- *         over, otherwise 0
+ * @return BK_TRUE if there exist more values for the key which is being
+ *         iterated over, otherwise BK_FALSE
  */
-int multimap_get_next(void *const value, multimap me)
+bk_bool multimap_get_next(void *const value, multimap me)
 {
     char *item;
     char *next;
     if (!me->iterate_get) {
-        return 0;
+        return BK_FALSE;
     }
     item = me->iterate_get;
     memcpy(value, item + value_node_value_offset, me->value_size);
     memcpy(&next, item + value_node_next_offset, ptr_size);
     me->iterate_get = next;
-    return 1;
+    return BK_TRUE;
 }
 
 /**
@@ -544,9 +543,9 @@ size_t multimap_count(multimap me, void *const key)
  * @param me  the multi-map to check for the key
  * @param key the key to check
  *
- * @return 1 if the multi-map contained the key, otherwise 0
+ * @return BK_TRUE if the multi-map contained the key, otherwise BK_FALSE
  */
-int multimap_contains(multimap me, void *const key)
+bk_bool multimap_contains(multimap me, void *const key)
 {
     return multimap_equal_match(me, key) != NULL;
 }
@@ -821,15 +820,15 @@ static void multimap_remove_element(multimap me, char *const traverse)
  * @param key   the key to remove
  * @param value the value to remove
  *
- * @return 1 if the multi-map contained the key, otherwise 0
+ * @return BK_TRUE if the multi-map contained the key, otherwise BK_FALSE
  */
-int multimap_remove(multimap me, void *const key, void *const value)
+bk_bool multimap_remove(multimap me, void *const key, void *const value)
 {
     char *current_value_node;
     char *const traverse = multimap_equal_match(me, key);
     size_t count;
     if (!traverse) {
-        return 0;
+        return BK_FALSE;
     }
     memcpy(&current_value_node, traverse + node_value_head_offset, ptr_size);
     if (me->value_comparator(current_value_node + value_node_value_offset,
@@ -847,7 +846,7 @@ int multimap_remove(multimap me, void *const key, void *const value)
                    current_value_node + value_node_next_offset, ptr_size);
         }
         if (!current_value_node) {
-            return 0;
+            return BK_FALSE;
         }
         memcpy(previous_value_node + value_node_next_offset,
                current_value_node + value_node_next_offset, ptr_size);
@@ -861,7 +860,7 @@ int multimap_remove(multimap me, void *const key, void *const value)
         memcpy(traverse + node_value_count_offset, &count, count_size);
     }
     me->size--;
-    return 1;
+    return BK_TRUE;
 }
 
 /*
@@ -893,16 +892,16 @@ static void multimap_remove_all_elements(multimap me, char *const traverse)
  * @param me  the multi-map to remove a key-value pair from
  * @param key the key to remove
  *
- * @return 1 if the multi-map contained the key, otherwise 0
+ * @return BK_TRUE if the multi-map contained the key, otherwise BK_FALSE
  */
-int multimap_remove_all(multimap me, void *const key)
+bk_bool multimap_remove_all(multimap me, void *const key)
 {
     char *const traverse = multimap_equal_match(me, key);
     if (!traverse) {
-        return 0;
+        return BK_FALSE;
     }
     multimap_remove_all_elements(me, traverse);
-    return 1;
+    return BK_TRUE;
 }
 
 /**

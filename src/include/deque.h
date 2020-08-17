@@ -23,7 +23,7 @@
 #ifndef BKTHOMPS_CONTAINERS_DEQUE_H
 #define BKTHOMPS_CONTAINERS_DEQUE_H
 
-#include <stdlib.h>
+#include "all.h"
 
 /**
  * The deque data structure, which is a doubly-ended queue.
@@ -35,30 +35,30 @@ deque deque_init(size_t data_size);
 
 /* Utility */
 size_t deque_size(deque me);
-int deque_is_empty(deque me);
-int deque_trim(deque me);
+bk_bool deque_is_empty(deque me);
+bk_err deque_trim(deque me);
 void deque_copy_to_array(void *arr, deque me);
 
 /* Adding */
-int deque_push_front(deque me, void *data);
-int deque_push_back(deque me, void *data);
+bk_err deque_push_front(deque me, void *data);
+bk_err deque_push_back(deque me, void *data);
 
 /* Removing */
-int deque_pop_front(void *data, deque me);
-int deque_pop_back(void *data, deque me);
+bk_err deque_pop_front(void *data, deque me);
+bk_err deque_pop_back(void *data, deque me);
 
 /* Setting */
-int deque_set_first(deque me, void *data);
-int deque_set_at(deque me, size_t index, void *data);
-int deque_set_last(deque me, void *data);
+bk_err deque_set_first(deque me, void *data);
+bk_err deque_set_at(deque me, size_t index, void *data);
+bk_err deque_set_last(deque me, void *data);
 
 /* Getting */
-int deque_get_first(void *data, deque me);
-int deque_get_at(void *data, deque me, size_t index);
-int deque_get_last(void *data, deque me);
+bk_err deque_get_first(void *data, deque me);
+bk_err deque_get_at(void *data, deque me, size_t index);
+bk_err deque_get_last(void *data, deque me);
 
 /* Ending */
-int deque_clear(deque me);
+bk_err deque_clear(deque me);
 deque deque_destroy(deque me);
 
 #endif /* BKTHOMPS_CONTAINERS_DEQUE_H */

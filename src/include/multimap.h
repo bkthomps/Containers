@@ -23,7 +23,7 @@
 #ifndef BKTHOMPS_CONTAINERS_MULTIMAP_H
 #define BKTHOMPS_CONTAINERS_MULTIMAP_H
 
-#include <stdlib.h>
+#include "all.h"
 
 /**
  * The multimap data structure, which is a collection of key-value pairs, sorted
@@ -40,16 +40,16 @@ multimap multimap_init(size_t key_size, size_t value_size,
 
 /* Capacity */
 size_t multimap_size(multimap me);
-int multimap_is_empty(multimap me);
+bk_bool multimap_is_empty(multimap me);
 
 /* Accessing */
-int multimap_put(multimap me, void *key, void *value);
+bk_err multimap_put(multimap me, void *key, void *value);
 void multimap_get_start(multimap me, void *key);
-int multimap_get_next(void *value, multimap me);
+bk_bool multimap_get_next(void *value, multimap me);
 size_t multimap_count(multimap me, void *key);
-int multimap_contains(multimap me, void *key);
-int multimap_remove(multimap me, void *key, void *value);
-int multimap_remove_all(multimap me, void *key);
+bk_bool multimap_contains(multimap me, void *key);
+bk_bool multimap_remove(multimap me, void *key, void *value);
+bk_bool multimap_remove_all(multimap me, void *key);
 
 /* Ending */
 void multimap_clear(multimap me);

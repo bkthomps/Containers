@@ -23,7 +23,7 @@
 #ifndef BKTHOMPS_CONTAINERS_MAP_H
 #define BKTHOMPS_CONTAINERS_MAP_H
 
-#include <stdlib.h>
+#include "all.h"
 
 /**
  * The map data structure, which is a collection of key-value pairs, sorted by
@@ -37,13 +37,13 @@ map map_init(size_t key_size, size_t value_size,
 
 /* Capacity */
 size_t map_size(map me);
-int map_is_empty(map me);
+bk_bool map_is_empty(map me);
 
 /* Accessing */
-int map_put(map me, void *key, void *value);
-int map_get(void *value, map me, void *key);
-int map_contains(map me, void *key);
-int map_remove(map me, void *key);
+bk_err map_put(map me, void *key, void *value);
+bk_bool map_get(void *value, map me, void *key);
+bk_bool map_contains(map me, void *key);
+bk_bool map_remove(map me, void *key);
 
 /* Ending */
 void map_clear(map me);

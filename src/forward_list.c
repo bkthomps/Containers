@@ -21,7 +21,6 @@
  */
 
 #include <string.h>
-#include <errno.h>
 #include "include/forward_list.h"
 
 struct internal_forward_list {
@@ -78,9 +77,9 @@ size_t forward_list_size(forward_list me)
  *
  * @param me the singly-linked list to check
  *
- * @return 1 if the singly-linked list is empty, otherwise 0
+ * @return BK_TRUE if the singly-linked list is empty, otherwise BK_FALSE
  */
-int forward_list_is_empty(forward_list me)
+bk_bool forward_list_is_empty(forward_list me)
 {
     return forward_list_size(me) == 0;
 }
@@ -139,10 +138,10 @@ static char *forward_list_get_node_at(forward_list me, const size_t index)
  * @param me   the singly-linked list to add data to
  * @param data the data to add to the singly-linked list
  *
- * @return 0       if no error
- * @return -ENOMEM if out of memory
+ * @return  BK_OK     if no error
+ * @return -BK_EINVAL if invalid argument
  */
-int forward_list_add_first(forward_list me, void *const data)
+bk_err forward_list_add_first(forward_list me, void *const data)
 {
     return forward_list_add_at(me, 0, data);
 }
@@ -158,19 +157,20 @@ int forward_list_add_first(forward_list me, void *const data)
  * @param index the index to add the data at
  * @param data  the data to add to the singly-linked list
  *
- * @return 0       if no error
- * @return -ENOMEM if out of memory
- * @return -EINVAL if invalid argument
+ * @return  BK_OK     if no error
+ * @return -BK_ENOMEM if out of memory
+ * @return -BK_EINVAL if invalid argument
  */
-int forward_list_add_at(forward_list me, const size_t index, void *const data)
+bk_err forward_list_add_at(forward_list me, const size_t index,
+                           void *const data)
 {
     char *node;
     if (index > me->item_count) {
-        return -EINVAL;
+        return -BK_EINVAL;
     }
     node = malloc(ptr_size + me->bytes_per_item);
     if (!node) {
-        return -ENOMEM;
+        return -BK_ENOMEM;
     }
     memcpy(node + node_data_ptr_offset, data, me->bytes_per_item);
     if (index == 0) {
@@ -188,7 +188,7 @@ int forward_list_add_at(forward_list me, const size_t index, void *const data)
         }
     }
     me->item_count++;
-    return 0;
+    return BK_OK;
 }
 
 /**
@@ -201,10 +201,10 @@ int forward_list_add_at(forward_list me, const size_t index, void *const data)
  * @param me   the singly-linked list to add data to
  * @param data the data to add to the singly-linked list
  *
- * @return 0       if no error
- * @return -ENOMEM if out of memory
+ * @return  BK_OK     if no error
+ * @return -BK_EINVAL if invalid argument
  */
-int forward_list_add_last(forward_list me, void *const data)
+bk_err forward_list_add_last(forward_list me, void *const data)
 {
     return forward_list_add_at(me, me->item_count, data);
 }
@@ -217,7 +217,7 @@ int forward_list_add_last(forward_list me, void *const data)
  * @return 0       if no error
  * @return -EINVAL if invalid argument
  */
-int forward_list_remove_first(forward_list me)
+bk_err forward_list_remove_first(forward_list me)
 {
     return forward_list_remove_at(me, 0);
 }
@@ -228,13 +228,13 @@ int forward_list_remove_first(forward_list me)
  * @param me    the singly-linked list to remove data from
  * @param index the index to remove from
  *
- * @return 0       if no error
- * @return -EINVAL if invalid argument
+ * @return  BK_OK     if no error
+ * @return -BK_EINVAL if invalid argument
  */
-int forward_list_remove_at(forward_list me, const size_t index)
+bk_err forward_list_remove_at(forward_list me, const size_t index)
 {
     if (index >= me->item_count) {
-        return -EINVAL;
+        return -BK_EINVAL;
     }
     if (index == 0) {
         char *temp = me->head;
@@ -257,7 +257,7 @@ int forward_list_remove_at(forward_list me, const size_t index)
         free(backup);
     }
     me->item_count--;
-    return 0;
+    return BK_OK;
 }
 
 /**
@@ -265,10 +265,10 @@ int forward_list_remove_at(forward_list me, const size_t index)
  *
  * @param me the singly-linked list to remove data from
  *
- * @return 0       if no error
- * @return -EINVAL if invalid argument
+ * @return  BK_OK     if no error
+ * @return -BK_EINVAL if invalid argument
  */
-int forward_list_remove_last(forward_list me)
+bk_err forward_list_remove_last(forward_list me)
 {
     return forward_list_remove_at(me, me->item_count - 1);
 }
@@ -283,10 +283,10 @@ int forward_list_remove_last(forward_list me)
  * @param me   the singly-linked list to set data for
  * @param data the data to set in the singly-linked list
  *
- * @return 0       if no error
- * @return -EINVAL if invalid argument
+ * @return  BK_OK     if no error
+ * @return -BK_EINVAL if invalid argument
  */
-int forward_list_set_first(forward_list me, void *const data)
+bk_err forward_list_set_first(forward_list me, void *const data)
 {
     return forward_list_set_at(me, 0, data);
 }
@@ -302,18 +302,19 @@ int forward_list_set_first(forward_list me, void *const data)
  * @param index the index to set data in the singly-linked list
  * @param data  the data to set in the singly-linked list
  *
- * @return 0       if no error
- * @return -EINVAL if invalid argument
+ * @return  BK_OK     if no error
+ * @return -BK_EINVAL if invalid argument
  */
-int forward_list_set_at(forward_list me, const size_t index, void *const data)
+bk_err forward_list_set_at(forward_list me, const size_t index,
+                           void *const data)
 {
     char *traverse;
     if (index >= me->item_count) {
-        return -EINVAL;
+        return -BK_EINVAL;
     }
     traverse = forward_list_get_node_at(me, index);
     memcpy(traverse + node_data_ptr_offset, data, me->bytes_per_item);
-    return 0;
+    return BK_OK;
 }
 
 /**
@@ -326,10 +327,10 @@ int forward_list_set_at(forward_list me, const size_t index, void *const data)
  * @param me   the singly-linked list to set data for
  * @param data the data to set in the singly-linked list
  *
- * @return 0       if no error
- * @return -EINVAL if invalid argument
+ * @return  BK_OK     if no error
+ * @return -BK_EINVAL if invalid argument
  */
-int forward_list_set_last(forward_list me, void *const data)
+bk_err forward_list_set_last(forward_list me, void *const data)
 {
     return forward_list_set_at(me, me->item_count - 1, data);
 }
@@ -345,10 +346,10 @@ int forward_list_set_last(forward_list me, void *const data)
  * @param data the data to get
  * @param me   the singly-linked list to get data from
  *
- * @return 0       if no error
- * @return -EINVAL if invalid argument
+ * @return  BK_OK     if no error
+ * @return -BK_EINVAL if invalid argument
  */
-int forward_list_get_first(void *const data, forward_list me)
+bk_err forward_list_get_first(void *const data, forward_list me)
 {
     return forward_list_get_at(data, me, 0);
 }
@@ -365,18 +366,19 @@ int forward_list_get_first(void *const data, forward_list me)
  * @param me    the singly-linked list to get data from
  * @param index the index to get data from
  *
- * @return 0       if no error
- * @return -EINVAL if invalid argument
+ * @return  BK_OK     if no error
+ * @return -BK_EINVAL if invalid argument
  */
-int forward_list_get_at(void *const data, forward_list me, const size_t index)
+bk_err forward_list_get_at(void *const data, forward_list me,
+                           const size_t index)
 {
     char *traverse;
     if (index >= me->item_count) {
-        return -EINVAL;
+        return -BK_EINVAL;
     }
     traverse = forward_list_get_node_at(me, index);
     memcpy(data, traverse + node_data_ptr_offset, me->bytes_per_item);
-    return 0;
+    return BK_OK;
 }
 
 /**
@@ -390,10 +392,10 @@ int forward_list_get_at(void *const data, forward_list me, const size_t index)
  * @param data the data to get
  * @param me   the singly-linked list to get data from
  *
- * @return 0       if no error
- * @return -EINVAL if invalid argument
+ * @return  BK_OK     if no error
+ * @return -BK_EINVAL if invalid argument
  */
-int forward_list_get_last(void *const data, forward_list me)
+bk_err forward_list_get_last(void *const data, forward_list me)
 {
     return forward_list_get_at(data, me, me->item_count - 1);
 }

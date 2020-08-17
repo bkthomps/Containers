@@ -23,7 +23,7 @@
 #ifndef BKTHOMPS_CONTAINERS_VECTOR_H
 #define BKTHOMPS_CONTAINERS_VECTOR_H
 
-#include <stdlib.h>
+#include "all.h"
 
 /**
  * The vector data structure, which is a dynamic contiguous array.
@@ -36,34 +36,34 @@ vector vector_init(size_t data_size);
 /* Utility */
 size_t vector_size(vector me);
 size_t vector_capacity(vector me);
-int vector_is_empty(vector me);
-int vector_reserve(vector me, size_t size);
-int vector_trim(vector me);
+bk_bool vector_is_empty(vector me);
+bk_err vector_reserve(vector me, size_t size);
+bk_err vector_trim(vector me);
 void vector_copy_to_array(void *arr, vector me);
 void *vector_get_data(vector me);
 
 /* Adding */
-int vector_add_first(vector me, void *data);
-int vector_add_at(vector me, size_t index, void *data);
-int vector_add_last(vector me, void *data);
+bk_err vector_add_first(vector me, void *data);
+bk_err vector_add_at(vector me, size_t index, void *data);
+bk_err vector_add_last(vector me, void *data);
 
 /* Removing */
-int vector_remove_first(vector me);
-int vector_remove_at(vector me, size_t index);
-int vector_remove_last(vector me);
+bk_err vector_remove_first(vector me);
+bk_err vector_remove_at(vector me, size_t index);
+bk_err vector_remove_last(vector me);
 
 /* Setting */
-int vector_set_first(vector me, void *data);
-int vector_set_at(vector me, size_t index, void *data);
-int vector_set_last(vector me, void *data);
+bk_err vector_set_first(vector me, void *data);
+bk_err vector_set_at(vector me, size_t index, void *data);
+bk_err vector_set_last(vector me, void *data);
 
 /* Getting */
-int vector_get_first(void *data, vector me);
-int vector_get_at(void *data, vector me, size_t index);
-int vector_get_last(void *data, vector me);
+bk_err vector_get_first(void *data, vector me);
+bk_err vector_get_at(void *data, vector me, size_t index);
+bk_err vector_get_last(void *data, vector me);
 
 /* Ending */
-int vector_clear(vector me);
+bk_err vector_clear(vector me);
 vector vector_destroy(vector me);
 
 #endif /* BKTHOMPS_CONTAINERS_VECTOR_H */

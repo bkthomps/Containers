@@ -23,7 +23,7 @@
 #ifndef BKTHOMPS_CONTAINERS_UNORDERED_MULTISET_H
 #define BKTHOMPS_CONTAINERS_UNORDERED_MULTISET_H
 
-#include <stdlib.h>
+#include "all.h"
 
 /**
  * The unordered_multiset data structure, which is a collection of keys, hashed
@@ -39,19 +39,19 @@ unordered_multiset_init(size_t key_size,
                                           const void *const two));
 
 /* Utility */
-int unordered_multiset_rehash(unordered_multiset me);
+bk_err unordered_multiset_rehash(unordered_multiset me);
 size_t unordered_multiset_size(unordered_multiset me);
-int unordered_multiset_is_empty(unordered_multiset me);
+bk_bool unordered_multiset_is_empty(unordered_multiset me);
 
 /* Accessing */
-int unordered_multiset_put(unordered_multiset me, void *key);
+bk_err unordered_multiset_put(unordered_multiset me, void *key);
 size_t unordered_multiset_count(unordered_multiset me, void *key);
-int unordered_multiset_contains(unordered_multiset me, void *key);
-int unordered_multiset_remove(unordered_multiset me, void *key);
-int unordered_multiset_remove_all(unordered_multiset me, void *key);
+bk_bool unordered_multiset_contains(unordered_multiset me, void *key);
+bk_bool unordered_multiset_remove(unordered_multiset me, void *key);
+bk_bool unordered_multiset_remove_all(unordered_multiset me, void *key);
 
 /* Ending */
-int unordered_multiset_clear(unordered_multiset me);
+bk_err unordered_multiset_clear(unordered_multiset me);
 unordered_multiset unordered_multiset_destroy(unordered_multiset me);
 
 #endif /* BKTHOMPS_CONTAINERS_UNORDERED_MULTISET_H */

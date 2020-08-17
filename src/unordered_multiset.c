@@ -21,7 +21,6 @@
  */
 
 #include <string.h>
-#include <errno.h>
 #include "include/unordered_multiset.h"
 
 #define BKTHOMPS_U_MULTISET_STARTING_BUCKETS 16
@@ -132,17 +131,17 @@ static void unordered_multiset_add_item(unordered_multiset me, char *const add)
  *
  * @param me the unordered multi-set to rehash
  *
- * @return 0       if no error
- * @return -ENOMEM if out of memory
+ * @return  BK_OK     if no error
+ * @return -BK_ENOMEM if out of memory
  */
-int unordered_multiset_rehash(unordered_multiset me)
+bk_err unordered_multiset_rehash(unordered_multiset me)
 {
     size_t i;
     char **old_buckets = me->buckets;
     me->buckets = calloc(me->capacity, ptr_size);
     if (!me->buckets) {
         me->buckets = old_buckets;
-        return -ENOMEM;
+        return -BK_ENOMEM;
     }
     for (i = 0; i < me->capacity; i++) {
         char *traverse = old_buckets[i];
@@ -157,7 +156,7 @@ int unordered_multiset_rehash(unordered_multiset me)
         }
     }
     free(old_buckets);
-    return 0;
+    return BK_OK;
 }
 
 /**
@@ -177,9 +176,9 @@ size_t unordered_multiset_size(unordered_multiset me)
  *
  * @param me the unordered multi-set to check
  *
- * @return 1 if the unordered multi-set is empty, otherwise 0
+ * @return BK_TRUE if the unordered multi-set is empty, otherwise BK_FALSE
  */
-int unordered_multiset_is_empty(unordered_multiset me)
+bk_bool unordered_multiset_is_empty(unordered_multiset me)
 {
     return unordered_multiset_size(me) == 0;
 }
@@ -187,7 +186,7 @@ int unordered_multiset_is_empty(unordered_multiset me)
 /*
  * Increases the size of the multi-set and redistributes the nodes.
  */
-static int unordered_multiset_resize(unordered_multiset me)
+static bk_err unordered_multiset_resize(unordered_multiset me)
 {
     size_t i;
     const size_t old_capacity = me->capacity;
@@ -196,7 +195,7 @@ static int unordered_multiset_resize(unordered_multiset me)
     me->buckets = calloc(new_capacity, ptr_size);
     if (!me->buckets) {
         me->buckets = old_buckets;
-        return -ENOMEM;
+        return -BK_ENOMEM;
     }
     me->capacity = new_capacity;
     for (i = 0; i < old_capacity; i++) {
@@ -209,15 +208,16 @@ static int unordered_multiset_resize(unordered_multiset me)
         }
     }
     free(old_buckets);
-    return 0;
+    return BK_OK;
 }
 
 /*
  * Determines if an element is equal to the key.
  */
-static int unordered_multiset_is_equal(unordered_multiset me, char *const item,
-                                       const unsigned long hash,
-                                       const void *const key)
+static bk_bool unordered_multiset_is_equal(unordered_multiset me,
+                                           char *const item,
+                                           const unsigned long hash,
+                                           const void *const key)
 {
     unsigned long item_hash;
     memcpy(&item_hash, item + node_hash_offset, hash_size);
@@ -254,17 +254,17 @@ static char *unordered_multiset_create_element(unordered_multiset me,
  * @param me  the unordered multi-set to add to
  * @param key the element to add
  *
- * @return 0       if no error
- * @return -ENOMEM if out of memory
+ * @return  BK_OK     if no error
+ * @return -BK_ENOMEM if out of memory
  */
-int unordered_multiset_put(unordered_multiset me, void *const key)
+bk_err unordered_multiset_put(unordered_multiset me, void *const key)
 {
     const unsigned long hash = unordered_multiset_hash(me, key);
     int index;
     if (me->used + 1 >=
         (size_t) (BKTHOMPS_U_MULTISET_RESIZE_AT * me->capacity)) {
-        const int rc = unordered_multiset_resize(me);
-        if (rc != 0) {
+        const bk_err rc = unordered_multiset_resize(me);
+        if (rc != BK_OK) {
             return rc;
         }
     }
@@ -272,7 +272,7 @@ int unordered_multiset_put(unordered_multiset me, void *const key)
     if (!me->buckets[index]) {
         me->buckets[index] = unordered_multiset_create_element(me, hash, key);
         if (!me->buckets[index]) {
-            return -ENOMEM;
+            return -BK_ENOMEM;
         }
     } else {
         char *traverse = me->buckets[index];
@@ -283,7 +283,7 @@ int unordered_multiset_put(unordered_multiset me, void *const key)
             count++;
             memcpy(traverse + node_count_offset, &count, count_size);
             me->size++;
-            return 0;
+            return BK_OK;
         }
         memcpy(&traverse_next, traverse + node_next_offset, ptr_size);
         while (traverse_next) {
@@ -295,18 +295,18 @@ int unordered_multiset_put(unordered_multiset me, void *const key)
                 count++;
                 memcpy(traverse + node_count_offset, &count, count_size);
                 me->size++;
-                return 0;
+                return BK_OK;
             }
         }
         traverse_next = unordered_multiset_create_element(me, hash, key);
         if (!traverse_next) {
-            return -ENOMEM;
+            return -BK_ENOMEM;
         }
         memcpy(traverse + node_next_offset, &traverse_next, ptr_size);
     }
     me->size++;
     me->used++;
-    return 0;
+    return BK_OK;
 }
 
 /**
@@ -346,9 +346,10 @@ size_t unordered_multiset_count(unordered_multiset me, void *const key)
  * @param me  the unordered multi-set to check for the key
  * @param key the key to check
  *
- * @return 1 if the unordered multi-set contained the key, otherwise 0
+ * @return BK_TRUE if the unordered multi-set contained the key,
+ *         otherwise BK_FALSE
  */
-int unordered_multiset_contains(unordered_multiset me, void *const key)
+bk_bool unordered_multiset_contains(unordered_multiset me, void *const key)
 {
     return unordered_multiset_count(me, key) != 0;
 }
@@ -363,16 +364,17 @@ int unordered_multiset_contains(unordered_multiset me, void *const key)
  * @param me  the unordered multi-set to remove a key from
  * @param key the key to remove
  *
- * @return 1 if the unordered multi-set contained the key, otherwise 0
+ * @return BK_TRUE if the unordered multi-set contained the key,
+ *         otherwise BK_FALSE
  */
-int unordered_multiset_remove(unordered_multiset me, void *const key)
+bk_bool unordered_multiset_remove(unordered_multiset me, void *const key)
 {
     char *traverse;
     char *traverse_next;
     const unsigned long hash = unordered_multiset_hash(me, key);
     const size_t index = hash % me->capacity;
     if (!me->buckets[index]) {
-        return 0;
+        return BK_FALSE;
     }
     traverse = me->buckets[index];
     if (unordered_multiset_is_equal(me, traverse, hash, key)) {
@@ -387,7 +389,7 @@ int unordered_multiset_remove(unordered_multiset me, void *const key)
             memcpy(traverse + node_count_offset, &count, count_size);
         }
         me->size--;
-        return 1;
+        return BK_TRUE;
     }
     memcpy(&traverse_next, traverse + node_next_offset, ptr_size);
     while (traverse_next) {
@@ -404,12 +406,12 @@ int unordered_multiset_remove(unordered_multiset me, void *const key)
                 memcpy(traverse_next + node_count_offset, &count, count_size);
             }
             me->size--;
-            return 1;
+            return BK_TRUE;
         }
         traverse = traverse_next;
         memcpy(&traverse_next, traverse + node_next_offset, ptr_size);
     }
-    return 0;
+    return BK_FALSE;
 }
 
 /**
@@ -422,16 +424,17 @@ int unordered_multiset_remove(unordered_multiset me, void *const key)
  * @param me  the unordered multi-set to remove a key from
  * @param key the key to remove
  *
- * @return 1 if the unordered multi-set contained the key, otherwise 0
+ * @return BK_TRUE if the unordered multi-set contained the key,
+ *         otherwise BK_FALSE
  */
-int unordered_multiset_remove_all(unordered_multiset me, void *const key)
+bk_bool unordered_multiset_remove_all(unordered_multiset me, void *const key)
 {
     char *traverse;
     char *traverse_next;
     const unsigned long hash = unordered_multiset_hash(me, key);
     const size_t index = hash % me->capacity;
     if (!me->buckets[index]) {
-        return 0;
+        return BK_FALSE;
     }
     traverse = me->buckets[index];
     if (unordered_multiset_is_equal(me, traverse, hash, key)) {
@@ -441,7 +444,7 @@ int unordered_multiset_remove_all(unordered_multiset me, void *const key)
         free(traverse);
         me->used--;
         me->size -= count;
-        return 1;
+        return BK_TRUE;
     }
     memcpy(&traverse_next, traverse + node_next_offset, ptr_size);
     while (traverse_next) {
@@ -453,12 +456,12 @@ int unordered_multiset_remove_all(unordered_multiset me, void *const key)
             free(traverse_next);
             me->used--;
             me->size -= count;
-            return 1;
+            return BK_TRUE;
         }
         traverse = traverse_next;
         memcpy(&traverse_next, traverse + node_next_offset, ptr_size);
     }
-    return 0;
+    return BK_FALSE;
 }
 
 /**
@@ -466,16 +469,16 @@ int unordered_multiset_remove_all(unordered_multiset me, void *const key)
  *
  * @param me the unordered multi-set to clear
  *
- * @return 0       if no error
- * @return -ENOMEM if out of memory
+ * @return  BK_OK     if no error
+ * @return -BK_ENOMEM if out of memory
  */
-int unordered_multiset_clear(unordered_multiset me)
+bk_err unordered_multiset_clear(unordered_multiset me)
 {
     size_t i;
     char **updated_buckets = calloc(BKTHOMPS_U_MULTISET_STARTING_BUCKETS,
                                     ptr_size);
     if (!updated_buckets) {
-        return -ENOMEM;
+        return -BK_ENOMEM;
     }
     for (i = 0; i < me->capacity; i++) {
         char *traverse = me->buckets[i];
@@ -490,7 +493,7 @@ int unordered_multiset_clear(unordered_multiset me)
     me->capacity = BKTHOMPS_U_MULTISET_STARTING_BUCKETS;
     me->used = 0;
     me->buckets = updated_buckets;
-    return 0;
+    return BK_OK;
 }
 
 /**

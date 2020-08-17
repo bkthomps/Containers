@@ -21,7 +21,6 @@
  */
 
 #include <string.h>
-#include <errno.h>
 #include "include/deque.h"
 
 #define BKTHOMPS_DEQUE_MAX_BLOCK_BYTE_SIZE 4096
@@ -102,9 +101,9 @@ size_t deque_size(deque me)
  *
  * @param me the deque to check if empty
  *
- * @return 1 if the deque is empty, otherwise 0
+ * @return BK_TRUE if the deque is empty, otherwise BK_FALSE
  */
-int deque_is_empty(deque me)
+bk_bool deque_is_empty(deque me)
 {
     return deque_size(me) == 0;
 }
@@ -115,10 +114,10 @@ int deque_is_empty(deque me)
  *
  * @param me the deque to trim
  *
- * @return 0       if no error
- * @return -ENOMEM if out of memory
+ * @return  BK_OK     if no error
+ * @return -BK_ENOMEM if out of memory
  */
-int deque_trim(deque me)
+bk_err deque_trim(deque me)
 {
     size_t i;
     const size_t start_block_index = me->start_index / me->block_size;
@@ -127,7 +126,7 @@ int deque_trim(deque me)
     const size_t updated_block_count = end_block_index - start_block_index + 1;
     char **updated_data = malloc(updated_block_count * sizeof(char *));
     if (!updated_data) {
-        return -ENOMEM;
+        return -BK_ENOMEM;
     }
     memcpy(updated_data, me->data + start_block_index,
            updated_block_count * sizeof(char *));
@@ -146,7 +145,7 @@ int deque_trim(deque me)
     me->end_index -= start_block_index * me->block_size;
     me->block_count = updated_block_count;
     me->data = updated_data;
-    return 0;
+    return BK_OK;
 }
 
 /**
@@ -201,10 +200,10 @@ void deque_copy_to_array(void *const arr, deque me)
  * @param me   the deque to add an element to
  * @param data the element to add
  *
- * @return 0       if no error
- * @return -ENOMEM if out of memory
+ * @return  BK_OK     if no error
+ * @return -BK_ENOMEM if out of memory
  */
-int deque_push_front(deque me, void *const data)
+bk_err deque_push_front(deque me, void *const data)
 {
     if (me->start_index == 0) {
         const size_t updated_block_count =
@@ -212,7 +211,7 @@ int deque_push_front(deque me, void *const data)
         const size_t added_blocks = updated_block_count - me->block_count;
         char **temp = realloc(me->data, updated_block_count * sizeof(char *));
         if (!temp) {
-            return -ENOMEM;
+            return -BK_ENOMEM;
         }
         memmove(temp + added_blocks, temp, me->block_count * sizeof(char *));
         memset(temp, 0, added_blocks * sizeof(char *));
@@ -229,7 +228,7 @@ int deque_push_front(deque me, void *const data)
         if (!block) {
             block = malloc(me->block_size * me->data_size);
             if (!block) {
-                return -ENOMEM;
+                return -BK_ENOMEM;
             }
             memcpy(me->data + previous_block_index, &block, sizeof(char *));
         }
@@ -242,7 +241,7 @@ int deque_push_front(deque me, void *const data)
         memcpy(&block, me->data + block_index, sizeof(char *));
         memcpy(block + inner_index * me->data_size, data, me->data_size);
     }
-    return 0;
+    return BK_OK;
 }
 
 /**
@@ -255,10 +254,10 @@ int deque_push_front(deque me, void *const data)
  * @param me   the deque to add an element to
  * @param data the element to add
  *
- * @return 0       if no error
- * @return -ENOMEM if out of memory
+ * @return  BK_OK     if no error
+ * @return -BK_ENOMEM if out of memory
  */
-int deque_push_back(deque me, void *const data)
+bk_err deque_push_back(deque me, void *const data)
 {
     if (me->end_index == me->block_count * me->block_size) {
         const size_t updated_block_count =
@@ -266,7 +265,7 @@ int deque_push_back(deque me, void *const data)
         const size_t added_blocks = updated_block_count - me->block_count;
         char **temp = realloc(me->data, updated_block_count * sizeof(char *));
         if (!temp) {
-            return -ENOMEM;
+            return -BK_ENOMEM;
         }
         memset(temp + me->block_count, 0, added_blocks * sizeof(char *));
         me->data = temp;
@@ -279,7 +278,7 @@ int deque_push_back(deque me, void *const data)
         if (!block) {
             block = malloc(me->block_size * me->data_size);
             if (!block) {
-                return -ENOMEM;
+                return -BK_ENOMEM;
             }
             memcpy(me->data + tentative_block_index, &block, sizeof(char *));
         }
@@ -292,7 +291,7 @@ int deque_push_back(deque me, void *const data)
         memcpy(block + inner_index * me->data_size, data, me->data_size);
     }
     me->end_index++;
-    return 0;
+    return BK_OK;
 }
 
 /**
@@ -306,21 +305,21 @@ int deque_push_back(deque me, void *const data)
  * @param data the value to copy to
  * @param me   the deque to remove from
  *
- * @return 0       if no error
- * @return -EINVAL if invalid argument
+ * @return  BK_OK     if no error
+ * @return -BK_EINVAL if invalid argument
  */
-int deque_pop_front(void *const data, deque me)
+bk_err deque_pop_front(void *const data, deque me)
 {
     char *block;
     const size_t block_index = me->start_index / me->block_size;
     const size_t inner_index = me->start_index % me->block_size;
     if (deque_is_empty(me)) {
-        return -EINVAL;
+        return -BK_EINVAL;
     }
     memcpy(&block, me->data + block_index, sizeof(char *));
     memcpy(data, block + inner_index * me->data_size, me->data_size);
     me->start_index++;
-    return 0;
+    return BK_OK;
 }
 
 /**
@@ -334,21 +333,21 @@ int deque_pop_front(void *const data, deque me)
  * @param data the value to copy to
  * @param me   the deque to remove from
  *
- * @return 0       if no error
- * @return -EINVAL if invalid argument
+ * @return  BK_OK     if no error
+ * @return -BK_EINVAL if invalid argument
  */
-int deque_pop_back(void *const data, deque me)
+bk_err deque_pop_back(void *const data, deque me)
 {
     char *block;
     const size_t block_index = (me->end_index - 1) / me->block_size;
     const size_t inner_index = (me->end_index - 1) % me->block_size;
     if (deque_is_empty(me)) {
-        return -EINVAL;
+        return -BK_EINVAL;
     }
     memcpy(&block, me->data + block_index, sizeof(char *));
     memcpy(data, block + inner_index * me->data_size, me->data_size);
     me->end_index--;
-    return 0;
+    return BK_OK;
 }
 
 /**
@@ -361,10 +360,10 @@ int deque_pop_back(void *const data, deque me)
  * @param me   the deque to set the value of
  * @param data the data to set
  *
- * @return 0       if no error
- * @return -EINVAL if invalid argument
+ * @return  BK_OK     if no error
+ * @return -BK_EINVAL if invalid argument
  */
-int deque_set_first(deque me, void *const data)
+bk_err deque_set_first(deque me, void *const data)
 {
     return deque_set_at(me, 0, data);
 }
@@ -380,20 +379,20 @@ int deque_set_first(deque me, void *const data)
  * @param index the index to set at
  * @param data  the data to set
  *
- * @return 0       if no error
- * @return -EINVAL if invalid argument
+ * @return  BK_OK     if no error
+ * @return -BK_EINVAL if invalid argument
  */
-int deque_set_at(deque me, size_t index, void *const data)
+bk_err deque_set_at(deque me, size_t index, void *const data)
 {
     char *block;
     const size_t block_index = (index + me->start_index) / me->block_size;
     const size_t inner_index = (index + me->start_index) % me->block_size;
     if (index >= deque_size(me)) {
-        return -EINVAL;
+        return -BK_EINVAL;
     }
     memcpy(&block, me->data + block_index, sizeof(char *));
     memcpy(block + inner_index * me->data_size, data, me->data_size);
-    return 0;
+    return BK_OK;
 }
 
 /**
@@ -406,10 +405,10 @@ int deque_set_at(deque me, size_t index, void *const data)
  * @param me   the deque to set the value of
  * @param data the data to set
  *
- * @return 0       if no error
- * @return -EINVAL if invalid argument
+ * @return  BK_OK     if no error
+ * @return -BK_EINVAL if invalid argument
  */
-int deque_set_last(deque me, void *const data)
+bk_err deque_set_last(deque me, void *const data)
 {
     return deque_set_at(me, deque_size(me) - 1, data);
 }
@@ -424,10 +423,10 @@ int deque_set_last(deque me, void *const data)
  * @param data the data to set
  * @param me   the deque to set the value of
  *
- * @return 0       if no error
- * @return -EINVAL if invalid argument
+ * @return  BK_OK     if no error
+ * @return -BK_EINVAL if invalid argument
  */
-int deque_get_first(void *const data, deque me)
+bk_err deque_get_first(void *const data, deque me)
 {
     return deque_get_at(data, me, 0);
 }
@@ -443,20 +442,20 @@ int deque_get_first(void *const data, deque me)
  * @param me    the deque to set the value of
  * @param index the index to set at
  *
- * @return 0       if no error
- * @return -EINVAL if invalid argument
+ * @return  BK_OK     if no error
+ * @return -BK_EINVAL if invalid argument
  */
-int deque_get_at(void *const data, deque me, size_t index)
+bk_err deque_get_at(void *const data, deque me, size_t index)
 {
     char *block;
     const size_t block_index = (index + me->start_index) / me->block_size;
     const size_t inner_index = (index + me->start_index) % me->block_size;
     if (index >= deque_size(me)) {
-        return -EINVAL;
+        return -BK_EINVAL;
     }
     memcpy(&block, me->data + block_index, sizeof(char *));
     memcpy(data, block + inner_index * me->data_size, me->data_size);
-    return 0;
+    return BK_OK;
 }
 
 /**
@@ -469,10 +468,10 @@ int deque_get_at(void *const data, deque me, size_t index)
  * @param data the data to set
  * @param me   the deque to set the value of
  *
- * @return 0       if no error
- * @return -EINVAL if invalid argument
+ * @return  BK_OK     if no error
+ * @return -BK_EINVAL if invalid argument
  */
-int deque_get_last(void *const data, deque me)
+bk_err deque_get_last(void *const data, deque me)
 {
     return deque_get_at(data, me, deque_size(me) - 1);
 }
@@ -482,22 +481,22 @@ int deque_get_last(void *const data, deque me)
  *
  * @param me the deque to clear
  *
- * @return 0       if no error
- * @return -ENOMEM if out of memory
+ * @return  BK_OK     if no error
+ * @return -BK_ENOMEM if out of memory
  */
-int deque_clear(deque me)
+bk_err deque_clear(deque me)
 {
     size_t i;
     char *updated_block;
     char **updated_data = calloc(BKTHOMPS_DEQUE_INITIAL_BLOCK_COUNT,
                                  sizeof(char *));
     if (!updated_data) {
-        return -ENOMEM;
+        return -BK_ENOMEM;
     }
     updated_block = malloc(me->block_size * me->data_size);
     if (!updated_block) {
         free(updated_data);
-        return -ENOMEM;
+        return -BK_ENOMEM;
     }
     for (i = 0; i < me->block_count; i++) {
         char *block;
@@ -511,7 +510,7 @@ int deque_clear(deque me)
     me->data = updated_data;
     memcpy(me->data + me->start_index / me->block_size, &updated_block,
            sizeof(char *));
-    return 0;
+    return BK_OK;
 }
 
 /**

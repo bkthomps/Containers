@@ -20,46 +20,24 @@
  * SOFTWARE.
  */
 
-#ifndef BKTHOMPS_CONTAINERS_LIST_H
-#define BKTHOMPS_CONTAINERS_LIST_H
+#ifndef BKTHOMPS_CONTAINERS_ALL_H
+#define BKTHOMPS_CONTAINERS_ALL_H
 
-#include "all.h"
+#include <stdlib.h>
 
-/**
- * The list data structure, which is a doubly-linked list.
+/*
+ * Cannot use <errno.h> because the C89 standard does not guarantee all
+ * of these. These are the same values as the regular linux error codes.
  */
-typedef struct internal_list *list;
+#define BK_OK 0
+#define BK_ENOMEM 12
+#define BK_EINVAL 22
 
-/* Starting */
-list list_init(size_t data_size);
+/* Cannot use <stdbool.h> because it is C99 not C89. */
+#define BK_FALSE 0
+#define BK_TRUE (!BK_FALSE)
 
-/* Utility */
-size_t list_size(list me);
-bk_bool list_is_empty(list me);
-void list_copy_to_array(void *arr, list me);
+typedef int bk_err;
+typedef int bk_bool;
 
-/* Adding */
-bk_err list_add_first(list me, void *data);
-bk_err list_add_at(list me, size_t index, void *data);
-bk_err list_add_last(list me, void *data);
-
-/* Removing */
-bk_err list_remove_first(list me);
-bk_err list_remove_at(list me, size_t index);
-bk_err list_remove_last(list me);
-
-/* Setting */
-bk_err list_set_first(list me, void *data);
-bk_err list_set_at(list me, size_t index, void *data);
-bk_err list_set_last(list me, void *data);
-
-/* Getting */
-bk_err list_get_first(void *data, list me);
-bk_err list_get_at(void *data, list me, size_t index);
-bk_err list_get_last(void *data, list me);
-
-/* Ending */
-void list_clear(list me);
-list list_destroy(list me);
-
-#endif /* BKTHOMPS_CONTAINERS_LIST_H */
+#endif /* BKTHOMPS_CONTAINERS_ALL_H */

@@ -23,7 +23,7 @@
 #ifndef BKTHOMPS_CONTAINERS_UNORDERED_SET_H
 #define BKTHOMPS_CONTAINERS_UNORDERED_SET_H
 
-#include <stdlib.h>
+#include "all.h"
 
 /**
  * The unordered_set data structure, which is a collection of unique keys,
@@ -38,17 +38,17 @@ unordered_set unordered_set_init(size_t key_size,
                                                    const void *const two));
 
 /* Utility */
-int unordered_set_rehash(unordered_set me);
+bk_err unordered_set_rehash(unordered_set me);
 size_t unordered_set_size(unordered_set me);
-int unordered_set_is_empty(unordered_set me);
+bk_bool unordered_set_is_empty(unordered_set me);
 
 /* Accessing */
-int unordered_set_put(unordered_set me, void *key);
-int unordered_set_contains(unordered_set me, void *key);
-int unordered_set_remove(unordered_set me, void *key);
+bk_err unordered_set_put(unordered_set me, void *key);
+bk_bool unordered_set_contains(unordered_set me, void *key);
+bk_bool unordered_set_remove(unordered_set me, void *key);
 
 /* Ending */
-int unordered_set_clear(unordered_set me);
+bk_err unordered_set_clear(unordered_set me);
 unordered_set unordered_set_destroy(unordered_set me);
 
 #endif /* BKTHOMPS_CONTAINERS_UNORDERED_SET_H */
