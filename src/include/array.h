@@ -20,8 +20,8 @@
  * SOFTWARE.
  */
 
-#ifndef CONTAINERS_ARRAY_H
-#define CONTAINERS_ARRAY_H
+#ifndef BKTHOMPS_CONTAINERS_ARRAY_H
+#define BKTHOMPS_CONTAINERS_ARRAY_H
 
 #include <stdlib.h>
 
@@ -45,4 +45,4 @@ int array_get(void *data, array me, size_t index);
 /* Ending */
 array array_destroy(array me);
 
-#endif /* CONTAINERS_ARRAY_H */
+#endif /* BKTHOMPS_CONTAINERS_ARRAY_H */

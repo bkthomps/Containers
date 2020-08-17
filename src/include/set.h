@@ -20,8 +20,8 @@
  * SOFTWARE.
  */
 
-#ifndef CONTAINERS_SET_H
-#define CONTAINERS_SET_H
+#ifndef BKTHOMPS_CONTAINERS_SET_H
+#define BKTHOMPS_CONTAINERS_SET_H
 
 #include <stdlib.h>
 
@@ -47,4 +47,4 @@ int set_remove(set me, void *key);
 void set_clear(set me);
 set set_destroy(set me);
 
-#endif /* CONTAINERS_SET_H */
+#endif /* BKTHOMPS_CONTAINERS_SET_H */

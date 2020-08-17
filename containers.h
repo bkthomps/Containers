@@ -27,8 +27,8 @@
  */
 
 
-#ifndef CONTAINERS_ARRAY_H
-#define CONTAINERS_ARRAY_H
+#ifndef BKTHOMPS_CONTAINERS_ARRAY_H
+#define BKTHOMPS_CONTAINERS_ARRAY_H
 
 #include <stdlib.h>
 
@@ -52,11 +52,11 @@ int array_get(void *data, array me, size_t index);
 /* Ending */
 array array_destroy(array me);
 
-#endif /* CONTAINERS_ARRAY_H */
+#endif /* BKTHOMPS_CONTAINERS_ARRAY_H */
 
 
-#ifndef CONTAINERS_DEQUE_H
-#define CONTAINERS_DEQUE_H
+#ifndef BKTHOMPS_CONTAINERS_DEQUE_H
+#define BKTHOMPS_CONTAINERS_DEQUE_H
 
 #include <stdlib.h>
 
@@ -96,11 +96,11 @@ int deque_get_last(void *data, deque me);
 int deque_clear(deque me);
 deque deque_destroy(deque me);
 
-#endif /* CONTAINERS_DEQUE_H */
+#endif /* BKTHOMPS_CONTAINERS_DEQUE_H */
 
 
-#ifndef CONTAINERS_FORWARD_LIST_H
-#define CONTAINERS_FORWARD_LIST_H
+#ifndef BKTHOMPS_CONTAINERS_FORWARD_LIST_H
+#define BKTHOMPS_CONTAINERS_FORWARD_LIST_H
 
 #include <stdlib.h>
 
@@ -141,11 +141,11 @@ int forward_list_get_last(void *data, forward_list me);
 void forward_list_clear(forward_list me);
 forward_list forward_list_destroy(forward_list me);
 
-#endif /* CONTAINERS_FORWARD_LIST_H */
+#endif /* BKTHOMPS_CONTAINERS_FORWARD_LIST_H */
 
 
-#ifndef CONTAINERS_LIST_H
-#define CONTAINERS_LIST_H
+#ifndef BKTHOMPS_CONTAINERS_LIST_H
+#define BKTHOMPS_CONTAINERS_LIST_H
 
 #include <stdlib.h>
 
@@ -186,11 +186,11 @@ int list_get_last(void *data, list me);
 void list_clear(list me);
 list list_destroy(list me);
 
-#endif /* CONTAINERS_LIST_H */
+#endif /* BKTHOMPS_CONTAINERS_LIST_H */
 
 
-#ifndef CONTAINERS_MAP_H
-#define CONTAINERS_MAP_H
+#ifndef BKTHOMPS_CONTAINERS_MAP_H
+#define BKTHOMPS_CONTAINERS_MAP_H
 
 #include <stdlib.h>
 
@@ -218,11 +218,11 @@ int map_remove(map me, void *key);
 void map_clear(map me);
 map map_destroy(map me);
 
-#endif /* CONTAINERS_MAP_H */
+#endif /* BKTHOMPS_CONTAINERS_MAP_H */
 
 
-#ifndef CONTAINERS_MULTIMAP_H
-#define CONTAINERS_MULTIMAP_H
+#ifndef BKTHOMPS_CONTAINERS_MULTIMAP_H
+#define BKTHOMPS_CONTAINERS_MULTIMAP_H
 
 #include <stdlib.h>
 
@@ -256,11 +256,11 @@ int multimap_remove_all(multimap me, void *key);
 void multimap_clear(multimap me);
 multimap multimap_destroy(multimap me);
 
-#endif /* CONTAINERS_MULTIMAP_H */
+#endif /* BKTHOMPS_CONTAINERS_MULTIMAP_H */
 
 
-#ifndef CONTAINERS_MULTISET_H
-#define CONTAINERS_MULTISET_H
+#ifndef BKTHOMPS_CONTAINERS_MULTISET_H
+#define BKTHOMPS_CONTAINERS_MULTISET_H
 
 #include <stdlib.h>
 
@@ -290,11 +290,11 @@ int multiset_remove_all(multiset me, void *key);
 void multiset_clear(multiset me);
 multiset multiset_destroy(multiset me);
 
-#endif /* CONTAINERS_MULTISET_H */
+#endif /* BKTHOMPS_CONTAINERS_MULTISET_H */
 
 
-#ifndef CONTAINERS_PRIORITY_QUEUE_H
-#define CONTAINERS_PRIORITY_QUEUE_H
+#ifndef BKTHOMPS_CONTAINERS_PRIORITY_QUEUE_H
+#define BKTHOMPS_CONTAINERS_PRIORITY_QUEUE_H
 
 #include <stdlib.h>
 
@@ -326,11 +326,11 @@ int priority_queue_front(void *data, priority_queue me);
 int priority_queue_clear(priority_queue me);
 priority_queue priority_queue_destroy(priority_queue me);
 
-#endif /* CONTAINERS_PRIORITY_QUEUE_H */
+#endif /* BKTHOMPS_CONTAINERS_PRIORITY_QUEUE_H */
 
 
-#ifndef CONTAINERS_QUEUE_H
-#define CONTAINERS_QUEUE_H
+#ifndef BKTHOMPS_CONTAINERS_QUEUE_H
+#define BKTHOMPS_CONTAINERS_QUEUE_H
 
 #include <stdlib.h>
 
@@ -363,11 +363,11 @@ int queue_back(void *data, queue me);
 int queue_clear(queue me);
 queue queue_destroy(queue me);
 
-#endif /* CONTAINERS_QUEUE_H */
+#endif /* BKTHOMPS_CONTAINERS_QUEUE_H */
 
 
-#ifndef CONTAINERS_SET_H
-#define CONTAINERS_SET_H
+#ifndef BKTHOMPS_CONTAINERS_SET_H
+#define BKTHOMPS_CONTAINERS_SET_H
 
 #include <stdlib.h>
 
@@ -393,11 +393,11 @@ int set_remove(set me, void *key);
 void set_clear(set me);
 set set_destroy(set me);
 
-#endif /* CONTAINERS_SET_H */
+#endif /* BKTHOMPS_CONTAINERS_SET_H */
 
 
-#ifndef CONTAINERS_STACK_H
-#define CONTAINERS_STACK_H
+#ifndef BKTHOMPS_CONTAINERS_STACK_H
+#define BKTHOMPS_CONTAINERS_STACK_H
 
 #include <stdlib.h>
 
@@ -429,11 +429,11 @@ int stack_top(void *data, stack me);
 int stack_clear(stack me);
 stack stack_destroy(stack me);
 
-#endif /* CONTAINERS_STACK_H */
+#endif /* BKTHOMPS_CONTAINERS_STACK_H */
 
 
-#ifndef CONTAINERS_UNORDERED_MAP_H
-#define CONTAINERS_UNORDERED_MAP_H
+#ifndef BKTHOMPS_CONTAINERS_UNORDERED_MAP_H
+#define BKTHOMPS_CONTAINERS_UNORDERED_MAP_H
 
 #include <stdlib.h>
 
@@ -465,11 +465,11 @@ int unordered_map_remove(unordered_map me, void *key);
 int unordered_map_clear(unordered_map me);
 unordered_map unordered_map_destroy(unordered_map me);
 
-#endif /* CONTAINERS_UNORDERED_MAP_H */
+#endif /* BKTHOMPS_CONTAINERS_UNORDERED_MAP_H */
 
 
-#ifndef CONTAINERS_UNORDERED_MULTIMAP_H
-#define CONTAINERS_UNORDERED_MULTIMAP_H
+#ifndef BKTHOMPS_CONTAINERS_UNORDERED_MULTIMAP_H
+#define BKTHOMPS_CONTAINERS_UNORDERED_MULTIMAP_H
 
 #include <stdlib.h>
 
@@ -507,11 +507,11 @@ int unordered_multimap_remove_all(unordered_multimap me, void *key);
 int unordered_multimap_clear(unordered_multimap me);
 unordered_multimap unordered_multimap_destroy(unordered_multimap me);
 
-#endif /* CONTAINERS_UNORDERED_MULTIMAP_H */
+#endif /* BKTHOMPS_CONTAINERS_UNORDERED_MULTIMAP_H */
 
 
-#ifndef CONTAINERS_UNORDERED_MULTISET_H
-#define CONTAINERS_UNORDERED_MULTISET_H
+#ifndef BKTHOMPS_CONTAINERS_UNORDERED_MULTISET_H
+#define BKTHOMPS_CONTAINERS_UNORDERED_MULTISET_H
 
 #include <stdlib.h>
 
@@ -544,11 +544,11 @@ int unordered_multiset_remove_all(unordered_multiset me, void *key);
 int unordered_multiset_clear(unordered_multiset me);
 unordered_multiset unordered_multiset_destroy(unordered_multiset me);
 
-#endif /* CONTAINERS_UNORDERED_MULTISET_H */
+#endif /* BKTHOMPS_CONTAINERS_UNORDERED_MULTISET_H */
 
 
-#ifndef CONTAINERS_UNORDERED_SET_H
-#define CONTAINERS_UNORDERED_SET_H
+#ifndef BKTHOMPS_CONTAINERS_UNORDERED_SET_H
+#define BKTHOMPS_CONTAINERS_UNORDERED_SET_H
 
 #include <stdlib.h>
 
@@ -578,11 +578,11 @@ int unordered_set_remove(unordered_set me, void *key);
 int unordered_set_clear(unordered_set me);
 unordered_set unordered_set_destroy(unordered_set me);
 
-#endif /* CONTAINERS_UNORDERED_SET_H */
+#endif /* BKTHOMPS_CONTAINERS_UNORDERED_SET_H */
 
 
-#ifndef CONTAINERS_VECTOR_H
-#define CONTAINERS_VECTOR_H
+#ifndef BKTHOMPS_CONTAINERS_VECTOR_H
+#define BKTHOMPS_CONTAINERS_VECTOR_H
 
 #include <stdlib.h>
 
@@ -627,4 +627,4 @@ int vector_get_last(void *data, vector me);
 int vector_clear(vector me);
 vector vector_destroy(vector me);
 
-#endif /* CONTAINERS_VECTOR_H */
+#endif /* BKTHOMPS_CONTAINERS_VECTOR_H */

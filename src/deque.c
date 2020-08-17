@@ -24,10 +24,10 @@
 #include <errno.h>
 #include "include/deque.h"
 
-#define MAX_BLOCK_BYTE_SIZE 4096
-#define MIN_BLOCK_ELEMENT_SIZE 16
-#define INITIAL_BLOCK_COUNT 8
-#define RESIZE_RATIO 1.5
+#define BKTHOMPS_DEQUE_MAX_BLOCK_BYTE_SIZE 4096
+#define BKTHOMPS_DEQUE_MIN_BLOCK_ELEMENT_SIZE 16
+#define BKTHOMPS_DEQUE_INITIAL_BLOCK_COUNT 8
+#define BKTHOMPS_DEQUE_RESIZE_RATIO 1.5
 
 struct internal_deque {
     size_t data_size;
@@ -59,13 +59,14 @@ deque deque_init(const size_t data_size)
         return NULL;
     }
     init->data_size = data_size;
-    init->block_size = MAX_BLOCK_BYTE_SIZE / init->data_size;
-    if (init->block_size < MIN_BLOCK_ELEMENT_SIZE) {
-        init->block_size = MIN_BLOCK_ELEMENT_SIZE;
+    init->block_size = BKTHOMPS_DEQUE_MAX_BLOCK_BYTE_SIZE / init->data_size;
+    if (init->block_size < BKTHOMPS_DEQUE_MIN_BLOCK_ELEMENT_SIZE) {
+        init->block_size = BKTHOMPS_DEQUE_MIN_BLOCK_ELEMENT_SIZE;
     }
-    init->start_index = init->block_size * INITIAL_BLOCK_COUNT / 2;
+    init->start_index =
+            init->block_size * BKTHOMPS_DEQUE_INITIAL_BLOCK_COUNT / 2;
     init->end_index = init->start_index;
-    init->block_count = INITIAL_BLOCK_COUNT;
+    init->block_count = BKTHOMPS_DEQUE_INITIAL_BLOCK_COUNT;
     init->data = calloc(init->block_count, sizeof(char *));
     if (!init->data) {
         free(init);
@@ -207,7 +208,7 @@ int deque_push_front(deque me, void *const data)
 {
     if (me->start_index == 0) {
         const size_t updated_block_count =
-                (size_t) (me->block_count * RESIZE_RATIO) + 1;
+                (size_t) (me->block_count * BKTHOMPS_DEQUE_RESIZE_RATIO) + 1;
         const size_t added_blocks = updated_block_count - me->block_count;
         char **temp = realloc(me->data, updated_block_count * sizeof(char *));
         if (!temp) {
@@ -261,7 +262,7 @@ int deque_push_back(deque me, void *const data)
 {
     if (me->end_index == me->block_count * me->block_size) {
         const size_t updated_block_count =
-                (size_t) (me->block_count * RESIZE_RATIO) + 1;
+                (size_t) (me->block_count * BKTHOMPS_DEQUE_RESIZE_RATIO) + 1;
         const size_t added_blocks = updated_block_count - me->block_count;
         char **temp = realloc(me->data, updated_block_count * sizeof(char *));
         if (!temp) {
@@ -488,7 +489,8 @@ int deque_clear(deque me)
 {
     size_t i;
     char *updated_block;
-    char **updated_data = calloc(INITIAL_BLOCK_COUNT, sizeof(char *));
+    char **updated_data = calloc(BKTHOMPS_DEQUE_INITIAL_BLOCK_COUNT,
+                                 sizeof(char *));
     if (!updated_data) {
         return -ENOMEM;
     }
@@ -503,9 +505,9 @@ int deque_clear(deque me)
         free(block);
     }
     free(me->data);
-    me->start_index = me->block_size * INITIAL_BLOCK_COUNT / 2;
+    me->start_index = me->block_size * BKTHOMPS_DEQUE_INITIAL_BLOCK_COUNT / 2;
     me->end_index = me->start_index;
-    me->block_count = INITIAL_BLOCK_COUNT;
+    me->block_count = BKTHOMPS_DEQUE_INITIAL_BLOCK_COUNT;
     me->data = updated_data;
     memcpy(me->data + me->start_index / me->block_size, &updated_block,
            sizeof(char *));

@@ -20,8 +20,8 @@
  * SOFTWARE.
  */
 
-#ifndef CONTAINERS_UNORDERED_MAP_H
-#define CONTAINERS_UNORDERED_MAP_H
+#ifndef BKTHOMPS_CONTAINERS_UNORDERED_MAP_H
+#define BKTHOMPS_CONTAINERS_UNORDERED_MAP_H
 
 #include <stdlib.h>
 
@@ -53,4 +53,4 @@ int unordered_map_remove(unordered_map me, void *key);
 int unordered_map_clear(unordered_map me);
 unordered_map unordered_map_destroy(unordered_map me);
 
-#endif /* CONTAINERS_UNORDERED_MAP_H */
+#endif /* BKTHOMPS_CONTAINERS_UNORDERED_MAP_H */

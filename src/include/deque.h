@@ -20,8 +20,8 @@
  * SOFTWARE.
  */
 
-#ifndef CONTAINERS_DEQUE_H
-#define CONTAINERS_DEQUE_H
+#ifndef BKTHOMPS_CONTAINERS_DEQUE_H
+#define BKTHOMPS_CONTAINERS_DEQUE_H
 
 #include <stdlib.h>
 
@@ -61,4 +61,4 @@ int deque_get_last(void *data, deque me);
 int deque_clear(deque me);
 deque deque_destroy(deque me);
 
-#endif /* CONTAINERS_DEQUE_H */
+#endif /* BKTHOMPS_CONTAINERS_DEQUE_H */

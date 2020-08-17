@@ -24,8 +24,8 @@
 #include <errno.h>
 #include "include/vector.h"
 
-static const int START_SPACE = 8;
-static const double RESIZE_RATIO = 1.5;
+#define BKTHOMPS_VECTOR_START_SPACE 8
+#define BKTHOMPS_VECTOR_RESIZE_RATIO 1.5
 
 struct internal_vector {
     size_t item_count;
@@ -54,7 +54,7 @@ vector vector_init(const size_t data_size)
         return NULL;
     }
     init->item_count = 0;
-    init->item_capacity = START_SPACE;
+    init->item_capacity = BKTHOMPS_VECTOR_START_SPACE;
     init->bytes_per_item = data_size;
     init->data = malloc(init->item_capacity * init->bytes_per_item);
     if (!init->data) {
@@ -221,7 +221,8 @@ int vector_add_at(vector me, const size_t index, void *const data)
         return -EINVAL;
     }
     if (me->item_count + 1 >= me->item_capacity) {
-        const int new_space = (int) (me->item_capacity * RESIZE_RATIO);
+        const size_t new_space =
+                (size_t) (me->item_capacity * BKTHOMPS_VECTOR_RESIZE_RATIO);
         char *const temp = realloc(me->data, new_space * me->bytes_per_item);
         if (!temp) {
             return -ENOMEM;
@@ -433,7 +434,7 @@ int vector_get_last(void *const data, vector me)
 int vector_clear(vector me)
 {
     me->item_count = 0;
-    return vector_set_space(me, START_SPACE);
+    return vector_set_space(me, BKTHOMPS_VECTOR_START_SPACE);
 }
 
 /**

@@ -20,8 +20,8 @@
  * SOFTWARE.
  */
 
-#ifndef CONTAINERS_VECTOR_H
-#define CONTAINERS_VECTOR_H
+#ifndef BKTHOMPS_CONTAINERS_VECTOR_H
+#define BKTHOMPS_CONTAINERS_VECTOR_H
 
 #include <stdlib.h>
 
@@ -66,4 +66,4 @@ int vector_get_last(void *data, vector me);
 int vector_clear(vector me);
 vector vector_destroy(vector me);
 
-#endif /* CONTAINERS_VECTOR_H */
+#endif /* BKTHOMPS_CONTAINERS_VECTOR_H */

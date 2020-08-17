@@ -20,8 +20,8 @@
  * SOFTWARE.
  */
 
-#ifndef CONTAINERS_LIST_H
-#define CONTAINERS_LIST_H
+#ifndef BKTHOMPS_CONTAINERS_LIST_H
+#define BKTHOMPS_CONTAINERS_LIST_H
 
 #include <stdlib.h>
 
@@ -62,4 +62,4 @@ int list_get_last(void *data, list me);
 void list_clear(list me);
 list list_destroy(list me);
 
-#endif /* CONTAINERS_LIST_H */
+#endif /* BKTHOMPS_CONTAINERS_LIST_H */

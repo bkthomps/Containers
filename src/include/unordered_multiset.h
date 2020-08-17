@@ -20,8 +20,8 @@
  * SOFTWARE.
  */
 
-#ifndef CONTAINERS_UNORDERED_MULTISET_H
-#define CONTAINERS_UNORDERED_MULTISET_H
+#ifndef BKTHOMPS_CONTAINERS_UNORDERED_MULTISET_H
+#define BKTHOMPS_CONTAINERS_UNORDERED_MULTISET_H
 
 #include <stdlib.h>
 
@@ -54,4 +54,4 @@ int unordered_multiset_remove_all(unordered_multiset me, void *key);
 int unordered_multiset_clear(unordered_multiset me);
 unordered_multiset unordered_multiset_destroy(unordered_multiset me);
 
-#endif /* CONTAINERS_UNORDERED_MULTISET_H */
+#endif /* BKTHOMPS_CONTAINERS_UNORDERED_MULTISET_H */

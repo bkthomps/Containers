@@ -20,8 +20,8 @@
  * SOFTWARE.
  */
 
-#ifndef CONTAINERS_PRIORITY_QUEUE_H
-#define CONTAINERS_PRIORITY_QUEUE_H
+#ifndef BKTHOMPS_CONTAINERS_PRIORITY_QUEUE_H
+#define BKTHOMPS_CONTAINERS_PRIORITY_QUEUE_H
 
 #include <stdlib.h>
 
@@ -53,4 +53,4 @@ int priority_queue_front(void *data, priority_queue me);
 int priority_queue_clear(priority_queue me);
 priority_queue priority_queue_destroy(priority_queue me);
 
-#endif /* CONTAINERS_PRIORITY_QUEUE_H */
+#endif /* BKTHOMPS_CONTAINERS_PRIORITY_QUEUE_H */

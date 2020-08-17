@@ -20,8 +20,8 @@
  * SOFTWARE.
  */
 
-#ifndef CONTAINERS_UNORDERED_MULTIMAP_H
-#define CONTAINERS_UNORDERED_MULTIMAP_H
+#ifndef BKTHOMPS_CONTAINERS_UNORDERED_MULTIMAP_H
+#define BKTHOMPS_CONTAINERS_UNORDERED_MULTIMAP_H
 
 #include <stdlib.h>
 
@@ -59,4 +59,4 @@ int unordered_multimap_remove_all(unordered_multimap me, void *key);
 int unordered_multimap_clear(unordered_multimap me);
 unordered_multimap unordered_multimap_destroy(unordered_multimap me);
 
-#endif /* CONTAINERS_UNORDERED_MULTIMAP_H */
+#endif /* BKTHOMPS_CONTAINERS_UNORDERED_MULTIMAP_H */

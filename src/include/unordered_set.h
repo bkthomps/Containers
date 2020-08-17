@@ -20,8 +20,8 @@
  * SOFTWARE.
  */
 
-#ifndef CONTAINERS_UNORDERED_SET_H
-#define CONTAINERS_UNORDERED_SET_H
+#ifndef BKTHOMPS_CONTAINERS_UNORDERED_SET_H
+#define BKTHOMPS_CONTAINERS_UNORDERED_SET_H
 
 #include <stdlib.h>
 
@@ -51,4 +51,4 @@ int unordered_set_remove(unordered_set me, void *key);
 int unordered_set_clear(unordered_set me);
 unordered_set unordered_set_destroy(unordered_set me);
 
-#endif /* CONTAINERS_UNORDERED_SET_H */
+#endif /* BKTHOMPS_CONTAINERS_UNORDERED_SET_H */

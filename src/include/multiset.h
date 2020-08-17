@@ -20,8 +20,8 @@
  * SOFTWARE.
  */
 
-#ifndef CONTAINERS_MULTISET_H
-#define CONTAINERS_MULTISET_H
+#ifndef BKTHOMPS_CONTAINERS_MULTISET_H
+#define BKTHOMPS_CONTAINERS_MULTISET_H
 
 #include <stdlib.h>
 
@@ -51,4 +51,4 @@ int multiset_remove_all(multiset me, void *key);
 void multiset_clear(multiset me);
 multiset multiset_destroy(multiset me);
 
-#endif /* CONTAINERS_MULTISET_H */
+#endif /* BKTHOMPS_CONTAINERS_MULTISET_H */

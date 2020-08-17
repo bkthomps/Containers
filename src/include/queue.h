@@ -20,8 +20,8 @@
  * SOFTWARE.
  */
 
-#ifndef CONTAINERS_QUEUE_H
-#define CONTAINERS_QUEUE_H
+#ifndef BKTHOMPS_CONTAINERS_QUEUE_H
+#define BKTHOMPS_CONTAINERS_QUEUE_H
 
 #include <stdlib.h>
 
@@ -54,4 +54,4 @@ int queue_back(void *data, queue me);
 int queue_clear(queue me);
 queue queue_destroy(queue me);
 
-#endif /* CONTAINERS_QUEUE_H */
+#endif /* BKTHOMPS_CONTAINERS_QUEUE_H */
