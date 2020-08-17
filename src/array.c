@@ -30,8 +30,7 @@ static const size_t data_size_offset = sizeof(size_t);
 static const size_t data_ptr_offset = 2 * sizeof(size_t);
 
 /**
- * Initializes an array. If the multiplication of the element count and the
- * data size overflows, it is undefined behavior.
+ * Initializes an array.
  *
  * @param element_count the number of elements in the array; must not be
  *                      negative
@@ -45,6 +44,12 @@ array array_init(const size_t element_count, const size_t data_size)
 {
     char *init;
     if (data_size == 0) {
+        return NULL;
+    }
+    if (element_count * data_size / data_size != element_count) {
+        return NULL;
+    }
+    if (data_ptr_offset + element_count * data_size < data_ptr_offset) {
         return NULL;
     }
     init = malloc(data_ptr_offset + element_count * data_size);
