@@ -20,8 +20,8 @@
  * SOFTWARE.
  */
 
-#ifndef CONTAINERS_MULTIMAP_H
-#define CONTAINERS_MULTIMAP_H
+#ifndef BKTHOMPS_CONTAINERS_MULTIMAP_H
+#define BKTHOMPS_CONTAINERS_MULTIMAP_H
 
 #include <stdlib.h>
 
@@ -55,4 +55,4 @@ int multimap_remove_all(multimap me, void *key);
 void multimap_clear(multimap me);
 multimap multimap_destroy(multimap me);
 
-#endif /* CONTAINERS_MULTIMAP_H */
+#endif /* BKTHOMPS_CONTAINERS_MULTIMAP_H */

@@ -20,8 +20,8 @@
  * SOFTWARE.
  */
 
-#ifndef CONTAINERS_FORWARD_LIST_H
-#define CONTAINERS_FORWARD_LIST_H
+#ifndef BKTHOMPS_CONTAINERS_FORWARD_LIST_H
+#define BKTHOMPS_CONTAINERS_FORWARD_LIST_H
 
 #include <stdlib.h>
 
@@ -62,4 +62,4 @@ int forward_list_get_last(void *data, forward_list me);
 void forward_list_clear(forward_list me);
 forward_list forward_list_destroy(forward_list me);
 
-#endif /* CONTAINERS_FORWARD_LIST_H */
+#endif /* BKTHOMPS_CONTAINERS_FORWARD_LIST_H */

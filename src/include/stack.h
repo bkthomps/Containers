@@ -20,8 +20,8 @@
  * SOFTWARE.
  */
 
-#ifndef CONTAINERS_STACK_H
-#define CONTAINERS_STACK_H
+#ifndef BKTHOMPS_CONTAINERS_STACK_H
+#define BKTHOMPS_CONTAINERS_STACK_H
 
 #include <stdlib.h>
 
@@ -53,4 +53,4 @@ int stack_top(void *data, stack me);
 int stack_clear(stack me);
 stack stack_destroy(stack me);
 
-#endif /* CONTAINERS_STACK_H */
+#endif /* BKTHOMPS_CONTAINERS_STACK_H */

@@ -20,8 +20,8 @@
  * SOFTWARE.
  */
 
-#ifndef CONTAINERS_MAP_H
-#define CONTAINERS_MAP_H
+#ifndef BKTHOMPS_CONTAINERS_MAP_H
+#define BKTHOMPS_CONTAINERS_MAP_H
 
 #include <stdlib.h>
 
@@ -49,4 +49,4 @@ int map_remove(map me, void *key);
 void map_clear(map me);
 map map_destroy(map me);
 
-#endif /* CONTAINERS_MAP_H */
+#endif /* BKTHOMPS_CONTAINERS_MAP_H */
