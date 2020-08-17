@@ -1,5 +1,3 @@
-#include <limits.h>
-#include <memory.h>
 #include "test.h"
 #include "../src/include/multimap.h"
 

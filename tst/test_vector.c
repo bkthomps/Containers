@@ -1,5 +1,3 @@
-#include <limits.h>
-#include <string.h>
 #include "test.h"
 #include "../src/include/vector.h"
 

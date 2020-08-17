@@ -21,7 +21,6 @@
  */
 
 #include <string.h>
-#include <errno.h>
 #include "include/multiset.h"
 
 struct internal_multiset {
@@ -326,10 +325,10 @@ bk_bool multiset_put(multiset me, void *const key)
     if (!me->root) {
         char *insert = multiset_create_node(me, key, NULL);
         if (!insert) {
-            return -ENOMEM;
+            return -BK_ENOMEM;
         }
         me->root = insert;
-        return 0;
+        return BK_OK;
     }
     traverse = me->root;
     for (;;) {
@@ -342,11 +341,11 @@ bk_bool multiset_put(multiset me, void *const key)
             } else {
                 char *insert = multiset_create_node(me, key, traverse);
                 if (!insert) {
-                    return -ENOMEM;
+                    return -BK_ENOMEM;
                 }
                 memcpy(traverse + node_left_child_offset, &insert, ptr_size);
                 multiset_insert_balance(me, insert);
-                return 0;
+                return BK_OK;
             }
         } else if (compare > 0) {
             char *traverse_right;
@@ -357,11 +356,11 @@ bk_bool multiset_put(multiset me, void *const key)
             } else {
                 char *insert = multiset_create_node(me, key, traverse);
                 if (!insert) {
-                    return -ENOMEM;
+                    return -BK_ENOMEM;
                 }
                 memcpy(traverse + node_right_child_offset, &insert, ptr_size);
                 multiset_insert_balance(me, insert);
-                return 0;
+                return BK_OK;
             }
         } else {
             size_t count;
@@ -369,7 +368,7 @@ bk_bool multiset_put(multiset me, void *const key)
             count++;
             memcpy(traverse + node_count_offset, &count, count_size);
             me->size++;
-            return 0;
+            return BK_OK;
         }
     }
 }

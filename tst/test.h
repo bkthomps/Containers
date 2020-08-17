@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <assert.h>
+#include <limits.h>
+#include <string.h>
 
 #define STUB_MALLOC 1
 
