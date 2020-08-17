@@ -66,13 +66,17 @@ deque deque_init(const size_t data_size)
     init->start_index = init->block_size * INITIAL_BLOCK_COUNT / 2;
     init->end_index = init->start_index;
     init->block_count = INITIAL_BLOCK_COUNT;
-    /* TODO: check this for "overflow" */
     init->data = calloc(init->block_count, sizeof(char *));
     if (!init->data) {
         free(init);
         return NULL;
     }
-    /* TODO: check this for "overflow" */
+    if (init->block_size * init->data_size / init->data_size
+        != init->block_size) {
+        free(init->data);
+        free(init);
+        return NULL;
+    }
     block = malloc(init->block_size * init->data_size);
     if (!block) {
         free(init->data);
@@ -126,7 +130,7 @@ int deque_trim(deque me)
     const size_t end_block_index = deque_is_empty(me) ? start_block_index :
                                    (me->end_index - 1) / me->block_size;
     const size_t updated_block_count = end_block_index - start_block_index + 1;
-    /* TODO: check this for "overflow" */
+    /* No "overflow" can occur here since it would have occurred on grow. */
     char **updated_data = malloc(updated_block_count * sizeof(char *));
     if (!updated_data) {
         return -ENOMEM;
@@ -205,6 +209,7 @@ void deque_copy_to_array(void *const arr, deque me)
  *
  * @return 0       if no error
  * @return -ENOMEM if out of memory
+ * @return -ERANGE if impossible to represent the byte count
  */
 int deque_push_front(deque me, void *const data)
 {
@@ -212,8 +217,12 @@ int deque_push_front(deque me, void *const data)
         const size_t updated_block_count =
                 (size_t) (me->block_count * RESIZE_RATIO) + 1;
         const size_t added_blocks = updated_block_count - me->block_count;
-        /* TODO: check this for "overflow" */
-        char **temp = realloc(me->data, updated_block_count * sizeof(char *));
+        char **temp;
+        if (updated_block_count * sizeof(char *) / sizeof(char *)
+            != updated_block_count) {
+            return -ERANGE;
+        }
+        temp = realloc(me->data, updated_block_count * sizeof(char *));
         if (!temp) {
             return -ENOMEM;
         }
@@ -230,7 +239,7 @@ int deque_push_front(deque me, void *const data)
                 me->start_index / me->block_size - 1;
         memcpy(&block, me->data + previous_block_index, sizeof(char *));
         if (!block) {
-            /* TODO: check this for "overflow" */
+            /* No "overflow" can occur here because it would happen on init. */
             block = malloc(me->block_size * me->data_size);
             if (!block) {
                 return -ENOMEM;
@@ -261,6 +270,7 @@ int deque_push_front(deque me, void *const data)
  *
  * @return 0       if no error
  * @return -ENOMEM if out of memory
+ * @return -ERANGE if impossible to represent the byte count
  */
 int deque_push_back(deque me, void *const data)
 {
@@ -268,8 +278,12 @@ int deque_push_back(deque me, void *const data)
         const size_t updated_block_count =
                 (size_t) (me->block_count * RESIZE_RATIO) + 1;
         const size_t added_blocks = updated_block_count - me->block_count;
-        /* TODO: check this for "overflow" */
-        char **temp = realloc(me->data, updated_block_count * sizeof(char *));
+        char **temp;
+        if (updated_block_count * sizeof(char *) / sizeof(char *)
+            != updated_block_count) {
+            return -ERANGE;
+        }
+        temp = realloc(me->data, updated_block_count * sizeof(char *));
         if (!temp) {
             return -ENOMEM;
         }
@@ -282,7 +296,7 @@ int deque_push_back(deque me, void *const data)
         const size_t tentative_block_index = me->end_index / me->block_size;
         memcpy(&block, me->data + tentative_block_index, sizeof(char *));
         if (!block) {
-            /* TODO: check this for "overflow" */
+            /* No "overflow" can occur here because it would happen on init. */
             block = malloc(me->block_size * me->data_size);
             if (!block) {
                 return -ENOMEM;
@@ -495,12 +509,11 @@ int deque_clear(deque me)
 {
     size_t i;
     char *updated_block;
-    /* TODO: check this for "overflow" */
     char **updated_data = calloc(INITIAL_BLOCK_COUNT, sizeof(char *));
     if (!updated_data) {
         return -ENOMEM;
     }
-    /* TODO: check this for "overflow" */
+    /* No "overflow" can occur here because it would happen on init. */
     updated_block = malloc(me->block_size * me->data_size);
     if (!updated_block) {
         free(updated_data);
