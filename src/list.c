@@ -185,6 +185,7 @@ int list_add_at(list me, const size_t index, void *const data)
     if (index > me->item_count) {
         return -EINVAL;
     }
+    /* TODO: check this for "overflow" */
     node = malloc(2 * ptr_size + me->bytes_per_item);
     if (!node) {
         return -ENOMEM;

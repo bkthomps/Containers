@@ -283,6 +283,7 @@ static void map_insert_balance(map me, char *const item)
 static char *map_create_node(map me, const void *const key,
                              const void *const value, char *const parent)
 {
+    /* TODO: check this for "overflow" */
     char *insert = malloc(1 + 3 * ptr_size + me->key_size + me->value_size);
     if (!insert) {
         return NULL;

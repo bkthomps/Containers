@@ -87,6 +87,7 @@ unordered_set unordered_set_init(const size_t key_size,
     init->comparator = comparator;
     init->size = 0;
     init->capacity = STARTING_BUCKETS;
+    /* TODO: check this for "overflow" */
     init->buckets = calloc(STARTING_BUCKETS, ptr_size);
     if (!init->buckets) {
         free(init);
@@ -133,6 +134,7 @@ int unordered_set_rehash(unordered_set me)
 {
     size_t i;
     char **old_buckets = me->buckets;
+    /* TODO: check this for "overflow" */
     me->buckets = calloc(me->capacity, ptr_size);
     if (!me->buckets) {
         me->buckets = old_buckets;
@@ -187,6 +189,7 @@ static int unordered_set_resize(unordered_set me)
     const size_t old_capacity = me->capacity;
     const size_t new_capacity = me->capacity * RESIZE_RATIO;
     char **old_buckets = me->buckets;
+    /* TODO: check this for "overflow" */
     me->buckets = calloc(new_capacity, ptr_size);
     if (!me->buckets) {
         me->buckets = old_buckets;
@@ -226,6 +229,7 @@ static char *unordered_set_create_element(unordered_set me,
                                           const unsigned long hash,
                                           const void *const key)
 {
+    /* TODO: check this for "overflow" */
     char *init = malloc(ptr_size + hash_size + me->key_size);
     if (!init) {
         return NULL;
@@ -369,6 +373,7 @@ int unordered_set_remove(unordered_set me, void *const key)
 int unordered_set_clear(unordered_set me)
 {
     size_t i;
+    /* TODO: check this for "overflow" */
     char **updated_buckets = calloc(STARTING_BUCKETS, ptr_size);
     if (!updated_buckets) {
         return -ENOMEM;

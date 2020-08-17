@@ -56,6 +56,7 @@ vector vector_init(const size_t data_size)
     init->item_count = 0;
     init->item_capacity = START_SPACE;
     init->bytes_per_item = data_size;
+    /* TODO: check this for "overflow" */
     init->data = malloc(init->item_capacity * init->bytes_per_item);
     if (!init->data) {
         free(init);
@@ -106,6 +107,7 @@ int vector_is_empty(vector me)
  */
 static int vector_set_space(vector me, const int size)
 {
+    /* TODO: check this for "overflow" */
     char *const temp = realloc(me->data, size * me->bytes_per_item);
     if (!temp) {
         return -ENOMEM;
@@ -222,6 +224,7 @@ int vector_add_at(vector me, const size_t index, void *const data)
     }
     if (me->item_count + 1 >= me->item_capacity) {
         const int new_space = (int) (me->item_capacity * RESIZE_RATIO);
+        /* TODO: check this for "overflow" */
         char *const temp = realloc(me->data, new_space * me->bytes_per_item);
         if (!temp) {
             return -ENOMEM;

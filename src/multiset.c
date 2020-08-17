@@ -292,6 +292,7 @@ static void multiset_insert_balance(multiset me, char *const item)
 static char *multiset_create_node(multiset me, const void *const data,
                                   char *const parent)
 {
+    /* TODO: check this for "overflow" */
     char *insert = malloc(1 + count_size + 3 * ptr_size + me->key_size);
     const size_t one = 1;
     if (!insert) {

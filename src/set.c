@@ -278,6 +278,7 @@ static void set_insert_balance(set me, char *const item)
  */
 static char *set_create_node(set me, const void *const data, char *const parent)
 {
+    /* TODO: check this for "overflow" */
     char *insert = malloc(1 + 3 * ptr_size + me->key_size);
     if (!insert) {
         return NULL;

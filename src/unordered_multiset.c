@@ -93,6 +93,7 @@ unordered_multiset_init(const size_t key_size,
     init->size = 0;
     init->capacity = STARTING_BUCKETS;
     init->used = 0;
+    /* TODO: check this for "overflow" */
     init->buckets = calloc(STARTING_BUCKETS, ptr_size);
     if (!init->buckets) {
         free(init);
@@ -139,6 +140,7 @@ int unordered_multiset_rehash(unordered_multiset me)
 {
     size_t i;
     char **old_buckets = me->buckets;
+    /* TODO: check this for "overflow" */
     me->buckets = calloc(me->capacity, ptr_size);
     if (!me->buckets) {
         me->buckets = old_buckets;
@@ -193,6 +195,7 @@ static int unordered_multiset_resize(unordered_multiset me)
     const size_t old_capacity = me->capacity;
     const size_t new_capacity = me->capacity * RESIZE_RATIO;
     char **old_buckets = me->buckets;
+    /* TODO: check this for "overflow" */
     me->buckets = calloc(new_capacity, ptr_size);
     if (!me->buckets) {
         me->buckets = old_buckets;
@@ -233,6 +236,7 @@ static char *unordered_multiset_create_element(unordered_multiset me,
                                                const void *const key)
 {
     const size_t one = 1;
+    /* TODO: check this for "overflow" */
     char *init = malloc(ptr_size + count_size + hash_size + me->key_size);
     if (!init) {
         return NULL;
@@ -471,6 +475,7 @@ int unordered_multiset_remove_all(unordered_multiset me, void *const key)
 int unordered_multiset_clear(unordered_multiset me)
 {
     size_t i;
+    /* TODO: check this for "overflow" */
     char **updated_buckets = calloc(STARTING_BUCKETS, ptr_size);
     if (!updated_buckets) {
         return -ENOMEM;

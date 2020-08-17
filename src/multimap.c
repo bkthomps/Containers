@@ -306,6 +306,7 @@ static void multimap_insert_balance(multimap me, char *const item)
  */
 static char *multimap_create_value_node(multimap me, const void *const value)
 {
+    /* TODO: check this for "overflow" */
     char *const add = malloc(ptr_size + me->value_size);
     if (!add) {
         return NULL;
@@ -321,6 +322,7 @@ static char *multimap_create_value_node(multimap me, const void *const value)
 static char *multimap_create_node(multimap me, const void *const key,
                                   const void *const value, char *const parent)
 {
+    /* TODO: check this for "overflow" */
     char *const insert = malloc(1 + count_size + 4 * ptr_size + me->key_size);
     const size_t one = 1;
     char *value_node;
