@@ -22,7 +22,7 @@ Finally, each container will have to be destroyed to free the memory associated
 with it.
 
 # Container Initialization
-When creating a container, first you must decide what type of data you which to
+When creating a container, first you must decide what type of data you wish to
 store in it (or types for the case of a map). Then, you must either decide if
 you wish to store a copy of the data in the container, or a pointer to it. The
 benefit of a copy is that you don't have to manage the memory, and it is easier
@@ -61,10 +61,10 @@ int):
 deque d = deque_init(sizeof(int));
 ...
 int add = 5;
-int rc = deque_push_back(me, &add); /* 5 has been added to the back of the deque */
+int rc = deque_push_back(d, &add); /* 5 has been added to the back of the deque */
 ...
 int retrieve;
-int rc = deque_pop_back(&retrieve, me); /* retrieve now is equal to 5 */
+int rc = deque_pop_back(&retrieve, d); /* retrieve now is equal to 5 */
 ...
 ```
 
@@ -72,7 +72,7 @@ Functions can fail for various reasons, such as the provided index argument
 being out of bounds, or the system running out of memory. The in-depth
 documentation linked above provides the exhaustive list of return codes for each
 function, which are present in the `errno.h` header file. For example, an
-invalid argument would return `-EINVAL` on success 0 would be returned.
+invalid argument would return `-EINVAL`, and on success 0 would be returned.
 
 # Comparators and Hash Functions
 The associative containers and the priority queue require the user to initialize
@@ -120,7 +120,6 @@ And a hash function can be as follows:
 static unsigned long hash_int(const void *const key)
 {
     unsigned long hash = 17;
-    hash_count++;
     hash = 31 * hash + *(int *) key;
     return hash;
 }
