@@ -5,20 +5,35 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/bkthomps/Containers/blob/master/LICENSE)
 
 # Containers
-This library provides various containers. Each container has utility functions to manipulate the data it holds. This is an abstraction as to not have to manually manage and reallocate memory.
+This library provides various containers. Each container has utility functions
+to manipulate the data it holds. This is an abstraction as to not have to
+manually manage and reallocate memory.
 
-Inspired by the C++ standard library; however, implemented using C with different function interfaces as the C++ standard library but with the same container names.
+Inspired by the C++ standard library; however, implemented using C with
+different function interfaces as the C++ standard library but with the same
+container names.
 
 ## Setup
 It is possible to compile this library as either static `.a` or dynamic `.so`:
-1. A static library is slightly faster than a dynamic one, however, if the library is modified, the entire project codebase which uses it will need to be recompiled.
-2. A dynamic library can be changed without recompiling the codebase, assuming no function definitions have changed.
+1. A static library is slightly faster than a dynamic one, however, if the
+library is modified, the entire project codebase which uses it will need to be
+recompiled.
+2. A dynamic library can be changed without recompiling the codebase, assuming
+no function definitions have changed.
 
 The installation process is as follows:
 1. Clone this repository and navigate to it.
-2. Run `make static_clang`/`make static_gcc` or `make dynamic_clang`/`make dynamic_gcc` for either a static or dynamic library.
-3. Then, you can copy-paste `containers.h` and `containers.a`/`containers.so` into your project to include the containers.
-4. Finally, you remember to link the library by including `containers.a -ldl`/`containers.so -ldl` as an argument.
+2. Run `make static_clang`/`make static_gcc` or
+`make dynamic_clang`/`make dynamic_gcc` for either a static or dynamic library.
+3. Then, you can copy-paste `containers.h` and `containers.a`/`containers.so`
+into your project to include the containers.
+4. Finally, you remember to link the library by including
+`containers.a -ldl`/`containers.so -ldl` as an argument.
+
+## Documentation
+For high-level documentation and usage, visit the
+[documentation](documentation.md) page. For in-depth documentation, visit the
+[code docs](https://codedocs.xyz/bkthomps/Containers/) page.
 
 ## Container Types
 The container types that this library contains are described below.
