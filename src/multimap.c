@@ -73,6 +73,7 @@ multimap multimap_init(const size_t key_size, const size_t value_size,
         || !key_comparator || !value_comparator) {
         return NULL;
     }
+    /* TODO: alloc marker */
     init = malloc(sizeof(struct internal_multimap));
     if (!init) {
         return NULL;
@@ -305,6 +306,7 @@ static void multimap_insert_balance(multimap me, char *const item)
  */
 static char *multimap_create_value_node(multimap me, const void *const value)
 {
+    /* TODO: alloc marker */
     char *const add = malloc(ptr_size + me->value_size);
     if (!add) {
         return NULL;
@@ -320,6 +322,7 @@ static char *multimap_create_value_node(multimap me, const void *const value)
 static char *multimap_create_node(multimap me, const void *const key,
                                   const void *const value, char *const parent)
 {
+    /* TODO: alloc marker */
     char *const insert = malloc(1 + count_size + 4 * ptr_size + me->key_size);
     const size_t one = 1;
     char *value_node;

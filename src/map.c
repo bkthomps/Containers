@@ -58,6 +58,7 @@ map map_init(const size_t key_size, const size_t value_size,
     if (key_size == 0 || value_size == 0 || !comparator) {
         return NULL;
     }
+    /* TODO: alloc marker */
     init = malloc(sizeof(struct internal_map));
     if (!init) {
         return NULL;
@@ -282,6 +283,7 @@ static void map_insert_balance(map me, char *const item)
 static char *map_create_node(map me, const void *const key,
                              const void *const value, char *const parent)
 {
+    /* TODO: alloc marker */
     char *insert = malloc(1 + 3 * ptr_size + me->key_size + me->value_size);
     if (!insert) {
         return NULL;

@@ -83,6 +83,7 @@ unordered_map unordered_map_init(const size_t key_size,
     if (key_size == 0 || value_size == 0 || !hash || !comparator) {
         return NULL;
     }
+    /* TODO: alloc marker */
     init = malloc(sizeof(struct internal_unordered_map));
     if (!init) {
         return NULL;
@@ -93,6 +94,7 @@ unordered_map unordered_map_init(const size_t key_size,
     init->comparator = comparator;
     init->size = 0;
     init->capacity = BKTHOMPS_U_MAP_STARTING_BUCKETS;
+    /* TODO: alloc marker */
     init->buckets = calloc(BKTHOMPS_U_MAP_STARTING_BUCKETS, ptr_size);
     if (!init->buckets) {
         free(init);
@@ -139,6 +141,7 @@ bk_err unordered_map_rehash(unordered_map me)
 {
     size_t i;
     char **old_buckets = me->buckets;
+    /* TODO: alloc marker */
     me->buckets = calloc(me->capacity, ptr_size);
     if (!me->buckets) {
         me->buckets = old_buckets;
@@ -193,6 +196,7 @@ static bk_err unordered_map_resize(unordered_map me)
     const size_t old_capacity = me->capacity;
     const size_t new_capacity = me->capacity * BKTHOMPS_U_MAP_RESIZE_RATIO;
     char **old_buckets = me->buckets;
+    /* TODO: alloc marker */
     me->buckets = calloc(new_capacity, ptr_size);
     if (!me->buckets) {
         me->buckets = old_buckets;
@@ -233,6 +237,7 @@ static char *unordered_map_create_element(unordered_map me,
                                           const void *const key,
                                           const void *const value)
 {
+    /* TODO: alloc marker */
     char *init = malloc(ptr_size + hash_size + me->key_size + me->value_size);
     if (!init) {
         return NULL;
@@ -413,6 +418,7 @@ bk_bool unordered_map_remove(unordered_map me, void *const key)
 int unordered_map_clear(unordered_map me)
 {
     size_t i;
+    /* TODO: alloc marker */
     char **updated_buckets = calloc(BKTHOMPS_U_MAP_STARTING_BUCKETS, ptr_size);
     if (!updated_buckets) {
         return -BK_ENOMEM;

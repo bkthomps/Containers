@@ -48,6 +48,7 @@ vector vector_init(const size_t data_size)
     if (data_size == 0) {
         return NULL;
     }
+    /* TODO: alloc marker */
     init = malloc(sizeof(struct internal_vector));
     if (!init) {
         return NULL;
@@ -55,6 +56,7 @@ vector vector_init(const size_t data_size)
     init->item_count = 0;
     init->item_capacity = BKTHOMPS_VECTOR_START_SPACE;
     init->bytes_per_item = data_size;
+    /* TODO: alloc marker */
     init->data = malloc(init->item_capacity * init->bytes_per_item);
     if (!init->data) {
         free(init);
@@ -105,6 +107,7 @@ bk_bool vector_is_empty(vector me)
  */
 static bk_err vector_set_space(vector me, const int size)
 {
+    /* TODO: alloc marker */
     char *const temp = realloc(me->data, size * me->bytes_per_item);
     if (!temp) {
         return -BK_ENOMEM;
@@ -223,6 +226,7 @@ bk_err vector_add_at(vector me, const size_t index, void *const data)
     if (me->item_count + 1 >= me->item_capacity) {
         const size_t new_space =
                 (size_t) (me->item_capacity * BKTHOMPS_VECTOR_RESIZE_RATIO);
+        /* TODO: alloc marker */
         char *const temp = realloc(me->data, new_space * me->bytes_per_item);
         if (!temp) {
             return -BK_ENOMEM;

@@ -61,6 +61,7 @@ multiset multiset_init(const size_t key_size,
     if (key_size == 0 || !comparator) {
         return NULL;
     }
+    /* TODO: alloc marker */
     init = malloc(sizeof(struct internal_multiset));
     if (!init) {
         return NULL;
@@ -291,6 +292,7 @@ static void multiset_insert_balance(multiset me, char *const item)
 static char *multiset_create_node(multiset me, const void *const data,
                                   char *const parent)
 {
+    /* TODO: alloc marker */
     char *insert = malloc(1 + count_size + 3 * ptr_size + me->key_size);
     const size_t one = 1;
     if (!insert) {

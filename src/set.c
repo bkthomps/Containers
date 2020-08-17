@@ -55,6 +55,7 @@ set set_init(const size_t key_size,
     if (key_size == 0 || !comparator) {
         return NULL;
     }
+    /* TODO: alloc marker */
     init = malloc(sizeof(struct internal_set));
     if (!init) {
         return NULL;
@@ -277,6 +278,7 @@ static void set_insert_balance(set me, char *const item)
  */
 static char *set_create_node(set me, const void *const data, char *const parent)
 {
+    /* TODO: alloc marker */
     char *insert = malloc(1 + 3 * ptr_size + me->key_size);
     if (!insert) {
         return NULL;
