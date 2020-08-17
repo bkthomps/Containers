@@ -21,7 +21,6 @@
  */
 
 #include <string.h>
-#include <errno.h>
 #include "include/array.h"
 
 static const size_t book_keeping_size = sizeof(size_t);
@@ -105,7 +104,7 @@ void array_copy_to_array(void *const arr, array me)
  * raw array. This pointer is not a copy, thus any modification to the data will
  * cause the array structure data to be modified. Operations using the array
  * functions may invalidate this pointer. The array owns this memory, thus it
- * should not be freed.
+ * should not be freed. If the array size if 0, this should not be used.
  *
  * @param me the array to get the storage element from
  *
@@ -132,20 +131,20 @@ void *array_get_data(array me)
  * @param index the location to set data at in the array
  * @param data  the data to set at the location in the array
  *
- * @return 0       if no error
- * @return -EINVAL if invalid argument
+ * @return  BK_OK     if no error
+ * @return -BK_EINVAL if invalid argument
  */
-int array_set(array me, const size_t index, void *const data)
+bk_err array_set(array me, const size_t index, void *const data)
 {
     size_t element_count;
     size_t data_size;
     memcpy(&element_count, me + arr_size_offset, book_keeping_size);
     if (index >= element_count) {
-        return -EINVAL;
+        return -BK_EINVAL;
     }
     memcpy(&data_size, me + data_size_offset, book_keeping_size);
     memcpy(me + data_ptr_offset + index * data_size, data, data_size);
-    return 0;
+    return BK_OK;
 }
 
 /**
@@ -160,20 +159,20 @@ int array_set(array me, const size_t index, void *const data)
  * @param me    the array to copy from
  * @param index the index to copy from in the array
  *
- * @return 0       if no error
- * @return -EINVAL if invalid argument
+ * @return  BK_OK     if no error
+ * @return -BK_EINVAL if invalid argument
  */
-int array_get(void *const data, array me, const size_t index)
+bk_err array_get(void *const data, array me, const size_t index)
 {
     size_t element_count;
     size_t data_size;
     memcpy(&element_count, me + arr_size_offset, book_keeping_size);
     if (index >= element_count) {
-        return -EINVAL;
+        return -BK_EINVAL;
     }
     memcpy(&data_size, me + data_size_offset, book_keeping_size);
     memcpy(data, me + data_ptr_offset + index * data_size, data_size);
-    return 0;
+    return BK_OK;
 }
 
 /**

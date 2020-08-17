@@ -21,7 +21,6 @@
  */
 
 #include <string.h>
-#include <errno.h>
 #include "include/set.h"
 
 struct internal_set {
@@ -84,9 +83,9 @@ size_t set_size(set me)
  *
  * @param me the set to check
  *
- * @return 1 if the set is empty, otherwise 0
+ * @return BK_TRUE if the set is empty, otherwise BK_FALSE
  */
-int set_is_empty(set me)
+bk_bool set_is_empty(set me)
 {
     return set_size(me) == 0;
 }
@@ -301,19 +300,19 @@ static char *set_create_node(set me, const void *const data, char *const parent)
  * @param me  the set to add to
  * @param key the key to add
  *
- * @return 0       if no error
- * @return -ENOMEM if out of memory
+ * @return  BK_OK     if no error
+ * @return -BK_ENOMEM if out of memory
  */
-int set_put(set me, void *const key)
+bk_err set_put(set me, void *const key)
 {
     char *traverse;
     if (!me->root) {
         char *insert = set_create_node(me, key, NULL);
         if (!insert) {
-            return -ENOMEM;
+            return -BK_ENOMEM;
         }
         me->root = insert;
-        return 0;
+        return BK_OK;
     }
     traverse = me->root;
     for (;;) {
@@ -326,11 +325,11 @@ int set_put(set me, void *const key)
             } else {
                 char *insert = set_create_node(me, key, traverse);
                 if (!insert) {
-                    return -ENOMEM;
+                    return -BK_ENOMEM;
                 }
                 memcpy(traverse + node_left_child_offset, &insert, ptr_size);
                 set_insert_balance(me, insert);
-                return 0;
+                return BK_OK;
             }
         } else if (compare > 0) {
             char *traverse_right;
@@ -341,14 +340,14 @@ int set_put(set me, void *const key)
             } else {
                 char *insert = set_create_node(me, key, traverse);
                 if (!insert) {
-                    return -ENOMEM;
+                    return -BK_ENOMEM;
                 }
                 memcpy(traverse + node_right_child_offset, &insert, ptr_size);
                 set_insert_balance(me, insert);
-                return 0;
+                return BK_OK;
             }
         } else {
-            return 0;
+            return BK_OK;
         }
     }
 }
@@ -397,9 +396,9 @@ static char *set_equal_match(set me, const void *const key)
  * @param me  the set to check for the key
  * @param key the key to check
  *
- * @return 1 if the set contained the key, otherwise 0
+ * @return BK_TRUE if the set contained the key, otherwise BK_FALSE
  */
-int set_contains(set me, void *const key)
+bk_bool set_contains(set me, void *const key)
 {
     return set_equal_match(me, key) != NULL;
 }
@@ -670,16 +669,16 @@ static void set_remove_element(set me, char *const traverse)
  * @param me  the set to remove an key from
  * @param key the key to remove
  *
- * @return 1 if the set contained the key, otherwise 0
+ * @return BK_TRUE if the set contained the key, otherwise BK_FALSE
  */
-int set_remove(set me, void *const key)
+bk_err set_remove(set me, void *const key)
 {
     char *const traverse = set_equal_match(me, key);
     if (!traverse) {
-        return 0;
+        return BK_FALSE;
     }
     set_remove_element(me, traverse);
-    return 1;
+    return BK_TRUE;
 }
 
 /**

@@ -21,7 +21,6 @@
  */
 
 #include <string.h>
-#include <errno.h>
 #include "include/map.h"
 
 struct internal_map {
@@ -88,9 +87,9 @@ size_t map_size(map me)
  *
  * @param me the map to check
  *
- * @return 1 if the map is empty, otherwise 0
+ * @return BK_TRUE if the map is empty, otherwise BK_FALSE
  */
-int map_is_empty(map me)
+bk_bool map_is_empty(map me)
 {
     return map_size(me) == 0;
 }
@@ -309,19 +308,19 @@ static char *map_create_node(map me, const void *const key,
  * @param key   the key to add
  * @param value the value to add
  *
- * @return 0       if no error
- * @return -ENOMEM if out of memory
+ * @return  BK_OK     if no error
+ * @return -BK_ENOMEM if out of memory
  */
-int map_put(map me, void *const key, void *const value)
+bk_err map_put(map me, void *const key, void *const value)
 {
     char *traverse;
     if (!me->root) {
         char *insert = map_create_node(me, key, value, NULL);
         if (!insert) {
-            return -ENOMEM;
+            return -BK_ENOMEM;
         }
         me->root = insert;
-        return 0;
+        return BK_OK;
     }
     traverse = me->root;
     for (;;) {
@@ -334,11 +333,11 @@ int map_put(map me, void *const key, void *const value)
             } else {
                 char *insert = map_create_node(me, key, value, traverse);
                 if (!insert) {
-                    return -ENOMEM;
+                    return -BK_ENOMEM;
                 }
                 memcpy(traverse + node_left_child_offset, &insert, ptr_size);
                 map_insert_balance(me, insert);
-                return 0;
+                return BK_OK;
             }
         } else if (compare > 0) {
             char *traverse_right;
@@ -349,16 +348,16 @@ int map_put(map me, void *const key, void *const value)
             } else {
                 char *insert = map_create_node(me, key, value, traverse);
                 if (!insert) {
-                    return -ENOMEM;
+                    return -BK_ENOMEM;
                 }
                 memcpy(traverse + node_right_child_offset, &insert, ptr_size);
                 map_insert_balance(me, insert);
-                return 0;
+                return BK_OK;
             }
         } else {
             memcpy(traverse + node_key_offset + me->key_size, value,
                    me->value_size);
-            return 0;
+            return BK_OK;
         }
     }
 }
@@ -409,16 +408,16 @@ static char *map_equal_match(map me, const void *const key)
  * @param me    the map to get from
  * @param key   the key to search for
  *
- * @return 1 if the map contained the key-value pair, otherwise 0
+ * @return BK_TRUE if the map contained the key-value pair, otherwise BK_FALSE
  */
-int map_get(void *const value, map me, void *const key)
+bk_bool map_get(void *const value, map me, void *const key)
 {
     char *const traverse = map_equal_match(me, key);
     if (!traverse) {
-        return 0;
+        return BK_FALSE;
     }
     memcpy(value, traverse + node_key_offset + me->key_size, me->value_size);
-    return 1;
+    return BK_TRUE;
 }
 
 /**
@@ -431,9 +430,9 @@ int map_get(void *const value, map me, void *const key)
  * @param me  the map to check for the element
  * @param key the key to check
  *
- * @return 1 if the map contained the element, otherwise 0
+ * @return BK_TRUE if the map contained the element, otherwise BK_FALSE
  */
-int map_contains(map me, void *const key)
+bk_bool map_contains(map me, void *const key)
 {
     return map_equal_match(me, key) != NULL;
 }
@@ -704,16 +703,16 @@ static void map_remove_element(map me, char *const traverse)
  * @param me  the map to remove an element from
  * @param key the key to remove
  *
- * @return 1 if the map contained the key-value pair, otherwise 0
+ * @return BK_TRUE if the map contained the key-value pair, otherwise BK_FALSE
  */
-int map_remove(map me, void *const key)
+bk_bool map_remove(map me, void *const key)
 {
     char *const traverse = map_equal_match(me, key);
     if (!traverse) {
-        return 0;
+        return BK_FALSE;
     }
     map_remove_element(me, traverse);
-    return 1;
+    return BK_TRUE;
 }
 
 /**

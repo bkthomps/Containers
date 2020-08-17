@@ -23,7 +23,7 @@
 #ifndef BKTHOMPS_CONTAINERS_SET_H
 #define BKTHOMPS_CONTAINERS_SET_H
 
-#include <stdlib.h>
+#include "all.h"
 
 /**
  * The set data structure, which is a collection of unique keys, sorted by keys.
@@ -36,12 +36,12 @@ set set_init(size_t key_size,
 
 /* Capacity */
 size_t set_size(set me);
-int set_is_empty(set me);
+bk_bool set_is_empty(set me);
 
 /* Accessing */
-int set_put(set me, void *key);
-int set_contains(set me, void *key);
-int set_remove(set me, void *key);
+bk_err set_put(set me, void *key);
+bk_bool set_contains(set me, void *key);
+bk_bool set_remove(set me, void *key);
 
 /* Ending */
 void set_clear(set me);

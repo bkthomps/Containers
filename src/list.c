@@ -21,7 +21,6 @@
  */
 
 #include <string.h>
-#include <errno.h>
 #include "include/list.h"
 
 struct internal_list {
@@ -79,9 +78,9 @@ size_t list_size(list me)
  *
  * @param me the doubly-linked list to check
  *
- * @return 1 if the list is empty, otherwise 0
+ * @return BK_TRUE if the list is empty, otherwise BK_FALSE
  */
-int list_is_empty(list me)
+bk_bool list_is_empty(list me)
 {
     return list_size(me) == 0;
 }
@@ -156,10 +155,10 @@ static char *list_get_node_at(list me, const size_t index)
  * @param me   the doubly-linked list to add data to
  * @param data the data to add to the doubly-linked list
  *
- * @return 0       if no error
- * @return -ENOMEM if out of memory
+ * @return  BK_OK     if no error
+ * @return -BK_ENOMEM if out of memory
  */
-int list_add_first(list me, void *const data)
+bk_err list_add_first(list me, void *const data)
 {
     return list_add_at(me, 0, data);
 }
@@ -175,19 +174,19 @@ int list_add_first(list me, void *const data)
  * @param index the index to add the data at
  * @param data  the data to add to the doubly-linked list
  *
- * @return 0       if no error
- * @return -ENOMEM if out of memory
- * @return -EINVAL if invalid argument
+ * @return  BK_OK     if no error
+ * @return -BK_ENOMEM if out of memory
+ * @return -BK_EINVAL if invalid argument
  */
-int list_add_at(list me, const size_t index, void *const data)
+bk_err list_add_at(list me, const size_t index, void *const data)
 {
     char *node;
     if (index > me->item_count) {
-        return -EINVAL;
+        return -BK_EINVAL;
     }
     node = malloc(2 * ptr_size + me->bytes_per_item);
     if (!node) {
-        return -ENOMEM;
+        return -BK_ENOMEM;
     }
     memcpy(node + node_data_ptr_offset, data, me->bytes_per_item);
     if (!me->head) {
@@ -217,7 +216,7 @@ int list_add_at(list me, const size_t index, void *const data)
         memcpy(traverse + node_prev_ptr_offset, &node, ptr_size);
     }
     me->item_count++;
-    return 0;
+    return BK_OK;
 }
 
 /**
@@ -230,10 +229,10 @@ int list_add_at(list me, const size_t index, void *const data)
  * @param me   the doubly-linked list to add data to
  * @param data the data to add to the doubly-linked list
  *
- * @return 0       if no error
- * @return -ENOMEM if out of memory
+ * @return  BK_OK     if no error
+ * @return -BK_ENOMEM if out of memory
  */
-int list_add_last(list me, void *const data)
+bk_err list_add_last(list me, void *const data)
 {
     return list_add_at(me, me->item_count, data);
 }
@@ -243,10 +242,10 @@ int list_add_last(list me, void *const data)
  *
  * @param me the doubly-linked list to remove data from
  *
- * @return 0       if no error
- * @return -EINVAL if invalid argument
+ * @return  BK_OK     if no error
+ * @return -BK_EINVAL if invalid argument
  */
-int list_remove_first(list me)
+bk_err list_remove_first(list me)
 {
     return list_remove_at(me, 0);
 }
@@ -257,14 +256,14 @@ int list_remove_first(list me)
  * @param me    the doubly-linked list to remove data from
  * @param index the index to remove from
  *
- * @return 0       if no error
- * @return -EINVAL if invalid argument
+ * @return  BK_OK     if no error
+ * @return -BK_EINVAL if invalid argument
  */
-int list_remove_at(list me, const size_t index)
+bk_err list_remove_at(list me, const size_t index)
 {
     char *traverse;
     if (index >= me->item_count) {
-        return -EINVAL;
+        return -BK_EINVAL;
     }
     traverse = list_get_node_at(me, index);
     if (me->item_count == 1) {
@@ -290,7 +289,7 @@ int list_remove_at(list me, const size_t index)
     }
     free(traverse);
     me->item_count--;
-    return 0;
+    return BK_OK;
 }
 
 /**
@@ -298,10 +297,10 @@ int list_remove_at(list me, const size_t index)
  *
  * @param me the doubly-linked list to remove data from
  *
- * @return 0       if no error
- * @return -EINVAL if invalid argument
+ * @return  BK_OK     if no error
+ * @return -BK_EINVAL if invalid argument
  */
-int list_remove_last(list me)
+bk_err list_remove_last(list me)
 {
     return list_remove_at(me, me->item_count - 1);
 }
@@ -316,10 +315,10 @@ int list_remove_last(list me)
  * @param me   the doubly-linked list to set data for
  * @param data the data to set in the doubly-linked list
  *
- * @return 0       if no error
- * @return -EINVAL if invalid argument
+ * @return  BK_OK     if no error
+ * @return -BK_EINVAL if invalid argument
  */
-int list_set_first(list me, void *const data)
+bk_err list_set_first(list me, void *const data)
 {
     return list_set_at(me, 0, data);
 }
@@ -335,18 +334,18 @@ int list_set_first(list me, void *const data)
  * @param index the index to set data in the doubly-linked list
  * @param data  the data to set in the doubly-linked list
  *
- * @return 0       if no error
- * @return -EINVAL if invalid argument
+ * @return  BK_OK     if no error
+ * @return -BK_EINVAL if invalid argument
  */
-int list_set_at(list me, const size_t index, void *const data)
+bk_err list_set_at(list me, const size_t index, void *const data)
 {
     char *traverse;
     if (index >= me->item_count) {
-        return -EINVAL;
+        return -BK_EINVAL;
     }
     traverse = list_get_node_at(me, index);
     memcpy(traverse + node_data_ptr_offset, data, me->bytes_per_item);
-    return 0;
+    return BK_OK;
 }
 
 /**
@@ -359,10 +358,10 @@ int list_set_at(list me, const size_t index, void *const data)
  * @param me   the doubly-linked list to set data for
  * @param data the data to set in the doubly-linked list
  *
- * @return 0       if no error
- * @return -EINVAL if invalid argument
+ * @return  BK_OK     if no error
+ * @return -BK_EINVAL if invalid argument
  */
-int list_set_last(list me, void *const data)
+bk_err list_set_last(list me, void *const data)
 {
     return list_set_at(me, me->item_count - 1, data);
 }
@@ -378,10 +377,10 @@ int list_set_last(list me, void *const data)
  * @param data the data to get
  * @param me   the doubly-linked list to get data from
  *
- * @return 0       if no error
- * @return -EINVAL if invalid argument
+ * @return  BK_OK     if no error
+ * @return -BK_EINVAL if invalid argument
  */
-int list_get_first(void *const data, list me)
+bk_err list_get_first(void *const data, list me)
 {
     return list_get_at(data, me, 0);
 }
@@ -398,18 +397,18 @@ int list_get_first(void *const data, list me)
  * @param me    the doubly-linked list to get data from
  * @param index the index to get data from
  *
- * @return 0       if no error
- * @return -EINVAL if invalid argument
+ * @return  BK_OK     if no error
+ * @return -BK_EINVAL if invalid argument
  */
-int list_get_at(void *const data, list me, const size_t index)
+bk_err list_get_at(void *const data, list me, const size_t index)
 {
     char *traverse;
     if (index >= me->item_count) {
-        return -EINVAL;
+        return -BK_EINVAL;
     }
     traverse = list_get_node_at(me, index);
     memcpy(data, traverse + node_data_ptr_offset, me->bytes_per_item);
-    return 0;
+    return BK_OK;
 }
 
 /**
@@ -423,10 +422,10 @@ int list_get_at(void *const data, list me, const size_t index)
  * @param data the data to get
  * @param me   the doubly-linked list to get data from
  *
- * @return 0       if no error
- * @return -EINVAL if invalid argument
+ * @return  BK_OK     if no error
+ * @return -BK_EINVAL if invalid argument
  */
-int list_get_last(void *const data, list me)
+bk_err list_get_last(void *const data, list me)
 {
     return list_get_at(data, me, me->item_count - 1);
 }

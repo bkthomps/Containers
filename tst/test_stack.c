@@ -1,4 +1,3 @@
-#include <limits.h>
 #include "test.h"
 #include "../src/include/stack.h"
 

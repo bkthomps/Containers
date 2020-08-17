@@ -55,9 +55,9 @@ size_t stack_size(stack me)
  *
  * @param me the stack to check if empty
  *
- * @return 1 if the stack is empty, otherwise 0
+ * @return BK_TRUE if the stack is empty, otherwise BK_FALSE
  */
-int stack_is_empty(stack me)
+bk_bool stack_is_empty(stack me)
 {
     return deque_is_empty(me);
 }
@@ -67,10 +67,10 @@ int stack_is_empty(stack me)
  *
  * @param me the stack to trim
  *
- * @return 0       if no error
- * @return -ENOMEM if out of memory
+ * @return  BK_OK     if no error
+ * @return -BK_ENOMEM if out of memory
  */
-int stack_trim(stack me)
+bk_err stack_trim(stack me)
 {
     return deque_trim(me);
 }
@@ -99,10 +99,10 @@ void stack_copy_to_array(void *const arr, stack me)
  * @param me   the stack to add an element to
  * @param data the data to add to the stack
  *
- * @return 0       if no error
- * @return -ENOMEM if out of memory
+ * @return  BK_OK     if no error
+ * @return -BK_ENOMEM if out of memory
  */
-int stack_push(stack me, void *const data)
+bk_err stack_push(stack me, void *const data)
 {
     return deque_push_back(me, data);
 }
@@ -118,9 +118,9 @@ int stack_push(stack me, void *const data)
  * @param data the copy of the element being removed
  * @param me   the stack to remove the top element from
  *
- * @return 1 if the stack contained elements, otherwise 0
+ * @return BK_TRUE if the stack contained elements, otherwise BK_FALSE
  */
-int stack_pop(void *const data, stack me)
+bk_bool stack_pop(void *const data, stack me)
 {
     return deque_pop_back(data, me) == 0;
 }
@@ -135,9 +135,9 @@ int stack_pop(void *const data, stack me)
  * @param data the copy of the top element of the stack
  * @param me   the stack to copy from
  *
- * @return 1 if the stack contained elements, otherwise 0
+ * @return BK_TRUE if the stack contained elements, otherwise BK_FALSE
  */
-int stack_top(void *const data, stack me)
+bk_bool stack_top(void *const data, stack me)
 {
     return deque_get_last(data, me) == 0;
 }
@@ -147,10 +147,10 @@ int stack_top(void *const data, stack me)
  *
  * @param me the stack to clear
  *
- * @return 0       if no error
- * @return -ENOMEM if out of memory
+ * @return  BK_OK     if no error
+ * @return -BK_ENOMEM if out of memory
  */
-int stack_clear(stack me)
+bk_err stack_clear(stack me)
 {
     return deque_clear(me);
 }

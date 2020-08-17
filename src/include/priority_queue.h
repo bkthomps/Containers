@@ -23,7 +23,7 @@
 #ifndef BKTHOMPS_CONTAINERS_PRIORITY_QUEUE_H
 #define BKTHOMPS_CONTAINERS_PRIORITY_QUEUE_H
 
-#include <stdlib.h>
+#include "all.h"
 
 /**
  * The priority_queue data structure, which adapts a container to provide a
@@ -38,19 +38,19 @@ priority_queue priority_queue_init(size_t data_size,
 
 /* Utility */
 size_t priority_queue_size(priority_queue me);
-int priority_queue_is_empty(priority_queue me);
+bk_bool priority_queue_is_empty(priority_queue me);
 
 /* Adding */
-int priority_queue_push(priority_queue me, void *data);
+bk_err priority_queue_push(priority_queue me, void *data);
 
 /* Removing */
-int priority_queue_pop(void *data, priority_queue me);
+bk_bool priority_queue_pop(void *data, priority_queue me);
 
 /* Getting */
-int priority_queue_front(void *data, priority_queue me);
+bk_bool priority_queue_front(void *data, priority_queue me);
 
 /* Ending */
-int priority_queue_clear(priority_queue me);
+bk_err priority_queue_clear(priority_queue me);
 priority_queue priority_queue_destroy(priority_queue me);
 
 #endif /* BKTHOMPS_CONTAINERS_PRIORITY_QUEUE_H */

@@ -21,7 +21,6 @@
  */
 
 #include <string.h>
-#include <errno.h>
 #include "include/vector.h"
 
 #define BKTHOMPS_VECTOR_START_SPACE 8
@@ -93,9 +92,9 @@ size_t vector_capacity(vector me)
  *
  * @param me the vector to check
  *
- * @return 1 if the vector is empty, otherwise 0
+ * @return BK_TRUE if the vector is empty, otherwise BK_FALSE
  */
-int vector_is_empty(vector me)
+bk_bool vector_is_empty(vector me)
 {
     return vector_size(me) == 0;
 }
@@ -104,15 +103,15 @@ int vector_is_empty(vector me)
  * Sets the space of the buffer. Assumes that size is at least the same as the
  * number of items currently in the vector.
  */
-static int vector_set_space(vector me, const int size)
+static bk_err vector_set_space(vector me, const int size)
 {
     char *const temp = realloc(me->data, size * me->bytes_per_item);
     if (!temp) {
-        return -ENOMEM;
+        return -BK_ENOMEM;
     }
     me->item_capacity = size;
     me->data = temp;
-    return 0;
+    return BK_OK;
 }
 
 /**
@@ -122,13 +121,13 @@ static int vector_set_space(vector me, const int size)
  * @param me   the vector to reserve space for
  * @param size the space to reserve
  *
- * @return 0       if no error
- * @return -ENOMEM if out of memory
+ * @return  BK_OK     if no error
+ * @return -BK_ENOMEM if out of memory
  */
-int vector_reserve(vector me, size_t size)
+bk_err vector_reserve(vector me, size_t size)
 {
     if (me->item_capacity >= size) {
-        return 0;
+        return BK_OK;
     }
     return vector_set_space(me, size);
 }
@@ -138,10 +137,10 @@ int vector_reserve(vector me, size_t size)
  *
  * @param me the vector to trim
  *
- * @return 0       if no error
- * @return -ENOMEM if out of memory
+ * @return  BK_OK     if no error
+ * @return -BK_ENOMEM if out of memory
  */
-int vector_trim(vector me)
+bk_err vector_trim(vector me)
 {
     return vector_set_space(me, me->item_count);
 }
@@ -171,7 +170,8 @@ void vector_copy_to_array(void *const arr, vector me)
  * the queried array. This pointer is not a copy, thus any modification to the
  * data will cause the vector structure data to be modified. Operations using
  * the vector functions may invalidate this pointer. The vector owns this
- * memory, thus it should not be freed.
+ * memory, thus it should not be freed. This should not be used if the vector
+ * is empty.
  *
  * @param me the vector to get the storage element from
  *
@@ -192,10 +192,10 @@ void *vector_get_data(vector me)
  * @param me   the vector to add to
  * @param data the data to add to the vector
  *
- * @return 0       if no error
- * @return -ENOMEM if out of memory
+ * @return  BK_OK     if no error
+ * @return -BK_ENOMEM if out of memory
  */
-int vector_add_first(vector me, void *const data)
+bk_err vector_add_first(vector me, void *const data)
 {
     return vector_add_at(me, 0, data);
 }
@@ -211,21 +211,21 @@ int vector_add_first(vector me, void *const data)
  * @param index the location in the vector to add the data to
  * @param data  the data to add to the vector
  *
- * @return 0       if no error
- * @return -ENOMEM if out of memory
- * @return -EINVAL if invalid argument
+ * @return  BK_OK     if no error
+ * @return -BK_ENOMEM if out of memory
+ * @return -BK_EINVAL if invalid argument
  */
-int vector_add_at(vector me, const size_t index, void *const data)
+bk_err vector_add_at(vector me, const size_t index, void *const data)
 {
     if (index > me->item_count) {
-        return -EINVAL;
+        return -BK_EINVAL;
     }
     if (me->item_count + 1 >= me->item_capacity) {
         const size_t new_space =
                 (size_t) (me->item_capacity * BKTHOMPS_VECTOR_RESIZE_RATIO);
         char *const temp = realloc(me->data, new_space * me->bytes_per_item);
         if (!temp) {
-            return -ENOMEM;
+            return -BK_ENOMEM;
         }
         me->data = temp;
         me->item_capacity = new_space;
@@ -237,7 +237,7 @@ int vector_add_at(vector me, const size_t index, void *const data)
     }
     memcpy(me->data + index * me->bytes_per_item, data, me->bytes_per_item);
     me->item_count++;
-    return 0;
+    return BK_OK;
 }
 
 /**
@@ -246,10 +246,10 @@ int vector_add_at(vector me, const size_t index, void *const data)
  * @param me   the vector to add to
  * @param data the data to add to the vector
  *
- * @return 0       if no error
- * @return -ENOMEM if out of memory
+ * @return  BK_OK     if no error
+ * @return -BK_ENOMEM if out of memory
  */
-int vector_add_last(vector me, void *const data)
+bk_err vector_add_last(vector me, void *const data)
 {
     return vector_add_at(me, me->item_count, data);
 }
@@ -259,10 +259,10 @@ int vector_add_last(vector me, void *const data)
  *
  * @param me the vector to remove from
  *
- * @return 0       if no error
- * @return -EINVAL if invalid argument
+ * @return  BK_OK     if no error
+ * @return -BK_EINVAL if invalid argument
  */
-int vector_remove_first(vector me)
+bk_err vector_remove_first(vector me)
 {
     return vector_remove_at(me, 0);
 }
@@ -273,19 +273,19 @@ int vector_remove_first(vector me)
  * @param me    the vector to remove from
  * @param index the location in the vector to remove the data from
  *
- * @return 0       if no error
- * @return -EINVAL if invalid argument
+ * @return  BK_OK     if no error
+ * @return -BK_EINVAL if invalid argument
  */
-int vector_remove_at(vector me, const size_t index)
+bk_err vector_remove_at(vector me, const size_t index)
 {
     if (index >= me->item_count) {
-        return -EINVAL;
+        return -BK_EINVAL;
     }
     me->item_count--;
     memmove(me->data + index * me->bytes_per_item,
             me->data + (index + 1) * me->bytes_per_item,
             (me->item_count - index) * me->bytes_per_item);
-    return 0;
+    return BK_OK;
 }
 
 /**
@@ -293,16 +293,16 @@ int vector_remove_at(vector me, const size_t index)
  *
  * @param me the vector to remove from
  *
- * @return 0       if no error
- * @return -EINVAL if invalid argument
+ * @return  BK_OK     if no error
+ * @return -BK_EINVAL if invalid argument
  */
-int vector_remove_last(vector me)
+bk_err vector_remove_last(vector me)
 {
     if (me->item_count == 0) {
-        return -EINVAL;
+        return -BK_EINVAL;
     }
     me->item_count--;
-    return 0;
+    return BK_OK;
 }
 
 /**
@@ -315,10 +315,10 @@ int vector_remove_last(vector me)
  * @param me   the vector to set data for
  * @param data the data to set at the start of the vector
  *
- * @return 0       if no error
- * @return -EINVAL if invalid argument
+ * @return  BK_OK     if no error
+ * @return -BK_EINVAL if invalid argument
  */
-int vector_set_first(vector me, void *const data)
+bk_err vector_set_first(vector me, void *const data)
 {
     return vector_set_at(me, 0, data);
 }
@@ -334,16 +334,16 @@ int vector_set_first(vector me, void *const data)
  * @param index the location to set data at in the vector
  * @param data  the data to set at the location in the vector
  *
- * @return 0       if no error
- * @return -EINVAL if invalid argument
+ * @return  BK_OK     if no error
+ * @return -BK_EINVAL if invalid argument
  */
-int vector_set_at(vector me, const size_t index, void *const data)
+bk_err vector_set_at(vector me, const size_t index, void *const data)
 {
     if (index >= me->item_count) {
-        return -EINVAL;
+        return -BK_EINVAL;
     }
     memcpy(me->data + index * me->bytes_per_item, data, me->bytes_per_item);
-    return 0;
+    return BK_OK;
 }
 
 /**
@@ -356,10 +356,10 @@ int vector_set_at(vector me, const size_t index, void *const data)
  * @param me   the vector to set data for
  * @param data the data to set at the end of the vector
  *
- * @return 0       if no error
- * @return -EINVAL if invalid argument
+ * @return  BK_OK     if no error
+ * @return -BK_EINVAL if invalid argument
  */
-int vector_set_last(vector me, void *const data)
+bk_err vector_set_last(vector me, void *const data)
 {
     return vector_set_at(me, me->item_count - 1, data);
 }
@@ -374,10 +374,10 @@ int vector_set_last(vector me, void *const data)
  * @param data the data to copy to
  * @param me   the vector to copy from
  *
- * @return 0       if no error
- * @return -EINVAL if invalid argument
+ * @return  BK_OK     if no error
+ * @return -BK_EINVAL if invalid argument
  */
-int vector_get_first(void *const data, vector me)
+bk_err vector_get_first(void *const data, vector me)
 {
     return vector_get_at(data, me, 0);
 }
@@ -393,16 +393,16 @@ int vector_get_first(void *const data, vector me)
  * @param me    the vector to copy from
  * @param index the index to copy from in the vector
  *
- * @return 0       if no error
- * @return -EINVAL if invalid argument
+ * @return  BK_OK     if no error
+ * @return -BK_EINVAL if invalid argument
  */
-int vector_get_at(void *const data, vector me, const size_t index)
+bk_err vector_get_at(void *const data, vector me, const size_t index)
 {
     if (index >= me->item_count) {
-        return -EINVAL;
+        return -BK_EINVAL;
     }
     memcpy(data, me->data + index * me->bytes_per_item, me->bytes_per_item);
-    return 0;
+    return BK_OK;
 }
 
 /**
@@ -415,10 +415,10 @@ int vector_get_at(void *const data, vector me, const size_t index)
  * @param data the data to copy to
  * @param me   the vector to copy from
  *
- * @return 0       if no error
- * @return -EINVAL if invalid argument
+ * @return  BK_OK     if no error
+ * @return -BK_EINVAL if invalid argument
  */
-int vector_get_last(void *const data, vector me)
+bk_err vector_get_last(void *const data, vector me)
 {
     return vector_get_at(data, me, me->item_count - 1);
 }
@@ -428,10 +428,10 @@ int vector_get_last(void *const data, vector me)
  *
  * @param me the vector to clear
  *
- * @return 0       if no error
- * @return -ENOMEM if out of memory
+ * @return  BK_OK     if no error
+ * @return -BK_ENOMEM if out of memory
  */
-int vector_clear(vector me)
+bk_err vector_clear(vector me)
 {
     me->item_count = 0;
     return vector_set_space(me, BKTHOMPS_VECTOR_START_SPACE);

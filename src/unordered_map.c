@@ -21,7 +21,6 @@
  */
 
 #include <string.h>
-#include <errno.h>
 #include "include/unordered_map.h"
 
 #define BKTHOMPS_U_MAP_STARTING_BUCKETS 16
@@ -133,17 +132,17 @@ static void unordered_map_add_item(unordered_map me, char *const add)
  *
  * @param me the unordered map to rehash
  *
- * @return 0       if no error
- * @return -ENOMEM if out of memory
+ * @return  BK_OK     if no error
+ * @return -BK_ENOMEM if out of memory
  */
-int unordered_map_rehash(unordered_map me)
+bk_err unordered_map_rehash(unordered_map me)
 {
     size_t i;
     char **old_buckets = me->buckets;
     me->buckets = calloc(me->capacity, ptr_size);
     if (!me->buckets) {
         me->buckets = old_buckets;
-        return -ENOMEM;
+        return -BK_ENOMEM;
     }
     for (i = 0; i < me->capacity; i++) {
         char *traverse = old_buckets[i];
@@ -158,7 +157,7 @@ int unordered_map_rehash(unordered_map me)
         }
     }
     free(old_buckets);
-    return 0;
+    return BK_OK;
 }
 
 /**
@@ -178,9 +177,9 @@ size_t unordered_map_size(unordered_map me)
  *
  * @param me the unordered map to check
  *
- * @return 1 if the unordered map is empty, otherwise 0
+ * @return BK_TRUE if the unordered map is empty, otherwise BK_FALSE
  */
-int unordered_map_is_empty(unordered_map me)
+bk_bool unordered_map_is_empty(unordered_map me)
 {
     return unordered_map_size(me) == 0;
 }
@@ -188,7 +187,7 @@ int unordered_map_is_empty(unordered_map me)
 /*
  * Increases the size of the map and redistributes the nodes.
  */
-static int unordered_map_resize(unordered_map me)
+static bk_err unordered_map_resize(unordered_map me)
 {
     size_t i;
     const size_t old_capacity = me->capacity;
@@ -197,7 +196,7 @@ static int unordered_map_resize(unordered_map me)
     me->buckets = calloc(new_capacity, ptr_size);
     if (!me->buckets) {
         me->buckets = old_buckets;
-        return -ENOMEM;
+        return -BK_ENOMEM;
     }
     me->capacity = new_capacity;
     for (i = 0; i < old_capacity; i++) {
@@ -210,15 +209,15 @@ static int unordered_map_resize(unordered_map me)
         }
     }
     free(old_buckets);
-    return 0;
+    return BK_OK;
 }
 
 /*
  * Determines if an element is equal to the key.
  */
-static int unordered_map_is_equal(unordered_map me, char *const item,
-                                  const unsigned long hash,
-                                  const void *const key)
+static bk_bool unordered_map_is_equal(unordered_map me, char *const item,
+                                      const unsigned long hash,
+                                      const void *const key)
 {
     unsigned long item_hash;
     memcpy(&item_hash, item + node_hash_offset, hash_size);
@@ -258,24 +257,24 @@ static char *unordered_map_create_element(unordered_map me,
  * @param key   the key to add
  * @param value the value to add
  *
- * @return 0       if no error
- * @return -ENOMEM if out of memory
+ * @return  BK_OK     if no error
+ * @return -BK_ENOMEM if out of memory
  */
-int unordered_map_put(unordered_map me, void *const key, void *const value)
+bk_err unordered_map_put(unordered_map me, void *const key, void *const value)
 {
     const unsigned long hash = unordered_map_hash(me, key);
-    int index;
+    size_t index;
     if (me->size + 1 >= (size_t) (BKTHOMPS_U_MAP_RESIZE_AT * me->capacity)) {
-        const int rc = unordered_map_resize(me);
-        if (rc != 0) {
+        const bk_err rc = unordered_map_resize(me);
+        if (rc != BK_OK) {
             return rc;
         }
     }
-    index = (size_t) (hash % me->capacity);
+    index = hash % me->capacity;
     if (!me->buckets[index]) {
         me->buckets[index] = unordered_map_create_element(me, hash, key, value);
         if (!me->buckets[index]) {
-            return -ENOMEM;
+            return -BK_ENOMEM;
         }
     } else {
         char *traverse = me->buckets[index];
@@ -283,7 +282,7 @@ int unordered_map_put(unordered_map me, void *const key, void *const value)
         if (unordered_map_is_equal(me, traverse, hash, key)) {
             memcpy(traverse + node_key_offset + me->key_size, value,
                    me->value_size);
-            return 0;
+            return BK_OK;
         }
         memcpy(&traverse_next, traverse + node_next_offset, ptr_size);
         while (traverse_next) {
@@ -292,17 +291,17 @@ int unordered_map_put(unordered_map me, void *const key, void *const value)
             if (unordered_map_is_equal(me, traverse, hash, key)) {
                 memcpy(traverse + node_key_offset + me->key_size, value,
                        me->value_size);
-                return 0;
+                return BK_OK;
             }
         }
         traverse_next = unordered_map_create_element(me, hash, key, value);
         if (!traverse_next) {
-            return -ENOMEM;
+            return -BK_ENOMEM;
         }
         memcpy(traverse + node_next_offset, &traverse_next, ptr_size);
     }
     me->size++;
-    return 0;
+    return BK_OK;
 }
 
 /**
@@ -317,9 +316,10 @@ int unordered_map_put(unordered_map me, void *const key, void *const value)
  * @param me    the unordered map to get from
  * @param key   the key to search for
  *
- * @return 1 if the unordered map contained the key-value pair, otherwise 0
+ * @return BK_TRUE if the unordered map contained the key-value pair,
+ *         otherwise BK_FALSE
  */
-int unordered_map_get(void *const value, unordered_map me, void *const key)
+bk_bool unordered_map_get(void *const value, unordered_map me, void *const key)
 {
     const unsigned long hash = unordered_map_hash(me, key);
     char *traverse = me->buckets[hash % me->capacity];
@@ -327,11 +327,11 @@ int unordered_map_get(void *const value, unordered_map me, void *const key)
         if (unordered_map_is_equal(me, traverse, hash, key)) {
             memcpy(value, traverse + node_key_offset + me->key_size,
                    me->value_size);
-            return 1;
+            return BK_TRUE;
         }
         memcpy(&traverse, traverse + node_next_offset, ptr_size);
     }
-    return 0;
+    return BK_FALSE;
 }
 
 /**
@@ -344,19 +344,19 @@ int unordered_map_get(void *const value, unordered_map me, void *const key)
  * @param me  the unordered map to check for the key
  * @param key the key to check
  *
- * @return 1 if the unordered map contained the key, otherwise 0
+ * @return BK_TRUE if the unordered map contained the key, otherwise BK_FALSE
  */
-int unordered_map_contains(unordered_map me, void *const key)
+bk_bool unordered_map_contains(unordered_map me, void *const key)
 {
     const unsigned long hash = unordered_map_hash(me, key);
     char *traverse = me->buckets[hash % me->capacity];
     while (traverse) {
         if (unordered_map_is_equal(me, traverse, hash, key)) {
-            return 1;
+            return BK_TRUE;
         }
         memcpy(&traverse, traverse + node_next_offset, ptr_size);
     }
-    return 0;
+    return BK_FALSE;
 }
 
 /**
@@ -369,23 +369,23 @@ int unordered_map_contains(unordered_map me, void *const key)
  * @param me  the unordered map to remove a key from
  * @param key the key to remove
  *
- * @return 1 if the unordered map contained the key, otherwise 0
+ * @return BK_TRUE if the unordered map contained the key, otherwise BK_FALSE
  */
-int unordered_map_remove(unordered_map me, void *const key)
+bk_bool unordered_map_remove(unordered_map me, void *const key)
 {
     char *traverse;
     char *traverse_next;
     const unsigned long hash = unordered_map_hash(me, key);
     const size_t index = hash % me->capacity;
     if (!me->buckets[index]) {
-        return 0;
+        return BK_FALSE;
     }
     traverse = me->buckets[index];
     if (unordered_map_is_equal(me, traverse, hash, key)) {
         memcpy(me->buckets + index, traverse + node_next_offset, ptr_size);
         free(traverse);
         me->size--;
-        return 1;
+        return BK_TRUE;
     }
     memcpy(&traverse_next, traverse + node_next_offset, ptr_size);
     while (traverse_next) {
@@ -394,12 +394,12 @@ int unordered_map_remove(unordered_map me, void *const key)
                    traverse_next + node_next_offset, ptr_size);
             free(traverse_next);
             me->size--;
-            return 1;
+            return BK_TRUE;
         }
         traverse = traverse_next;
         memcpy(&traverse_next, traverse + node_next_offset, ptr_size);
     }
-    return 0;
+    return BK_FALSE;
 }
 
 /**
@@ -407,15 +407,15 @@ int unordered_map_remove(unordered_map me, void *const key)
  *
  * @param me the unordered map to clear
  *
- * @return 0       if no error
- * @return -ENOMEM if out of memory
+ * @return  BK_OK     if no error
+ * @return -BK_ENOMEM if out of memory
  */
 int unordered_map_clear(unordered_map me)
 {
     size_t i;
     char **updated_buckets = calloc(BKTHOMPS_U_MAP_STARTING_BUCKETS, ptr_size);
     if (!updated_buckets) {
-        return -ENOMEM;
+        return -BK_ENOMEM;
     }
     for (i = 0; i < me->capacity; i++) {
         char *traverse = me->buckets[i];
@@ -429,7 +429,7 @@ int unordered_map_clear(unordered_map me)
     me->size = 0;
     me->capacity = BKTHOMPS_U_MAP_STARTING_BUCKETS;
     me->buckets = updated_buckets;
-    return 0;
+    return BK_OK;
 }
 
 /**
