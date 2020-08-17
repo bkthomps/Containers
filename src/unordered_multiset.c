@@ -260,7 +260,7 @@ static char *unordered_multiset_create_element(unordered_multiset me,
 bk_err unordered_multiset_put(unordered_multiset me, void *const key)
 {
     const unsigned long hash = unordered_multiset_hash(me, key);
-    int index;
+    size_t index;
     if (me->used + 1 >=
         (size_t) (BKTHOMPS_U_MULTISET_RESIZE_AT * me->capacity)) {
         const bk_err rc = unordered_multiset_resize(me);
@@ -268,7 +268,7 @@ bk_err unordered_multiset_put(unordered_multiset me, void *const key)
             return rc;
         }
     }
-    index = (size_t) (hash % me->capacity);
+    index = hash % me->capacity;
     if (!me->buckets[index]) {
         me->buckets[index] = unordered_multiset_create_element(me, hash, key);
         if (!me->buckets[index]) {

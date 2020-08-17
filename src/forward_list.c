@@ -139,7 +139,7 @@ static char *forward_list_get_node_at(forward_list me, const size_t index)
  * @param data the data to add to the singly-linked list
  *
  * @return  BK_OK     if no error
- * @return -BK_EINVAL if invalid argument
+ * @return -BK_ENOMEM if out of memory
  */
 bk_err forward_list_add_first(forward_list me, void *const data)
 {
@@ -202,7 +202,7 @@ bk_err forward_list_add_at(forward_list me, const size_t index,
  * @param data the data to add to the singly-linked list
  *
  * @return  BK_OK     if no error
- * @return -BK_EINVAL if invalid argument
+ * @return -BK_ENOMEM if out of memory
  */
 bk_err forward_list_add_last(forward_list me, void *const data)
 {
@@ -214,8 +214,8 @@ bk_err forward_list_add_last(forward_list me, void *const data)
  *
  * @param me the singly-linked list to remove data from
  *
- * @return 0       if no error
- * @return -EINVAL if invalid argument
+ * @return  BK_OK     if no error
+ * @return -BK_EINVAL if invalid argument
  */
 bk_err forward_list_remove_first(forward_list me)
 {

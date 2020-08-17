@@ -504,7 +504,7 @@ bk_bool unordered_multimap_remove(unordered_multimap me, void *const key,
 bk_bool unordered_multimap_remove_all(unordered_multimap me, void *const key)
 {
     const unsigned long hash = unordered_multimap_hash(me, key);
-    const size_t index = (size_t) (hash % me->capacity);
+    const size_t index = hash % me->capacity;
     bk_bool was_modified = BK_FALSE;
     for (;;) {
         char *traverse = me->buckets[index];

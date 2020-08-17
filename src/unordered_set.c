@@ -252,14 +252,14 @@ static char *unordered_set_create_element(unordered_set me,
 int unordered_set_put(unordered_set me, void *const key)
 {
     const unsigned long hash = unordered_set_hash(me, key);
-    int index;
+    size_t index;
     if (me->size + 1 >= (size_t) (BKTHOMPS_U_SET_RESIZE_AT * me->capacity)) {
         const bk_err rc = unordered_set_resize(me);
         if (rc != BK_OK) {
             return rc;
         }
     }
-    index = (size_t) (hash % me->capacity);
+    index = hash % me->capacity;
     if (!me->buckets[index]) {
         me->buckets[index] = unordered_set_create_element(me, hash, key);
         if (!me->buckets[index]) {
