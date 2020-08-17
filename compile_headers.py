@@ -47,7 +47,7 @@ version_file.write(header)
 version_file.close()
 
 folder_path = 'src/include'
-for filename in glob.glob(os.path.join(folder_path, '*.h')):
+for filename in sorted(glob.glob(os.path.join(folder_path, '*.h'))):
     with open(filename, 'r') as file:
         text = file.read()
         header += text.split("*/", 1)[1]
