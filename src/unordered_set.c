@@ -24,9 +24,9 @@
 #include <errno.h>
 #include "include/unordered_set.h"
 
-#define STARTING_BUCKETS 16
-#define RESIZE_AT 0.75
-#define RESIZE_RATIO 2
+#define BKTHOMPS_U_SET_STARTING_BUCKETS 16
+#define BKTHOMPS_U_SET_RESIZE_AT 0.75
+#define BKTHOMPS_U_SET_RESIZE_RATIO 2
 
 struct internal_unordered_set {
     size_t key_size;
@@ -86,8 +86,8 @@ unordered_set unordered_set_init(const size_t key_size,
     init->hash = hash;
     init->comparator = comparator;
     init->size = 0;
-    init->capacity = STARTING_BUCKETS;
-    init->buckets = calloc(STARTING_BUCKETS, ptr_size);
+    init->capacity = BKTHOMPS_U_SET_STARTING_BUCKETS;
+    init->buckets = calloc(BKTHOMPS_U_SET_STARTING_BUCKETS, ptr_size);
     if (!init->buckets) {
         free(init);
         return NULL;
@@ -185,7 +185,7 @@ static int unordered_set_resize(unordered_set me)
 {
     size_t i;
     const size_t old_capacity = me->capacity;
-    const size_t new_capacity = me->capacity * RESIZE_RATIO;
+    const size_t new_capacity = me->capacity * BKTHOMPS_U_SET_RESIZE_RATIO;
     char **old_buckets = me->buckets;
     me->buckets = calloc(new_capacity, ptr_size);
     if (!me->buckets) {
@@ -254,7 +254,7 @@ int unordered_set_put(unordered_set me, void *const key)
 {
     const unsigned long hash = unordered_set_hash(me, key);
     int index;
-    if (me->size + 1 >= (size_t) (RESIZE_AT * me->capacity)) {
+    if (me->size + 1 >= (size_t) (BKTHOMPS_U_SET_RESIZE_AT * me->capacity)) {
         const int rc = unordered_set_resize(me);
         if (rc != 0) {
             return rc;
@@ -369,7 +369,7 @@ int unordered_set_remove(unordered_set me, void *const key)
 int unordered_set_clear(unordered_set me)
 {
     size_t i;
-    char **updated_buckets = calloc(STARTING_BUCKETS, ptr_size);
+    char **updated_buckets = calloc(BKTHOMPS_U_SET_STARTING_BUCKETS, ptr_size);
     if (!updated_buckets) {
         return -ENOMEM;
     }
@@ -383,7 +383,7 @@ int unordered_set_clear(unordered_set me)
     }
     free(me->buckets);
     me->size = 0;
-    me->capacity = STARTING_BUCKETS;
+    me->capacity = BKTHOMPS_U_SET_STARTING_BUCKETS;
     me->buckets = updated_buckets;
     return 0;
 }
