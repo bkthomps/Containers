@@ -5,6 +5,10 @@
 static void test_invalid_init(void)
 {
     assert(!array_init(1, 0));
+    /* These "overflow" tests rely on this. */
+    assert(sizeof(size_t) == sizeof(long));
+    assert(!array_init(ULONG_MAX, ULONG_MAX));
+    assert(!array_init(1, ULONG_MAX));
 }
 
 static void test_empty_array(void)

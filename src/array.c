@@ -46,7 +46,12 @@ array array_init(const size_t element_count, const size_t data_size)
     if (data_size == 0) {
         return NULL;
     }
-    /* TODO: check this for "overflow" */
+    if (element_count * data_size / data_size != element_count) {
+        return NULL;
+    }
+    if (data_ptr_offset + element_count * data_size < data_ptr_offset) {
+        return NULL;
+    }
     init = malloc(data_ptr_offset + element_count * data_size);
     if (!init) {
         return NULL;
