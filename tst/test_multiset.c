@@ -93,8 +93,10 @@ static int compare_int(const void *const one, const void *const two)
 
 static void test_invalid_init(void)
 {
+    const size_t max_size = -1;
     assert(!multiset_init(0, compare_int));
     assert(!multiset_init(sizeof(int), NULL));
+    assert(!multiset_init(max_size, compare_int));
 }
 
 static void mutation_order(multiset me, const int *const arr, const int size)

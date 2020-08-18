@@ -58,6 +58,12 @@ map map_init(const size_t key_size, const size_t value_size,
     if (key_size == 0 || value_size == 0 || !comparator) {
         return NULL;
     }
+    if (node_key_offset + key_size < node_key_offset) {
+        return NULL;
+    }
+    if (node_key_offset + key_size + value_size < node_key_offset + key_size) {
+        return NULL;
+    }
     init = malloc(sizeof(struct internal_map));
     if (!init) {
         return NULL;

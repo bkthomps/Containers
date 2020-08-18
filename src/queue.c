@@ -101,6 +101,7 @@ void queue_copy_to_array(void *const arr, queue me)
  *
  * @return  BK_OK     if no error
  * @return -BK_ENOMEM if out of memory
+ * @return -BK_ERANGE if size has reached representable limit
  */
 bk_err queue_push(queue me, void *const data)
 {

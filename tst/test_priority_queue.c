@@ -167,16 +167,16 @@ static void test_push_out_of_memory(void)
     }
     assert(priority_queue_size(me) == 0);
     priority_queue_clear(me);
-    for (i = 0; i < 11; i++) {
+    for (i = 0; i < 12; i++) {
         assert(priority_queue_push(me, &i) == 0);
     }
-    assert(priority_queue_size(me) == 11);
+    assert(priority_queue_size(me) == 12);
     fail_realloc = 1;
     assert(priority_queue_push(me, &get) == -ENOMEM);
-    for (i = 0; i < 11; i++) {
+    for (i = 0; i < 12; i++) {
         get = 0xfacade;
         assert(priority_queue_pop(&get, me));
-        assert(get == 10 - i);
+        assert(get == 11 - i);
     }
     assert(!priority_queue_destroy(me));
 }

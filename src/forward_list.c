@@ -49,6 +49,9 @@ forward_list forward_list_init(const size_t data_size)
     if (data_size == 0) {
         return NULL;
     }
+    if (node_data_ptr_offset + data_size < node_data_ptr_offset) {
+        return NULL;
+    }
     init = malloc(sizeof(struct internal_forward_list));
     if (!init) {
         return NULL;

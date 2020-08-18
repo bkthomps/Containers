@@ -55,6 +55,9 @@ set set_init(const size_t key_size,
     if (key_size == 0 || !comparator) {
         return NULL;
     }
+    if (node_key_offset + key_size < node_key_offset) {
+        return NULL;
+    }
     init = malloc(sizeof(struct internal_set));
     if (!init) {
         return NULL;

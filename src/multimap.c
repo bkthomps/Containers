@@ -73,6 +73,12 @@ multimap multimap_init(const size_t key_size, const size_t value_size,
         || !key_comparator || !value_comparator) {
         return NULL;
     }
+    if (ptr_size + value_size < ptr_size) {
+        return NULL;
+    }
+    if (node_key_offset + key_size < node_key_offset) {
+        return NULL;
+    }
     init = malloc(sizeof(struct internal_multimap));
     if (!init) {
         return NULL;

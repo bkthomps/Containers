@@ -93,6 +93,12 @@ unordered_multimap_init(const size_t key_size,
         || !hash || !key_comparator || !value_comparator) {
         return NULL;
     }
+    if (node_key_offset + key_size < node_key_offset) {
+        return NULL;
+    }
+    if (node_key_offset + key_size + value_size < node_key_offset + key_size) {
+        return NULL;
+    }
     init = malloc(sizeof(struct internal_unordered_multimap));
     if (!init) {
         return NULL;

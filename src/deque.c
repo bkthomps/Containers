@@ -62,6 +62,10 @@ deque deque_init(const size_t data_size)
     if (init->block_size < BKTHOMPS_DEQUE_MIN_BLOCK_ELEMENT_SIZE) {
         init->block_size = BKTHOMPS_DEQUE_MIN_BLOCK_ELEMENT_SIZE;
     }
+    if (init->block_size * data_size / data_size != init->block_size) {
+        free(init);
+        return NULL;
+    }
     init->start_index =
             init->block_size * BKTHOMPS_DEQUE_INITIAL_BLOCK_COUNT / 2;
     init->end_index = init->start_index;
@@ -190,6 +194,23 @@ void deque_copy_to_array(void *const arr, deque me)
     }
 }
 
+/*
+ * Returns the new block count after resize, or 0 on failure.
+ */
+static size_t deque_get_new_block_count(deque me)
+{
+    const size_t block_limit = ((size_t) -1) / me->block_size;
+    size_t new_block_count;
+    if (block_limit == me->block_count) {
+        return 0;
+    }
+    new_block_count = me->block_count * BKTHOMPS_DEQUE_RESIZE_RATIO;
+    if (new_block_count > block_limit || new_block_count <= me->block_count) {
+        new_block_count = block_limit;
+    }
+    return new_block_count;
+}
+
 /**
  * Adds an element to the front of the deque. The pointer to the data being
  * passed in should point to the data type which this deque holds. For example,
@@ -202,21 +223,26 @@ void deque_copy_to_array(void *const arr, deque me)
  *
  * @return  BK_OK     if no error
  * @return -BK_ENOMEM if out of memory
+ * @return -BK_ERANGE if size has reached representable limit
  */
 bk_err deque_push_front(deque me, void *const data)
 {
     if (me->start_index == 0) {
-        const size_t updated_block_count =
-                (size_t) (me->block_count * BKTHOMPS_DEQUE_RESIZE_RATIO) + 1;
-        const size_t added_blocks = updated_block_count - me->block_count;
-        char **temp = realloc(me->data, updated_block_count * sizeof(char *));
+        const size_t new_block_count = deque_get_new_block_count(me);
+        size_t added_blocks;
+        char **temp;
+        if (new_block_count == 0) {
+            return -BK_ERANGE;
+        }
+        added_blocks = new_block_count - me->block_count;
+        temp = realloc(me->data, new_block_count * sizeof(char *));
         if (!temp) {
             return -BK_ENOMEM;
         }
         memmove(temp + added_blocks, temp, me->block_count * sizeof(char *));
         memset(temp, 0, added_blocks * sizeof(char *));
         me->data = temp;
-        me->block_count += added_blocks;
+        me->block_count = new_block_count;
         me->start_index += added_blocks * me->block_size;
         me->end_index += added_blocks * me->block_size;
     }
@@ -256,20 +282,25 @@ bk_err deque_push_front(deque me, void *const data)
  *
  * @return  BK_OK     if no error
  * @return -BK_ENOMEM if out of memory
+ * @return -BK_ERANGE if size has reached representable limit
  */
 bk_err deque_push_back(deque me, void *const data)
 {
     if (me->end_index == me->block_count * me->block_size) {
-        const size_t updated_block_count =
-                (size_t) (me->block_count * BKTHOMPS_DEQUE_RESIZE_RATIO) + 1;
-        const size_t added_blocks = updated_block_count - me->block_count;
-        char **temp = realloc(me->data, updated_block_count * sizeof(char *));
+        const size_t new_block_count = deque_get_new_block_count(me);
+        size_t added_blocks;
+        char **temp;
+        if (new_block_count == 0) {
+            return -BK_ERANGE;
+        }
+        added_blocks = new_block_count - me->block_count;
+        temp = realloc(me->data, new_block_count * sizeof(char *));
         if (!temp) {
             return -BK_ENOMEM;
         }
         memset(temp + me->block_count, 0, added_blocks * sizeof(char *));
         me->data = temp;
-        me->block_count += added_blocks;
+        me->block_count = new_block_count;
     }
     if (me->end_index % me->block_size == 0) {
         char *block;

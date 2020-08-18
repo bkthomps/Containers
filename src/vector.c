@@ -55,6 +55,10 @@ vector vector_init(const size_t data_size)
     init->item_count = 0;
     init->item_capacity = BKTHOMPS_VECTOR_START_SPACE;
     init->bytes_per_item = data_size;
+    if (init->item_capacity * data_size / data_size != init->item_capacity) {
+        free(init);
+        return NULL;
+    }
     init->data = malloc(init->item_capacity * init->bytes_per_item);
     if (!init->data) {
         free(init);
@@ -103,9 +107,13 @@ bk_bool vector_is_empty(vector me)
  * Sets the space of the buffer. Assumes that size is at least the same as the
  * number of items currently in the vector.
  */
-static bk_err vector_set_space(vector me, const int size)
+static bk_err vector_set_space(vector me, const size_t size)
 {
-    char *const temp = realloc(me->data, size * me->bytes_per_item);
+    char *temp;
+    if (size * me->bytes_per_item / me->bytes_per_item != size) {
+        return -BK_ERANGE;
+    }
+    temp = realloc(me->data, size * me->bytes_per_item);
     if (!temp) {
         return -BK_ENOMEM;
     }
@@ -123,6 +131,7 @@ static bk_err vector_set_space(vector me, const int size)
  *
  * @return  BK_OK     if no error
  * @return -BK_ENOMEM if out of memory
+ * @return -BK_ERANGE if space to reserve exceeds representable limit
  */
 bk_err vector_reserve(vector me, size_t size)
 {
@@ -194,6 +203,7 @@ void *vector_get_data(vector me)
  *
  * @return  BK_OK     if no error
  * @return -BK_ENOMEM if out of memory
+ * @return -BK_ERANGE if size has reached representable limit
  */
 bk_err vector_add_first(vector me, void *const data)
 {
@@ -214,16 +224,25 @@ bk_err vector_add_first(vector me, void *const data)
  * @return  BK_OK     if no error
  * @return -BK_ENOMEM if out of memory
  * @return -BK_EINVAL if invalid argument
+ * @return -BK_ERANGE if size has reached representable limit
  */
 bk_err vector_add_at(vector me, const size_t index, void *const data)
 {
     if (index > me->item_count) {
         return -BK_EINVAL;
     }
-    if (me->item_count + 1 >= me->item_capacity) {
-        const size_t new_space =
-                (size_t) (me->item_capacity * BKTHOMPS_VECTOR_RESIZE_RATIO);
-        char *const temp = realloc(me->data, new_space * me->bytes_per_item);
+    if (me->item_count == me->item_capacity) {
+        char *temp;
+        const size_t item_limit = ((size_t) -1) / me->bytes_per_item;
+        size_t new_space;
+        if (item_limit == me->item_capacity) {
+            return -BK_ERANGE;
+        }
+        new_space = me->item_capacity * BKTHOMPS_VECTOR_RESIZE_RATIO;
+        if (new_space <= me->item_capacity) {
+            new_space = item_limit;
+        }
+        temp = realloc(me->data, new_space * me->bytes_per_item);
         if (!temp) {
             return -BK_ENOMEM;
         }
@@ -248,6 +267,7 @@ bk_err vector_add_at(vector me, const size_t index, void *const data)
  *
  * @return  BK_OK     if no error
  * @return -BK_ENOMEM if out of memory
+ * @return -BK_ERANGE if size has reached representable limit
  */
 bk_err vector_add_last(vector me, void *const data)
 {
