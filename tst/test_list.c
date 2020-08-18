@@ -3,7 +3,9 @@
 
 static void test_invalid_init(void)
 {
+    const size_t max_size = -1;
     assert(!list_init(0));
+    assert(!list_init(max_size));
 }
 
 static void test_front(list me)

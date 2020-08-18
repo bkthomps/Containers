@@ -3,11 +3,10 @@
 
 static void test_invalid_init(void)
 {
+    const size_t max_size = -1;
     assert(!array_init(1, 0));
-    /* These tests rely on this. */
-    assert(sizeof(size_t) == sizeof(unsigned long));
-    assert(!array_init(ULONG_MAX, ULONG_MAX));
-    assert(!array_init(1, ULONG_MAX));
+    assert(!array_init(max_size, max_size));
+    assert(!array_init(1, max_size));
 }
 
 static void test_empty_array(void)

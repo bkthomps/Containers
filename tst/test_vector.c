@@ -3,7 +3,9 @@
 
 static void test_invalid_init(void)
 {
+    const size_t compare_int = -1;
     assert(!vector_init(0));
+    assert(!vector_init(compare_int));
 }
 
 static void test_adding(vector me)
@@ -217,6 +219,14 @@ static void test_dynamic(void)
     assert(!vector_destroy(str_vector));
 }
 
+static void test_reserve_erange(void)
+{
+    const size_t max_size = -1;
+    vector me = vector_init(sizeof(int));
+    assert(vector_reserve(me, max_size) == -ERANGE);
+    vector_destroy(me);
+}
+
 #if STUB_MALLOC
 static void test_init_out_of_memory(void)
 {
@@ -317,6 +327,7 @@ void test_vector(void)
     test_basic();
     test_vector_of_vectors();
     test_dynamic();
+    test_reserve_erange();
 #if STUB_MALLOC
     test_init_out_of_memory();
     test_set_space_out_of_memory();

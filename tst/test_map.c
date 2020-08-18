@@ -91,9 +91,12 @@ static int compare_int(const void *const one, const void *const two)
 
 static void test_invalid_init(void)
 {
+    const size_t max_size = -1;
     assert(!map_init(0, sizeof(int), compare_int));
     assert(!map_init(sizeof(int), 0, compare_int));
     assert(!map_init(sizeof(int), sizeof(int), NULL));
+    assert(!map_init(max_size, max_size, compare_int));
+    assert(!map_init(1, max_size, compare_int));
 }
 
 static void mutation_order(map me, const int *const arr, const int size)

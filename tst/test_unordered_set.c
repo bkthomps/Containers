@@ -25,9 +25,11 @@ static unsigned long bad_hash_int()
 
 static void test_invalid_init(void)
 {
+    const size_t max_size = -1;
     assert(!unordered_set_init(0, hash_int, compare_int));
     assert(!unordered_set_init(sizeof(int), NULL, compare_int));
     assert(!unordered_set_init(sizeof(int), hash_int, NULL));
+    assert(!unordered_set_init(max_size, hash_int, compare_int));
 }
 
 static void test_put(unordered_set me)
