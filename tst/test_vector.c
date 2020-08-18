@@ -264,15 +264,15 @@ static void test_add_out_of_memory(void)
 {
     vector me = vector_init(sizeof(int));
     int i;
-    for (i = 0; i < 7; i++) {
+    for (i = 0; i < 8; i++) {
         assert(vector_add_last(me, &i) == 0);
     }
     i++;
     fail_realloc = 1;
     assert(vector_add_last(me, &i) == -ENOMEM);
-    assert(vector_size(me) == 7);
+    assert(vector_size(me) == 8);
     assert(vector_capacity(me) == 8);
-    for (i = 0; i < 7; i++) {
+    for (i = 0; i < 8; i++) {
         int get = 0xfacade;
         vector_get_at(&get, me, i);
         assert(get == i);

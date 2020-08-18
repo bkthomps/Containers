@@ -210,11 +210,11 @@ void deque_copy_to_array(void *const arr, deque me)
 bk_err deque_push_front(deque me, void *const data)
 {
     if (me->start_index == 0) {
-        const size_t updated_block_count =
-                (size_t) (me->block_count * BKTHOMPS_DEQUE_RESIZE_RATIO) + 1;
-        const size_t added_blocks = updated_block_count - me->block_count;
+        const size_t new_block_count =
+                me->block_count * BKTHOMPS_DEQUE_RESIZE_RATIO;
+        const size_t added_blocks = new_block_count - me->block_count;
         /* TODO: alloc marker */
-        char **temp = realloc(me->data, updated_block_count * sizeof(char *));
+        char **temp = realloc(me->data, new_block_count * sizeof(char *));
         if (!temp) {
             return -BK_ENOMEM;
         }
@@ -265,11 +265,11 @@ bk_err deque_push_front(deque me, void *const data)
 bk_err deque_push_back(deque me, void *const data)
 {
     if (me->end_index == me->block_count * me->block_size) {
-        const size_t updated_block_count =
-                (size_t) (me->block_count * BKTHOMPS_DEQUE_RESIZE_RATIO) + 1;
-        const size_t added_blocks = updated_block_count - me->block_count;
+        const size_t new_block_count =
+                me->block_count * BKTHOMPS_DEQUE_RESIZE_RATIO;
+        const size_t added_blocks = new_block_count - me->block_count;
         /* TODO: alloc marker */
-        char **temp = realloc(me->data, updated_block_count * sizeof(char *));
+        char **temp = realloc(me->data, new_block_count * sizeof(char *));
         if (!temp) {
             return -BK_ENOMEM;
         }

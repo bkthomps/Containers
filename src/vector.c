@@ -229,9 +229,9 @@ bk_err vector_add_at(vector me, const size_t index, void *const data)
     if (index > me->item_count) {
         return -BK_EINVAL;
     }
-    if (me->item_count + 1 >= me->item_capacity) {
+    if (me->item_count == me->item_capacity) {
         const size_t new_space =
-                (size_t) (me->item_capacity * BKTHOMPS_VECTOR_RESIZE_RATIO);
+                me->item_capacity * BKTHOMPS_VECTOR_RESIZE_RATIO;
         /* TODO: alloc marker */
         char *const temp = realloc(me->data, new_space * me->bytes_per_item);
         if (!temp) {
