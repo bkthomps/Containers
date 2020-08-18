@@ -203,7 +203,7 @@ void *vector_get_data(vector me)
  *
  * @return  BK_OK     if no error
  * @return -BK_ENOMEM if out of memory
- * @return -BK_ERANGE if vector has reached representable limit
+ * @return -BK_ERANGE if size has reached representable limit
  */
 bk_err vector_add_first(vector me, void *const data)
 {
@@ -224,7 +224,7 @@ bk_err vector_add_first(vector me, void *const data)
  * @return  BK_OK     if no error
  * @return -BK_ENOMEM if out of memory
  * @return -BK_EINVAL if invalid argument
- * @return -BK_ERANGE if vector has reached representable limit
+ * @return -BK_ERANGE if size has reached representable limit
  */
 bk_err vector_add_at(vector me, const size_t index, void *const data)
 {
@@ -267,7 +267,7 @@ bk_err vector_add_at(vector me, const size_t index, void *const data)
  *
  * @return  BK_OK     if no error
  * @return -BK_ENOMEM if out of memory
- * @return -BK_ERANGE if vector has reached representable limit
+ * @return -BK_ERANGE if size has reached representable limit
  */
 bk_err vector_add_last(vector me, void *const data)
 {

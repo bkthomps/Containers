@@ -99,6 +99,7 @@ bk_bool priority_queue_is_empty(priority_queue me)
  *
  * @return  BK_OK     if no error
  * @return -BK_ENOMEM if out of memory
+ * @return -BK_ERANGE if size has reached representable limit
  */
 bk_err priority_queue_push(priority_queue me, void *const data)
 {

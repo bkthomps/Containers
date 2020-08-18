@@ -206,15 +206,24 @@ void deque_copy_to_array(void *const arr, deque me)
  *
  * @return  BK_OK     if no error
  * @return -BK_ENOMEM if out of memory
+ * @return -BK_ERANGE if size has reached representable limit
  */
 bk_err deque_push_front(deque me, void *const data)
 {
     if (me->start_index == 0) {
-        const size_t new_block_count =
-                me->block_count * BKTHOMPS_DEQUE_RESIZE_RATIO;
-        const size_t added_blocks = new_block_count - me->block_count;
-        /* TODO: alloc marker */
-        char **temp = realloc(me->data, new_block_count * sizeof(char *));
+        char **temp;
+        const size_t block_limit = ((size_t) -1) / sizeof(char *);
+        size_t new_block_count;
+        size_t added_blocks;
+        if (block_limit == me->block_count) {
+            return -BK_ERANGE;
+        }
+        new_block_count = me->block_count * BKTHOMPS_DEQUE_RESIZE_RATIO;
+        if (new_block_count <= me->block_count) {
+            new_block_count = block_limit;
+        }
+        added_blocks = new_block_count - me->block_count;
+        temp = realloc(me->data, new_block_count * sizeof(char *));
         if (!temp) {
             return -BK_ENOMEM;
         }
@@ -261,15 +270,24 @@ bk_err deque_push_front(deque me, void *const data)
  *
  * @return  BK_OK     if no error
  * @return -BK_ENOMEM if out of memory
+ * @return -BK_ERANGE if size has reached representable limit
  */
 bk_err deque_push_back(deque me, void *const data)
 {
     if (me->end_index == me->block_count * me->block_size) {
-        const size_t new_block_count =
-                me->block_count * BKTHOMPS_DEQUE_RESIZE_RATIO;
-        const size_t added_blocks = new_block_count - me->block_count;
-        /* TODO: alloc marker */
-        char **temp = realloc(me->data, new_block_count * sizeof(char *));
+        char **temp;
+        const size_t block_limit = ((size_t) -1) / sizeof(char *);
+        size_t new_block_count;
+        size_t added_blocks;
+        if (block_limit == me->block_count) {
+            return -BK_ERANGE;
+        }
+        new_block_count = me->block_count * BKTHOMPS_DEQUE_RESIZE_RATIO;
+        if (new_block_count <= me->block_count) {
+            new_block_count = block_limit;
+        }
+        added_blocks = new_block_count - me->block_count;
+        temp = realloc(me->data, new_block_count * sizeof(char *));
         if (!temp) {
             return -BK_ENOMEM;
         }
