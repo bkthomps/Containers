@@ -242,7 +242,7 @@ bk_err deque_push_front(deque me, void *const data)
         memmove(temp + added_blocks, temp, me->block_count * sizeof(char *));
         memset(temp, 0, added_blocks * sizeof(char *));
         me->data = temp;
-        me->block_count += added_blocks;
+        me->block_count = new_block_count;
         me->start_index += added_blocks * me->block_size;
         me->end_index += added_blocks * me->block_size;
     }
@@ -300,7 +300,7 @@ bk_err deque_push_back(deque me, void *const data)
         }
         memset(temp + me->block_count, 0, added_blocks * sizeof(char *));
         me->data = temp;
-        me->block_count += added_blocks;
+        me->block_count = new_block_count;
     }
     if (me->end_index % me->block_size == 0) {
         char *block;
