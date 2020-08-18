@@ -38,6 +38,7 @@ size_t deque_size(deque me);
 bk_bool deque_is_empty(deque me);
 bk_err deque_trim(deque me);
 void deque_copy_to_array(void *arr, deque me);
+bk_err deque_add_all(deque me, void *arr, size_t size);
 
 /* Adding */
 bk_err deque_push_front(deque me, void *data);
