@@ -194,6 +194,23 @@ void deque_copy_to_array(void *const arr, deque me)
     }
 }
 
+/*
+ * Returns the new block count after resize, or 0 on failure.
+ */
+static size_t deque_get_new_block_count(deque me)
+{
+    const size_t block_limit = ((size_t) -1) / me->block_size;
+    size_t new_block_count;
+    if (block_limit == me->block_count) {
+        return 0;
+    }
+    new_block_count = me->block_count * BKTHOMPS_DEQUE_RESIZE_RATIO;
+    if (new_block_count > block_limit || new_block_count <= me->block_count) {
+        new_block_count = block_limit;
+    }
+    return new_block_count;
+}
+
 /**
  * Adds an element to the front of the deque. The pointer to the data being
  * passed in should point to the data type which this deque holds. For example,
@@ -211,17 +228,11 @@ void deque_copy_to_array(void *const arr, deque me)
 bk_err deque_push_front(deque me, void *const data)
 {
     if (me->start_index == 0) {
-        char **temp;
-        const size_t block_limit = ((size_t) -1) / me->block_size;
-        size_t new_block_count;
+        const size_t new_block_count = deque_get_new_block_count(me);
         size_t added_blocks;
-        if (block_limit == me->block_count) {
+        char **temp;
+        if (new_block_count == 0) {
             return -BK_ERANGE;
-        }
-        new_block_count = me->block_count * BKTHOMPS_DEQUE_RESIZE_RATIO;
-        if (new_block_count > block_limit
-            || new_block_count <= me->block_count) {
-            new_block_count = block_limit;
         }
         added_blocks = new_block_count - me->block_count;
         temp = realloc(me->data, new_block_count * sizeof(char *));
@@ -276,17 +287,11 @@ bk_err deque_push_front(deque me, void *const data)
 bk_err deque_push_back(deque me, void *const data)
 {
     if (me->end_index == me->block_count * me->block_size) {
-        char **temp;
-        const size_t block_limit = ((size_t) -1) / me->block_size;
-        size_t new_block_count;
+        const size_t new_block_count = deque_get_new_block_count(me);
         size_t added_blocks;
-        if (block_limit == me->block_count) {
+        char **temp;
+        if (new_block_count == 0) {
             return -BK_ERANGE;
-        }
-        new_block_count = me->block_count * BKTHOMPS_DEQUE_RESIZE_RATIO;
-        if (new_block_count > block_limit
-            || new_block_count <= me->block_count) {
-            new_block_count = block_limit;
         }
         added_blocks = new_block_count - me->block_count;
         temp = realloc(me->data, new_block_count * sizeof(char *));
