@@ -4,19 +4,19 @@ in-depth documentation, visit the
 [code docs](https://codedocs.xyz/bkthomps/Containers/) page.
 
 ## General Overview
-Each container has an initialization function which returns the container
-object. For a deque, this would be `deque_init()` which returns a `deque`. The
-returned object is a pointer to an internal struct which contains data and
-book keeping information. However, this is abstracted away to reduce mistakes,
-and since it is not stored in the most easy manner. More information about the
-initialization type of function is presented below in its own section.
+Each container has an initialization function which returns a container object.
+For a deque, this would be `deque_init()` which returns a `deque`. The returned
+object is a pointer to an internal struct which contains information, but this
+is abstracted away to reduce mistakes and make development easier. More
+information about the initialization functions is presented below in its own
+section.
 
-Once this object is initialized, it is possible to manipulate it using the
-provided functions, which have in-depth documentation available. Each container
-has adding and retrieval type functions, and each type of container has its own
-specific set of function interfaces, which are explained in-depth at the
-function level in the code docs link above. More high-level information will be
-explained in its own section below.
+Once a container object is initialized, it is possible to manipulate it using
+the provided functions, which have in-depth documentation available. Each
+container has adding and retrieval type functions, and each type of container
+has its own specific set of function interfaces, which are explained in-depth at
+the function level in the code docs link above. More high-level information will
+be explained in its own section below.
 
 Finally, each container will have to be destroyed to free the memory associated
 with it.
@@ -71,9 +71,8 @@ bk_err rc = deque_pop_back(&retrieve, d); /* retrieve now is equal to 5 */
 Functions can fail for various reasons, such as the provided index argument
 being out of bounds, or the system running out of memory. The in-depth
 documentation linked above provides the exhaustive list of return codes for each
-function, which are present in the `errno.h` header file. For example, an
-invalid argument would return `-BK_EINVAL`, and on success `BK_OK` would be
-returned.
+function, which are present in the header file. For example, an invalid argument
+would return `-BK_EINVAL`, and on success `BK_OK` would be returned.
 
 # Comparators and Hash Functions
 The associative containers and the priority queue require the user to initialize
@@ -82,7 +81,7 @@ require a hash function to be passed in. State should not be modified in
 comparators or in hash functions, or else it would lead to undefined behavior.
 
 When a comparator function is called, two arguments are passed in, being two
-elements to compare. The comparator must return 0 is they are equal, a negative
+elements to compare. The comparator must return 0 if they are equal, a negative
 value if the first is less than the second, and a positive value is the first is
 greater than the second. To be valid, a comparator must obey the following
 rules:
