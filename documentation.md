@@ -7,7 +7,7 @@ in-depth documentation, visit the
 Each container has an initialization function which returns the container
 object. For a deque, this would be `deque_init()` which returns a `deque`. The
 returned object is a pointer to an internal struct which contains data and
-book keeping information. However, this is abstracted away to reduce mistakes,
+bookkeeping information. However, this is abstracted away to reduce mistakes,
 and since it is not stored in the most easy manner. More information about the
 initialization type of function is presented below in its own section.
 
