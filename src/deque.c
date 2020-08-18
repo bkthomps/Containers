@@ -212,14 +212,15 @@ bk_err deque_push_front(deque me, void *const data)
 {
     if (me->start_index == 0) {
         char **temp;
-        const size_t block_limit = ((size_t) -1) / sizeof(char *);
+        const size_t block_limit = ((size_t) -1) / me->block_size;
         size_t new_block_count;
         size_t added_blocks;
         if (block_limit == me->block_count) {
             return -BK_ERANGE;
         }
         new_block_count = me->block_count * BKTHOMPS_DEQUE_RESIZE_RATIO;
-        if (new_block_count <= me->block_count) {
+        if (new_block_count > block_limit
+            || new_block_count <= me->block_count) {
             new_block_count = block_limit;
         }
         added_blocks = new_block_count - me->block_count;
@@ -276,14 +277,15 @@ bk_err deque_push_back(deque me, void *const data)
 {
     if (me->end_index == me->block_count * me->block_size) {
         char **temp;
-        const size_t block_limit = ((size_t) -1) / sizeof(char *);
+        const size_t block_limit = ((size_t) -1) / me->block_size;
         size_t new_block_count;
         size_t added_blocks;
         if (block_limit == me->block_count) {
             return -BK_ERANGE;
         }
         new_block_count = me->block_count * BKTHOMPS_DEQUE_RESIZE_RATIO;
-        if (new_block_count <= me->block_count) {
+        if (new_block_count > block_limit
+            || new_block_count <= me->block_count) {
             new_block_count = block_limit;
         }
         added_blocks = new_block_count - me->block_count;
