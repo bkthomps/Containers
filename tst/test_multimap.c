@@ -104,6 +104,7 @@ static void test_invalid_init(void)
     assert(!multimap_init(sizeof(int), sizeof(int), compare_int, NULL));
     assert(!multimap_init(max_size, max_size, compare_int, compare_int));
     assert(!multimap_init(1, max_size, compare_int, compare_int));
+    assert(!multimap_init(max_size, 1, compare_int, compare_int));
 }
 
 static void mutation_order(multimap me, const int *const arr, const int size)
