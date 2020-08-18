@@ -197,47 +197,43 @@ void deque_copy_to_array(void *const arr, deque me)
 bk_err deque_add_all(deque me, void *const arr, const size_t size)
 {
     /* TODO: check -BK_ERANGE */
-    const size_t add_block_index = me->end_index / me->block_size;
-    const size_t add_inner_index = me->end_index % me->block_size;
-    const size_t first_block_space = me->block_size - add_inner_index;
-    size_t remaining_space;
-    size_t needed_blocks;
-    size_t new_block_count;
+    const size_t block_index = me->end_index / me->block_size;
+    const size_t inner_index = me->end_index % me->block_size;
+    const size_t first_block_space = me->block_size - inner_index;
+    const size_t remaining_space = size - first_block_space;
+    const size_t needed_blocks = 1 + remaining_space / me->block_size;
+    const size_t new_block_count = me->block_count + needed_blocks;
     size_t i;
     size_t offset;
     char **temp;
     if (size <= first_block_space) {
-        memcpy(me->data[add_block_index] + add_inner_index * me->data_size, arr,
+        memcpy(me->data[block_index] + inner_index * me->data_size, arr,
                size * me->data_size);
         me->end_index += size;
         return BK_OK;
     }
-    remaining_space = size - first_block_space;
-    needed_blocks = 1 + remaining_space / me->block_size;
-    new_block_count = me->block_count + needed_blocks;
     temp = realloc(me->data, new_block_count * sizeof(char *));
     if (!temp) {
         return -BK_ENOMEM;
     }
     memset(temp + me->block_count, 0, needed_blocks * sizeof(char *));
     for (i = 1; i <= needed_blocks; i++) {
-        if (!temp[add_block_index + i]) {
-            temp[add_block_index + i] = malloc(me->block_size * me->data_size);
-            if (!temp[add_block_index + i]) {
+        if (!temp[block_index + i]) {
+            temp[block_index + i] = malloc(me->block_size * me->data_size);
+            if (!temp[block_index + i]) {
                 /* FIXME: leaks on failure */
                 return -BK_ENOMEM;
             }
         }
     }
     offset = first_block_space * me->data_size;
-    memcpy(temp[add_block_index] + add_inner_index * me->data_size, arr,
-           offset);
+    memcpy(temp[block_index] + inner_index * me->data_size, arr, offset);
     for (i = 1; i < needed_blocks; i++) {
-        memcpy(temp[add_block_index + i], (char *) arr + offset,
+        memcpy(temp[block_index + i], (char *) arr + offset,
                me->block_size * me->data_size);
         offset += me->block_size * me->data_size;
     }
-    memcpy(temp[add_block_index + needed_blocks], (char *) arr + offset,
+    memcpy(temp[block_index + needed_blocks], (char *) arr + offset,
            (remaining_space % me->block_size) * me->data_size);
     me->data = temp;
     me->block_count = new_block_count;

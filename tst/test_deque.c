@@ -511,7 +511,7 @@ void test_deque(void)
     assert(test_puzzle(2, 5) == 4);
     assert(test_puzzle(2, 10) == 5);
     test_big_object();
-    for (i = 1; i < 11000; i++) {
+    for (i = 1; i < 6000; i++) {
         test_add_all(i);
     }
 }
