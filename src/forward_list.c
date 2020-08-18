@@ -49,7 +49,9 @@ forward_list forward_list_init(const size_t data_size)
     if (data_size == 0) {
         return NULL;
     }
-    /* TODO: alloc marker */
+    if (node_data_ptr_offset + data_size < node_data_ptr_offset) {
+        return NULL;
+    }
     init = malloc(sizeof(struct internal_forward_list));
     if (!init) {
         return NULL;
@@ -169,7 +171,6 @@ bk_err forward_list_add_at(forward_list me, const size_t index,
     if (index > me->item_count) {
         return -BK_EINVAL;
     }
-    /* TODO: alloc marker */
     node = malloc(ptr_size + me->bytes_per_item);
     if (!node) {
         return -BK_ENOMEM;

@@ -82,7 +82,9 @@ unordered_multiset_init(const size_t key_size,
     if (key_size == 0 || !hash || !comparator) {
         return NULL;
     }
-    /* TODO: alloc marker */
+    if (node_key_offset + key_size < node_key_offset) {
+        return NULL;
+    }
     init = malloc(sizeof(struct internal_unordered_multiset));
     if (!init) {
         return NULL;
@@ -93,7 +95,6 @@ unordered_multiset_init(const size_t key_size,
     init->size = 0;
     init->capacity = BKTHOMPS_U_MULTISET_STARTING_BUCKETS;
     init->used = 0;
-    /* TODO: alloc marker */
     init->buckets = calloc(BKTHOMPS_U_MULTISET_STARTING_BUCKETS, ptr_size);
     if (!init->buckets) {
         free(init);
@@ -140,7 +141,6 @@ bk_err unordered_multiset_rehash(unordered_multiset me)
 {
     size_t i;
     char **old_buckets = me->buckets;
-    /* TODO: alloc marker */
     me->buckets = calloc(me->capacity, ptr_size);
     if (!me->buckets) {
         me->buckets = old_buckets;
@@ -195,7 +195,6 @@ static bk_err unordered_multiset_resize(unordered_multiset me)
     const size_t old_capacity = me->capacity;
     const size_t new_capacity = me->capacity * BKTHOMPS_U_MULTISET_RESIZE_RATIO;
     char **old_buckets = me->buckets;
-    /* TODO: alloc marker */
     me->buckets = calloc(new_capacity, ptr_size);
     if (!me->buckets) {
         me->buckets = old_buckets;
@@ -237,7 +236,6 @@ static char *unordered_multiset_create_element(unordered_multiset me,
                                                const void *const key)
 {
     const size_t one = 1;
-    /* TODO: alloc marker */
     char *init = malloc(ptr_size + count_size + hash_size + me->key_size);
     if (!init) {
         return NULL;
@@ -480,7 +478,6 @@ bk_bool unordered_multiset_remove_all(unordered_multiset me, void *const key)
 bk_err unordered_multiset_clear(unordered_multiset me)
 {
     size_t i;
-    /* TODO: alloc marker */
     char **updated_buckets = calloc(BKTHOMPS_U_MULTISET_STARTING_BUCKETS,
                                     ptr_size);
     if (!updated_buckets) {

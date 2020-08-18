@@ -48,7 +48,6 @@ vector vector_init(const size_t data_size)
     if (data_size == 0) {
         return NULL;
     }
-    /* TODO: alloc marker */
     init = malloc(sizeof(struct internal_vector));
     if (!init) {
         return NULL;
@@ -56,7 +55,10 @@ vector vector_init(const size_t data_size)
     init->item_count = 0;
     init->item_capacity = BKTHOMPS_VECTOR_START_SPACE;
     init->bytes_per_item = data_size;
-    /* TODO: alloc marker */
+    if (init->item_capacity * data_size / data_size != init->item_capacity) {
+        free(init);
+        return NULL;
+    }
     init->data = malloc(init->item_capacity * init->bytes_per_item);
     if (!init->data) {
         free(init);
@@ -105,10 +107,13 @@ bk_bool vector_is_empty(vector me)
  * Sets the space of the buffer. Assumes that size is at least the same as the
  * number of items currently in the vector.
  */
-static bk_err vector_set_space(vector me, const int size)
+static bk_err vector_set_space(vector me, const size_t size)
 {
-    /* TODO: alloc marker */
-    char *const temp = realloc(me->data, size * me->bytes_per_item);
+    char *temp;
+    if (size * me->bytes_per_item / me->bytes_per_item != size) {
+        return -BK_ERANGE;
+    }
+    temp = realloc(me->data, size * me->bytes_per_item);
     if (!temp) {
         return -BK_ENOMEM;
     }
@@ -126,6 +131,7 @@ static bk_err vector_set_space(vector me, const int size)
  *
  * @return  BK_OK     if no error
  * @return -BK_ENOMEM if out of memory
+ * @return -BK_ERANGE if byte count is too large to represent
  */
 bk_err vector_reserve(vector me, size_t size)
 {

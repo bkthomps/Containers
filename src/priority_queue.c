@@ -49,7 +49,6 @@ priority_queue priority_queue_init(const size_t data_size,
     if (data_size == 0 || !comparator) {
         return NULL;
     }
-    /* TODO: alloc marker */
     init = malloc(sizeof(struct internal_priority_queue));
     if (!init) {
         return NULL;
@@ -109,7 +108,6 @@ bk_err priority_queue_push(priority_queue me, void *const data)
     size_t parent_index;
     char *data_index;
     char *data_parent_index;
-    /* TODO: alloc marker */
     char *const temp = malloc(me->data_size);
     if (!temp) {
         return -BK_ENOMEM;

@@ -53,7 +53,6 @@ deque deque_init(const size_t data_size)
     if (data_size == 0) {
         return NULL;
     }
-    /* TODO: alloc marker */
     init = malloc(sizeof(struct internal_deque));
     if (!init) {
         return NULL;
@@ -63,17 +62,19 @@ deque deque_init(const size_t data_size)
     if (init->block_size < BKTHOMPS_DEQUE_MIN_BLOCK_ELEMENT_SIZE) {
         init->block_size = BKTHOMPS_DEQUE_MIN_BLOCK_ELEMENT_SIZE;
     }
+    if (init->block_size * data_size / data_size != init->block_size) {
+        free(init);
+        return NULL;
+    }
     init->start_index =
             init->block_size * BKTHOMPS_DEQUE_INITIAL_BLOCK_COUNT / 2;
     init->end_index = init->start_index;
     init->block_count = BKTHOMPS_DEQUE_INITIAL_BLOCK_COUNT;
-    /* TODO: alloc marker */
     init->data = calloc(init->block_count, sizeof(char *));
     if (!init->data) {
         free(init);
         return NULL;
     }
-    /* TODO: alloc marker */
     block = malloc(init->block_size * init->data_size);
     if (!block) {
         free(init->data);
@@ -127,7 +128,6 @@ bk_err deque_trim(deque me)
     const size_t end_block_index = deque_is_empty(me) ? start_block_index :
                                    (me->end_index - 1) / me->block_size;
     const size_t updated_block_count = end_block_index - start_block_index + 1;
-    /* TODO: alloc marker */
     char **updated_data = malloc(updated_block_count * sizeof(char *));
     if (!updated_data) {
         return -BK_ENOMEM;
@@ -231,7 +231,6 @@ bk_err deque_push_front(deque me, void *const data)
                 me->start_index / me->block_size - 1;
         memcpy(&block, me->data + previous_block_index, sizeof(char *));
         if (!block) {
-            /* TODO: alloc marker */
             block = malloc(me->block_size * me->data_size);
             if (!block) {
                 return -BK_ENOMEM;
@@ -283,7 +282,6 @@ bk_err deque_push_back(deque me, void *const data)
         const size_t tentative_block_index = me->end_index / me->block_size;
         memcpy(&block, me->data + tentative_block_index, sizeof(char *));
         if (!block) {
-            /* TODO: alloc marker */
             block = malloc(me->block_size * me->data_size);
             if (!block) {
                 return -BK_ENOMEM;
@@ -496,13 +494,11 @@ bk_err deque_clear(deque me)
 {
     size_t i;
     char *updated_block;
-    /* TODO: alloc marker */
     char **updated_data = calloc(BKTHOMPS_DEQUE_INITIAL_BLOCK_COUNT,
                                  sizeof(char *));
     if (!updated_data) {
         return -BK_ENOMEM;
     }
-    /* TODO: alloc marker */
     updated_block = malloc(me->block_size * me->data_size);
     if (!updated_block) {
         free(updated_data);

@@ -93,7 +93,12 @@ unordered_multimap_init(const size_t key_size,
         || !hash || !key_comparator || !value_comparator) {
         return NULL;
     }
-    /* TODO: alloc marker */
+    if (node_key_offset + key_size < node_key_offset) {
+        return NULL;
+    }
+    if (node_key_offset + key_size + value_size < node_key_offset + key_size) {
+        return NULL;
+    }
     init = malloc(sizeof(struct internal_unordered_multimap));
     if (!init) {
         return NULL;
@@ -105,14 +110,12 @@ unordered_multimap_init(const size_t key_size,
     init->value_comparator = value_comparator;
     init->size = 0;
     init->capacity = BKTHOMPS_U_MULTIMAP_STARTING_BUCKETS;
-    /* TODO: alloc marker */
     init->buckets = calloc(BKTHOMPS_U_MULTIMAP_STARTING_BUCKETS, ptr_size);
     if (!init->buckets) {
         free(init);
         return NULL;
     }
     init->iterate_hash = 0;
-    /* TODO: alloc marker */
     init->iterate_key = calloc(1, init->key_size);
     if (!init->iterate_key) {
         free(init->buckets);
@@ -161,7 +164,6 @@ bk_err unordered_multimap_rehash(unordered_multimap me)
 {
     size_t i;
     char **old_buckets = me->buckets;
-    /* TODO: alloc marker */
     me->buckets = calloc(me->capacity, ptr_size);
     if (!me->buckets) {
         me->buckets = old_buckets;
@@ -216,7 +218,6 @@ static bk_err unordered_multimap_resize(unordered_multimap me)
     const size_t old_capacity = me->capacity;
     const size_t new_capacity = me->capacity * BKTHOMPS_U_MULTIMAP_RESIZE_RATIO;
     char **old_buckets = me->buckets;
-    /* TODO: alloc marker */
     me->buckets = calloc(new_capacity, ptr_size);
     if (!me->buckets) {
         me->buckets = old_buckets;
@@ -258,7 +259,6 @@ static char *unordered_multimap_create_element(unordered_multimap me,
                                                const void *const key,
                                                const void *const value)
 {
-    /* TODO: alloc marker */
     char *init = malloc(ptr_size + hash_size + me->key_size + me->value_size);
     if (!init) {
         return NULL;
@@ -555,7 +555,6 @@ bk_bool unordered_multimap_remove_all(unordered_multimap me, void *const key)
 bk_err unordered_multimap_clear(unordered_multimap me)
 {
     size_t i;
-    /* TODO: alloc marker */
     char **updated_buckets = calloc(BKTHOMPS_U_MULTIMAP_STARTING_BUCKETS,
                                     ptr_size);
     if (!updated_buckets) {
