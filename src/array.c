@@ -121,6 +121,31 @@ void *array_get_data(array me)
 }
 
 /**
+ * Copies elements from a raw array to an array. The size specifies the number
+ * of elements to copy starting from the start of the raw array, which must be
+ * less than or equal to the size of both the raw array and of the array.
+ *
+ * @param me   the array to add data to
+ * @param arr  the raw array to copy data from
+ * @param size the number of elements to copy
+ *
+ * @return  BK_OK     if no error
+ * @return -BK_EINVAL if invalid argument
+ */
+bk_err array_add_all(array me, void *const arr, const size_t size)
+{
+    size_t element_count;
+    size_t data_size;
+    memcpy(&element_count, me + arr_size_offset, book_keeping_size);
+    if (size > element_count) {
+        return -BK_EINVAL;
+    }
+    memcpy(&data_size, me + data_size_offset, book_keeping_size);
+    memcpy(me + data_ptr_offset, arr, size * data_size);
+    return BK_OK;
+}
+
+/**
  * Sets the data for a specified element in the array. The pointer to the data
  * being passed in should point to the data type which this array holds. For
  * example, if this array holds integers, the data pointer should be a pointer
