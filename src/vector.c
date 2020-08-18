@@ -131,7 +131,7 @@ static bk_err vector_set_space(vector me, const size_t size)
  *
  * @return  BK_OK     if no error
  * @return -BK_ENOMEM if out of memory
- * @return -BK_ERANGE if byte count is too large to represent
+ * @return -BK_ERANGE if space to reserve exceeds representable limit
  */
 bk_err vector_reserve(vector me, size_t size)
 {
