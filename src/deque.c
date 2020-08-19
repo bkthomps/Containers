@@ -212,12 +212,13 @@ bk_err deque_add_all(deque me, void *const arr, const size_t size)
         return BK_OK;
     }
     if (available_blocks < needed_blocks) {
-        const size_t new_block_count = me->block_count + needed_blocks;
+        const size_t appended_blocks = needed_blocks - available_blocks;
+        const size_t new_block_count = me->block_count + appended_blocks;
         char **temp = realloc(me->data, new_block_count * sizeof(char *));
         if (!temp) {
             return -BK_ENOMEM;
         }
-        memset(temp + me->block_count, 0, needed_blocks * sizeof(char *));
+        memset(temp + me->block_count, 0, appended_blocks * sizeof(char *));
         me->data = temp;
         me->block_count = new_block_count;
     }
