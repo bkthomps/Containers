@@ -191,6 +191,19 @@ void *vector_get_data(vector me)
     return me->data;
 }
 
+/**
+ * Copies elements from an array to the vector. The size specifies the number of
+ * elements to copy, starting from the beginning of the array. The size must be
+ * less than or equal to the size of the array.
+ *
+ * @param me   the vector to add data to
+ * @param arr  the array to copy data from
+ * @param size the number of elements to copy
+ *
+ * @return  BK_OK     if no error
+ * @return -BK_ENOMEM if out of memory
+ * @return -BK_ERANGE if size has reached representable limit
+ */
 bk_err vector_add_all(vector me, void *const arr, const size_t size)
 {
     const size_t cur_size = vector_size(me);
