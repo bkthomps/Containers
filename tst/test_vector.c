@@ -321,6 +321,25 @@ static void test_big_object(void)
     assert(!vector_destroy(me));
 }
 
+static void test_add_all(void)
+{
+    size_t i;
+    const size_t max_size = -1;
+    double small_array[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    vector me = vector_init(sizeof(double));
+    assert(vector_add_all(me, small_array, 10) == BK_OK);
+    assert(vector_size(me) == 10);
+    for (i = 0; i < 10; i++) {
+        double get;
+        assert(vector_get_at(&get, me, i) == BK_OK);
+        assert(get == i + 1);
+    }
+    assert(vector_add_all(me, small_array, max_size) == -BK_ERANGE);
+    assert(vector_add_all(me, small_array, max_size - 10) == -BK_ERANGE);
+    assert(vector_add_all(me, small_array, max_size - 20) == -BK_ERANGE);
+    vector_destroy(me);
+}
+
 void test_vector(void)
 {
     test_invalid_init();
@@ -334,4 +353,5 @@ void test_vector(void)
     test_add_out_of_memory();
 #endif
     test_big_object();
+    test_add_all();
 }

@@ -191,6 +191,23 @@ void *vector_get_data(vector me)
     return me->data;
 }
 
+bk_err vector_add_all(vector me, void *const arr, const size_t size)
+{
+    const size_t cur_size = vector_size(me);
+    size_t rc;
+    if (size + cur_size < size) {
+        return -BK_ERANGE;
+    }
+    rc = vector_reserve(me, size + cur_size);
+    if (rc != BK_OK) {
+        return rc;
+    }
+    memcpy(me->data + cur_size * me->bytes_per_item, arr,
+           size * me->bytes_per_item);
+    me->item_count += size;
+    return BK_OK;
+}
+
 /**
  * Adds an element to the start of the vector. The pointer to the data being
  * passed in should point to the data type which this vector holds. For example,
