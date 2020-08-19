@@ -194,6 +194,73 @@ void deque_copy_to_array(void *const arr, deque me)
     }
 }
 
+/**
+ * Copies elements from an array to the deque. The size specifies the number of
+ * elements to copy, starting from the beginning of the array. The size must be
+ * less than or equal to the size of the array.
+ *
+ * @param me   the deque to add data to
+ * @param arr  the array to copy data from
+ * @param size the number of elements to copy
+ *
+ * @return  BK_OK     if no error
+ * @return -BK_ENOMEM if out of memory
+ * @return -BK_ERANGE if size has reached representable limit
+ */
+bk_err deque_add_all(deque me, void *const arr, const size_t size)
+{
+    const size_t block_index = me->end_index / me->block_size;
+    const size_t inner_index = me->end_index % me->block_size;
+    const size_t first_block_space = me->block_size - inner_index;
+    const size_t remaining_space = size - first_block_space;
+    const size_t available_blocks = me->block_count - (block_index + 1);
+    const size_t needed_blocks = 1 + remaining_space / me->block_size;
+    size_t offset;
+    size_t i;
+    if (size <= first_block_space) {
+        memcpy(me->data[block_index] + inner_index * me->data_size, arr,
+               size * me->data_size);
+        me->end_index += size;
+        return BK_OK;
+    }
+    if (available_blocks < needed_blocks) {
+        const size_t block_limit = ((size_t) -1) / me->block_size;
+        const size_t appended_blocks = needed_blocks - available_blocks;
+        const size_t new_block_count = me->block_count + appended_blocks;
+        char **temp;
+        if (new_block_count > block_limit) {
+            return -BK_ERANGE;
+        }
+        temp = realloc(me->data, new_block_count * sizeof(char *));
+        if (!temp) {
+            return -BK_ENOMEM;
+        }
+        memset(temp + me->block_count, 0, appended_blocks * sizeof(char *));
+        me->data = temp;
+        me->block_count = new_block_count;
+    }
+    for (i = block_index + 1; i <= block_index + needed_blocks; i++) {
+        if (me->data[i]) {
+            continue;
+        }
+        me->data[i] = malloc(me->block_size * me->data_size);
+        if (!me->data[i]) {
+            return -BK_ENOMEM;
+        }
+    }
+    offset = first_block_space * me->data_size;
+    memcpy(me->data[block_index] + inner_index * me->data_size, arr, offset);
+    for (i = 1; i < needed_blocks; i++) {
+        memcpy(me->data[block_index + i], (char *) arr + offset,
+               me->block_size * me->data_size);
+        offset += me->block_size * me->data_size;
+    }
+    memcpy(me->data[block_index + needed_blocks], (char *) arr + offset,
+           (remaining_space % me->block_size) * me->data_size);
+    me->end_index += size;
+    return BK_OK;
+}
+
 /*
  * Returns the new block count after resize, or 0 on failure.
  */

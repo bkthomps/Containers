@@ -110,6 +110,71 @@ void forward_list_copy_to_array(void *const arr, forward_list me)
     }
 }
 
+/**
+ * Copies elements from an array to the singly-linked list. The size specifies
+ * the number of elements to copy, starting from the beginning of the array. The
+ * size must be less than or equal to the size of the array.
+ *
+ * @param me   the singly-linked list to add data to
+ * @param arr  the array to copy data from
+ * @param size the number of elements to copy
+ *
+ * @return  BK_OK     if no error
+ * @return -BK_ENOMEM if out of memory
+ * @return -BK_ERANGE if size has reached representable limit
+ */
+bk_err forward_list_add_all(forward_list me, void *const arr, const size_t size)
+{
+    size_t i;
+    char *traverse_head;
+    char *traverse;
+    if (size == 0) {
+        return BK_OK;
+    }
+    if (size + me->item_count < size) {
+        return -BK_ERANGE;
+    }
+    traverse = malloc(ptr_size + me->bytes_per_item);
+    if (!traverse) {
+        return -BK_ENOMEM;
+    }
+    traverse_head = traverse;
+    memcpy(traverse + node_data_ptr_offset, arr, me->bytes_per_item);
+    for (i = 1; i < size; i++) {
+        char *node = malloc(ptr_size + me->bytes_per_item);
+        if (!node) {
+            memset(traverse + node_next_ptr_offset, 0, ptr_size);
+            while (traverse_head) {
+                char *backup = traverse_head;
+                memcpy(&traverse_head, traverse_head + node_next_ptr_offset,
+                       ptr_size);
+                free(backup);
+            }
+            return -BK_ENOMEM;
+        }
+        memcpy(traverse + node_next_ptr_offset, &node, ptr_size);
+        memcpy(node + node_data_ptr_offset,
+               (char *) arr + i * me->bytes_per_item, me->bytes_per_item);
+        traverse = node;
+    }
+    memset(traverse + node_next_ptr_offset, 0, ptr_size);
+    if (!forward_list_is_empty(me)) {
+        char *tail = me->tail;
+        if (!tail) {
+            tail = me->head;
+            for (i = 0; i < me->item_count - 1; i++) {
+                memcpy(&tail, tail + node_next_ptr_offset, ptr_size);
+            }
+        }
+        memcpy(tail + node_next_ptr_offset, &traverse_head, ptr_size);
+    } else {
+        me->head = traverse_head;
+    }
+    me->tail = traverse;
+    me->item_count += size;
+    return BK_OK;
+}
+
 /*
  * Gets the node at the specified index.
  */

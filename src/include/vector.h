@@ -41,6 +41,7 @@ bk_err vector_reserve(vector me, size_t size);
 bk_err vector_trim(vector me);
 void vector_copy_to_array(void *arr, vector me);
 void *vector_get_data(vector me);
+bk_err vector_add_all(vector me, void *arr, size_t size);
 
 /* Adding */
 bk_err vector_add_first(vector me, void *data);

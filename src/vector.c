@@ -192,6 +192,36 @@ void *vector_get_data(vector me)
 }
 
 /**
+ * Copies elements from an array to the vector. The size specifies the number of
+ * elements to copy, starting from the beginning of the array. The size must be
+ * less than or equal to the size of the array.
+ *
+ * @param me   the vector to add data to
+ * @param arr  the array to copy data from
+ * @param size the number of elements to copy
+ *
+ * @return  BK_OK     if no error
+ * @return -BK_ENOMEM if out of memory
+ * @return -BK_ERANGE if size has reached representable limit
+ */
+bk_err vector_add_all(vector me, void *const arr, const size_t size)
+{
+    const size_t cur_size = vector_size(me);
+    size_t rc;
+    if (size + cur_size < size) {
+        return -BK_ERANGE;
+    }
+    rc = vector_reserve(me, size + cur_size);
+    if (rc != BK_OK) {
+        return rc;
+    }
+    memcpy(me->data + cur_size * me->bytes_per_item, arr,
+           size * me->bytes_per_item);
+    me->item_count += size;
+    return BK_OK;
+}
+
+/**
  * Adds an element to the start of the vector. The pointer to the data being
  * passed in should point to the data type which this vector holds. For example,
  * if this vector holds integers, the data pointer should be a pointer to an

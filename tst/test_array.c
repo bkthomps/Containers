@@ -127,6 +127,29 @@ static void test_big_object(void)
     assert(!array_destroy(me));
 }
 
+static void test_add_all(void)
+{
+    int get;
+    size_t i;
+    int arr_1[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    int arr_2[] = {100, 200, 300, 400, 500, 600, 700, 800, 900};
+    array me = array_init(10, sizeof(int));
+    assert(array_add_all(me, arr_1, 11) == -BK_EINVAL);
+    assert(array_add_all(me, arr_1, 10) == BK_OK);
+    for (i = 0; i < sizeof(arr_1) / sizeof(*arr_1); i++) {
+        array_get(&get, me, i);
+        assert(get == arr_1[i]);
+    }
+    assert(array_add_all(me, arr_2, 9) == BK_OK);
+    for (i = 0; i < sizeof(arr_2) / sizeof(*arr_2); i++) {
+        array_get(&get, me, i);
+        assert(get == arr_2[i]);
+    }
+    array_get(&get, me, 9);
+    assert(get == 10);
+    array_destroy(me);
+}
+
 void test_array(void)
 {
     test_invalid_init();
@@ -136,4 +159,5 @@ void test_array(void)
     test_init_out_of_memory();
 #endif
     test_big_object();
+    test_add_all();
 }
