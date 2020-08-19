@@ -194,9 +194,21 @@ void deque_copy_to_array(void *const arr, deque me)
     }
 }
 
+/**
+ * Copies elements from an array to the deque. The size specifies the number of
+ * elements to copy, starting from the beginning of the array. The size must be
+ * less than or equal to the size of the array.
+ *
+ * @param me   the deque to add data to
+ * @param arr  the array to copy data from
+ * @param size the number of elements to copy
+ *
+ * @return  BK_OK     if no error
+ * @return -BK_ENOMEM if out of memory
+ * @return -BK_ERANGE if size has reached representable limit
+ */
 bk_err deque_add_all(deque me, void *const arr, const size_t size)
 {
-    /* TODO: check -BK_ERANGE */
     const size_t block_index = me->end_index / me->block_size;
     const size_t inner_index = me->end_index % me->block_size;
     const size_t first_block_space = me->block_size - inner_index;
@@ -212,9 +224,14 @@ bk_err deque_add_all(deque me, void *const arr, const size_t size)
         return BK_OK;
     }
     if (available_blocks < needed_blocks) {
+        const size_t block_limit = ((size_t) -1) / me->block_size;
         const size_t appended_blocks = needed_blocks - available_blocks;
         const size_t new_block_count = me->block_count + appended_blocks;
-        char **temp = realloc(me->data, new_block_count * sizeof(char *));
+        char **temp;
+        if (new_block_count > block_limit) {
+            return -BK_ERANGE;
+        }
+        temp = realloc(me->data, new_block_count * sizeof(char *));
         if (!temp) {
             return -BK_ENOMEM;
         }
