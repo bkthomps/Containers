@@ -509,8 +509,8 @@ void test_add_all_failure(void)
     assert(deque_size(me) == 2000);
     for (i = 0; i < 2000; i++) {
         int get;
-        assert(deque_pop_front(&get, me) == BK_OK);
-        assert(get == (int) i % 10 + 1);
+        assert(deque_pop_back(&get, me) == BK_OK);
+        assert(get == 10 - (int) i % 10);
     }
     assert(deque_size(me) == 0);
     for (i = 0; i < 200; i++) {
