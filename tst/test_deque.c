@@ -489,6 +489,40 @@ void test_add_all(int big_arr_size)
     free(big_array);
 }
 
+void test_add_all_failure(void)
+{
+    const size_t big_arr_size = 2000;
+    size_t i;
+    int small_array[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    double *big_array = malloc(big_arr_size * sizeof(double));
+    deque me = deque_init(sizeof(int));
+    for (i = 0; i < big_arr_size; i++) {
+        big_array[i] = (int) i + 10;
+    }
+    assert(deque_add_all(me, small_array, 0) == BK_OK);
+    assert(deque_size(me) == 0);
+    assert(deque_add_all(me, small_array, -1) == -BK_ERANGE);
+    assert(deque_size(me) == 0);
+    for (i = 0; i < 200; i++) {
+        assert(deque_add_all(me, small_array, 10) == BK_OK);
+    }
+    assert(deque_size(me) == 2000);
+    for (i = 0; i < 2000; i++) {
+        int get;
+        assert(deque_pop_front(&get, me) == BK_OK);
+        assert(get == i % 10 + 1);
+    }
+    assert(deque_size(me) == 0);
+    fail_realloc = 1;
+    assert(deque_add_all(me, small_array, 4000) == -BK_ENOMEM);
+    assert(deque_size(me) == 0);
+    fail_malloc = 1;
+    assert(deque_add_all(me, big_array, 2000) == -BK_ENOMEM);
+    assert(deque_size(me) == 0);
+    deque_destroy(me);
+    free(big_array);
+}
+
 void test_deque(void)
 {
     int i;
@@ -514,4 +548,5 @@ void test_deque(void)
     for (i = 1; i < 6000; i++) {
         test_add_all(i);
     }
+    test_add_all_failure();
 }
