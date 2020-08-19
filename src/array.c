@@ -121,9 +121,10 @@ void *array_get_data(array me)
 }
 
 /**
- * Copies elements from a raw array to an array. The size specifies the number
+ * Copies elements from a raw array to the array. The size specifies the number
  * of elements to copy starting from the start of the raw array, which must be
- * less than or equal to the size of both the raw array and of the array.
+ * less than or equal to the size of both the raw array and of the array. The
+ * elements are copied to the array starting at the start of the array.
  *
  * @param me   the array to add data to
  * @param arr  the raw array to copy data from
