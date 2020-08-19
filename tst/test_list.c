@@ -377,6 +377,32 @@ static void test_big_object(void)
     assert(!list_destroy(me));
 }
 
+static void test_add_all(void)
+{
+    size_t i;
+    int arr[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    list me = list_init(sizeof(int));
+    assert(list_add_all(me, arr, 0) == BK_OK);
+    assert(list_size(me) == 0);
+    assert(list_add_all(me, arr, 10) == BK_OK);
+    assert(list_size(me) == 10);
+    for (i = 0; i < 10; i++) {
+        int get;
+        assert(list_get_at(&get, me, i) == BK_OK);
+        assert(get == (int) i + 1);
+    }
+    assert(list_add_all(me, arr, 10) == BK_OK);
+    assert(list_size(me) == 20);
+    assert(list_add_all(me, arr, 10) == BK_OK);
+    assert(list_size(me) == 30);
+    for (i = 0; i < 30; i++) {
+        int get;
+        assert(list_get_at(&get, me, i) == BK_OK);
+        assert(get == (int) i % 10 + 1);
+    }
+    list_destroy(me);
+}
+
 void test_list(void)
 {
     test_invalid_init();
@@ -393,4 +419,5 @@ void test_list(void)
     assert(test_puzzle_backwards(2, 5) == 4);
     assert(test_puzzle_backwards(2, 10) == 5);
     test_big_object();
+    test_add_all();
 }
