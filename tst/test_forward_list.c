@@ -401,23 +401,28 @@ static void test_add_all(void)
     }
     assert(forward_list_add_all(me, arr, 10) == BK_OK);
     assert(forward_list_size(me) == 20);
+    assert(forward_list_remove_last(me) == BK_OK);
     assert(forward_list_add_all(me, arr, 10) == BK_OK);
-    assert(forward_list_size(me) == 30);
-    for (i = 0; i < 30; i++) {
+    assert(forward_list_size(me) == 29);
+    for (i = 0; i < 29; i++) {
         int get;
+        int n = i;
+        if (i >= 19) {
+            n++;
+        }
         assert(forward_list_get_at(&get, me, i) == BK_OK);
-        assert(get == (int) i % 10 + 1);
+        assert(get == n % 10 + 1);
     }
     assert(forward_list_add_all(me, arr, max_size) == -BK_ERANGE);
-    assert(forward_list_size(me) == 30);
+    assert(forward_list_size(me) == 29);
 #if STUB_MALLOC
     fail_malloc = 1;
     assert(forward_list_add_all(me, arr, 10) == -BK_ENOMEM);
-    assert(forward_list_size(me) == 30);
+    assert(forward_list_size(me) == 29);
     fail_malloc = 1;
     delay_fail_malloc = 5;
     assert(forward_list_add_all(me, arr, 10) == -BK_ENOMEM);
-    assert(forward_list_size(me) == 30);
+    assert(forward_list_size(me) == 29);
 #endif
     forward_list_destroy(me);
 }
