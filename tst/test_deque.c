@@ -513,13 +513,17 @@ void test_add_all_failure(void)
         assert(get == (int) i % 10 + 1);
     }
     assert(deque_size(me) == 0);
+    for (i = 0; i < 200; i++) {
+        assert(deque_add_all(me, small_array, 10) == BK_OK);
+    }
+    assert(deque_size(me) == 2000);
 #if STUB_MALLOC
     fail_realloc = 1;
     assert(deque_add_all(me, small_array, 4000) == -BK_ENOMEM);
-    assert(deque_size(me) == 0);
+    assert(deque_size(me) == 2000);
     fail_malloc = 1;
     assert(deque_add_all(me, big_array, 2000) == -BK_ENOMEM);
-    assert(deque_size(me) == 0);
+    assert(deque_size(me) == 2000);
 #endif
     deque_destroy(me);
     free(big_array);
