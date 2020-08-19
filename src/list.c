@@ -141,7 +141,7 @@ bk_err list_add_all(list me, void *const arr, const size_t size)
     }
     traverse_head = traverse;
     memset(traverse + node_prev_ptr_offset, 0, ptr_size);
-    memcpy(traverse + node_data_ptr_offset, arr, ptr_size);
+    memcpy(traverse + node_data_ptr_offset, arr, me->bytes_per_item);
     for (i = 1; i < size; i++) {
         char *node = malloc(2 * ptr_size + me->bytes_per_item);
         if (!node) {
@@ -151,7 +151,7 @@ bk_err list_add_all(list me, void *const arr, const size_t size)
         memcpy(traverse + node_next_ptr_offset, &node, ptr_size);
         memcpy(node + node_prev_ptr_offset, &traverse, ptr_size);
         memcpy(node + node_data_ptr_offset,
-               (char *) arr + i * me->bytes_per_item, ptr_size);
+               (char *) arr + i * me->bytes_per_item, me->bytes_per_item);
         traverse = node;
     }
     memset(traverse + node_next_ptr_offset, 0, ptr_size);
