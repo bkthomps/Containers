@@ -510,7 +510,7 @@ void test_add_all_failure(void)
     for (i = 0; i < 2000; i++) {
         int get;
         assert(deque_pop_front(&get, me) == BK_OK);
-        assert(get == i % 10 + 1);
+        assert(get == (int) i % 10 + 1);
     }
     assert(deque_size(me) == 0);
     fail_realloc = 1;
