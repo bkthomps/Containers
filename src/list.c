@@ -112,11 +112,11 @@ void list_copy_to_array(void *const arr, list me)
 }
 
 /**
- * Copies elements from an array to the list. The size specifies the number of
- * elements to copy, starting from the beginning of the array. The size must be
- * less than or equal to the size of the array.
+ * Copies elements from an array to the doubly-linked list. The size specifies
+ * the number of elements to copy, starting from the beginning of the array. The
+ * size must be less than or equal to the size of the array.
  *
- * @param me   the list to add data to
+ * @param me   the doubly-linked list to add data to
  * @param arr  the array to copy data from
  * @param size the number of elements to copy
  *

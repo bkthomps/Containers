@@ -384,6 +384,44 @@ static void test_big_object(void)
     assert(!forward_list_destroy(me));
 }
 
+static void test_add_all(void)
+{
+    const size_t max_size = -1;
+    size_t i;
+    int arr[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    forward_list me = forward_list_init(sizeof(int));
+    assert(forward_list_add_all(me, arr, 0) == BK_OK);
+    assert(forward_list_size(me) == 0);
+    assert(forward_list_add_all(me, arr, 10) == BK_OK);
+    assert(forward_list_size(me) == 10);
+    for (i = 0; i < 10; i++) {
+        int get;
+        assert(forward_list_get_at(&get, me, i) == BK_OK);
+        assert(get == (int) i + 1);
+    }
+    assert(forward_list_add_all(me, arr, 10) == BK_OK);
+    assert(forward_list_size(me) == 20);
+    assert(forward_list_add_all(me, arr, 10) == BK_OK);
+    assert(forward_list_size(me) == 30);
+    for (i = 0; i < 30; i++) {
+        int get;
+        assert(forward_list_get_at(&get, me, i) == BK_OK);
+        assert(get == (int) i % 10 + 1);
+    }
+    assert(forward_list_add_all(me, arr, max_size) == -BK_ERANGE);
+    assert(forward_list_size(me) == 30);
+#if STUB_MALLOC
+    fail_malloc = 1;
+    assert(forward_list_add_all(me, arr, 10) == -BK_ENOMEM);
+    assert(forward_list_size(me) == 30);
+    fail_malloc = 1;
+    delay_fail_malloc = 5;
+    assert(forward_list_add_all(me, arr, 10) == -BK_ENOMEM);
+    assert(forward_list_size(me) == 30);
+#endif
+    forward_list_destroy(me);
+}
+
 void test_forward_list(void)
 {
     test_invalid_init();
@@ -400,4 +438,5 @@ void test_forward_list(void)
     assert(test_puzzle_backwards(2, 5) == 4);
     assert(test_puzzle_backwards(2, 10) == 5);
     test_big_object();
+    test_add_all();
 }

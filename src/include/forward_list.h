@@ -37,6 +37,7 @@ forward_list forward_list_init(size_t data_size);
 size_t forward_list_size(forward_list me);
 bk_bool forward_list_is_empty(forward_list me);
 void forward_list_copy_to_array(void *arr, forward_list me);
+bk_err forward_list_add_all(forward_list me, void *arr, size_t size);
 
 /* Adding */
 bk_err forward_list_add_first(forward_list me, void *data);
