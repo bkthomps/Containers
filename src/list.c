@@ -145,7 +145,11 @@ bk_err list_add_all(list me, void *const arr, const size_t size)
     for (i = 1; i < size; i++) {
         char *node = malloc(2 * ptr_size + me->bytes_per_item);
         if (!node) {
-            /* TODO: free all the nodes */
+            while (traverse) {
+                char *backup = traverse;
+                memcpy(&traverse, traverse + node_prev_ptr_offset, ptr_size);
+                free(backup);
+            }
             return -BK_ENOMEM;
         }
         memcpy(traverse + node_next_ptr_offset, &node, ptr_size);

@@ -379,6 +379,7 @@ static void test_big_object(void)
 
 static void test_add_all(void)
 {
+    const size_t max_size = -1;
     size_t i;
     int arr[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     list me = list_init(sizeof(int));
@@ -400,6 +401,17 @@ static void test_add_all(void)
         assert(list_get_at(&get, me, i) == BK_OK);
         assert(get == (int) i % 10 + 1);
     }
+    assert(list_add_all(me, arr, max_size) == -BK_ERANGE);
+    assert(list_size(me) == 30);
+#if STUB_MALLOC
+    fail_malloc = 1;
+    assert(list_add_all(me, arr, 10) == -BK_ENOMEM);
+    assert(list_size(me) == 30);
+    fail_malloc = 1;
+    delay_fail_malloc = 5;
+    assert(list_add_all(me, arr, 10) == -BK_ENOMEM);
+    assert(list_size(me) == 30);
+#endif
     list_destroy(me);
 }
 
