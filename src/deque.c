@@ -34,6 +34,8 @@ struct internal_deque {
     size_t start_index;
     size_t end_index;
     size_t block_count;
+    size_t alloc_block_start;
+    size_t alloc_block_end;
     char **data;
 };
 
@@ -70,6 +72,8 @@ deque deque_init(const size_t data_size)
             init->block_size * BKTHOMPS_DEQUE_INITIAL_BLOCK_COUNT / 2;
     init->end_index = init->start_index;
     init->block_count = BKTHOMPS_DEQUE_INITIAL_BLOCK_COUNT;
+    init->alloc_block_start = init->start_index / init->block_size;
+    init->alloc_block_end = init->alloc_block_start;
     init->data = calloc(init->block_count, sizeof(char *));
     if (!init->data) {
         free(init);
@@ -585,14 +589,14 @@ bk_err deque_clear(deque me)
         return -BK_ENOMEM;
     }
     for (i = 0; i < me->block_count; i++) {
-        char *block;
-        memcpy(&block, me->data + i, sizeof(char *));
-        free(block);
+        free(me->data[i]);
     }
     free(me->data);
     me->start_index = me->block_size * BKTHOMPS_DEQUE_INITIAL_BLOCK_COUNT / 2;
     me->end_index = me->start_index;
     me->block_count = BKTHOMPS_DEQUE_INITIAL_BLOCK_COUNT;
+    me->alloc_block_start = me->start_index / me->block_size;
+    me->alloc_block_end = me->alloc_block_start;
     me->data = updated_data;
     me->data[me->start_index / me->block_size] = updated_block;
     return BK_OK;
