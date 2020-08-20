@@ -732,6 +732,15 @@ void *set_last(set me)
     return traverse + node_key_offset;
 }
 
+/**
+ * Returns the key which is strictly lower than the comparison key. Meaning that
+ * the highest key which is lower than the key used for comparison is returned.
+ *
+ * @param me  the set to get the lower key from
+ * @param key the key to use for comparison
+ *
+ * @return the key which is strictly lower, or NULL if it does not exist
+ */
 void *set_lower(set me, void *const key)
 {
     char *ret = NULL;
@@ -748,6 +757,16 @@ void *set_lower(set me, void *const key)
     return ret;
 }
 
+/**
+ * Returns the key which is strictly higher than the comparison key. Meaning
+ * that the lowest key which is higher than the key used for comparison is
+ * returned.
+ *
+ * @param me  the set to get the higher key from
+ * @param key the key to use for comparison
+ *
+ * @return the key which is strictly higher, or NULL if it does not exist
+ */
 void *set_higher(set me, void *const key)
 {
     char *ret = NULL;
@@ -764,6 +783,16 @@ void *set_higher(set me, void *const key)
     return ret;
 }
 
+/**
+ * Returns the key which is the floor of the comparison key. Meaning that the
+ * the highest key which is lower or equal to the key used for comparison is
+ * returned.
+ *
+ * @param me  the set to get the floor key from
+ * @param key the key to use for comparison
+ *
+ * @return the key which is the floor, or NULL if it does not exist
+ */
 void *set_floor(set me, void *const key)
 {
     char *ret = NULL;
@@ -780,6 +809,16 @@ void *set_floor(set me, void *const key)
     return ret;
 }
 
+/**
+ * Returns the key which is the ceiling of the comparison key. Meaning that the
+ * the lowest key which is higher or equal to the key used for comparison is
+ * returned.
+ *
+ * @param me  the set to get the ceiling key from
+ * @param key the key to use for comparison
+ *
+ * @return the key which is the ceiling, or NULL if it does not exist
+ */
 void *set_ceiling(set me, void *const key)
 {
     char *ret = NULL;
