@@ -732,6 +732,70 @@ void *set_last(set me)
     return traverse + node_key_offset;
 }
 
+void *set_lower(set me, void *const key)
+{
+    char *ret = NULL;
+    char *traverse = me->root;
+    while (traverse) {
+        const int compare = me->comparator(traverse + node_key_offset, key);
+        if (compare < 0) {
+            ret = traverse + node_key_offset;
+            memcpy(&traverse, traverse + node_right_child_offset, ptr_size);
+        } else {
+            memcpy(&traverse, traverse + node_left_child_offset, ptr_size);
+        }
+    }
+    return ret;
+}
+
+void *set_higher(set me, void *const key)
+{
+    char *ret = NULL;
+    char *traverse = me->root;
+    while (traverse) {
+        const int compare = me->comparator(traverse + node_key_offset, key);
+        if (compare > 0) {
+            ret = traverse + node_key_offset;
+            memcpy(&traverse, traverse + node_left_child_offset, ptr_size);
+        } else {
+            memcpy(&traverse, traverse + node_right_child_offset, ptr_size);
+        }
+    }
+    return ret;
+}
+
+void *set_floor(set me, void *const key)
+{
+    char *ret = NULL;
+    char *traverse = me->root;
+    while (traverse) {
+        const int compare = me->comparator(traverse + node_key_offset, key);
+        if (compare <= 0) {
+            ret = traverse + node_key_offset;
+            memcpy(&traverse, traverse + node_right_child_offset, ptr_size);
+        } else {
+            memcpy(&traverse, traverse + node_left_child_offset, ptr_size);
+        }
+    }
+    return ret;
+}
+
+void *set_ceiling(set me, void *const key)
+{
+    char *ret = NULL;
+    char *traverse = me->root;
+    while (traverse) {
+        const int compare = me->comparator(traverse + node_key_offset, key);
+        if (compare >= 0) {
+            ret = traverse + node_key_offset;
+            memcpy(&traverse, traverse + node_left_child_offset, ptr_size);
+        } else {
+            memcpy(&traverse, traverse + node_right_child_offset, ptr_size);
+        }
+    }
+    return ret;
+}
+
 /**
  * Clears the keys from the set.
  *

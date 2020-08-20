@@ -574,7 +574,7 @@ static void test_big_object(void)
     assert(!set_destroy(me));
 }
 
-static void ordered_retrieval_global_peak(void)
+static void ordered_retrieval(void)
 {
     int *get;
     int val = 4;
@@ -594,12 +594,77 @@ static void ordered_retrieval_global_peak(void)
     assert(3 == *get);
     get = set_last(me);
     assert(5 == *get);
+    /* Lower tests */
+    val = 7;
+    get = set_lower(me, &val);
+    assert(5 == *get);
+    val = 6;
+    get = set_lower(me, &val);
+    assert(5 == *get);
+    val = 5;
+    get = set_lower(me, &val);
+    assert(4 == *get);
+    val = 4;
+    get = set_lower(me, &val);
+    assert(3 == *get);
+    val = 3;
+    get = set_lower(me, &val);
+    assert(!get);
+    /* Higher tests */
+    val = 1;
+    get = set_higher(me, &val);
+    assert(3 == *get);
+    val = 2;
+    get = set_higher(me, &val);
+    assert(3 == *get);
+    val = 3;
+    get = set_higher(me, &val);
+    assert(4 == *get);
+    val = 4;
+    get = set_higher(me, &val);
+    assert(5 == *get);
+    val = 5;
+    get = set_higher(me, &val);
+    assert(!get);
+    /* Floor tests */
+    val = 7;
+    get = set_floor(me, &val);
+    assert(5 == *get);
+    val = 6;
+    get = set_floor(me, &val);
+    assert(5 == *get);
+    val = 5;
+    get = set_floor(me, &val);
+    assert(5 == *get);
+    val = 4;
+    get = set_floor(me, &val);
+    assert(4 == *get);
+    val = 3;
+    get = set_floor(me, &val);
+    assert(3 == *get);
+    val = 2;
+    get = set_floor(me, &val);
+    assert(!get);
+    /* Ceiling tests */
+    val = 1;
+    get = set_ceiling(me, &val);
+    assert(3 == *get);
+    val = 2;
+    get = set_ceiling(me, &val);
+    assert(3 == *get);
+    val = 3;
+    get = set_ceiling(me, &val);
+    assert(3 == *get);
+    val = 4;
+    get = set_ceiling(me, &val);
+    assert(4 == *get);
+    val = 5;
+    get = set_ceiling(me, &val);
+    assert(5 == *get);
+    val = 6;
+    get = set_ceiling(me, &val);
+    assert(!get);
     set_destroy(me);
-}
-
-static void ordered_retrieval_local_peak(void)
-{
-
 }
 
 void test_set(void)
@@ -617,5 +682,5 @@ void test_set(void)
     test_put_out_of_memory();
 #endif
     test_big_object();
-    ordered_retrieval_global_peak();
+    ordered_retrieval();
 }
