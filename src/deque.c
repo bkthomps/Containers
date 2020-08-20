@@ -74,7 +74,7 @@ deque deque_init(const size_t data_size)
     init->block_count = BKTHOMPS_DEQUE_INITIAL_BLOCK_COUNT;
     init->alloc_block_start = init->start_index / init->block_size;
     init->alloc_block_end = init->alloc_block_start;
-    init->data = calloc(init->block_count, sizeof(char *));
+    init->data = malloc(init->block_count * sizeof(char *));
     if (!init->data) {
         free(init);
         return NULL;
@@ -137,16 +137,18 @@ bk_err deque_trim(deque me)
     }
     memcpy(updated_data, me->data + start_block_index,
            updated_block_count * sizeof(char *));
-    for (i = 0; i < start_block_index; i++) {
+    for (i = me->alloc_block_start; i < start_block_index; i++) {
         free(me->data[i]);
     }
-    for (i = end_block_index + 1; i < me->block_count; i++) {
+    for (i = end_block_index + 1; i <= me->alloc_block_end; i++) {
         free(me->data[i]);
     }
     free(me->data);
     me->start_index -= start_block_index * me->block_size;
     me->end_index -= start_block_index * me->block_size;
     me->block_count = updated_block_count;
+    me->alloc_block_start = 0;
+    me->alloc_block_end = updated_block_count - 1;
     me->data = updated_data;
     return BK_OK;
 }
@@ -234,18 +236,18 @@ bk_err deque_add_all(deque me, void *const arr, const size_t size)
         if (!temp) {
             return -BK_ENOMEM;
         }
-        memset(temp + me->block_count, 0, appended_blocks * sizeof(char *));
         me->data = temp;
         me->block_count = new_block_count;
     }
     for (i = block_index + 1; i <= block_index + needed_blocks; i++) {
-        if (me->data[i]) {
+        if (i <= me->alloc_block_end) {
             continue;
         }
         me->data[i] = malloc(me->block_size * me->data_size);
         if (!me->data[i]) {
             return -BK_ENOMEM;
         }
+        me->alloc_block_end++;
     }
     offset = first_block_space * me->data_size;
     memcpy(me->data[block_index] + inner_index * me->data_size, arr, offset);
@@ -306,19 +308,21 @@ bk_err deque_push_front(deque me, void *const data)
             return -BK_ENOMEM;
         }
         memmove(temp + added_blocks, temp, me->block_count * sizeof(char *));
-        memset(temp, 0, added_blocks * sizeof(char *));
         me->data = temp;
         me->block_count = new_block_count;
         me->start_index += added_blocks * me->block_size;
         me->end_index += added_blocks * me->block_size;
+        me->alloc_block_start += added_blocks;
+        me->alloc_block_end += added_blocks;
     }
     if (me->start_index % me->block_size == 0) {
         const size_t add_block_index = me->start_index / me->block_size - 1;
-        if (!me->data[add_block_index]) {
+        if (add_block_index < me->alloc_block_start) {
             me->data[add_block_index] = malloc(me->block_size * me->data_size);
             if (!me->data[add_block_index]) {
                 return -BK_ENOMEM;
             }
+            me->alloc_block_start--;
         }
     }
     me->start_index--;
@@ -350,27 +354,25 @@ bk_err deque_push_back(deque me, void *const data)
 {
     if (me->end_index == me->block_count * me->block_size) {
         const size_t new_block_count = deque_get_new_block_count(me);
-        size_t added_blocks;
         char **temp;
         if (new_block_count == 0) {
             return -BK_ERANGE;
         }
-        added_blocks = new_block_count - me->block_count;
         temp = realloc(me->data, new_block_count * sizeof(char *));
         if (!temp) {
             return -BK_ENOMEM;
         }
-        memset(temp + me->block_count, 0, added_blocks * sizeof(char *));
         me->data = temp;
         me->block_count = new_block_count;
     }
     if (me->end_index % me->block_size == 0) {
         const size_t add_block_index = me->end_index / me->block_size;
-        if (!me->data[add_block_index]) {
+        if (add_block_index > me->alloc_block_end) {
             me->data[add_block_index] = malloc(me->block_size * me->data_size);
             if (!me->data[add_block_index]) {
                 return -BK_ENOMEM;
             }
+            me->alloc_block_end++;
         }
     }
     {
@@ -578,8 +580,8 @@ bk_err deque_clear(deque me)
 {
     size_t i;
     char *updated_block;
-    char **updated_data = calloc(BKTHOMPS_DEQUE_INITIAL_BLOCK_COUNT,
-                                 sizeof(char *));
+    char **updated_data =
+            malloc(BKTHOMPS_DEQUE_INITIAL_BLOCK_COUNT * sizeof(char *));
     if (!updated_data) {
         return -BK_ENOMEM;
     }
@@ -588,7 +590,7 @@ bk_err deque_clear(deque me)
         free(updated_data);
         return -BK_ENOMEM;
     }
-    for (i = 0; i < me->block_count; i++) {
+    for (i = me->alloc_block_start; i <= me->alloc_block_end; i++) {
         free(me->data[i]);
     }
     free(me->data);
@@ -613,7 +615,7 @@ bk_err deque_clear(deque me)
 deque deque_destroy(deque me)
 {
     size_t i;
-    for (i = 0; i < me->block_count; i++) {
+    for (i = me->alloc_block_start; i <= me->alloc_block_end; i++) {
         free(me->data[i]);
     }
     free(me->data);

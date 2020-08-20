@@ -268,12 +268,13 @@ static void test_large_elements(void)
 #if STUB_MALLOC
 static void test_init_out_of_memory(void)
 {
-    fail_calloc = 1;
-    assert(!deque_init(sizeof(int)));
     fail_malloc = 1;
     assert(!deque_init(sizeof(int)));
     fail_malloc = 1;
     delay_fail_malloc = 1;
+    assert(!deque_init(sizeof(int)));
+    fail_malloc = 1;
+    delay_fail_malloc = 2;
     assert(!deque_init(sizeof(int)));
 }
 #endif
@@ -342,7 +343,7 @@ static void test_clear_out_of_memory(void)
         deque_push_back(me, &i);
     }
     assert(deque_size(me) == 32);
-    fail_calloc = 1;
+    fail_malloc = 1;
     assert(deque_clear(me) == -ENOMEM);
     for (i = 0; i < 32; i++) {
         int get = 0xfacade;
@@ -351,6 +352,7 @@ static void test_clear_out_of_memory(void)
     }
     assert(deque_size(me) == 32);
     fail_malloc = 1;
+    delay_fail_malloc = 1;
     assert(deque_clear(me) == -ENOMEM);
     for (i = 0; i < 32; i++) {
         int get = 0xfacade;
