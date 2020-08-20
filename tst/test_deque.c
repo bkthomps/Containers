@@ -463,7 +463,7 @@ static void test_big_object(void)
     assert(!deque_destroy(me));
 }
 
-void test_add_all(int big_arr_size)
+static void test_add_all(int big_arr_size)
 {
     int i;
     double small_array[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
@@ -491,7 +491,7 @@ void test_add_all(int big_arr_size)
     free(big_array);
 }
 
-void test_add_all_failure(void)
+static void test_add_all_failure(void)
 {
     const size_t big_arr_size = 2000;
     size_t i;
@@ -531,44 +531,78 @@ void test_add_all_failure(void)
     free(big_array);
 }
 
-void test_block_reuse_forwards(void)
+static void test_block_reuse_forwards(void)
 {
     size_t i;
     size_t queue_size = 1500;
     deque queue = deque_init(sizeof(double));
     for (i = 0; i < queue_size; i++) {
         double d = i;
-        deque_push_back(queue, &d);
+        assert(deque_push_back(queue, &d) == BK_OK);
     }
     for (i = 0; i < queue_size; i++) {
         double d = i;
         double get;
-        deque_push_back(queue, &d);
-        deque_pop_front(&get, queue);
+        assert(deque_push_back(queue, &d) == BK_OK);
+        assert(deque_pop_front(&get, queue) == BK_OK);
         assert(get == d);
     }
-    assert(deque_trim(queue) == BK_OK);
     deque_destroy(queue);
 }
 
-void test_block_reuse_backwards(void)
+static void test_block_reuse_backwards(void)
 {
     size_t i;
     size_t queue_size = 1500;
     deque queue = deque_init(sizeof(double));
     for (i = 0; i < queue_size; i++) {
         double d = i;
-        deque_push_front(queue, &d);
+        assert(deque_push_front(queue, &d) == BK_OK);
     }
     for (i = 0; i < queue_size; i++) {
         double d = i;
         double get;
-        deque_push_front(queue, &d);
-        deque_pop_back(&get, queue);
+        assert(deque_push_front(queue, &d) == BK_OK);
+        assert(deque_pop_back(&get, queue) == BK_OK);
         assert(get == d);
     }
-    assert(deque_trim(queue) == BK_OK);
     deque_destroy(queue);
+}
+
+static void test_trim_both_sides(void)
+{
+    int i;
+    deque me = deque_init(sizeof(int));
+    for (i = 999; i >= 0; i--) {
+        assert(deque_push_front(me, &i) == BK_OK);
+        assert(deque_push_back(me, &i) == BK_OK);
+    }
+    assert(deque_size(me) == 2000);
+    assert(deque_trim(me) == BK_OK);
+    assert(deque_size(me) == 2000);
+    for (i = 0; i < 500; i++) {
+        int get = 0xfacade;
+        assert(deque_pop_front(&get, me) == BK_OK);
+        assert(get == i);
+        get = 0xfacade;
+        assert(deque_pop_back(&get, me) == BK_OK);
+        assert(get == i);
+    }
+    assert(deque_size(me) == 1000);
+    assert(deque_trim(me) == BK_OK);
+    assert(deque_size(me) == 1000);
+    for (i = 500; i < 1000; i++) {
+        int get = 0xfacade;
+        assert(deque_pop_front(&get, me) == BK_OK);
+        assert(get == i);
+        get = 0xfacade;
+        assert(deque_pop_back(&get, me) == BK_OK);
+        assert(get == i);
+    }
+    assert(deque_size(me) == 0);
+    assert(deque_trim(me) == BK_OK);
+    assert(deque_size(me) == 0);
+    deque_destroy(me);
 }
 
 void test_deque(void)
@@ -599,4 +633,5 @@ void test_deque(void)
     test_add_all_failure();
     test_block_reuse_forwards();
     test_block_reuse_backwards();
+    test_trim_both_sides();
 }
