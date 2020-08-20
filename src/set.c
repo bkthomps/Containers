@@ -685,6 +685,54 @@ bk_err set_remove(set me, void *const key)
 }
 
 /**
+ * Returns the first (lowest) key in this set. The returned key is a pointer to
+ * the internally stored key, which should not be modified. Modifying it results
+ * in undefined behaviour.
+ *
+ * @param me the set to get the key from
+ *
+ * @return the lowest key in this set, or NULL if it is empty
+ */
+void *set_first(set me)
+{
+    char *traverse = me->root;
+    char *traverse_left;
+    if (!traverse) {
+        return NULL;
+    }
+    memcpy(&traverse_left, traverse + node_left_child_offset, ptr_size);
+    while (traverse_left) {
+        traverse = traverse_left;
+        memcpy(&traverse_left, traverse + node_left_child_offset, ptr_size);
+    }
+    return traverse + node_key_offset;
+}
+
+/**
+ * Returns the last (highest) key in this set. The returned key is a pointer to
+ * the internally stored key, which should not be modified. Modifying it results
+ * in undefined behaviour.
+ *
+ * @param me the set to get the key from
+ *
+ * @return the highest key in this set, or NULL if it is empty
+ */
+void *set_last(set me)
+{
+    char *traverse = me->root;
+    char *traverse_right;
+    if (!traverse) {
+        return NULL;
+    }
+    memcpy(&traverse_right, traverse + node_right_child_offset, ptr_size);
+    while (traverse_right) {
+        traverse = traverse_right;
+        memcpy(&traverse_right, traverse + node_right_child_offset, ptr_size);
+    }
+    return traverse + node_key_offset;
+}
+
+/**
  * Clears the keys from the set.
  *
  * @param me the set to clear
