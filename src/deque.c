@@ -318,9 +318,16 @@ bk_err deque_push_front(deque me, void *const data)
     if (me->start_index % me->block_size == 0) {
         const size_t add_block_index = me->start_index / me->block_size - 1;
         if (add_block_index < me->alloc_block_start) {
-            me->data[add_block_index] = malloc(me->block_size * me->data_size);
-            if (!me->data[add_block_index]) {
-                return -BK_ENOMEM;
+            const size_t end_block = (me->end_index - 1) / me->block_size;
+            if (end_block < me->alloc_block_end) {
+                me->data[add_block_index] = me->data[me->alloc_block_end];
+                me->alloc_block_end--;
+            } else {
+                me->data[add_block_index] =
+                        malloc(me->block_size * me->data_size);
+                if (!me->data[add_block_index]) {
+                    return -BK_ENOMEM;
+                }
             }
             me->alloc_block_start--;
         }
@@ -368,9 +375,16 @@ bk_err deque_push_back(deque me, void *const data)
     if (me->end_index % me->block_size == 0) {
         const size_t add_block_index = me->end_index / me->block_size;
         if (add_block_index > me->alloc_block_end) {
-            me->data[add_block_index] = malloc(me->block_size * me->data_size);
-            if (!me->data[add_block_index]) {
-                return -BK_ENOMEM;
+            const size_t start_block = me->start_index / me->block_size;
+            if (start_block > me->alloc_block_start) {
+                me->data[add_block_index] = me->data[me->alloc_block_start];
+                me->alloc_block_start++;
+            } else {
+                me->data[add_block_index] =
+                        malloc(me->block_size * me->data_size);
+                if (!me->data[add_block_index]) {
+                    return -BK_ENOMEM;
+                }
             }
             me->alloc_block_end++;
         }
