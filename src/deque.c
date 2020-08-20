@@ -85,7 +85,7 @@ deque deque_init(const size_t data_size)
         free(init);
         return NULL;
     }
-    init->data[init->start_index / init->block_size] = block;
+    init->data[init->alloc_block_start] = block;
     return init;
 }
 
@@ -611,7 +611,7 @@ bk_err deque_clear(deque me)
     me->alloc_block_start = me->start_index / me->block_size;
     me->alloc_block_end = me->alloc_block_start;
     me->data = updated_data;
-    me->data[me->start_index / me->block_size] = updated_block;
+    me->data[me->alloc_block_start] = updated_block;
     return BK_OK;
 }
 
