@@ -531,6 +531,44 @@ void test_add_all_failure(void)
     free(big_array);
 }
 
+void test_block_reuse_forwards(void)
+{
+    size_t i;
+    size_t queue_size = 1500;
+    deque queue = deque_init(sizeof(double));
+    for (i = 0; i < queue_size; i++) {
+        double d = i;
+        deque_push_back(queue, &d);
+    }
+    for (i = 0; i < queue_size; i++) {
+        double d = i;
+        double get;
+        deque_push_back(queue, &d);
+        deque_pop_front(&get, queue);
+        assert(get == d);
+    }
+    deque_destroy(queue);
+}
+
+void test_block_reuse_backwards(void)
+{
+    size_t i;
+    size_t queue_size = 1500;
+    deque queue = deque_init(sizeof(double));
+    for (i = 0; i < queue_size; i++) {
+        double d = i;
+        deque_push_front(queue, &d);
+    }
+    for (i = 0; i < queue_size; i++) {
+        double d = i;
+        double get;
+        deque_push_front(queue, &d);
+        deque_pop_back(&get, queue);
+        assert(get == d);
+    }
+    deque_destroy(queue);
+}
+
 void test_deque(void)
 {
     int i;
@@ -557,4 +595,6 @@ void test_deque(void)
         test_add_all(i);
     }
     test_add_all_failure();
+    test_block_reuse_forwards();
+    test_block_reuse_backwards();
 }
