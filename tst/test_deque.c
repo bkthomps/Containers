@@ -547,6 +547,7 @@ void test_block_reuse_forwards(void)
         deque_pop_front(&get, queue);
         assert(get == d);
     }
+    assert(deque_trim(queue) == BK_OK);
     deque_destroy(queue);
 }
 
@@ -566,6 +567,7 @@ void test_block_reuse_backwards(void)
         deque_pop_back(&get, queue);
         assert(get == d);
     }
+    assert(deque_trim(queue) == BK_OK);
     deque_destroy(queue);
 }
 
