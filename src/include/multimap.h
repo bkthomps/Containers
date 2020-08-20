@@ -51,6 +51,14 @@ bk_bool multimap_contains(multimap me, void *key);
 bk_bool multimap_remove(multimap me, void *key, void *value);
 bk_bool multimap_remove_all(multimap me, void *key);
 
+/* Retrieval */
+void *multimap_first(multimap me);
+void *multimap_last(multimap me);
+void *multimap_lower(multimap me, void *key);
+void *multimap_higher(multimap me, void *key);
+void *multimap_floor(multimap me, void *key);
+void *multimap_ceiling(multimap me, void *key);
+
 /* Ending */
 void multimap_clear(multimap me);
 multimap multimap_destroy(multimap me);

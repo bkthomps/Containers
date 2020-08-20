@@ -45,6 +45,14 @@ bk_bool map_get(void *value, map me, void *key);
 bk_bool map_contains(map me, void *key);
 bk_bool map_remove(map me, void *key);
 
+/* Retrieval */
+void *map_first(map me);
+void *map_last(map me);
+void *map_lower(map me, void *key);
+void *map_higher(map me, void *key);
+void *map_floor(map me, void *key);
+void *map_ceiling(map me, void *key);
+
 /* Ending */
 void map_clear(map me);
 map map_destroy(map me);

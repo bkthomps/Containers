@@ -911,6 +911,157 @@ bk_bool multimap_remove_all(multimap me, void *const key)
 }
 
 /**
+ * Returns the first (lowest) key in this multi-map. The returned key is a
+ * pointer to the internally stored key, which should not be modified. Modifying
+ * it results in undefined behaviour.
+ *
+ * @param me the multi-map to get the key from
+ *
+ * @return the lowest key in this multi-map, or NULL if it is empty
+ */
+void *multimap_first(multimap me)
+{
+    char *traverse = me->root;
+    char *traverse_left;
+    if (!traverse) {
+        return NULL;
+    }
+    memcpy(&traverse_left, traverse + node_left_child_offset, ptr_size);
+    while (traverse_left) {
+        traverse = traverse_left;
+        memcpy(&traverse_left, traverse + node_left_child_offset, ptr_size);
+    }
+    return traverse + node_key_offset;
+}
+
+/**
+ * Returns the last (highest) key in this multi-map. The returned key is a
+ * pointer to the internally stored key, which should not be modified. Modifying
+ * it results in undefined behaviour.
+ *
+ * @param me the multi-map to get the key from
+ *
+ * @return the highest key in this multi-map, or NULL if it is empty
+ */
+void *multimap_last(multimap me)
+{
+    char *traverse = me->root;
+    char *traverse_right;
+    if (!traverse) {
+        return NULL;
+    }
+    memcpy(&traverse_right, traverse + node_right_child_offset, ptr_size);
+    while (traverse_right) {
+        traverse = traverse_right;
+        memcpy(&traverse_right, traverse + node_right_child_offset, ptr_size);
+    }
+    return traverse + node_key_offset;
+}
+
+/**
+ * Returns the key which is strictly lower than the comparison key. Meaning that
+ * the highest key which is lower than the key used for comparison is returned.
+ *
+ * @param me  the multi-map to get the lower key from
+ * @param key the key to use for comparison
+ *
+ * @return the key which is strictly lower, or NULL if it does not exist
+ */
+void *multimap_lower(multimap me, void *const key)
+{
+    char *ret = NULL;
+    char *traverse = me->root;
+    while (traverse) {
+        const int compare = me->key_comparator(traverse + node_key_offset, key);
+        if (compare < 0) {
+            ret = traverse + node_key_offset;
+            memcpy(&traverse, traverse + node_right_child_offset, ptr_size);
+        } else {
+            memcpy(&traverse, traverse + node_left_child_offset, ptr_size);
+        }
+    }
+    return ret;
+}
+
+/**
+ * Returns the key which is strictly higher than the comparison key. Meaning
+ * that the lowest key which is higher than the key used for comparison is
+ * returned.
+ *
+ * @param me  the multi-map to get the higher key from
+ * @param key the key to use for comparison
+ *
+ * @return the key which is strictly higher, or NULL if it does not exist
+ */
+void *multimap_higher(multimap me, void *const key)
+{
+    char *ret = NULL;
+    char *traverse = me->root;
+    while (traverse) {
+        const int compare = me->key_comparator(traverse + node_key_offset, key);
+        if (compare > 0) {
+            ret = traverse + node_key_offset;
+            memcpy(&traverse, traverse + node_left_child_offset, ptr_size);
+        } else {
+            memcpy(&traverse, traverse + node_right_child_offset, ptr_size);
+        }
+    }
+    return ret;
+}
+
+/**
+ * Returns the key which is the floor of the comparison key. Meaning that the
+ * the highest key which is lower or equal to the key used for comparison is
+ * returned.
+ *
+ * @param me  the multi-map to get the floor key from
+ * @param key the key to use for comparison
+ *
+ * @return the key which is the floor, or NULL if it does not exist
+ */
+void *multimap_floor(multimap me, void *const key)
+{
+    char *ret = NULL;
+    char *traverse = me->root;
+    while (traverse) {
+        const int compare = me->key_comparator(traverse + node_key_offset, key);
+        if (compare <= 0) {
+            ret = traverse + node_key_offset;
+            memcpy(&traverse, traverse + node_right_child_offset, ptr_size);
+        } else {
+            memcpy(&traverse, traverse + node_left_child_offset, ptr_size);
+        }
+    }
+    return ret;
+}
+
+/**
+ * Returns the key which is the ceiling of the comparison key. Meaning that the
+ * the lowest key which is higher or equal to the key used for comparison is
+ * returned.
+ *
+ * @param me  the multi-map to get the ceiling key from
+ * @param key the key to use for comparison
+ *
+ * @return the key which is the ceiling, or NULL if it does not exist
+ */
+void *multimap_ceiling(multimap me, void *const key)
+{
+    char *ret = NULL;
+    char *traverse = me->root;
+    while (traverse) {
+        const int compare = me->key_comparator(traverse + node_key_offset, key);
+        if (compare >= 0) {
+            ret = traverse + node_key_offset;
+            memcpy(&traverse, traverse + node_left_child_offset, ptr_size);
+        } else {
+            memcpy(&traverse, traverse + node_right_child_offset, ptr_size);
+        }
+    }
+    return ret;
+}
+
+/**
  * Clears the key-value pairs from the multi-map.
  *
  * @param me the multi-map to clear
