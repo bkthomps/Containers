@@ -574,7 +574,7 @@ static void test_big_object(void)
     assert(!set_destroy(me));
 }
 
-static void ordered_retrieval(void)
+static void test_ordered_retrieval(void)
 {
     int *get;
     int val = 4;
@@ -682,5 +682,5 @@ void test_set(void)
     test_put_out_of_memory();
 #endif
     test_big_object();
-    ordered_retrieval();
+    test_ordered_retrieval();
 }

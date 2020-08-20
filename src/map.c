@@ -722,6 +722,157 @@ bk_bool map_remove(map me, void *const key)
 }
 
 /**
+ * Returns the first (lowest) key in this map. The returned key is a pointer to
+ * the internally stored key, which should not be modified. Modifying it results
+ * in undefined behaviour.
+ *
+ * @param me the map to get the key from
+ *
+ * @return the lowest key in this map, or NULL if it is empty
+ */
+void *map_first(map me)
+{
+    char *traverse = me->root;
+    char *traverse_left;
+    if (!traverse) {
+        return NULL;
+    }
+    memcpy(&traverse_left, traverse + node_left_child_offset, ptr_size);
+    while (traverse_left) {
+        traverse = traverse_left;
+        memcpy(&traverse_left, traverse + node_left_child_offset, ptr_size);
+    }
+    return traverse + node_key_offset;
+}
+
+/**
+ * Returns the last (highest) key in this map. The returned key is a pointer to
+ * the internally stored key, which should not be modified. Modifying it results
+ * in undefined behaviour.
+ *
+ * @param me the map to get the key from
+ *
+ * @return the highest key in this map, or NULL if it is empty
+ */
+void *map_last(map me)
+{
+    char *traverse = me->root;
+    char *traverse_right;
+    if (!traverse) {
+        return NULL;
+    }
+    memcpy(&traverse_right, traverse + node_right_child_offset, ptr_size);
+    while (traverse_right) {
+        traverse = traverse_right;
+        memcpy(&traverse_right, traverse + node_right_child_offset, ptr_size);
+    }
+    return traverse + node_key_offset;
+}
+
+/**
+ * Returns the key which is strictly lower than the comparison key. Meaning that
+ * the highest key which is lower than the key used for comparison is returned.
+ *
+ * @param me  the map to get the lower key from
+ * @param key the key to use for comparison
+ *
+ * @return the key which is strictly lower, or NULL if it does not exist
+ */
+void *map_lower(map me, void *const key)
+{
+    char *ret = NULL;
+    char *traverse = me->root;
+    while (traverse) {
+        const int compare = me->comparator(traverse + node_key_offset, key);
+        if (compare < 0) {
+            ret = traverse + node_key_offset;
+            memcpy(&traverse, traverse + node_right_child_offset, ptr_size);
+        } else {
+            memcpy(&traverse, traverse + node_left_child_offset, ptr_size);
+        }
+    }
+    return ret;
+}
+
+/**
+ * Returns the key which is strictly higher than the comparison key. Meaning
+ * that the lowest key which is higher than the key used for comparison is
+ * returned.
+ *
+ * @param me  the map to get the higher key from
+ * @param key the key to use for comparison
+ *
+ * @return the key which is strictly higher, or NULL if it does not exist
+ */
+void *map_higher(map me, void *const key)
+{
+    char *ret = NULL;
+    char *traverse = me->root;
+    while (traverse) {
+        const int compare = me->comparator(traverse + node_key_offset, key);
+        if (compare > 0) {
+            ret = traverse + node_key_offset;
+            memcpy(&traverse, traverse + node_left_child_offset, ptr_size);
+        } else {
+            memcpy(&traverse, traverse + node_right_child_offset, ptr_size);
+        }
+    }
+    return ret;
+}
+
+/**
+ * Returns the key which is the floor of the comparison key. Meaning that the
+ * the highest key which is lower or equal to the key used for comparison is
+ * returned.
+ *
+ * @param me  the map to get the floor key from
+ * @param key the key to use for comparison
+ *
+ * @return the key which is the floor, or NULL if it does not exist
+ */
+void *map_floor(map me, void *const key)
+{
+    char *ret = NULL;
+    char *traverse = me->root;
+    while (traverse) {
+        const int compare = me->comparator(traverse + node_key_offset, key);
+        if (compare <= 0) {
+            ret = traverse + node_key_offset;
+            memcpy(&traverse, traverse + node_right_child_offset, ptr_size);
+        } else {
+            memcpy(&traverse, traverse + node_left_child_offset, ptr_size);
+        }
+    }
+    return ret;
+}
+
+/**
+ * Returns the key which is the ceiling of the comparison key. Meaning that the
+ * the lowest key which is higher or equal to the key used for comparison is
+ * returned.
+ *
+ * @param me  the map to get the ceiling key from
+ * @param key the key to use for comparison
+ *
+ * @return the key which is the ceiling, or NULL if it does not exist
+ */
+void *map_ceiling(map me, void *const key)
+{
+    char *ret = NULL;
+    char *traverse = me->root;
+    while (traverse) {
+        const int compare = me->comparator(traverse + node_key_offset, key);
+        if (compare >= 0) {
+            ret = traverse + node_key_offset;
+            memcpy(&traverse, traverse + node_left_child_offset, ptr_size);
+        } else {
+            memcpy(&traverse, traverse + node_right_child_offset, ptr_size);
+        }
+    }
+    return ret;
+}
+
+/**
  * Clears the key-value pairs from the map.
  *
  * @param me the map to clear
