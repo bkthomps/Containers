@@ -239,10 +239,7 @@ bk_err deque_add_all(deque me, void *const arr, const size_t size)
         me->data = temp;
         me->block_count = new_block_count;
     }
-    for (i = block_index + 1; i <= block_index + needed_blocks; i++) {
-        if (i <= me->alloc_block_end) {
-            continue;
-        }
+    for (i = me->alloc_block_end + 1; i <= block_index + needed_blocks; i++) {
         me->data[i] = malloc(me->block_size * me->data_size);
         if (!me->data[i]) {
             return -BK_ENOMEM;
