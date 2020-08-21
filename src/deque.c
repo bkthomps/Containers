@@ -294,17 +294,20 @@ bk_err deque_push_front(deque me, void *const data)
 {
     if (me->start_index == 0) {
         const size_t new_block_count = deque_get_new_block_count(me);
+        const size_t new_back_space =
+                (me->block_count - me->alloc_block_end - 1) / 2;
         size_t added_blocks;
         char **temp;
         if (new_block_count == 0) {
             return -BK_ERANGE;
         }
-        added_blocks = new_block_count - me->block_count;
         temp = realloc(me->data, new_block_count * sizeof(char *));
         if (!temp) {
             return -BK_ENOMEM;
         }
-        memmove(temp + added_blocks, temp, me->block_count * sizeof(char *));
+        added_blocks = new_block_count - me->block_count + new_back_space;
+        memmove(temp + added_blocks, temp,
+                (me->block_count - new_back_space) * sizeof(char *));
         me->data = temp;
         me->block_count = new_block_count;
         me->start_index += added_blocks * me->block_size;
@@ -358,6 +361,7 @@ bk_err deque_push_back(deque me, void *const data)
 {
     if (me->end_index == me->block_count * me->block_size) {
         const size_t new_block_count = deque_get_new_block_count(me);
+        const size_t new_front_space = me->alloc_block_start / 2;
         char **temp;
         if (new_block_count == 0) {
             return -BK_ERANGE;
@@ -366,8 +370,15 @@ bk_err deque_push_back(deque me, void *const data)
         if (!temp) {
             return -BK_ENOMEM;
         }
+        memmove(temp + me->alloc_block_start - new_front_space,
+                temp + me->alloc_block_start,
+                (me->block_count - new_front_space) * sizeof(char *));
         me->data = temp;
         me->block_count = new_block_count;
+        me->start_index -= new_front_space * me->block_size;
+        me->end_index -= new_front_space * me->block_size;
+        me->alloc_block_start -= new_front_space;
+        me->alloc_block_end -= new_front_space;
     }
     if (me->end_index % me->block_size == 0) {
         const size_t add_block_index = me->end_index / me->block_size;
