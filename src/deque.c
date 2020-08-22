@@ -293,24 +293,39 @@ static size_t deque_get_new_block_count(deque me)
 bk_err deque_push_front(deque me, void *const data)
 {
     if (me->start_index == 0) {
-        const size_t new_block_count = deque_get_new_block_count(me);
-        size_t added_blocks;
-        char **temp;
-        if (new_block_count == 0) {
-            return -BK_ERANGE;
+        const size_t available_end = me->block_count - me->alloc_block_end - 1;
+        if (available_end > BKTHOMPS_DEQUE_INITIAL_BLOCK_COUNT) {
+            const size_t shift_end = available_end / 2;
+            const size_t allocated_blocks =
+                    me->alloc_block_end - me->alloc_block_start + 1;
+            memmove(me->data + me->alloc_block_start + shift_end,
+                    me->data + me->alloc_block_start,
+                    allocated_blocks * sizeof(char *));
+            me->start_index += shift_end * me->block_size;
+            me->end_index += shift_end * me->block_size;
+            me->alloc_block_start += shift_end;
+            me->alloc_block_end += shift_end;
+        } else {
+            const size_t new_block_count = deque_get_new_block_count(me);
+            size_t added_blocks;
+            char **temp;
+            if (new_block_count == 0) {
+                return -BK_ERANGE;
+            }
+            added_blocks = new_block_count - me->block_count;
+            temp = realloc(me->data, new_block_count * sizeof(char *));
+            if (!temp) {
+                return -BK_ENOMEM;
+            }
+            memmove(temp + added_blocks, temp,
+                    me->block_count * sizeof(char *));
+            me->data = temp;
+            me->block_count = new_block_count;
+            me->start_index += added_blocks * me->block_size;
+            me->end_index += added_blocks * me->block_size;
+            me->alloc_block_start += added_blocks;
+            me->alloc_block_end += added_blocks;
         }
-        added_blocks = new_block_count - me->block_count;
-        temp = realloc(me->data, new_block_count * sizeof(char *));
-        if (!temp) {
-            return -BK_ENOMEM;
-        }
-        memmove(temp + added_blocks, temp, me->block_count * sizeof(char *));
-        me->data = temp;
-        me->block_count = new_block_count;
-        me->start_index += added_blocks * me->block_size;
-        me->end_index += added_blocks * me->block_size;
-        me->alloc_block_start += added_blocks;
-        me->alloc_block_end += added_blocks;
     }
     if (me->start_index % me->block_size == 0) {
         const size_t add_block_index = me->start_index / me->block_size - 1;
@@ -357,17 +372,31 @@ bk_err deque_push_front(deque me, void *const data)
 bk_err deque_push_back(deque me, void *const data)
 {
     if (me->end_index == me->block_count * me->block_size) {
-        const size_t new_block_count = deque_get_new_block_count(me);
-        char **temp;
-        if (new_block_count == 0) {
-            return -BK_ERANGE;
+        const size_t available_start = me->alloc_block_start;
+        if (available_start > BKTHOMPS_DEQUE_INITIAL_BLOCK_COUNT) {
+            const size_t shift_start = available_start / 2;
+            const size_t allocated_blocks =
+                    me->alloc_block_end - me->alloc_block_start + 1;
+            memmove(me->data + shift_start,
+                    me->data + me->alloc_block_start,
+                    allocated_blocks * sizeof(char *));
+            me->start_index = shift_start * me->block_size;
+            me->end_index -= shift_start * me->block_size;
+            me->alloc_block_start = shift_start;
+            me->alloc_block_end -= shift_start;
+        } else {
+            const size_t new_block_count = deque_get_new_block_count(me);
+            char **temp;
+            if (new_block_count == 0) {
+                return -BK_ERANGE;
+            }
+            temp = realloc(me->data, new_block_count * sizeof(char *));
+            if (!temp) {
+                return -BK_ENOMEM;
+            }
+            me->data = temp;
+            me->block_count = new_block_count;
         }
-        temp = realloc(me->data, new_block_count * sizeof(char *));
-        if (!temp) {
-            return -BK_ENOMEM;
-        }
-        me->data = temp;
-        me->block_count = new_block_count;
     }
     if (me->end_index % me->block_size == 0) {
         const size_t add_block_index = me->end_index / me->block_size;
