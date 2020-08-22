@@ -374,15 +374,15 @@ bk_err deque_push_back(deque me, void *const data)
     if (me->end_index == me->block_count * me->block_size) {
         const size_t available_start = me->alloc_block_start;
         if (available_start > BKTHOMPS_DEQUE_INITIAL_BLOCK_COUNT) {
-            const size_t shift_start = available_start / 2;
+            const size_t shift_start = available_start - available_start / 2;
             const size_t allocated_blocks =
                     me->alloc_block_end - me->alloc_block_start + 1;
-            memmove(me->data + shift_start,
+            memmove(me->data + me->alloc_block_start / 2,
                     me->data + me->alloc_block_start,
                     allocated_blocks * sizeof(char *));
-            me->start_index = shift_start * me->block_size;
+            me->start_index -= shift_start * me->block_size;
             me->end_index -= shift_start * me->block_size;
-            me->alloc_block_start = shift_start;
+            me->alloc_block_start -= shift_start;
             me->alloc_block_end -= shift_start;
         } else {
             const size_t new_block_count = deque_get_new_block_count(me);
