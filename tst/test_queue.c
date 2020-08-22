@@ -187,6 +187,5 @@ void test_queue(void)
     test_automated_trim();
     assert(test_puzzle(2, 5) == 4);
     assert(test_puzzle(2, 10) == 5);
-    assert(test_puzzle(100, 1000) == 42);
     test_big_object();
 }
