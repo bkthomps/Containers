@@ -512,7 +512,8 @@ void list_clear(list me)
 
 /**
  * Destroys the doubly-linked list. Performing further operations after calling
- * this function results in undefined behavior.
+ * this function results in undefined behavior. Freeing NULL is legal, and
+ * causes no operation to be performed.
  *
  * @param me the doubly-linked list to destroy
  *
@@ -520,7 +521,9 @@ void list_clear(list me)
  */
 list list_destroy(list me)
 {
-    list_clear(me);
-    free(me);
+    if (me) {
+        list_clear(me);
+        free(me);
+    }
     return NULL;
 }

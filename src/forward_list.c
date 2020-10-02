@@ -488,7 +488,8 @@ void forward_list_clear(forward_list me)
 
 /**
  * Destroys the singly-linked list. Performing further operations after calling
- * this function results in undefined behavior.
+ * this function results in undefined behavior. Freeing NULL is legal, and
+ * causes no operation to be performed.
  *
  * @param me the singly-linked list to destroy
  *
@@ -496,7 +497,9 @@ void forward_list_clear(forward_list me)
  */
 forward_list forward_list_destroy(forward_list me)
 {
-    forward_list_clear(me);
-    free(me);
+    if (me) {
+        forward_list_clear(me);
+        free(me);
+    }
     return NULL;
 }

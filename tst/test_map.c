@@ -711,4 +711,5 @@ void test_map(void)
 #endif
     test_big_object();
     test_ordered_retrieval();
+    map_destroy(NULL);
 }

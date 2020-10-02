@@ -239,4 +239,5 @@ void test_priority_queue(void)
     test_push_out_of_memory();
 #endif
     test_big_object();
+    priority_queue_destroy(NULL);
 }

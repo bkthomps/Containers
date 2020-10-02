@@ -432,4 +432,5 @@ void test_list(void)
     assert(test_puzzle_backwards(2, 10) == 5);
     test_big_object();
     test_add_all();
+    list_destroy(NULL);
 }

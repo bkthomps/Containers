@@ -444,4 +444,5 @@ void test_forward_list(void)
     assert(test_puzzle_backwards(2, 10) == 5);
     test_big_object();
     test_add_all();
+    forward_list_destroy(NULL);
 }

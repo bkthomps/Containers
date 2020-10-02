@@ -342,4 +342,5 @@ void test_unordered_set(void)
     test_clear_out_of_memory();
 #endif
     test_big_object();
+    unordered_set_destroy(NULL);
 }

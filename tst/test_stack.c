@@ -112,4 +112,5 @@ void test_stack(void)
     test_basic();
     test_automated_trim();
     test_big_object();
+    stack_destroy(NULL);
 }

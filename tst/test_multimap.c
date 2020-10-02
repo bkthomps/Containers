@@ -786,4 +786,5 @@ void test_multimap(void)
 #endif
     test_big_object();
     test_ordered_retrieval();
+    multimap_destroy(NULL);
 }

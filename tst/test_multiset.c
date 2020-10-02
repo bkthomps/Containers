@@ -715,4 +715,5 @@ void test_multiset(void)
 #endif
     test_big_object();
     test_ordered_retrieval();
+    multiset_destroy(NULL);
 }

@@ -646,7 +646,8 @@ bk_err deque_clear(deque me)
 
 /**
  * Destroys the deque. Performing further operations after calling this function
- * results in undefined behavior.
+ * results in undefined behavior. Freeing NULL is legal, and causes no operation
+ * to be performed.
  *
  * @param me the deque to destroy
  *
@@ -654,11 +655,13 @@ bk_err deque_clear(deque me)
  */
 deque deque_destroy(deque me)
 {
-    size_t i;
-    for (i = me->alloc_block_start; i <= me->alloc_block_end; i++) {
-        free(me->data[i]);
+    if (me) {
+        size_t i;
+        for (i = me->alloc_block_start; i <= me->alloc_block_end; i++) {
+            free(me->data[i]);
+        }
+        free(me->data);
+        free(me);
     }
-    free(me->data);
-    free(me);
     return NULL;
 }

@@ -478,4 +478,5 @@ void test_unordered_multimap(void)
     test_clear_out_of_memory();
 #endif
     test_big_object();
+    unordered_multimap_destroy(NULL);
 }

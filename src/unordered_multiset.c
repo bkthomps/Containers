@@ -501,7 +501,8 @@ bk_err unordered_multiset_clear(unordered_multiset me)
 
 /**
  * Frees the unordered multi-set memory. Performing further operations after
- * calling this function results in undefined behavior.
+ * calling this function results in undefined behavior. Freeing NULL is legal,
+ * and causes no operation to be performed.
  *
  * @param me the unordered multi-set to free from memory
  *
@@ -509,8 +510,10 @@ bk_err unordered_multiset_clear(unordered_multiset me)
  */
 unordered_multiset unordered_multiset_destroy(unordered_multiset me)
 {
-    unordered_multiset_clear(me);
-    free(me->buckets);
-    free(me);
+    if (me) {
+        unordered_multiset_clear(me);
+        free(me->buckets);
+        free(me);
+    }
     return NULL;
 }

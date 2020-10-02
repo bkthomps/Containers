@@ -683,4 +683,5 @@ void test_set(void)
 #endif
     test_big_object();
     test_ordered_retrieval();
+    set_destroy(NULL);
 }

@@ -402,4 +402,5 @@ void test_unordered_multiset(void)
     test_clear_out_of_memory();
 #endif
     test_big_object();
+    unordered_multiset_destroy(NULL);
 }
