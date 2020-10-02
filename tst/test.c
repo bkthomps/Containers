@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "test.h"
 
 #if STUB_MALLOC
@@ -86,5 +87,6 @@ int main(void)
     test_stack();
     test_queue();
     test_priority_queue();
+    printf("Tests Passed\n");
     return 0;
 }
