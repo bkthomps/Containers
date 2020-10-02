@@ -3,7 +3,9 @@
 
 static void test_invalid_init(void)
 {
+    const size_t compare_int = -1;
     assert(!vector_init(0));
+    assert(!vector_init(compare_int));
 }
 
 static void test_adding(vector me)
@@ -217,6 +219,14 @@ static void test_dynamic(void)
     assert(!vector_destroy(str_vector));
 }
 
+static void test_reserve_erange(void)
+{
+    const size_t max_size = -1;
+    vector me = vector_init(sizeof(int));
+    assert(vector_reserve(me, max_size) == -ERANGE);
+    vector_destroy(me);
+}
+
 #if STUB_MALLOC
 static void test_init_out_of_memory(void)
 {
@@ -254,15 +264,15 @@ static void test_add_out_of_memory(void)
 {
     vector me = vector_init(sizeof(int));
     int i;
-    for (i = 0; i < 7; i++) {
+    for (i = 0; i < 8; i++) {
         assert(vector_add_last(me, &i) == 0);
     }
     i++;
     fail_realloc = 1;
     assert(vector_add_last(me, &i) == -ENOMEM);
-    assert(vector_size(me) == 7);
+    assert(vector_size(me) == 8);
     assert(vector_capacity(me) == 8);
-    for (i = 0; i < 7; i++) {
+    for (i = 0; i < 8; i++) {
         int get = 0xfacade;
         vector_get_at(&get, me, i);
         assert(get == i);
@@ -311,16 +321,37 @@ static void test_big_object(void)
     assert(!vector_destroy(me));
 }
 
+static void test_add_all(void)
+{
+    size_t i;
+    const size_t max_size = -1;
+    double small_array[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    vector me = vector_init(sizeof(double));
+    assert(vector_add_all(me, small_array, 10) == BK_OK);
+    assert(vector_size(me) == 10);
+    for (i = 0; i < 10; i++) {
+        double get;
+        assert(vector_get_at(&get, me, i) == BK_OK);
+        assert(get == i + 1);
+    }
+    assert(vector_add_all(me, small_array, max_size) == -BK_ERANGE);
+    assert(vector_add_all(me, small_array, max_size - 10) == -BK_ERANGE);
+    assert(vector_add_all(me, small_array, max_size - 20) == -BK_ERANGE);
+    vector_destroy(me);
+}
+
 void test_vector(void)
 {
     test_invalid_init();
     test_basic();
     test_vector_of_vectors();
     test_dynamic();
+    test_reserve_erange();
 #if STUB_MALLOC
     test_init_out_of_memory();
     test_set_space_out_of_memory();
     test_add_out_of_memory();
 #endif
     test_big_object();
+    test_add_all();
 }

@@ -32,6 +32,7 @@
 #define BK_OK 0
 #define BK_ENOMEM 12
 #define BK_EINVAL 22
+#define BK_ERANGE 34
 
 /* Cannot use <stdbool.h> because it is C99 not C89. */
 #define BK_FALSE 0

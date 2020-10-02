@@ -17,7 +17,7 @@ container names.
 It is possible to compile this library as either static `.a` or dynamic `.so`:
 1. A static library is slightly faster than a dynamic one, however, if the
 library is modified, the entire project codebase which uses it will need to be
-recompiled.
+relinked.
 2. A dynamic library can be changed without recompiling the codebase, assuming
 no function definitions have changed.
 

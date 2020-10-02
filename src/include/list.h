@@ -37,6 +37,7 @@ list list_init(size_t data_size);
 size_t list_size(list me);
 bk_bool list_is_empty(list me);
 void list_copy_to_array(void *arr, list me);
+bk_err list_add_all(list me, void *arr, size_t size);
 
 /* Adding */
 bk_err list_add_first(list me, void *data);

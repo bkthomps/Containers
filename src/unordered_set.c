@@ -77,6 +77,9 @@ unordered_set unordered_set_init(const size_t key_size,
     if (key_size == 0 || !hash || !comparator) {
         return NULL;
     }
+    if (node_key_offset + key_size < node_key_offset) {
+        return NULL;
+    }
     init = malloc(sizeof(struct internal_unordered_set));
     if (!init) {
         return NULL;

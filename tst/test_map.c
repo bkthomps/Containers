@@ -91,9 +91,12 @@ static int compare_int(const void *const one, const void *const two)
 
 static void test_invalid_init(void)
 {
+    const size_t max_size = -1;
     assert(!map_init(0, sizeof(int), compare_int));
     assert(!map_init(sizeof(int), 0, compare_int));
     assert(!map_init(sizeof(int), sizeof(int), NULL));
+    assert(!map_init(max_size, max_size, compare_int));
+    assert(!map_init(1, max_size, compare_int));
 }
 
 static void mutation_order(map me, const int *const arr, const int size)
@@ -598,6 +601,99 @@ static void test_big_object(void)
     assert(!map_destroy(me));
 }
 
+static void test_ordered_retrieval(void)
+{
+    int *get;
+    int val = 4;
+    map me = map_init(sizeof(int), sizeof(int), compare_int);
+    assert(!map_first(me));
+    assert(!map_last(me));
+    assert(map_put(me, &val, &val) == BK_OK);
+    get = map_first(me);
+    assert(val == *get);
+    get = map_last(me);
+    assert(val == *get);
+    val = 5;
+    assert(map_put(me, &val, &val) == BK_OK);
+    val = 3;
+    assert(map_put(me, &val, &val) == BK_OK);
+    get = map_first(me);
+    assert(3 == *get);
+    get = map_last(me);
+    assert(5 == *get);
+    /* Lower tests */
+    val = 7;
+    get = map_lower(me, &val);
+    assert(5 == *get);
+    val = 6;
+    get = map_lower(me, &val);
+    assert(5 == *get);
+    val = 5;
+    get = map_lower(me, &val);
+    assert(4 == *get);
+    val = 4;
+    get = map_lower(me, &val);
+    assert(3 == *get);
+    val = 3;
+    get = map_lower(me, &val);
+    assert(!get);
+    /* Higher tests */
+    val = 1;
+    get = map_higher(me, &val);
+    assert(3 == *get);
+    val = 2;
+    get = map_higher(me, &val);
+    assert(3 == *get);
+    val = 3;
+    get = map_higher(me, &val);
+    assert(4 == *get);
+    val = 4;
+    get = map_higher(me, &val);
+    assert(5 == *get);
+    val = 5;
+    get = map_higher(me, &val);
+    assert(!get);
+    /* Floor tests */
+    val = 7;
+    get = map_floor(me, &val);
+    assert(5 == *get);
+    val = 6;
+    get = map_floor(me, &val);
+    assert(5 == *get);
+    val = 5;
+    get = map_floor(me, &val);
+    assert(5 == *get);
+    val = 4;
+    get = map_floor(me, &val);
+    assert(4 == *get);
+    val = 3;
+    get = map_floor(me, &val);
+    assert(3 == *get);
+    val = 2;
+    get = map_floor(me, &val);
+    assert(!get);
+    /* Ceiling tests */
+    val = 1;
+    get = map_ceiling(me, &val);
+    assert(3 == *get);
+    val = 2;
+    get = map_ceiling(me, &val);
+    assert(3 == *get);
+    val = 3;
+    get = map_ceiling(me, &val);
+    assert(3 == *get);
+    val = 4;
+    get = map_ceiling(me, &val);
+    assert(4 == *get);
+    val = 5;
+    get = map_ceiling(me, &val);
+    assert(5 == *get);
+    val = 6;
+    get = map_ceiling(me, &val);
+    assert(!get);
+    map_destroy(me);
+}
+
 void test_map(void)
 {
     test_invalid_init();
@@ -614,4 +710,5 @@ void test_map(void)
     test_put_out_of_memory();
 #endif
     test_big_object();
+    test_ordered_retrieval();
 }

@@ -93,8 +93,10 @@ static int compare_int(const void *const one, const void *const two)
 
 static void test_invalid_init(void)
 {
+    const size_t max_size = -1;
     assert(!multiset_init(0, compare_int));
     assert(!multiset_init(sizeof(int), NULL));
+    assert(!multiset_init(max_size, compare_int));
 }
 
 static void mutation_order(multiset me, const int *const arr, const int size)
@@ -603,6 +605,99 @@ static void test_big_object(void)
     assert(!multiset_destroy(me));
 }
 
+static void test_ordered_retrieval(void)
+{
+    int *get;
+    int val = 4;
+    multiset me = multiset_init(sizeof(int), compare_int);
+    assert(!multiset_first(me));
+    assert(!multiset_last(me));
+    assert(multiset_put(me, &val) == BK_OK);
+    get = multiset_first(me);
+    assert(val == *get);
+    get = multiset_last(me);
+    assert(val == *get);
+    val = 5;
+    assert(multiset_put(me, &val) == BK_OK);
+    val = 3;
+    assert(multiset_put(me, &val) == BK_OK);
+    get = multiset_first(me);
+    assert(3 == *get);
+    get = multiset_last(me);
+    assert(5 == *get);
+    /* Lower tests */
+    val = 7;
+    get = multiset_lower(me, &val);
+    assert(5 == *get);
+    val = 6;
+    get = multiset_lower(me, &val);
+    assert(5 == *get);
+    val = 5;
+    get = multiset_lower(me, &val);
+    assert(4 == *get);
+    val = 4;
+    get = multiset_lower(me, &val);
+    assert(3 == *get);
+    val = 3;
+    get = multiset_lower(me, &val);
+    assert(!get);
+    /* Higher tests */
+    val = 1;
+    get = multiset_higher(me, &val);
+    assert(3 == *get);
+    val = 2;
+    get = multiset_higher(me, &val);
+    assert(3 == *get);
+    val = 3;
+    get = multiset_higher(me, &val);
+    assert(4 == *get);
+    val = 4;
+    get = multiset_higher(me, &val);
+    assert(5 == *get);
+    val = 5;
+    get = multiset_higher(me, &val);
+    assert(!get);
+    /* Floor tests */
+    val = 7;
+    get = multiset_floor(me, &val);
+    assert(5 == *get);
+    val = 6;
+    get = multiset_floor(me, &val);
+    assert(5 == *get);
+    val = 5;
+    get = multiset_floor(me, &val);
+    assert(5 == *get);
+    val = 4;
+    get = multiset_floor(me, &val);
+    assert(4 == *get);
+    val = 3;
+    get = multiset_floor(me, &val);
+    assert(3 == *get);
+    val = 2;
+    get = multiset_floor(me, &val);
+    assert(!get);
+    /* Ceiling tests */
+    val = 1;
+    get = multiset_ceiling(me, &val);
+    assert(3 == *get);
+    val = 2;
+    get = multiset_ceiling(me, &val);
+    assert(3 == *get);
+    val = 3;
+    get = multiset_ceiling(me, &val);
+    assert(3 == *get);
+    val = 4;
+    get = multiset_ceiling(me, &val);
+    assert(4 == *get);
+    val = 5;
+    get = multiset_ceiling(me, &val);
+    assert(5 == *get);
+    val = 6;
+    get = multiset_ceiling(me, &val);
+    assert(!get);
+    multiset_destroy(me);
+}
+
 void test_multiset(void)
 {
     test_invalid_init();
@@ -619,4 +714,5 @@ void test_multiset(void)
     test_put_out_of_memory();
 #endif
     test_big_object();
+    test_ordered_retrieval();
 }

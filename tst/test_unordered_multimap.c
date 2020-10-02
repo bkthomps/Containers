@@ -25,6 +25,7 @@ static unsigned long bad_hash_int()
 
 static void test_invalid_init(void)
 {
+    const size_t max_size = -1;
     assert(!unordered_multimap_init(0, sizeof(int), hash_int, compare_int,
                                     compare_int));
     assert(!unordered_multimap_init(sizeof(int), 0, hash_int, compare_int,
@@ -35,6 +36,10 @@ static void test_invalid_init(void)
                                     compare_int));
     assert(!unordered_multimap_init(sizeof(int), sizeof(int), hash_int,
                                     compare_int, NULL));
+    assert(!unordered_multimap_init(max_size, max_size, hash_int, compare_int,
+                                    compare_int));
+    assert(!unordered_multimap_init(1, max_size, hash_int, compare_int,
+                                    compare_int));
 }
 
 static void test_put(unordered_multimap me)

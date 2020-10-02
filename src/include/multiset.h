@@ -47,6 +47,14 @@ bk_bool multiset_contains(multiset me, void *key);
 bk_bool multiset_remove(multiset me, void *key);
 bk_bool multiset_remove_all(multiset me, void *key);
 
+/* Retrieval */
+void *multiset_first(multiset me);
+void *multiset_last(multiset me);
+void *multiset_lower(multiset me, void *key);
+void *multiset_higher(multiset me, void *key);
+void *multiset_floor(multiset me, void *key);
+void *multiset_ceiling(multiset me, void *key);
+
 /* Ending */
 void multiset_clear(multiset me);
 multiset multiset_destroy(multiset me);

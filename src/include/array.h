@@ -37,6 +37,7 @@ array array_init(size_t element_count, size_t data_size);
 size_t array_size(array me);
 void array_copy_to_array(void *arr, array me);
 void *array_get_data(array me);
+bk_err array_add_all(array me, void *arr, size_t size);
 
 /* Accessing */
 bk_err array_set(array me, size_t index, void *data);

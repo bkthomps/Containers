@@ -83,6 +83,12 @@ unordered_map unordered_map_init(const size_t key_size,
     if (key_size == 0 || value_size == 0 || !hash || !comparator) {
         return NULL;
     }
+    if (node_key_offset + key_size < node_key_offset) {
+        return NULL;
+    }
+    if (node_key_offset + key_size + value_size < node_key_offset + key_size) {
+        return NULL;
+    }
     init = malloc(sizeof(struct internal_unordered_map));
     if (!init) {
         return NULL;

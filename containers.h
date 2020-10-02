@@ -23,7 +23,7 @@
 /*
  * The Containers library is hosted at: github.com/bkthomps/Containers
  * The author is: Bailey Thompson
- * This local version is: v1.1.2
+ * This local version is: v1.2.0
  */
 
 
@@ -39,6 +39,7 @@
 #define BK_OK 0
 #define BK_ENOMEM 12
 #define BK_EINVAL 22
+#define BK_ERANGE 34
 
 /* Cannot use <stdbool.h> because it is C99 not C89. */
 #define BK_FALSE 0
@@ -65,6 +66,7 @@ array array_init(size_t element_count, size_t data_size);
 size_t array_size(array me);
 void array_copy_to_array(void *arr, array me);
 void *array_get_data(array me);
+bk_err array_add_all(array me, void *arr, size_t size);
 
 /* Accessing */
 bk_err array_set(array me, size_t index, void *data);
@@ -92,6 +94,7 @@ size_t deque_size(deque me);
 bk_bool deque_is_empty(deque me);
 bk_err deque_trim(deque me);
 void deque_copy_to_array(void *arr, deque me);
+bk_err deque_add_all(deque me, void *arr, size_t size);
 
 /* Adding */
 bk_err deque_push_front(deque me, void *data);
@@ -133,6 +136,7 @@ forward_list forward_list_init(size_t data_size);
 size_t forward_list_size(forward_list me);
 bk_bool forward_list_is_empty(forward_list me);
 void forward_list_copy_to_array(void *arr, forward_list me);
+bk_err forward_list_add_all(forward_list me, void *arr, size_t size);
 
 /* Adding */
 bk_err forward_list_add_first(forward_list me, void *data);
@@ -176,6 +180,7 @@ list list_init(size_t data_size);
 size_t list_size(list me);
 bk_bool list_is_empty(list me);
 void list_copy_to_array(void *arr, list me);
+bk_err list_add_all(list me, void *arr, size_t size);
 
 /* Adding */
 bk_err list_add_first(list me, void *data);
@@ -227,6 +232,14 @@ bk_bool map_get(void *value, map me, void *key);
 bk_bool map_contains(map me, void *key);
 bk_bool map_remove(map me, void *key);
 
+/* Retrieval */
+void *map_first(map me);
+void *map_last(map me);
+void *map_lower(map me, void *key);
+void *map_higher(map me, void *key);
+void *map_floor(map me, void *key);
+void *map_ceiling(map me, void *key);
+
 /* Ending */
 void map_clear(map me);
 map map_destroy(map me);
@@ -263,6 +276,14 @@ bk_bool multimap_contains(multimap me, void *key);
 bk_bool multimap_remove(multimap me, void *key, void *value);
 bk_bool multimap_remove_all(multimap me, void *key);
 
+/* Retrieval */
+void *multimap_first(multimap me);
+void *multimap_last(multimap me);
+void *multimap_lower(multimap me, void *key);
+void *multimap_higher(multimap me, void *key);
+void *multimap_floor(multimap me, void *key);
+void *multimap_ceiling(multimap me, void *key);
+
 /* Ending */
 void multimap_clear(multimap me);
 multimap multimap_destroy(multimap me);
@@ -294,6 +315,14 @@ size_t multiset_count(multiset me, void *key);
 bk_bool multiset_contains(multiset me, void *key);
 bk_bool multiset_remove(multiset me, void *key);
 bk_bool multiset_remove_all(multiset me, void *key);
+
+/* Retrieval */
+void *multiset_first(multiset me);
+void *multiset_last(multiset me);
+void *multiset_lower(multiset me, void *key);
+void *multiset_higher(multiset me, void *key);
+void *multiset_floor(multiset me, void *key);
+void *multiset_ceiling(multiset me, void *key);
 
 /* Ending */
 void multiset_clear(multiset me);
@@ -391,6 +420,14 @@ bk_bool set_is_empty(set me);
 bk_err set_put(set me, void *key);
 bk_bool set_contains(set me, void *key);
 bk_bool set_remove(set me, void *key);
+
+/* Retrieval */
+void *set_first(set me);
+void *set_last(set me);
+void *set_lower(set me, void *key);
+void *set_higher(set me, void *key);
+void *set_floor(set me, void *key);
+void *set_ceiling(set me, void *key);
 
 /* Ending */
 void set_clear(set me);
@@ -594,6 +631,7 @@ bk_err vector_reserve(vector me, size_t size);
 bk_err vector_trim(vector me);
 void vector_copy_to_array(void *arr, vector me);
 void *vector_get_data(vector me);
+bk_err vector_add_all(vector me, void *arr, size_t size);
 
 /* Adding */
 bk_err vector_add_first(vector me, void *data);

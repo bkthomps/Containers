@@ -101,6 +101,7 @@ void stack_copy_to_array(void *const arr, stack me)
  *
  * @return  BK_OK     if no error
  * @return -BK_ENOMEM if out of memory
+ * @return -BK_ERANGE if size has reached representable limit
  */
 bk_err stack_push(stack me, void *const data)
 {

@@ -3,7 +3,9 @@
 
 static void test_invalid_init(void)
 {
+    const size_t max_size = -1;
     assert(!deque_init(0));
+    assert(!deque_init(max_size));
 }
 
 static void test_copy(deque me)
@@ -266,12 +268,13 @@ static void test_large_elements(void)
 #if STUB_MALLOC
 static void test_init_out_of_memory(void)
 {
-    fail_calloc = 1;
-    assert(!deque_init(sizeof(int)));
     fail_malloc = 1;
     assert(!deque_init(sizeof(int)));
     fail_malloc = 1;
     delay_fail_malloc = 1;
+    assert(!deque_init(sizeof(int)));
+    fail_malloc = 1;
+    delay_fail_malloc = 2;
     assert(!deque_init(sizeof(int)));
 }
 #endif
@@ -340,7 +343,7 @@ static void test_clear_out_of_memory(void)
         deque_push_back(me, &i);
     }
     assert(deque_size(me) == 32);
-    fail_calloc = 1;
+    fail_malloc = 1;
     assert(deque_clear(me) == -ENOMEM);
     for (i = 0; i < 32; i++) {
         int get = 0xfacade;
@@ -349,6 +352,7 @@ static void test_clear_out_of_memory(void)
     }
     assert(deque_size(me) == 32);
     fail_malloc = 1;
+    delay_fail_malloc = 1;
     assert(deque_clear(me) == -ENOMEM);
     for (i = 0; i < 32; i++) {
         int get = 0xfacade;
@@ -384,7 +388,7 @@ struct pair {
     int cur_cost;
 };
 
-static int test_puzzle(int start_node, int dest_node)
+static int test_puzzle_forwards(int start_node, int dest_node)
 {
     deque q = deque_init(sizeof(struct pair));
     struct pair cur;
@@ -413,6 +417,42 @@ static int test_puzzle(int start_node, int dest_node)
         assert(cur.cur_node == node - 1);
         cur.cur_node = 2 * node;
         deque_push_back(q, &cur);
+        assert(cur.cur_cost == cost + 1);
+        assert(cur.cur_node == 2 * node);
+    }
+    deque_destroy(q);
+    return -1;
+}
+
+static int test_puzzle_backwards(int start_node, int dest_node)
+{
+    deque q = deque_init(sizeof(struct pair));
+    struct pair cur;
+    cur.cur_node = start_node;
+    cur.cur_cost = 0;
+    assert(deque_is_empty(q));
+    deque_push_back(q, &cur);
+    assert(deque_size(q) == 1);
+    while (!deque_is_empty(q)) {
+        int node;
+        int cost;
+        deque_pop_back(&cur, q);
+        node = cur.cur_node;
+        cost = cur.cur_cost;
+        if (node > 2 * dest_node || node < 1) {
+            continue;
+        }
+        if (node == dest_node) {
+            deque_destroy(q);
+            return cost;
+        }
+        cur.cur_cost = cost + 1;
+        cur.cur_node = node - 1;
+        deque_push_front(q, &cur);
+        assert(cur.cur_cost == cost + 1);
+        assert(cur.cur_node == node - 1);
+        cur.cur_node = 2 * node;
+        deque_push_front(q, &cur);
         assert(cur.cur_cost == cost + 1);
         assert(cur.cur_node == 2 * node);
     }
@@ -459,8 +499,151 @@ static void test_big_object(void)
     assert(!deque_destroy(me));
 }
 
+static void test_add_all(int big_arr_size)
+{
+    int i;
+    double small_array[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    double *big_array = malloc(big_arr_size * sizeof(double));
+    deque me = deque_init(sizeof(double));
+    for (i = 0; i < big_arr_size; i++) {
+        big_array[i] = i + 10;
+    }
+    assert(deque_add_all(me, small_array, 10) == BK_OK);
+    assert(deque_size(me) == 10);
+    for (i = 0; i < 9; i++) {
+        double get;
+        assert(deque_get_at(&get, me, i) == BK_OK);
+        assert(small_array[i] == i + 1);
+        assert(get == small_array[i]);
+    }
+    assert(deque_add_all(me, big_array, big_arr_size) == BK_OK);
+    for (i = 10; i < big_arr_size; i++) {
+        double get;
+        assert(deque_get_at(&get, me, i) == BK_OK);
+        assert(big_array[i - 10] == i);
+        assert(get == big_array[i - 10]);
+    }
+    deque_destroy(me);
+    free(big_array);
+}
+
+static void test_add_all_failure(void)
+{
+    const size_t big_arr_size = 2000;
+    size_t i;
+    int small_array[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    double *big_array = malloc(big_arr_size * sizeof(double));
+    deque me = deque_init(sizeof(int));
+    for (i = 0; i < big_arr_size; i++) {
+        big_array[i] = (int) i + 10;
+    }
+    assert(deque_add_all(me, small_array, 0) == BK_OK);
+    assert(deque_size(me) == 0);
+    assert(deque_add_all(me, small_array, -1) == -BK_ERANGE);
+    assert(deque_size(me) == 0);
+    for (i = 0; i < 200; i++) {
+        assert(deque_add_all(me, small_array, 10) == BK_OK);
+    }
+    assert(deque_size(me) == 2000);
+    for (i = 0; i < 2000; i++) {
+        int get;
+        assert(deque_pop_back(&get, me) == BK_OK);
+        assert(get == 10 - (int) i % 10);
+    }
+    assert(deque_size(me) == 0);
+    for (i = 0; i < 200; i++) {
+        assert(deque_add_all(me, small_array, 10) == BK_OK);
+    }
+    assert(deque_size(me) == 2000);
+#if STUB_MALLOC
+    fail_realloc = 1;
+    assert(deque_add_all(me, small_array, 4000) == -BK_ENOMEM);
+    assert(deque_size(me) == 2000);
+    fail_malloc = 1;
+    assert(deque_add_all(me, big_array, 2000) == -BK_ENOMEM);
+    assert(deque_size(me) == 2000);
+#endif
+    deque_destroy(me);
+    free(big_array);
+}
+
+static void test_block_reuse_forwards(void)
+{
+    size_t i;
+    size_t queue_size = 1500;
+    deque queue = deque_init(sizeof(double));
+    for (i = 0; i < queue_size; i++) {
+        double d = i;
+        assert(deque_push_back(queue, &d) == BK_OK);
+    }
+    for (i = 0; i < queue_size; i++) {
+        double d = i;
+        double get;
+        assert(deque_push_back(queue, &d) == BK_OK);
+        assert(deque_pop_front(&get, queue) == BK_OK);
+        assert(get == d);
+    }
+    deque_destroy(queue);
+}
+
+static void test_block_reuse_backwards(void)
+{
+    size_t i;
+    size_t queue_size = 1500;
+    deque queue = deque_init(sizeof(double));
+    for (i = 0; i < queue_size; i++) {
+        double d = i;
+        assert(deque_push_front(queue, &d) == BK_OK);
+    }
+    for (i = 0; i < queue_size; i++) {
+        double d = i;
+        double get;
+        assert(deque_push_front(queue, &d) == BK_OK);
+        assert(deque_pop_back(&get, queue) == BK_OK);
+        assert(get == d);
+    }
+    deque_destroy(queue);
+}
+
+static void test_trim_both_sides(void)
+{
+    int i;
+    deque me = deque_init(sizeof(int));
+    for (i = 999; i >= 0; i--) {
+        assert(deque_push_front(me, &i) == BK_OK);
+        assert(deque_push_back(me, &i) == BK_OK);
+    }
+    assert(deque_size(me) == 2000);
+    assert(deque_trim(me) == BK_OK);
+    assert(deque_size(me) == 2000);
+    for (i = 0; i < 500; i++) {
+        int get = 0xfacade;
+        assert(deque_pop_front(&get, me) == BK_OK);
+        assert(get == i);
+        get = 0xfacade;
+        assert(deque_pop_back(&get, me) == BK_OK);
+        assert(get == i);
+    }
+    assert(deque_size(me) == 1000);
+    assert(deque_trim(me) == BK_OK);
+    assert(deque_size(me) == 1000);
+    for (i = 500; i < 1000; i++) {
+        int get = 0xfacade;
+        assert(deque_pop_front(&get, me) == BK_OK);
+        assert(get == i);
+        get = 0xfacade;
+        assert(deque_pop_back(&get, me) == BK_OK);
+        assert(get == i);
+    }
+    assert(deque_size(me) == 0);
+    assert(deque_trim(me) == BK_OK);
+    assert(deque_size(me) == 0);
+    deque_destroy(me);
+}
+
 void test_deque(void)
 {
+    int i;
     test_invalid_init();
     test_basic();
     test_trim();
@@ -477,7 +660,18 @@ void test_deque(void)
     test_clear_out_of_memory();
 #endif
     test_single_full_block();
-    assert(test_puzzle(2, 5) == 4);
-    assert(test_puzzle(2, 10) == 5);
+    assert(test_puzzle_forwards(2, 5) == 4);
+    assert(test_puzzle_forwards(2, 10) == 5);
+    assert(test_puzzle_forwards(100, 1000) == 42);
+    assert(test_puzzle_backwards(2, 5) == 4);
+    assert(test_puzzle_backwards(2, 10) == 5);
+    assert(test_puzzle_backwards(100, 1000) == 42);
     test_big_object();
+    for (i = 1; i < 6000; i++) {
+        test_add_all(i);
+    }
+    test_add_all_failure();
+    test_block_reuse_forwards();
+    test_block_reuse_backwards();
+    test_trim_both_sides();
 }

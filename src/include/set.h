@@ -43,6 +43,14 @@ bk_err set_put(set me, void *key);
 bk_bool set_contains(set me, void *key);
 bk_bool set_remove(set me, void *key);
 
+/* Retrieval */
+void *set_first(set me);
+void *set_last(set me);
+void *set_lower(set me, void *key);
+void *set_higher(set me, void *key);
+void *set_floor(set me, void *key);
+void *set_ceiling(set me, void *key);
+
 /* Ending */
 void set_clear(set me);
 set set_destroy(set me);

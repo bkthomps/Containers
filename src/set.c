@@ -55,6 +55,9 @@ set set_init(const size_t key_size,
     if (key_size == 0 || !comparator) {
         return NULL;
     }
+    if (node_key_offset + key_size < node_key_offset) {
+        return NULL;
+    }
     init = malloc(sizeof(struct internal_set));
     if (!init) {
         return NULL;
@@ -679,6 +682,157 @@ bk_err set_remove(set me, void *const key)
     }
     set_remove_element(me, traverse);
     return BK_TRUE;
+}
+
+/**
+ * Returns the first (lowest) key in this set. The returned key is a pointer to
+ * the internally stored key, which should not be modified. Modifying it results
+ * in undefined behaviour.
+ *
+ * @param me the set to get the key from
+ *
+ * @return the lowest key in this set, or NULL if it is empty
+ */
+void *set_first(set me)
+{
+    char *traverse = me->root;
+    char *traverse_left;
+    if (!traverse) {
+        return NULL;
+    }
+    memcpy(&traverse_left, traverse + node_left_child_offset, ptr_size);
+    while (traverse_left) {
+        traverse = traverse_left;
+        memcpy(&traverse_left, traverse + node_left_child_offset, ptr_size);
+    }
+    return traverse + node_key_offset;
+}
+
+/**
+ * Returns the last (highest) key in this set. The returned key is a pointer to
+ * the internally stored key, which should not be modified. Modifying it results
+ * in undefined behaviour.
+ *
+ * @param me the set to get the key from
+ *
+ * @return the highest key in this set, or NULL if it is empty
+ */
+void *set_last(set me)
+{
+    char *traverse = me->root;
+    char *traverse_right;
+    if (!traverse) {
+        return NULL;
+    }
+    memcpy(&traverse_right, traverse + node_right_child_offset, ptr_size);
+    while (traverse_right) {
+        traverse = traverse_right;
+        memcpy(&traverse_right, traverse + node_right_child_offset, ptr_size);
+    }
+    return traverse + node_key_offset;
+}
+
+/**
+ * Returns the key which is strictly lower than the comparison key. Meaning that
+ * the highest key which is lower than the key used for comparison is returned.
+ *
+ * @param me  the set to get the lower key from
+ * @param key the key to use for comparison
+ *
+ * @return the key which is strictly lower, or NULL if it does not exist
+ */
+void *set_lower(set me, void *const key)
+{
+    char *ret = NULL;
+    char *traverse = me->root;
+    while (traverse) {
+        const int compare = me->comparator(traverse + node_key_offset, key);
+        if (compare < 0) {
+            ret = traverse + node_key_offset;
+            memcpy(&traverse, traverse + node_right_child_offset, ptr_size);
+        } else {
+            memcpy(&traverse, traverse + node_left_child_offset, ptr_size);
+        }
+    }
+    return ret;
+}
+
+/**
+ * Returns the key which is strictly higher than the comparison key. Meaning
+ * that the lowest key which is higher than the key used for comparison is
+ * returned.
+ *
+ * @param me  the set to get the higher key from
+ * @param key the key to use for comparison
+ *
+ * @return the key which is strictly higher, or NULL if it does not exist
+ */
+void *set_higher(set me, void *const key)
+{
+    char *ret = NULL;
+    char *traverse = me->root;
+    while (traverse) {
+        const int compare = me->comparator(traverse + node_key_offset, key);
+        if (compare > 0) {
+            ret = traverse + node_key_offset;
+            memcpy(&traverse, traverse + node_left_child_offset, ptr_size);
+        } else {
+            memcpy(&traverse, traverse + node_right_child_offset, ptr_size);
+        }
+    }
+    return ret;
+}
+
+/**
+ * Returns the key which is the floor of the comparison key. Meaning that the
+ * the highest key which is lower or equal to the key used for comparison is
+ * returned.
+ *
+ * @param me  the set to get the floor key from
+ * @param key the key to use for comparison
+ *
+ * @return the key which is the floor, or NULL if it does not exist
+ */
+void *set_floor(set me, void *const key)
+{
+    char *ret = NULL;
+    char *traverse = me->root;
+    while (traverse) {
+        const int compare = me->comparator(traverse + node_key_offset, key);
+        if (compare <= 0) {
+            ret = traverse + node_key_offset;
+            memcpy(&traverse, traverse + node_right_child_offset, ptr_size);
+        } else {
+            memcpy(&traverse, traverse + node_left_child_offset, ptr_size);
+        }
+    }
+    return ret;
+}
+
+/**
+ * Returns the key which is the ceiling of the comparison key. Meaning that the
+ * the lowest key which is higher or equal to the key used for comparison is
+ * returned.
+ *
+ * @param me  the set to get the ceiling key from
+ * @param key the key to use for comparison
+ *
+ * @return the key which is the ceiling, or NULL if it does not exist
+ */
+void *set_ceiling(set me, void *const key)
+{
+    char *ret = NULL;
+    char *traverse = me->root;
+    while (traverse) {
+        const int compare = me->comparator(traverse + node_key_offset, key);
+        if (compare >= 0) {
+            ret = traverse + node_key_offset;
+            memcpy(&traverse, traverse + node_left_child_offset, ptr_size);
+        } else {
+            memcpy(&traverse, traverse + node_right_child_offset, ptr_size);
+        }
+    }
+    return ret;
 }
 
 /**

@@ -50,6 +50,9 @@ list list_init(const size_t data_size)
     if (data_size == 0) {
         return NULL;
     }
+    if (node_data_ptr_offset + data_size < node_data_ptr_offset) {
+        return NULL;
+    }
     init = malloc(sizeof(struct internal_list));
     if (!init) {
         return NULL;
@@ -106,6 +109,65 @@ void list_copy_to_array(void *const arr, list me)
         memcpy(&traverse, traverse + node_next_ptr_offset, ptr_size);
         offset += me->bytes_per_item;
     }
+}
+
+/**
+ * Copies elements from an array to the doubly-linked list. The size specifies
+ * the number of elements to copy, starting from the beginning of the array. The
+ * size must be less than or equal to the size of the array.
+ *
+ * @param me   the doubly-linked list to add data to
+ * @param arr  the array to copy data from
+ * @param size the number of elements to copy
+ *
+ * @return  BK_OK     if no error
+ * @return -BK_ENOMEM if out of memory
+ * @return -BK_ERANGE if size has reached representable limit
+ */
+bk_err list_add_all(list me, void *const arr, const size_t size)
+{
+    size_t i;
+    char *traverse_head;
+    char *traverse;
+    if (size == 0) {
+        return BK_OK;
+    }
+    if (size + me->item_count < size) {
+        return -BK_ERANGE;
+    }
+    traverse = malloc(2 * ptr_size + me->bytes_per_item);
+    if (!traverse) {
+        return -BK_ENOMEM;
+    }
+    traverse_head = traverse;
+    memset(traverse + node_prev_ptr_offset, 0, ptr_size);
+    memcpy(traverse + node_data_ptr_offset, arr, me->bytes_per_item);
+    for (i = 1; i < size; i++) {
+        char *node = malloc(2 * ptr_size + me->bytes_per_item);
+        if (!node) {
+            while (traverse) {
+                char *backup = traverse;
+                memcpy(&traverse, traverse + node_prev_ptr_offset, ptr_size);
+                free(backup);
+            }
+            return -BK_ENOMEM;
+        }
+        memcpy(traverse + node_next_ptr_offset, &node, ptr_size);
+        memcpy(node + node_prev_ptr_offset, &traverse, ptr_size);
+        memcpy(node + node_data_ptr_offset,
+               (char *) arr + i * me->bytes_per_item, me->bytes_per_item);
+        traverse = node;
+    }
+    memset(traverse + node_next_ptr_offset, 0, ptr_size);
+    if (list_is_empty(me)) {
+        me->head = traverse_head;
+    } else {
+        memcpy(traverse_head + node_prev_ptr_offset, &me->tail, ptr_size);
+        memcpy(me->tail + node_next_ptr_offset, &traverse_head, ptr_size);
+    }
+    me->tail = traverse;
+    me->item_count += size;
+    return BK_OK;
 }
 
 /*
@@ -190,8 +252,8 @@ bk_err list_add_at(list me, const size_t index, void *const data)
     }
     memcpy(node + node_data_ptr_offset, data, me->bytes_per_item);
     if (!me->head) {
-        /* Relies on next and prev being the first two blocks. */
-        memset(node, 0, 2 * ptr_size);
+        memset(node + node_next_ptr_offset, 0, ptr_size);
+        memset(node + node_prev_ptr_offset, 0, ptr_size);
         me->head = node;
         me->tail = node;
     } else if (index == 0) {

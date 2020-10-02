@@ -97,10 +97,14 @@ static int compare_int(const void *const one, const void *const two)
 
 static void test_invalid_init(void)
 {
+    const size_t max_size = -1;
     assert(!multimap_init(0, sizeof(int), compare_int, compare_int));
     assert(!multimap_init(sizeof(int), 0, compare_int, compare_int));
     assert(!multimap_init(sizeof(int), sizeof(int), NULL, compare_int));
     assert(!multimap_init(sizeof(int), sizeof(int), compare_int, NULL));
+    assert(!multimap_init(max_size, max_size, compare_int, compare_int));
+    assert(!multimap_init(1, max_size, compare_int, compare_int));
+    assert(!multimap_init(max_size, 1, compare_int, compare_int));
 }
 
 static void mutation_order(multimap me, const int *const arr, const int size)
@@ -670,6 +674,100 @@ static void test_big_object(void)
     assert(!multimap_destroy(me));
 }
 
+static void test_ordered_retrieval(void)
+{
+    int *get;
+    int val = 4;
+    multimap me = multimap_init(sizeof(int), sizeof(int), compare_int,
+                                compare_int);
+    assert(!multimap_first(me));
+    assert(!multimap_last(me));
+    assert(multimap_put(me, &val, &val) == BK_OK);
+    get = multimap_first(me);
+    assert(val == *get);
+    get = multimap_last(me);
+    assert(val == *get);
+    val = 5;
+    assert(multimap_put(me, &val, &val) == BK_OK);
+    val = 3;
+    assert(multimap_put(me, &val, &val) == BK_OK);
+    get = multimap_first(me);
+    assert(3 == *get);
+    get = multimap_last(me);
+    assert(5 == *get);
+    /* Lower tests */
+    val = 7;
+    get = multimap_lower(me, &val);
+    assert(5 == *get);
+    val = 6;
+    get = multimap_lower(me, &val);
+    assert(5 == *get);
+    val = 5;
+    get = multimap_lower(me, &val);
+    assert(4 == *get);
+    val = 4;
+    get = multimap_lower(me, &val);
+    assert(3 == *get);
+    val = 3;
+    get = multimap_lower(me, &val);
+    assert(!get);
+    /* Higher tests */
+    val = 1;
+    get = multimap_higher(me, &val);
+    assert(3 == *get);
+    val = 2;
+    get = multimap_higher(me, &val);
+    assert(3 == *get);
+    val = 3;
+    get = multimap_higher(me, &val);
+    assert(4 == *get);
+    val = 4;
+    get = multimap_higher(me, &val);
+    assert(5 == *get);
+    val = 5;
+    get = multimap_higher(me, &val);
+    assert(!get);
+    /* Floor tests */
+    val = 7;
+    get = multimap_floor(me, &val);
+    assert(5 == *get);
+    val = 6;
+    get = multimap_floor(me, &val);
+    assert(5 == *get);
+    val = 5;
+    get = multimap_floor(me, &val);
+    assert(5 == *get);
+    val = 4;
+    get = multimap_floor(me, &val);
+    assert(4 == *get);
+    val = 3;
+    get = multimap_floor(me, &val);
+    assert(3 == *get);
+    val = 2;
+    get = multimap_floor(me, &val);
+    assert(!get);
+    /* Ceiling tests */
+    val = 1;
+    get = multimap_ceiling(me, &val);
+    assert(3 == *get);
+    val = 2;
+    get = multimap_ceiling(me, &val);
+    assert(3 == *get);
+    val = 3;
+    get = multimap_ceiling(me, &val);
+    assert(3 == *get);
+    val = 4;
+    get = multimap_ceiling(me, &val);
+    assert(4 == *get);
+    val = 5;
+    get = multimap_ceiling(me, &val);
+    assert(5 == *get);
+    val = 6;
+    get = multimap_ceiling(me, &val);
+    assert(!get);
+    multimap_destroy(me);
+}
+
 void test_multimap(void)
 {
     test_invalid_init();
@@ -687,4 +785,5 @@ void test_multimap(void)
     test_put_out_of_memory();
 #endif
     test_big_object();
+    test_ordered_retrieval();
 }
