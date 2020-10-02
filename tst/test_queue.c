@@ -188,4 +188,5 @@ void test_queue(void)
     assert(test_puzzle(2, 5) == 4);
     assert(test_puzzle(2, 10) == 5);
     test_big_object();
+    queue_destroy(NULL);
 }

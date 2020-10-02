@@ -355,4 +355,5 @@ void test_unordered_map(void)
     test_clear_out_of_memory();
 #endif
     test_big_object();
+    unordered_map_destroy(NULL);
 }

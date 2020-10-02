@@ -886,7 +886,8 @@ void map_clear(map me)
 
 /**
  * Frees the map memory. Performing further operations after calling this
- * function results in undefined behavior.
+ * function results in undefined behavior. Freeing NULL is legal, and causes
+ * no operation to be performed.
  *
  * @param me the map to free from memory
  *
@@ -894,7 +895,9 @@ void map_clear(map me)
  */
 map map_destroy(map me)
 {
-    map_clear(me);
-    free(me);
+    if (me) {
+        map_clear(me);
+        free(me);
+    }
     return NULL;
 }

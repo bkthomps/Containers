@@ -354,4 +354,5 @@ void test_vector(void)
 #endif
     test_big_object();
     test_add_all();
+    vector_destroy(NULL);
 }

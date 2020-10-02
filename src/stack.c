@@ -158,7 +158,8 @@ bk_err stack_clear(stack me)
 
 /**
  * Frees the stack memory. Performing further operations after calling this
- * function results in undefined behavior.
+ * function results in undefined behavior. Freeing NULL is legal, and causes
+ * no operation to be performed.
  *
  * @param me the stack to destroy
  *

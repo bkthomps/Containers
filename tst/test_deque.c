@@ -674,4 +674,5 @@ void test_deque(void)
     test_block_reuse_forwards();
     test_block_reuse_backwards();
     test_trim_both_sides();
+    deque_destroy(NULL);
 }

@@ -489,7 +489,8 @@ bk_err vector_clear(vector me)
 
 /**
  * Frees the vector memory. Performing further operations after calling this
- * function results in undefined behavior.
+ * function results in undefined behavior. Freeing NULL is legal, and causes
+ * no operation to be performed.
  *
  * @param me the vector to free from memory
  *
@@ -497,7 +498,9 @@ bk_err vector_clear(vector me)
  */
 vector vector_destroy(vector me)
 {
-    free(me->data);
-    free(me);
+    if (me) {
+        free(me->data);
+        free(me);
+    }
     return NULL;
 }

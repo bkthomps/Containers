@@ -174,7 +174,8 @@ bk_err queue_clear(queue me)
 
 /**
  * Destroys the queue. Performing further operations after calling this function
- * results in undefined behavior.
+ * results in undefined behavior. Freeing NULL is legal, and causes no operation
+ * to be performed.
  *
  * @param me the queue to destroy
  *

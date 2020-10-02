@@ -393,7 +393,8 @@ int unordered_set_clear(unordered_set me)
 
 /**
  * Frees the unordered set memory. Performing further operations after calling
- * this function results in undefined behavior.
+ * this function results in undefined behavior. Freeing NULL is legal, and
+ * causes no operation to be performed.
  *
  * @param me the unordered set to free from memory
  *
@@ -401,8 +402,10 @@ int unordered_set_clear(unordered_set me)
  */
 unordered_set unordered_set_destroy(unordered_set me)
 {
-    unordered_set_clear(me);
-    free(me->buckets);
-    free(me);
+    if (me) {
+        unordered_set_clear(me);
+        free(me->buckets);
+        free(me);
+    }
     return NULL;
 }

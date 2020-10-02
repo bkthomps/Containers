@@ -929,7 +929,8 @@ void multiset_clear(multiset me)
 
 /**
  * Frees the multi-set memory. Performing further operations after calling this
- * function results in undefined behavior.
+ * function results in undefined behavior. Freeing NULL is legal, and causes no
+ * operation to be performed.
  *
  * @param me the multi-set to free from memory
  *
@@ -937,7 +938,9 @@ void multiset_clear(multiset me)
  */
 multiset multiset_destroy(multiset me)
 {
-    multiset_clear(me);
-    free(me);
+    if (me) {
+        multiset_clear(me);
+        free(me);
+    }
     return NULL;
 }

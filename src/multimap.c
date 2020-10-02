@@ -1075,7 +1075,8 @@ void multimap_clear(multimap me)
 
 /**
  * Frees the multi-map memory. Performing further operations after calling this
- * function results in undefined behavior.
+ * function results in undefined behavior. Freeing NULL is legal, and causes no
+ * operation to be performed.
  *
  * @param me the multi-map to free from memory
  *
@@ -1083,7 +1084,9 @@ void multimap_clear(multimap me)
  */
 multimap multimap_destroy(multimap me)
 {
-    multimap_clear(me);
-    free(me);
+    if (me) {
+        multimap_clear(me);
+        free(me);
+    }
     return NULL;
 }

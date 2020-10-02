@@ -440,7 +440,8 @@ int unordered_map_clear(unordered_map me)
 
 /**
  * Frees the unordered map memory. Performing further operations after calling
- * this function results in undefined behavior.
+ * this function results in undefined behavior. Freeing NULL is legal, and
+ * causes no operation to be performed.
  *
  * @param me the unordered map to free from memory
  *
@@ -448,8 +449,10 @@ int unordered_map_clear(unordered_map me)
  */
 unordered_map unordered_map_destroy(unordered_map me)
 {
-    unordered_map_clear(me);
-    free(me->buckets);
-    free(me);
+    if (me) {
+        unordered_map_clear(me);
+        free(me->buckets);
+        free(me);
+    }
     return NULL;
 }

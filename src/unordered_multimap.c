@@ -577,7 +577,8 @@ bk_err unordered_multimap_clear(unordered_multimap me)
 
 /**
  * Frees the unordered multi-map memory. Performing further operations after
- * calling this function results in undefined behavior.
+ * calling this function results in undefined behavior. Freeing NULL is legal,
+ * and causes no operation to be performed.
  *
  * @param me the unordered multi-map to free from memory
  *
@@ -585,9 +586,11 @@ bk_err unordered_multimap_clear(unordered_multimap me)
  */
 unordered_multimap unordered_multimap_destroy(unordered_multimap me)
 {
-    unordered_multimap_clear(me);
-    free(me->iterate_key);
-    free(me->buckets);
-    free(me);
+    if (me) {
+        unordered_multimap_clear(me);
+        free(me->iterate_key);
+        free(me->buckets);
+        free(me);
+    }
     return NULL;
 }

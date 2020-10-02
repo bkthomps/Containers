@@ -203,7 +203,8 @@ bk_err array_get(void *const data, array me, const size_t index)
 
 /**
  * Frees the array memory. Performing further operations after calling this
- * function results in undefined behavior.
+ * function results in undefined behavior. Freeing NULL is legal, and causes
+ * no operation to be performed.
  *
  * @param me the array to free from memory
  *

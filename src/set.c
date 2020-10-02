@@ -849,7 +849,8 @@ void set_clear(set me)
 
 /**
  * Frees the set memory. Performing further operations after calling this
- * function results in undefined behavior.
+ * function results in undefined behavior. Freeing NULL is legal, and causes
+ * no operation to be performed.
  *
  * @param me the set to free from memory
  *
@@ -857,7 +858,9 @@ void set_clear(set me)
  */
 set set_destroy(set me)
 {
-    set_clear(me);
-    free(me);
+    if (me) {
+        set_clear(me);
+        free(me);
+    }
     return NULL;
 }

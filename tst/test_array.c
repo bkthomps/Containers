@@ -160,4 +160,5 @@ void test_array(void)
 #endif
     test_big_object();
     test_add_all();
+    array_destroy(NULL);
 }

@@ -236,7 +236,8 @@ bk_err priority_queue_clear(priority_queue me)
 
 /**
  * Frees the priority queue memory. Performing further operations after calling
- * this function results in undefined behavior.
+ * this function results in undefined behavior. Freeing NULL is legal, and
+ * causes no operation to be performed.
  *
  * @param me the priority queue to free from memory
  *
@@ -244,7 +245,9 @@ bk_err priority_queue_clear(priority_queue me)
  */
 priority_queue priority_queue_destroy(priority_queue me)
 {
-    vector_destroy(me->data);
-    free(me);
+    if (me) {
+        vector_destroy(me->data);
+        free(me);
+    }
     return NULL;
 }
