@@ -23,7 +23,7 @@
 #ifndef BKTHOMPS_CONTAINERS_ARRAY_H
 #define BKTHOMPS_CONTAINERS_ARRAY_H
 
-#include "all.h"
+#include "_bk_defines.h"
 
 /**
  * The array data structure, which is a static contiguous array.

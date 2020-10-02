@@ -23,7 +23,7 @@
 #ifndef BKTHOMPS_CONTAINERS_DEQUE_H
 #define BKTHOMPS_CONTAINERS_DEQUE_H
 
-#include "all.h"
+#include "_bk_defines.h"
 
 /**
  * The deque data structure, which is a doubly-ended queue.

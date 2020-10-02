@@ -23,7 +23,7 @@
 #ifndef BKTHOMPS_CONTAINERS_QUEUE_H
 #define BKTHOMPS_CONTAINERS_QUEUE_H
 
-#include "all.h"
+#include "_bk_defines.h"
 
 /**
  * The queue data structure, which adapts a container to provide a queue
