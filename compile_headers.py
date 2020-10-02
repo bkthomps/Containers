@@ -51,7 +51,8 @@ for filename in sorted(glob.glob(os.path.join(folder_path, '*.h'))):
     with open(filename, 'r') as file:
         text = file.read()
         entire_file = text.split("*/", 1)[1]
-        split_around_include = entire_file.split('#include "all.h"\n\n', 1)
+        split_around_text = '#include "_bk_defines.h"\n\n'
+        split_around_include = entire_file.split(split_around_text, 1)
         header += split_around_include[0]
         if len(split_around_include) == 2:
             header += split_around_include[1]

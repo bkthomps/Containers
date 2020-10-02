@@ -23,7 +23,7 @@
 #ifndef BKTHOMPS_CONTAINERS_VECTOR_H
 #define BKTHOMPS_CONTAINERS_VECTOR_H
 
-#include "all.h"
+#include "_bk_defines.h"
 
 /**
  * The vector data structure, which is a dynamic contiguous array.

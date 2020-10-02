@@ -23,7 +23,7 @@
 #ifndef BKTHOMPS_CONTAINERS_MAP_H
 #define BKTHOMPS_CONTAINERS_MAP_H
 
-#include "all.h"
+#include "_bk_defines.h"
 
 /**
  * The map data structure, which is a collection of key-value pairs, sorted by

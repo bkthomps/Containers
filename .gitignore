@@ -1,5 +1,6 @@
 .idea/*
 cmake-build-debug/*
+venv/*
 docs/*
 containers.a
 containers.so

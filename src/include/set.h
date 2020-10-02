@@ -23,7 +23,7 @@
 #ifndef BKTHOMPS_CONTAINERS_SET_H
 #define BKTHOMPS_CONTAINERS_SET_H
 
-#include "all.h"
+#include "_bk_defines.h"
 
 /**
  * The set data structure, which is a collection of unique keys, sorted by keys.

@@ -23,7 +23,7 @@
 #ifndef BKTHOMPS_CONTAINERS_MULTISET_H
 #define BKTHOMPS_CONTAINERS_MULTISET_H
 
-#include "all.h"
+#include "_bk_defines.h"
 
 /**
  * The multiset data structure, which is a collection of key-value pairs, sorted
