@@ -20,8 +20,8 @@
  * SOFTWARE.
  */
 
-#ifndef BKTHOMPS_CONTAINERS_ALL_H
-#define BKTHOMPS_CONTAINERS_ALL_H
+#ifndef BKTHOMPS_CONTAINERS_BK_DEFINES_H
+#define BKTHOMPS_CONTAINERS_BK_DEFINES_H
 
 #include <stdlib.h>
 
@@ -41,4 +41,4 @@
 typedef int bk_err;
 typedef int bk_bool;
 
-#endif /* BKTHOMPS_CONTAINERS_ALL_H */
+#endif /* BKTHOMPS_CONTAINERS_BK_DEFINES_H */
