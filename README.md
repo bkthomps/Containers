@@ -18,7 +18,7 @@ It is possible to compile this library as either static `.a` or dynamic `.so`:
 1. A static library is slightly faster than a dynamic one, however, if the
 library is modified, the entire project codebase which uses it will need to be
 relinked.
-2. A dynamic library can be changed without recompiling the codebase, assuming
+2. A dynamic library can be changed without relinking the codebase, assuming
 no function definitions have changed.
 
 The installation process is as follows:
