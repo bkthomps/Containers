@@ -633,8 +633,10 @@ static int compare_big_object(const void *const one, const void *const two)
     return a->n - b->n;
 }
 
-static int compare_dummy()
+static int compare_dummy(const void *const one, const void *const two)
 {
+    (void) one;
+    (void) two;
     assert(0);
 }
 
