@@ -7,10 +7,10 @@
 #include <limits.h>
 #include <string.h>
 
-#if defined(_POSIX_VERSION)
-#define STUB_MALLOC 1
-#else
+#if defined(_WIN32)
 #define STUB_MALLOC 0
+#else
+#define STUB_MALLOC 1
 #endif
 
 #if STUB_MALLOC
