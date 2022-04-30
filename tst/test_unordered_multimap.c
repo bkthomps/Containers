@@ -420,7 +420,7 @@ static int compare_big_object(const void *const one, const void *const two)
     return a->n - b->n;
 }
 
-static int compare_dummy(const void *const one, const void *const two)
+static int compare_placeholder(const void *const one, const void *const two)
 {
     (void) one;
     (void) two;
@@ -435,7 +435,7 @@ static void test_big_object(void)
                                                     sizeof(struct big_object),
                                                     bad_hash_int,
                                                     compare_big_object,
-                                                    compare_dummy);
+                                                    compare_placeholder);
     assert(me);
     for (i = 0; i < 16; i++) {
         int j;
