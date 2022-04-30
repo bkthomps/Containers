@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2020 Bailey Thompson
+ * Copyright (c) 2017-2022 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -79,7 +79,7 @@ multimap multimap_init(const size_t key_size, const size_t value_size,
     if (node_key_offset + key_size < node_key_offset) {
         return NULL;
     }
-    init = malloc(sizeof(struct internal_multimap));
+    init = malloc(sizeof *init);
     if (!init) {
         return NULL;
     }
