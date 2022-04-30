@@ -638,6 +638,7 @@ static int compare_dummy(const void *const one, const void *const two)
     (void) one;
     (void) two;
     assert(0);
+    return 5;
 }
 
 static void test_big_object(void)
