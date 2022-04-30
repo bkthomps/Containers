@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2020 Bailey Thompson
+ * Copyright (c) 2017-2022 Bailey Thompson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,12 +23,12 @@
 /*
  * The Containers library is hosted at: github.com/bkthomps/Containers
  * The author is: Bailey Thompson
- * This local version is: v1.2.0
+ * This local version is: v1.2.1
  */
 
 
-#ifndef BKTHOMPS_CONTAINERS_ALL_H
-#define BKTHOMPS_CONTAINERS_ALL_H
+#ifndef BKTHOMPS_CONTAINERS_BK_DEFINES_H
+#define BKTHOMPS_CONTAINERS_BK_DEFINES_H
 
 #include <stdlib.h>
 
@@ -48,7 +48,7 @@
 typedef int bk_err;
 typedef int bk_bool;
 
-#endif /* BKTHOMPS_CONTAINERS_ALL_H */
+#endif /* BKTHOMPS_CONTAINERS_BK_DEFINES_H */
 
 
 #ifndef BKTHOMPS_CONTAINERS_ARRAY_H
