@@ -23,15 +23,20 @@ header:
 	python3 compile_headers.py $(version)
 
 test_debug:
-	@gcc src/*.c tst/*.c -Wall -Wextra -Wpedantic -Werror -std=c89 -O0 -ldl -o ContainersTestDebug
+	@gcc src/*.c tst/*.c -Wall -Wextra -Wpedantic -Werror -std=c89 -O0 -ldl -o ContainersTest
 
 test_optimized:
-	@gcc src/*.c tst/*.c -Wall -Wextra -Wpedantic -Werror -std=c89 -O3 -ldl -o ContainersTestOptimized
+	@gcc src/*.c tst/*.c -Wall -Wextra -Wpedantic -Werror -std=c89 -O3 -ldl -o ContainersTest
+
+test_debug_no_malloc_fail:
+	@sed -i 's/STUB_MALLOC 1/STUB_MALLOC 0/g' tst/test.h
+	@gcc src/*.c tst/*.c -Wall -Wextra -Wpedantic -Werror -std=c89 -O0 -o ContainersTest
+	@sed -i 's/STUB_MALLOC 0/STUB_MALLOC 1/g' tst/test.h
+
+test_optimized_no_malloc_fail:
+	@sed -i 's/STUB_MALLOC 1/STUB_MALLOC 0/g' tst/test.h
+	@gcc src/*.c tst/*.c -Wall -Wextra -Wpedantic -Werror -std=c89 -O3 -o ContainersTest
+	@sed -i 's/STUB_MALLOC 0/STUB_MALLOC 1/g' tst/test.h
 
 test_coverage:
-	@gcc src/*.c tst/*.c -Wall -Wextra -Wpedantic -Werror -std=c89 -O0 -ldl -g -coverage -o ContainersTestCoverage
-
-test_valgrind:
-	@sed -i 's/STUB_MALLOC 1/STUB_MALLOC 0/g' tst/test.h
-	@gcc src/*.c tst/*.c -Wall -Wextra -Wpedantic -Werror -std=c89 -O0 -o ContainersTestValgrind
-	@sed -i 's/STUB_MALLOC 0/STUB_MALLOC 1/g' tst/test.h
+	@gcc src/*.c tst/*.c -Wall -Wextra -Wpedantic -Werror -std=c89 -O0 -ldl -g -coverage -o ContainersTest

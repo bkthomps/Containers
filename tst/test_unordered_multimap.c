@@ -18,8 +18,9 @@ static unsigned long hash_int(const void *const key)
     return hash;
 }
 
-static unsigned long bad_hash_int()
+static unsigned long bad_hash_int(const void *const key)
 {
+    (void) key;
     return 5;
 }
 
@@ -419,9 +420,12 @@ static int compare_big_object(const void *const one, const void *const two)
     return a->n - b->n;
 }
 
-static int compare_dummy()
+static int compare_dummy(const void *const one, const void *const two)
 {
+    (void) one;
+    (void) two;
     assert(0);
+    return 5;
 }
 
 static void test_big_object(void)

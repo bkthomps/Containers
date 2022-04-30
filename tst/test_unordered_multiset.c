@@ -18,8 +18,9 @@ static unsigned long hash_int(const void *const key)
     return hash;
 }
 
-static unsigned long bad_hash_int()
+static unsigned long bad_hash_int(const void *const key)
 {
+    (void) key;
     return 5;
 }
 
