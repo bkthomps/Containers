@@ -180,16 +180,16 @@ void deque_copy_to_array(void *const arr, deque me)
         return;
     }
     size_offset = first_block_length * me->data_size;
-    memcpy(&block, me->data + start_block_index, sizeof(char *));
+    block = me->data[start_block_index];
     memcpy(arr, block + start_inner_index * me->data_size, size_offset);
     for (i = start_block_index + 1; i < end_block_index; i++) {
-        memcpy(&block, me->data + i, sizeof(char *));
+        block = me->data[i];
         memcpy((char *) arr + size_offset, block,
                me->block_size * me->data_size);
         size_offset += me->block_size * me->data_size;
     }
     if (end_block_index != start_block_index) {
-        memcpy(&block, me->data + end_block_index, sizeof(char *));
+        block = me->data[end_block_index];
         memcpy((char *) arr + size_offset, block,
                (end_inner_index + 1) * me->data_size);
     }
@@ -349,7 +349,7 @@ bk_err deque_push_front(deque me, void *const data)
         char *block;
         const size_t block_index = me->start_index / me->block_size;
         const size_t inner_index = me->start_index % me->block_size;
-        memcpy(&block, me->data + block_index, sizeof(char *));
+        block = me->data[block_index];
         memcpy(block + inner_index * me->data_size, data, me->data_size);
     }
     return BK_OK;
@@ -419,7 +419,7 @@ bk_err deque_push_back(deque me, void *const data)
         char *block;
         const size_t block_index = me->end_index / me->block_size;
         const size_t inner_index = me->end_index % me->block_size;
-        memcpy(&block, me->data + block_index, sizeof(char *));
+        block = me->data[block_index];
         memcpy(block + inner_index * me->data_size, data, me->data_size);
     }
     me->end_index++;
@@ -448,7 +448,7 @@ bk_err deque_pop_front(void *const data, deque me)
     if (deque_is_empty(me)) {
         return -BK_EINVAL;
     }
-    memcpy(&block, me->data + block_index, sizeof(char *));
+    block = me->data[block_index];
     memcpy(data, block + inner_index * me->data_size, me->data_size);
     me->start_index++;
     return BK_OK;
@@ -476,7 +476,7 @@ bk_err deque_pop_back(void *const data, deque me)
     if (deque_is_empty(me)) {
         return -BK_EINVAL;
     }
-    memcpy(&block, me->data + block_index, sizeof(char *));
+    block = me->data[block_index];
     memcpy(data, block + inner_index * me->data_size, me->data_size);
     me->end_index--;
     return BK_OK;
@@ -522,7 +522,7 @@ bk_err deque_set_at(deque me, size_t index, void *const data)
     if (index >= deque_size(me)) {
         return -BK_EINVAL;
     }
-    memcpy(&block, me->data + block_index, sizeof(char *));
+    block = me->data[block_index];
     memcpy(block + inner_index * me->data_size, data, me->data_size);
     return BK_OK;
 }
@@ -585,7 +585,7 @@ bk_err deque_get_at(void *const data, deque me, size_t index)
     if (index >= deque_size(me)) {
         return -BK_EINVAL;
     }
-    memcpy(&block, me->data + block_index, sizeof(char *));
+    block = me->data[block_index];
     memcpy(data, block + inner_index * me->data_size, me->data_size);
     return BK_OK;
 }
