@@ -7,7 +7,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v5
     - run: make test_debug
     - run: ./ContainersTest
   debug_windows:
@@ -16,7 +16,7 @@ jobs:
       matrix:
         os: [windows-latest]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
       - run: make test_debug_no_malloc_fail
       - run: ./ContainersTest
   optimized:
@@ -25,7 +25,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v5
     - run: make test_optimized
     - run: ./ContainersTest
   optimized_windows:
@@ -34,20 +34,20 @@ jobs:
       matrix:
         os: [windows-latest]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
       - run: make test_optimized_no_malloc_fail
       - run: ./ContainersTest
   coverage:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v5
     - run: make test_coverage
     - run: ./ContainersTest
     - run: bash <(curl -s https://codecov.io/bash)
   valgrind:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v5
     - run: sudo apt install -y valgrind
     - run: make test_debug_no_malloc_fail
     - run: valgrind --leak-check=full --error-exitcode=1 ./ContainersTest
