@@ -167,7 +167,7 @@ bk_bool priority_queue_pop(void *const data, priority_queue me)
     vector_storage = vector_get_data(me->data);
     size = vector_size(me->data) - 1;
     temp = vector_storage + size * me->data_size;
-    memcpy(vector_storage, temp, me->data_size);
+    memmove(vector_storage, temp, me->data_size);
     left_index = 1;
     right_index = 2;
     data_index = vector_storage;
